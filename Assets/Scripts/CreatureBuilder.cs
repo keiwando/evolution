@@ -1,24 +1,27 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 
 public class CreatureBuilder : MonoBehaviour {
 
-	private enum BodyParts {
+	public enum BodyPart {
 		Joint, 
-		BodyConnection, 
+		Bone, 
 		Muscle
 	}
 
-	/** The joint that can connect multiple BodyConnections. */
+	public ButtonManager buttonManager;
+
+	/** The joint that can connect multiple Bones. */
 	public GameObject jointPreset;
 
 	/** 
 	 * The connection objects that represent the skeleton of the creature. 
 	 * Bodyconnections can only be placed between two existing joints.
 	*/
-	public GameObject bodyConnectionPreset;
+	public GameObject bonePreset;
 
 	/** The muscle that connects multiple bodyconnections and can apply pulling forces. */
 	public GameObject musclePreset;
@@ -26,17 +29,28 @@ public class CreatureBuilder : MonoBehaviour {
 
 	/** The joints of the creature that have been placed in the scene. */
 	private List<Joint> joints;
-	/** The bodyConnections that have been placed in the scene. */
-	private List<BodyConnection> bodyConnections;
+	/** The bones that have been placed in the scene. */
+	private List<Bone> bones;
 	/** The muscles that have been placed in the scene. */
 	private List<Muscle> muscles;
 
-	private BodyParts selectedPart;
+	private BodyPart selectedPart;
+	public BodyPart SelectedPart {
+		get { return selectedPart; }
+		set {
+			selectedPart = value;
+			updateHoverables();
+		}
+	}
 
-	/** The BodyConnection that is currently being placed. */
-	private BodyConnection currentBodyConnection;
+	/** The Bone that is currently being placed. */
+	private Bone currentBone;
+
+	/** The Muscle that is currentyl being placed. */
+	private Muscle currentMuscle;
 
 
+	private float CONNECTION_WIDHT = 0.5f;
 	private bool TESTING_ENABLED = true;
 
 	// Use this for initialization
@@ -44,11 +58,11 @@ public class CreatureBuilder : MonoBehaviour {
 
 		// initialize arrays
 		joints = new List<Joint>();
-		bodyConnections = new List<BodyConnection>();
+		bones = new List<Bone>();
 		muscles = new List<Muscle>();
 
 		// Joints are selected by default.
-		selectedPart = BodyParts.Joint;
+		selectedPart = BodyPart.Joint;
 	}
 	
 	// Update is called once per frame
@@ -65,101 +79,138 @@ public class CreatureBuilder : MonoBehaviour {
 	 */
 	private void handleClicks() {
 
-		if ( Input.GetMouseButtonDown(0) ) { 	// user touched
+		if ( Input.GetMouseButtonDown(0) ) { 	// user clicked
+
+			if (EventSystem.current.IsPointerOverGameObject()) return;
 			
-			if (selectedPart == BodyParts.Joint) {
+			if (selectedPart == BodyPart.Joint) {			// Place a JOINT
 				placeJoint(ScreenToWorldPoint(Input.mousePosition));
 
-			} else if (selectedPart == BodyParts.BodyConnection ) {
+			} else if (selectedPart == BodyPart.Bone ) {	// Start placing BONE
 				// find the selected joint
 				Joint joint = getHoveringObject<Joint>(joints);
 
 				if (joint != null) {
 
-					createConnectionFromJoint(joint);
-					placeConnectionBetweenPoints(joint.center, ScreenToWorldPoint(Input.mousePosition), 0.5f);
+					createBoneFromJoint(joint);
+					placeConnectionBetweenPoints(currentBone.gameObject, joint.center, ScreenToWorldPoint(Input.mousePosition), CONNECTION_WIDHT);
+				}
+
+			} else if (selectedPart == BodyPart.Muscle) {	// Start placing MUSCLE
+				// find the selected bone
+				Bone bone = getHoveringObject<Bone>(bones);
+
+				if (bone != null) {
+
+					Vector3 mousePos = ScreenToWorldPoint(Input.mousePosition);
+					MuscleJoint joint = bone.muscleJoint;
+
+					createMuscleFromJoint(joint);
+					placeConnectionBetweenPoints(currentMuscle.gameObject, joint.position, mousePos, CONNECTION_WIDHT);
 				}
 			}
+
 		} else if (Input.GetMouseButton(0)) {
 			// Mouse click & hold
-			if (selectedPart == BodyParts.BodyConnection ) {
+			if (selectedPart == BodyPart.Bone ) {
 
-				if (currentBodyConnection != null){
+				if (currentBone != null) {
 					// check if user is hovering over an ending joint which is not the same as the starting
-					// joint of the currentBodyConnection
+					// joint of the currentBone
 					Joint joint = getHoveringObject<Joint>(joints);
 					Vector3 endingPoint = ScreenToWorldPoint(Input.mousePosition);
 
-					if (joint != null && !joint.Equals(currentBodyConnection.startingJoint)) {
+					if (joint != null && !joint.Equals(currentBone.startingJoint)) {
 						endingPoint = joint.center;
-						currentBodyConnection.endingJoint = joint;
+						currentBone.endingJoint = joint;
 					} 
 
-					placeConnectionBetweenPoints(currentBodyConnection.startingPoint, endingPoint, 0.5f);	
+					placeConnectionBetweenPoints(currentBone.gameObject, currentBone.startingPoint, endingPoint, CONNECTION_WIDHT);	
 				}	
 
+			} else if (selectedPart == BodyPart.Muscle) {
+
+				if (currentMuscle != null) {
+					// check if user is hovering over an ending joint which is not the same as the starting
+					// joint of the currentMuscle
+					Bone bone = getHoveringObject<Bone>(bones);
+					Vector3 endingPoint = ScreenToWorldPoint(Input.mousePosition);
+
+					if(bone != null) {
+						
+						MuscleJoint joint = bone.muscleJoint;
+
+						if (!joint.Equals(currentMuscle.startingJoint)) {
+							endingPoint = joint.position;
+							currentMuscle.endingJoint = joint;	
+						}
+					}
+
+					placeConnectionBetweenPoints(currentMuscle.gameObject, currentMuscle.startingPoint, endingPoint, CONNECTION_WIDHT);
+				}
 			}
 
 		} else if ( Input.GetMouseButtonUp(0) ) {
 
-			if (selectedPart == BodyParts.BodyConnection ) {
+			if (selectedPart == BodyPart.Bone ) {
 				
-				placeCurrentBodyConnection();	
+				placeCurrentBone();	
+			} else if (selectedPart == BodyPart.Muscle) {
+
+				placeCurrentMuscle();
 			}
 		} 
-
-
 
 	}
 
 	/** Handles all possible keyboard controls / shortcuts. */
 	private void handleKeyboardInput() {
 
-		// J = place Joint
-		if (Input.GetKeyDown(KeyCode.J)) {
-			selectedPart = BodyParts.Joint;
-			updateHoverables();
+		if (Input.anyKeyDown) {
+		
+			// J = place Joint
+			if (Input.GetKeyDown(KeyCode.J)) {
+				SelectedPart = BodyPart.Joint;
+			}
+
+			// B = place body connection
+			else if (Input.GetKeyDown(KeyCode.B)) {
+				SelectedPart = BodyPart.Bone;
+			}
+
+			// M = place muscle
+			else if (Input.GetKeyDown(KeyCode.M)) {
+				SelectedPart = BodyPart.Muscle;
+			}
+
+			// T = Go to testing scene
+			else if (TESTING_ENABLED && Input.GetKeyDown(KeyCode.T)) {
+				takeCreatureToTestScene();
+			}
+
+
+			buttonManager.selectButton(selectedPart);
 		}
-
-		// B = place body connection
-		else if (Input.GetKeyDown(KeyCode.B)) {
-			selectedPart = BodyParts.BodyConnection;
-			updateHoverables();
-		}
-
-		// M = place muscle
-		else if (Input.GetKeyDown(KeyCode.M)) {
-			selectedPart = BodyParts.Muscle;
-			updateHoverables();
-		}
-
-		// T = Go to testing scene
-		else if (TESTING_ENABLED && Input.GetKeyDown(KeyCode.T)) {
-			takeCreatureToTestScene();
-		}
-
-
-
 	}
 
-	/** 
+	/**
 	 * Sets the shouldHighlight variable appropiately on every hoverable object
 	 * depending on the currently selected part.
 	 */
 	private void updateHoverables() {
 
-		if (selectedPart == BodyParts.Joint ) {
+		if (selectedPart == BodyPart.Joint ) {
 			// disable Highlights
 			disableAllHoverables();
-		} else if (selectedPart == BodyParts.BodyConnection ) {
+		} else if (selectedPart == BodyPart.Bone ) {
 			// make the joints hoverable
 			setShouldHighlight(joints, true);
-			setShouldHighlight(bodyConnections, false);
+			setShouldHighlight(bones, false);
 			setShouldHighlight(muscles, false);
-		} else if (selectedPart == BodyParts.Muscle ) {
-			// make the bodyConnections hoverables
+		} else if (selectedPart == BodyPart.Muscle ) {
+			// make the bones hoverables
 			setShouldHighlight(joints, false);
-			setShouldHighlight(bodyConnections, true);
+			setShouldHighlight(bones, true);
 			setShouldHighlight(muscles, false);
 		}
 	}
@@ -167,7 +218,7 @@ public class CreatureBuilder : MonoBehaviour {
 	private void disableAllHoverables() {
 
 		setShouldHighlight(joints, false);
-		setShouldHighlight(bodyConnections, false);
+		setShouldHighlight(bones, false);
 		setShouldHighlight(muscles, false);
 	}
 
@@ -209,17 +260,17 @@ public class CreatureBuilder : MonoBehaviour {
 		joints.Add(joint.GetComponent<Joint>());
 	}
 
-	/** Instantiates a bodyConnection at the specified point. */
-	private void createConnectionFromJoint(Joint joint){
+	/** Instantiates a muscle at the specified point. */
+	private void createMuscleFromJoint(MuscleJoint joint) {
 
-		Vector3 point = joint.center;
+		Vector3 point = joint.position;
 		point.z = 0;
-		currentBodyConnection = ((GameObject) Instantiate(bodyConnectionPreset, point, Quaternion.identity)).GetComponent<BodyConnection>();
-		currentBodyConnection.startingJoint = joint;
+		currentMuscle = ((GameObject) Instantiate(musclePreset, point, Quaternion.identity)).GetComponent<Muscle>();
+		currentMuscle.startingJoint = joint;
 	}
 
-	/** Places the currentBodyConnection between the specified points. (Points flattened to 2D) */
-	private void placeConnectionBetweenPoints(Vector3 start, Vector3 end, float width) {
+	/** Transforms the given gameObject between the specified points. (Points flattened to 2D). */
+	private void placeConnectionBetweenPoints(GameObject connection, Vector3 start, Vector3 end, float width) {
 
 		// flatten the vectors to 2D
 		start.z = 0;
@@ -230,31 +281,76 @@ public class CreatureBuilder : MonoBehaviour {
 		Vector3 position = start + (offset / 2.0f);
 
 
-		currentBodyConnection.transform.position = position;
-		currentBodyConnection.transform.up = offset;
-		currentBodyConnection.transform.localScale = scale;
+		connection.transform.position = position;
+		connection.transform.up = offset;
+		connection.transform.localScale = scale;
+	}
+
+	/** Instantiates a bone at the specified point. */
+	private void createBoneFromJoint(Joint joint){
+
+		Vector3 point = joint.center;
+		point.z = 0;
+		currentBone = ((GameObject) Instantiate(bonePreset, point, Quaternion.identity)).GetComponent<Bone>();
+		currentBone.startingJoint = joint;
+	}
+
+	/** Places the currentBone between the specified points. (Points flattened to 2D) */
+	private void placeBoneBetweenPoints(Vector3 start, Vector3 end, float width) {
+
+		// flatten the vectors to 2D
+		start.z = 0;
+		end.z = 0;
+
+		Vector3 offset = end - start;
+		Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
+		Vector3 position = start + (offset / 2.0f);
+
+
+		currentBone.transform.position = position;
+		currentBone.transform.up = offset;
+		currentBone.transform.localScale = scale;
 
 	}
 
 	/** 
-	 * Checks to see if the current bodyconnection is valid (attached to two joints) and
-	 * adds it to the list of connections.
+	 * Checks to see if the current bone is valid (attached to two joints) and if so
+	 * adds it to the list of bones.
 	 */
-	private void placeCurrentBodyConnection() {
+	private void placeCurrentBone() {
 
-		if (currentBodyConnection == null) return;
+		if (currentBone == null) return;
 
-		if (currentBodyConnection.endingJoint == null || getHoveringObject<Joint>(joints) == null) {
+		if (currentBone.endingJoint == null || getHoveringObject<Joint>(joints) == null) {
 			// The connection has no connected ending -> Destroy
-			Destroy(currentBodyConnection.gameObject);
+			Destroy(currentBone.gameObject);
 		
 		} else {
-			currentBodyConnection.connectToJoints();
-			bodyConnections.Add(currentBodyConnection);
+			currentBone.connectToJoints();
+			bones.Add(currentBone);
 		}
 
-		currentBodyConnection = null;
+		currentBone = null;
 	} 
+
+	/** 
+	 * Checks to see if the current muscle is valid (attached to two joints) and if so
+	 * adds it to the list of muscles.
+	 */
+	private void placeCurrentMuscle() {
+			
+		if (currentMuscle == null) return;
+
+		if (currentMuscle.endingJoint == null || getHoveringObject<Bone>(bones) == null) {
+			// The connection has no connected ending -> Destroy
+			Destroy(currentMuscle.gameObject);
+		} else {
+			currentMuscle.connectToJoints();
+			muscles.Add(currentMuscle);
+		}
+
+		currentMuscle = null;
+	}
 
 	private Vector3 ScreenToWorldPoint(Vector3 point) {
 		return Camera.main.ScreenToWorldPoint(point);
@@ -270,7 +366,7 @@ public class CreatureBuilder : MonoBehaviour {
 			joint.transform.SetParent(creatureObj.transform);
 		}
 
-		foreach (BodyConnection connection in bodyConnections) {
+		foreach (Bone connection in bones) {
 			connection.transform.SetParent(creatureObj.transform);
 		}
 
@@ -279,7 +375,7 @@ public class CreatureBuilder : MonoBehaviour {
 		}
 
 		creature.joints = joints;
-		creature.bones = bodyConnections;
+		creature.bones = bones;
 		creature.muscles = muscles;
 
 		creature.setKinematic(false);
@@ -294,6 +390,15 @@ public class CreatureBuilder : MonoBehaviour {
 		DontDestroyOnLoad(creature.gameObject);
 
 		SceneManager.LoadScene("TestingScene");
+	}
+
+	/** Generates a creature and starts the evolution simulation. */
+	public void evolve() {
+
+		Creature creature = buildCreature();
+		DontDestroyOnLoad(creature.gameObject);
+
+		// TODO: Start evolution simulation
 	}
 
 

@@ -24,8 +24,8 @@ public class Joint : Hoverable {
 	
 	}
 
-	/** Connects a BodyConnection to the gameobject with a hinge joint. */
-	public void connect(BodyConnection bone) {
+	/** Connects a Bone to the gameobject with a hinge joint. */
+	public void connect(Bone bone) {
 
 		HingeJoint joint = gameObject.AddComponent<HingeJoint>();
 		joint.anchor = Vector3.zero;

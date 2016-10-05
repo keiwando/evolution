@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class Creature : MonoBehaviour {
 
 	public List<Joint> joints;
-	public List<BodyConnection> bones;
+	public List<Bone> bones;
 	public List<Muscle> muscles;
 
 
@@ -13,7 +13,7 @@ public class Creature : MonoBehaviour {
 	void Start () {
 
 		joints = new List<Joint>();
-		bones = new List<BodyConnection>();
+		bones = new List<Bone>();
 		muscles = new List<Muscle>();
 	}
 	
@@ -28,7 +28,7 @@ public class Creature : MonoBehaviour {
 			joint.GetComponent<Rigidbody>().isKinematic = enabled;
 		}
 
-		foreach (BodyConnection bone in bones) {
+		foreach (Bone bone in bones) {
 			bone.GetComponent<Rigidbody>().isKinematic = enabled;
 		}
 

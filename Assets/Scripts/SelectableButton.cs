@@ -9,22 +9,30 @@ public class SelectableButton : MonoBehaviour {
 
 	public ButtonManager manager;
 
-	public bool selected {
+	private bool selected;
+	public bool Selected {
 		get { return selected; }
 		set {
 			selected = value;
-			float time = 0.05f;
+			float time = 0.5f;
+			if (routine != null) this.StopCoroutine(routine);
+
 			if (selected) {
-				this.StartCoroutine(SmoothMove(selectedPosition, time));
+				routine = SmoothMove(selectedPosition, time);
 			} else {
-				this.StartCoroutine(SmoothMove(defaultPosition, time));
+				routine = SmoothMove(defaultPosition, time);
 			}
+			this.StartCoroutine(routine);
+			//transform.position = selectedPosition;
 		}
 	}
 
+	private IEnumerator routine;
+
 	// Use this for initialization
 	void Start () {
-	
+		defaultPosition = transform.position;
+		selectedPosition = new Vector3(defaultPosition.x + 20, defaultPosition.y, 0);
 	}
 	
 	// Update is called once per frame
@@ -32,7 +40,7 @@ public class SelectableButton : MonoBehaviour {
 		
 	}
 
-	void OnClick() {
+	public void OnClick() {
 		print("Click");
 		manager.selectButton(this);
 	}
