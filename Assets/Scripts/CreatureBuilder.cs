@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class CreatureBuilder : MonoBehaviour {
 
 	public enum BodyPart {
+		None,
 		Joint, 
 		Bone, 
 		Muscle
@@ -23,8 +24,10 @@ public class CreatureBuilder : MonoBehaviour {
 	*/
 	public GameObject bonePreset;
 
-	/** The muscle that connects multiple bodyconnections and can apply pulling forces. */
-	public GameObject musclePreset;
+	/** The material for the muscles. */
+	public Material muscleMaterial;
+
+	public Texture2D mouseDeleteTexture;
 
 
 	/** The joints of the creature that have been placed in the scene. */
@@ -106,8 +109,27 @@ public class CreatureBuilder : MonoBehaviour {
 					MuscleJoint joint = bone.muscleJoint;
 
 					createMuscleFromJoint(joint);
-					placeConnectionBetweenPoints(currentMuscle.gameObject, joint.position, mousePos, CONNECTION_WIDHT);
+					//placeConnectionBetweenPoints(currentMuscle.gameObject, joint.position, mousePos, CONNECTION_WIDHT);
+					currentMuscle.setLinePoints(joint.position, mousePos);
 				}
+			} else if (selectedPart == BodyPart.None) { // Delete selected object
+
+				updateDeletedObjects();
+
+				BodyComponent joint = getHoveringObject<Joint>(joints);
+				BodyComponent bone = getHoveringObject<Bone>(bones);
+				BodyComponent muscle = getHoveringObject<Muscle>(muscles);
+	
+				BodyComponent toDelete = joint != null ? joint : ( bone != null ? bone : muscle ) ;
+
+				if (toDelete != null) {
+
+					toDelete.delete();
+					updateDeletedObjects();
+
+					Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+				}
+
 			}
 
 		} else if (Input.GetMouseButton(0)) {
@@ -143,10 +165,15 @@ public class CreatureBuilder : MonoBehaviour {
 						if (!joint.Equals(currentMuscle.startingJoint)) {
 							endingPoint = joint.position;
 							currentMuscle.endingJoint = joint;	
+						} else {
+							currentMuscle.endingJoint = null;
 						}
+					} else {
+						currentMuscle.endingJoint = null;
 					}
 
-					placeConnectionBetweenPoints(currentMuscle.gameObject, currentMuscle.startingPoint, endingPoint, CONNECTION_WIDHT);
+					//placeConnectionBetweenPoints(currentMuscle.gameObject, currentMuscle.startingPoint, endingPoint, CONNECTION_WIDHT);
+					currentMuscle.setLinePoints(currentMuscle.startingPoint, endingPoint);
 				}
 			}
 
@@ -183,6 +210,11 @@ public class CreatureBuilder : MonoBehaviour {
 				SelectedPart = BodyPart.Muscle;
 			}
 
+			// D = Delete component
+			else if (Input.GetKeyDown(KeyCode.D)) {
+				SelectedPart = BodyPart.None;
+			}
+
 			// T = Go to testing scene
 			else if (TESTING_ENABLED && Input.GetKeyDown(KeyCode.T)) {
 				takeCreatureToTestScene();
@@ -199,6 +231,8 @@ public class CreatureBuilder : MonoBehaviour {
 	 */
 	private void updateHoverables() {
 
+		setMouseHoverTexture(null);
+
 		if (selectedPart == BodyPart.Joint ) {
 			// disable Highlights
 			disableAllHoverables();
@@ -212,7 +246,35 @@ public class CreatureBuilder : MonoBehaviour {
 			setShouldHighlight(joints, false);
 			setShouldHighlight(bones, true);
 			setShouldHighlight(muscles, false);
+		} else if (selectedPart == BodyPart.None) {
+			// make everything highlightable
+			setShouldHighlight(joints, true);
+			setShouldHighlight(bones, true);
+			setShouldHighlight(muscles, true);
+
+			setMouseHoverTexture(mouseDeleteTexture);
 		}
+	}
+
+	/** Removes the already destroyed object that are still left in the lists. */
+	private void updateDeletedObjects() {
+
+		bones = updateDeletedObjects<Bone>(bones);
+		joints = updateDeletedObjects<Joint>(joints);
+		muscles = updateDeletedObjects<Muscle>(muscles);
+	}
+
+	/** Removes the already destroyed object that are still left in the list. */
+	private List<T> updateDeletedObjects<T>(List<T> objects) where T: MonoBehaviour {
+
+		List<T> removed = new List<T>(objects);
+		foreach (T obj in objects) {
+			if (obj == null || obj.Equals(null) || obj.gameObject == null || obj.gameObject.Equals(null)) {
+				print("Removed one.");
+				removed.Remove(obj);
+			}
+		}
+		return removed;
 	}
 
 	private void disableAllHoverables() {
@@ -220,6 +282,19 @@ public class CreatureBuilder : MonoBehaviour {
 		setShouldHighlight(joints, false);
 		setShouldHighlight(bones, false);
 		setShouldHighlight(muscles, false);
+	}
+
+	private void setMouseHoverTexture(Texture2D texture) {
+
+		foreach (Joint joint in joints) {
+			joint.mouseHoverTexture = texture;
+		}
+		foreach (Bone bone in bones) {
+			bone.mouseHoverTexture = texture;
+		}
+		foreach (Muscle muscle in muscles) {
+			muscle.mouseHoverTexture = texture;
+		}
 	}
 
 	/** 
@@ -265,8 +340,13 @@ public class CreatureBuilder : MonoBehaviour {
 
 		Vector3 point = joint.position;
 		point.z = 0;
-		currentMuscle = ((GameObject) Instantiate(musclePreset, point, Quaternion.identity)).GetComponent<Muscle>();
+		GameObject muscleEmpty = new GameObject();
+		currentMuscle = muscleEmpty.AddComponent<Muscle>();
+		currentMuscle.addLineRenderer();
+		currentMuscle.setMaterial(muscleMaterial);
+		//currentMuscle = ((GameObject) Instantiate(musclePreset, point, Quaternion.identity)).GetComponent<Muscle>();
 		currentMuscle.startingJoint = joint;
+		currentMuscle.setLinePoints(joint.position, joint.position);
 	}
 
 	/** Transforms the given gameObject between the specified points. (Points flattened to 2D). */
@@ -345,7 +425,18 @@ public class CreatureBuilder : MonoBehaviour {
 			// The connection has no connected ending -> Destroy
 			Destroy(currentMuscle.gameObject);
 		} else {
+
+			// Validate the muscle doesn't exist already
+			foreach (Muscle muscle in muscles) {
+				if (muscle.Equals(currentMuscle)) {
+					Destroy(currentMuscle.gameObject);
+					currentMuscle = null;
+					return;
+				}
+			}
+
 			currentMuscle.connectToJoints();
+			currentMuscle.addCollider();
 			muscles.Add(currentMuscle);
 		}
 
@@ -378,7 +469,8 @@ public class CreatureBuilder : MonoBehaviour {
 		creature.bones = bones;
 		creature.muscles = muscles;
 
-		creature.setKinematic(false);
+		creature.prepareForEvolution();
+		disableAllHoverables();
 
 		return creature;
 	} 

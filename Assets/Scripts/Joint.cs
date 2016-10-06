@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Joint : Hoverable {
+public class Joint : BodyComponent {
 
 	public Vector3 center { 
 		get {
@@ -10,13 +10,15 @@ public class Joint : Hoverable {
 		} 
 	}
 
-	private List<HingeJoint> joints;
+	private Dictionary<Bone, HingeJoint> joints;
+
+	private bool iterating;
 
 	// Use this for initialization
 	public override void Start () {
 		base.Start();
 
-		joints = new List<HingeJoint>();
+		joints = new Dictionary<Bone, HingeJoint>();
 	}
 	
 	// Update is called once per frame
@@ -36,7 +38,43 @@ public class Joint : Hoverable {
 
 		joint.connectedBody = bone.gameObject.GetComponent<Rigidbody>();
 
-		joints.Add(joint);
+		joints.Add(bone, joint);
+	}
+
+	/** Disconnects the bone from the joint. */
+	public void disconnect(Bone bone) {
+
+		HingeJoint joint = joints[bone];
+		Destroy(joint);
+		if (!iterating)
+			joints.Remove(bone);
+	}
+
+	/** Deletes the joint and all attached objects from the scene. */
+	public override void delete() {
+
+		iterating = true;
+
+		List<Bone> toDelete = new List<Bone>();
+		// disconnect the bones
+		foreach(Bone bone in joints.Keys) {
+
+			bone.delete();
+			toDelete.Add(bone);
+		}
+
+		foreach(Bone bone in toDelete) {
+			joints.Remove(bone);
+		}
+
+		iterating = false;
+
+		Destroy(gameObject);
+	}
+
+	public override void prepareForEvolution ()
+	{
+		GetComponent<Rigidbody>().isKinematic = false;
 	}
 		
 }

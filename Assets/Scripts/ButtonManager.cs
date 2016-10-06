@@ -5,27 +5,31 @@ using System.Collections.Generic;
 
 public class ButtonManager : MonoBehaviour {
 
-	private List<SelectableButton> buttons;
-
 	public SelectableButton jointButton;
 	public SelectableButton boneButton;
 	public SelectableButton muscleButton;
+
+	public SelectableButton deleteButton;
 
 	public SelectableButton selectedButton;
 
 	public CreatureBuilder creatureBuilder;
 
+	private Dictionary<SelectableButton, CreatureBuilder.BodyPart> buttonMap;
+
 	// Use this for initialization
 	void Start () {
 
-		buttons = new List<SelectableButton>();
-		buttons.Add(jointButton);
-		buttons.Add(boneButton);
-		buttons.Add(muscleButton);
+		buttonMap = new Dictionary<SelectableButton, CreatureBuilder.BodyPart>();
+
+		buttonMap.Add(jointButton, CreatureBuilder.BodyPart.Joint);
+		buttonMap.Add(boneButton, CreatureBuilder.BodyPart.Bone);
+		buttonMap.Add(muscleButton, CreatureBuilder.BodyPart.Muscle);
+		buttonMap.Add(deleteButton, CreatureBuilder.BodyPart.None);
 
 		selectedButton.Selected = true;
 
-		foreach (SelectableButton button in buttons) {
+		foreach (SelectableButton button in buttonMap.Keys) {
 			button.manager = this;
 		}
 	}
@@ -44,23 +48,18 @@ public class ButtonManager : MonoBehaviour {
 			selectedButton.Selected = false;
 			selectedButton = button;
 
-			if (button.Equals(jointButton)) {
-				creatureBuilder.SelectedPart = CreatureBuilder.BodyPart.Joint;
-			} else if (button.Equals(boneButton)) {
-				creatureBuilder.SelectedPart = CreatureBuilder.BodyPart.Bone;
-			} else if (button.Equals(muscleButton)) {
-				creatureBuilder.SelectedPart = CreatureBuilder.BodyPart.Muscle;
-			}
+			creatureBuilder.SelectedPart = buttonMap[button];
 		}
 	}
 
 	public void selectButton(CreatureBuilder.BodyPart part) {
-
-		switch(part) {
+		
+		foreach ( SelectableButton button in buttonMap.Keys) {
 			
-		case CreatureBuilder.BodyPart.Bone: selectButton(boneButton); break;
-		case CreatureBuilder.BodyPart.Joint: selectButton(jointButton); break;
-		case CreatureBuilder.BodyPart.Muscle: selectButton(muscleButton); break;
+			if (buttonMap[button].Equals(part)) {
+				selectButton(button);
+				break;
+			}
 		}
 	}
 }

@@ -32,8 +32,23 @@ public class Creature : MonoBehaviour {
 			bone.GetComponent<Rigidbody>().isKinematic = enabled;
 		}
 
-		foreach (Muscle muscle in muscles) {
+		/*foreach (Muscle muscle in muscles) {
 			muscle.GetComponent<Rigidbody>().isKinematic = enabled;
+		}*/
+	}
+
+	public void prepareForEvolution() {
+
+		foreach (Joint joint in joints) {
+			joint.prepareForEvolution();
+		}
+
+		foreach (Bone bone in bones) {
+			bone.prepareForEvolution();
+		}
+
+		foreach (Muscle muscle in muscles) {
+			muscle.prepareForEvolution();
 		}
 	}
 }
