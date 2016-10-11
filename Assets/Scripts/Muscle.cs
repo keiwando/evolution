@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Assertions;
 using System.Collections;
 
 public class Muscle : BodyComponent {
@@ -23,11 +24,17 @@ public class Muscle : BodyComponent {
 	private LineRenderer lineRenderer;
 
 	/** Specifies whether the muscle should contract and expand or not. */
-	private bool living;
+	public bool living;
 
 	private float LINE_WIDTH = 0.5f;
 
 	private float CONTRACTION_FACTOR = 0.2f;
+
+	private float SPRING_STRENGTH = 1500;
+
+	private float MAX_MUSCLE_FORCE = 2500;
+
+	public float currentForce = 0;
 
 	// TODO: Add rest and contraction spring tension constants
 
@@ -42,8 +49,10 @@ public class Muscle : BodyComponent {
 	void Update () {
 
 		updateLinePoints();
+	}
 
-		testContraction();
+	void FixedUpdate() {
+		contract();
 	}
 
 	/** Connects the gameobject to the starting end endingJoint */
@@ -56,7 +65,8 @@ public class Muscle : BodyComponent {
 
 		// connect the musclejoints with a spring joint
 		spring = startingJoint.gameObject.AddComponent<SpringJoint>();
-		spring.spring = 1;
+		spring.spring = SPRING_STRENGTH;
+		spring.damper = 50;
 		spring.minDistance = 0;
 		spring.maxDistance = 0;
 		//spring.autoConfigureConnectedAnchor = true;
@@ -69,22 +79,46 @@ public class Muscle : BodyComponent {
 
 	}
 
+	/** Set the muscle contraction. O = no contraction, 1 = fully contracted. */
+	public void setContractionForce(float percent) {
+
+		currentForce = Mathf.Max(0, Mathf.Min(MAX_MUSCLE_FORCE, percent * MAX_MUSCLE_FORCE));
+	}
+
 	/** Contracts the muscle. */
 	public void contract() {
-		spring.spring = 100;
-		StartCoroutine(ExpandAfterTime(0.5f));
+
+		if (living) {
+
+			contract(currentForce);
+		}
+	}
+
+	public void contract(float force) {
+
+		// Apply a force on both connection joints.
+		Vector3 midPoint = (startingPoint + endingPoint) / 2;
+
+		Vector3 endingForce = (midPoint - endingPoint).normalized;
+		Vector3 startingForce = (midPoint - startingPoint).normalized;
+
+		Vector3 scaleVector = new Vector3(force, force, force);
+		endingForce.Scale(scaleVector);
+		startingForce.Scale(scaleVector);
+
+		Rigidbody rb = endingJoint.GetComponent<Rigidbody>();
+		startingJoint.GetComponent<Rigidbody>().AddForce(startingForce);
 	}
 
 	/** Expands the muscle. */
 	public void expand() {
-		spring.spring = 1;
+		
 	}
 
 	private void testContraction() {
 		if (living) {
 
-			StartCoroutine(ContractAfterTime(6f));
-			living = false;
+			contract(currentForce);
 		}
 	}
 
@@ -107,6 +141,10 @@ public class Muscle : BodyComponent {
 		
 		lineRenderer = gameObject.AddComponent<LineRenderer>();
 		lineRenderer.SetWidth(LINE_WIDTH, LINE_WIDTH);
+	}
+
+	public void deleteAndAddLineRenderer(){
+		lineRenderer = gameObject.GetComponent<LineRenderer>();
 	}
 
 	public void addCollider() {
@@ -132,7 +170,7 @@ public class Muscle : BodyComponent {
 		float angle = (Mathf.Abs (startingPoint.y - endingPoint.y) / Mathf.Abs (startingPoint.x - endingPoint.x));
 		if((startingPoint.y < endingPoint.y && startingPoint.x > endingPoint.x) || (endingPoint.y < startingPoint.y && endingPoint.x > startingPoint.x)) {
 			
-			angle*=-1;
+			angle *= -1;
 		}
 
 		angle = Mathf.Rad2Deg * Mathf.Atan (angle);
@@ -162,6 +200,7 @@ public class Muscle : BodyComponent {
 		startingP.z = 0; 
 		endingP.z = 0;
 
+		Assert.IsNotNull(lineRenderer);
 		lineRenderer.SetPositions(new Vector3[]{ startingP, endingP });
 	}
 
@@ -180,6 +219,7 @@ public class Muscle : BodyComponent {
 
 	/** Deletes the muscle gameobject and the springjoint. */
 	public override void delete() {
+		base.delete();
 
 		Destroy(spring);
 		startingJoint.disconnect(this);

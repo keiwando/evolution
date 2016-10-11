@@ -29,6 +29,8 @@ public class CreatureBuilder : MonoBehaviour {
 
 	public Texture2D mouseDeleteTexture;
 
+	public Evolution evolution;
+
 
 	/** The joints of the creature that have been placed in the scene. */
 	private List<Joint> joints;
@@ -114,7 +116,7 @@ public class CreatureBuilder : MonoBehaviour {
 				}
 			} else if (selectedPart == BodyPart.None) { // Delete selected object
 
-				updateDeletedObjects();
+				//updateDeletedObjects();
 
 				BodyComponent joint = getHoveringObject<Joint>(joints);
 				BodyComponent bone = getHoveringObject<Bone>(bones);
@@ -129,6 +131,8 @@ public class CreatureBuilder : MonoBehaviour {
 
 					Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
 				}
+
+				//updateDeletedObjects();
 
 			}
 
@@ -217,7 +221,8 @@ public class CreatureBuilder : MonoBehaviour {
 
 			// T = Go to testing scene
 			else if (TESTING_ENABLED && Input.GetKeyDown(KeyCode.T)) {
-				takeCreatureToTestScene();
+				//takeCreatureToTestScene();
+				evolve();
 			}
 
 
@@ -265,12 +270,12 @@ public class CreatureBuilder : MonoBehaviour {
 	}
 
 	/** Removes the already destroyed object that are still left in the list. */
-	private List<T> updateDeletedObjects<T>(List<T> objects) where T: MonoBehaviour {
+	private List<T> updateDeletedObjects<T>(List<T> objects) where T: BodyComponent {
 
 		List<T> removed = new List<T>(objects);
 		foreach (T obj in objects) {
-			if (obj == null || obj.Equals(null) || obj.gameObject == null || obj.gameObject.Equals(null)) {
-				print("Removed one.");
+			if (obj == null || obj.Equals(null) || obj.gameObject == null || obj.gameObject.Equals(null) || obj.deleted) {
+				print("Removed component of type: " + typeof(T));
 				removed.Remove(obj);
 			}
 		}
@@ -341,6 +346,7 @@ public class CreatureBuilder : MonoBehaviour {
 		Vector3 point = joint.position;
 		point.z = 0;
 		GameObject muscleEmpty = new GameObject();
+		muscleEmpty.name = "Muscle";
 		currentMuscle = muscleEmpty.AddComponent<Muscle>();
 		currentMuscle.addLineRenderer();
 		currentMuscle.setMaterial(muscleMaterial);
@@ -451,6 +457,7 @@ public class CreatureBuilder : MonoBehaviour {
 	public Creature buildCreature() {
 
 		GameObject creatureObj = new GameObject();
+		creatureObj.name = "Creature";
 		Creature creature = creatureObj.AddComponent<Creature>();
 
 		foreach (Joint joint in joints) {
@@ -469,7 +476,6 @@ public class CreatureBuilder : MonoBehaviour {
 		creature.bones = bones;
 		creature.muscles = muscles;
 
-		creature.prepareForEvolution();
 		disableAllHoverables();
 
 		return creature;
@@ -490,7 +496,28 @@ public class CreatureBuilder : MonoBehaviour {
 		Creature creature = buildCreature();
 		DontDestroyOnLoad(creature.gameObject);
 
-		// TODO: Start evolution simulation
+		//SceneManager.LoadScene("EvolutionScene");
+		AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
+		sceneLoading.allowSceneActivation = true;
+		DontDestroyOnLoad(evolution.gameObject);
+		evolution.creature = creature;
+
+		StartCoroutine(waitForEvolutionSceneToLoad(sceneLoading));
+		DontDestroyOnLoad(this);
+		//evolution.StartEvolution();
+	}
+
+	IEnumerator waitForEvolutionSceneToLoad(AsyncOperation loadingOperation) {
+
+		while(!loadingOperation.isDone){
+
+			print(loadingOperation.progress);
+			yield return null;
+		}
+			
+		Destroy(this.gameObject);
+		print("Starting Evolution");
+		evolution.StartEvolution();
 	}
 
 

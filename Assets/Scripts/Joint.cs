@@ -14,6 +14,8 @@ public class Joint : BodyComponent {
 
 	private bool iterating;
 
+	public bool isColliding { get; private set; }
+
 	// Use this for initialization
 	public override void Start () {
 		base.Start();
@@ -52,6 +54,7 @@ public class Joint : BodyComponent {
 
 	/** Deletes the joint and all attached objects from the scene. */
 	public override void delete() {
+		base.delete();
 
 		iterating = true;
 
@@ -77,4 +80,11 @@ public class Joint : BodyComponent {
 		GetComponent<Rigidbody>().isKinematic = false;
 	}
 		
+	void OnCollisionEnter() {
+		isColliding = true;
+	}
+
+	void OnCollisionExit() {
+		isColliding = false;
+	}
 }
