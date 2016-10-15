@@ -30,9 +30,9 @@ public class Muscle : BodyComponent {
 
 	private float CONTRACTION_FACTOR = 0.2f;
 
-	private float SPRING_STRENGTH = 1500;
+	private float SPRING_STRENGTH = 10000;
 
-	private float MAX_MUSCLE_FORCE = 2500;
+	private float MAX_MUSCLE_FORCE = 5000;
 
 	public float currentForce = 0;
 
@@ -74,15 +74,20 @@ public class Muscle : BodyComponent {
 		spring.connectedAnchor = endingJoint.position;
 		spring.connectedBody = endingJoint.GetComponent<Rigidbody>();
 
-		spring.enablePreprocessing = true;
+		spring.enablePreprocessing = false;
 		spring.enableCollision = false;
+
+		// break forces
+		//spring.breakForce = 5000;
+		//spring.breakTorque = 5000;
 
 	}
 
 	/** Set the muscle contraction. O = no contraction, 1 = fully contracted. */
 	public void setContractionForce(float percent) {
 
-		currentForce = Mathf.Max(0, Mathf.Min(MAX_MUSCLE_FORCE, percent * MAX_MUSCLE_FORCE));
+		currentForce = Mathf.Max(0.01f, Mathf.Min(MAX_MUSCLE_FORCE, percent * MAX_MUSCLE_FORCE));
+		Assert.IsFalse(float.IsNaN(currentForce), "Percent: " + percent);
 	}
 
 	/** Contracts the muscle. */
@@ -106,8 +111,15 @@ public class Muscle : BodyComponent {
 		endingForce.Scale(scaleVector);
 		startingForce.Scale(scaleVector);
 
+		Assert.IsFalse(float.IsNaN(endingForce.x),"force: " + force);
+		Assert.IsFalse(float.IsNaN(startingForce.x),"force: " + force);
+
 		Rigidbody rb = endingJoint.GetComponent<Rigidbody>();
-		startingJoint.GetComponent<Rigidbody>().AddForce(startingForce);
+
+		//startingJoint.GetComponent<Rigidbody>().AddForce(startingForce);
+		//endingJoint.GetComponent<Rigidbody>().AddForce(endingForce);
+		startingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(startingForce ,startingJoint.position);
+		endingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(endingForce, endingJoint.position);
 	}
 
 	/** Expands the muscle. */

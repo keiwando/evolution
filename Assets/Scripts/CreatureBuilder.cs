@@ -407,7 +407,7 @@ public class CreatureBuilder : MonoBehaviour {
 
 		if (currentBone == null) return;
 
-		if (currentBone.endingJoint == null || getHoveringObject<Joint>(joints) == null) {
+		if (currentBone.endingJoint == null || getHoveringObject<Joint>(joints) == null || currentBone.endingJoint.Equals(currentBone.startingJoint)) {
 			// The connection has no connected ending -> Destroy
 			Destroy(currentBone.gameObject);
 		

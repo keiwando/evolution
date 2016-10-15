@@ -75,14 +75,14 @@ public class Creature : MonoBehaviour {
 
 	public float distanceFromGround() {
 
-		float[] heights = new float[joints.Count];
+		float min = joints[0].center.y;
 
-		int i = 0;
 		foreach (Joint joint in joints) {
-			heights[i] = joint.center.y - joint.GetComponent<Collider>().bounds.size.y / 2;	
+			float height =  joint.center.y - joint.GetComponent<Collider>().bounds.size.y / 2;
+			min = height < min ? height : min; 
 		}
 
-		return Mathf.Min( heights );
+		return min;
 	}
 
 	/** Returns the velocity of the creature */

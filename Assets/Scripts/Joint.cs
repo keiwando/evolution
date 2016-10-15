@@ -35,8 +35,12 @@ public class Joint : BodyComponent {
 		joint.anchor = Vector3.zero;
 		joint.axis = new Vector3(0, 0, 1);
 		joint.autoConfigureConnectedAnchor = true;
+		joint.useSpring = true;
+		//var spring = joint.spring;
+		//spring.spring = 1000f;
+		//joint.spring = spring;
 		//joint.connectedAnchor = new Vector3(0, 1.14f, 0);
-		joint.enablePreprocessing = true;
+		joint.enablePreprocessing = false;
 
 		joint.connectedBody = bone.gameObject.GetComponent<Rigidbody>();
 
