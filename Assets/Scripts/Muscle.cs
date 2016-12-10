@@ -4,6 +4,12 @@ using System.Collections;
 
 public class Muscle : BodyComponent {
 
+	public enum MuscleAction {
+		CONTRACT, EXPAND	
+	}
+
+	public MuscleAction muscleAction;
+
 	public MuscleJoint startingJoint;
 	public MuscleJoint endingJoint;
 
@@ -30,7 +36,7 @@ public class Muscle : BodyComponent {
 
 	private float CONTRACTION_FACTOR = 0.2f;
 
-	private float SPRING_STRENGTH = 10000;
+	private float SPRING_STRENGTH = 30000;
 
 	private float MAX_MUSCLE_FORCE = 5000;
 
@@ -52,7 +58,12 @@ public class Muscle : BodyComponent {
 	}
 
 	void FixedUpdate() {
-		contract();
+		
+		if (muscleAction == MuscleAction.CONTRACT) {
+			contract();
+		} else {
+			expand();	
+		}
 	}
 
 	/** Connects the gameobject to the starting end endingJoint */
@@ -83,7 +94,7 @@ public class Muscle : BodyComponent {
 
 	}
 
-	/** Set the muscle contraction. O = no contraction, 1 = fully contracted. */
+	/** Set the muscle contraction. O = no contraction/expansion, 1 = fully contracted. */
 	public void setContractionForce(float percent) {
 
 		currentForce = Mathf.Max(0.01f, Mathf.Min(MAX_MUSCLE_FORCE, percent * MAX_MUSCLE_FORCE));
@@ -107,6 +118,32 @@ public class Muscle : BodyComponent {
 		Vector3 endingForce = (midPoint - endingPoint).normalized;
 		Vector3 startingForce = (midPoint - startingPoint).normalized;
 
+		applyForces(force, startingForce, endingForce);
+	}
+
+	/** Expands the muscle. */
+	public void expand() {
+
+		if (living) {
+
+			expand(currentForce);
+		}
+	}
+
+	public void expand(float force) {
+
+		// Apply a force on both connection joints.
+		Vector3 midPoint = (startingPoint + endingPoint) / 2;
+
+		Vector3 endingForce = (endingPoint - midPoint).normalized;
+		Vector3 startingForce = (startingPoint - midPoint).normalized;
+
+		applyForces(force, startingForce, endingForce);
+	} 
+
+	/** Applies the starting Force to the startingJoint and endingForce to the endingJoint. force specifies the magnitude of the force. */
+	private void applyForces(float force, Vector3 startingForce, Vector3 endingForce) {
+
 		Vector3 scaleVector = new Vector3(force, force, force);
 		endingForce.Scale(scaleVector);
 		startingForce.Scale(scaleVector);
@@ -120,11 +157,6 @@ public class Muscle : BodyComponent {
 		//endingJoint.GetComponent<Rigidbody>().AddForce(endingForce);
 		startingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(startingForce ,startingJoint.position);
 		endingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(endingForce, endingJoint.position);
-	}
-
-	/** Expands the muscle. */
-	public void expand() {
-		
 	}
 
 	private void testContraction() {
