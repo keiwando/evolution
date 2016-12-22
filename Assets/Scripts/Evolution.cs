@@ -50,8 +50,7 @@ public class Evolution : MonoBehaviour {
 	private bool running;
 
 	// UI
-	public Text speedLabel;
-	public Text generationLabel;
+	[SerializeField] private ViewController viewController;
 
 	// Use this for initialization
 	void Start () {
@@ -172,7 +171,9 @@ public class Evolution : MonoBehaviour {
 		currentGeneration = createGeneration();
 		Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
 
-		print("Generation " + currentGenerationNumber);
+		// Update the view
+		viewController.UpdateGeneration(currentGenerationNumber);
+
 
 		SimulateGeneration();
 
@@ -221,7 +222,9 @@ public class Evolution : MonoBehaviour {
 
 	}
 
-	/** Takes two chromosome strings and returns an array of two new chromosome strings that are a combination of the parent strings. */
+	/// <summary>
+	/// Takes two chromosome strings and returns an array of two new chromosome strings that are a combination of the parent strings.
+	/// </summary>
 	private string[] combineChromosomes(string chrom1, string chrom2) {
 
 		int splitIndex = UnityEngine.Random.Range(1, chrom2.Length);
@@ -266,7 +269,10 @@ public class Evolution : MonoBehaviour {
 		return mutated;
 	}
 
-	/** Picks an index between 0 and POPULATION_SIZE. The first indices as more likely to be picked. The weights decrease towards to. */
+	/// <summary>
+	/// Picks an index between 0 and POPULATION_SIZE. The first indices as more likely to be picked. The weights decrease towards to.
+	/// </summary>
+	/// <returns>The randomly weighted index.</returns>
 	private int PickRandomWeightedIndex() {
 
 		int number = UnityEngine.Random.Range(0, randomPickingWeights[0] - 1);

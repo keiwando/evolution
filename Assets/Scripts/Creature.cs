@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 public class Creature : MonoBehaviour {
 
@@ -167,3 +168,4 @@ public class Creature : MonoBehaviour {
 		return joints.Count == 0 ? 0 : total / joints.Count ;
 	}
 }
+

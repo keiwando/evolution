@@ -29,26 +29,30 @@ public class Muscle : BodyComponent {
 
 	private LineRenderer lineRenderer;
 
-	/** Specifies whether the muscle should contract and expand or not. */
+	/// <summary>
+	/// Specifies whether the muscle should contract and expand or not.
+	/// </summary>
 	public bool living;
 
 	private float LINE_WIDTH = 0.5f;
 
 	private float CONTRACTION_FACTOR = 0.2f;
 
-	private float SPRING_STRENGTH = 30000;
+	private float SPRING_STRENGTH = 1000; //30000;
 
-	private float MAX_MUSCLE_FORCE = 5000;
+	private float MAX_MUSCLE_FORCE = 1500; //5000;
 
 	public float currentForce = 0;
 
-	// TODO: Add rest and contraction spring tension constants
+
 
 	// Use this for initialization
 	public override void Start () {
 		base.Start();
 
 		highlightingShader = Shader.Find("Standard");
+
+
 	}
 	
 	// Update is called once per frame
@@ -66,7 +70,9 @@ public class Muscle : BodyComponent {
 		}
 	}
 
-	/** Connects the gameobject to the starting end endingJoint */
+	/// <summary>
+	/// Connects the gameobject to the starting end endingJoint
+	/// </summary>
 	public void connectToJoints() {
 
 		if (startingJoint == null || endingJoint == null) return;
@@ -157,6 +163,13 @@ public class Muscle : BodyComponent {
 		//endingJoint.GetComponent<Rigidbody>().AddForce(endingForce);
 		startingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(startingForce ,startingJoint.position);
 		endingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(endingForce, endingJoint.position);
+	}
+
+	/// <summary>
+	/// Tries to setup 
+	/// </summary>
+	private void TrySetupFromPrefab() {
+		
 	}
 
 	private void testContraction() {
