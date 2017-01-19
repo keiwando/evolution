@@ -29,8 +29,24 @@ public class Evolution : MonoBehaviour {
 		}
 	}
 
+	public int SimulationTime {
+		set { SIMULATION_TIME = value; }
+		get { return SIMULATION_TIME; }
+	}
 	private int SIMULATION_TIME = 10;	// in seconds
-	private int POPULATION_SIZE = 12;
+
+	public int PopulationSize {
+		set { 
+			if (value % 2 == 0) {
+				POPULATION_SIZE = value;
+			} else {
+				POPULATION_SIZE = value + 1;	
+			}
+		}
+		get { return POPULATION_SIZE; }
+	}
+	private int POPULATION_SIZE = 10;
+
 	private float MUTATION_RATE = 0.5f;
 
 	private int currentGenerationNumber = 1;
@@ -50,7 +66,7 @@ public class Evolution : MonoBehaviour {
 	private bool running;
 
 	// UI
-	[SerializeField] private ViewController viewController;
+	private ViewController viewController;
 
 	// Use this for initialization
 	void Start () {
@@ -63,10 +79,12 @@ public class Evolution : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		handleKeyboardInput();
+		HandleKeyboardInput();
 	}
 
-	private void handleKeyboardInput() {
+	private void HandleKeyboardInput() {
+
+		if (!running) { return; }
 
 		if (Input.anyKeyDown) {
 
@@ -98,23 +116,23 @@ public class Evolution : MonoBehaviour {
 
 	private void SetupEvolution() {
 
-		calculateDropHeight();
+		CalculateDropHeight();
 		bestCreatures = new Dictionary<int, Creature>();
 
 		string[] currentChromosomes = new string[POPULATION_SIZE];
 		// The first generation will have random brains.
-		currentGeneration = createCreatures();
-		applyBrains(currentGeneration, true);
+		currentGeneration = CreateCreatures();
+		ApplyBrains(currentGeneration, true);
 		SimulateGeneration();
 
 		creature.gameObject.SetActive(false);
 
 		Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
 
-		//testCopy();
+		//TestCopy();
 	}
 
-	private void testCopy() {
+	private void TestCopy() {
 		Muscle lastMuscle = null;
 		foreach(Creature creatures in currentGeneration) {
 			if (lastMuscle != null) {
@@ -126,6 +144,9 @@ public class Evolution : MonoBehaviour {
 
 	/** Starts the Evolution for the current */
 	public void StartEvolution() {
+
+		viewController = GameObject.Find("ViewController").GetComponent<ViewController>();
+		Assert.IsNotNull(viewController);
 
 		creature.Alive = false;
 		running = true;
@@ -168,7 +189,7 @@ public class Evolution : MonoBehaviour {
 		currentGenerationNumber++;
 
 		KillGeneration();
-		currentGeneration = createGeneration();
+		currentGeneration = CreateGeneration();
 		Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
 
 		// Update the view
@@ -183,7 +204,7 @@ public class Evolution : MonoBehaviour {
 	private void EvaluateCreatures(Creature[] creatures) {
 
 		foreach (Creature creature in creatures) {
-			creature.brain.evaluateFitness();
+			creature.brain.EvaluateFitness();
 		}
 	}
 
@@ -194,11 +215,11 @@ public class Evolution : MonoBehaviour {
 	private string[] CreateNewChromosomesFromGeneration() {
 
 		string[] result = new string[POPULATION_SIZE];
-		setupRandomPickingWeights();
+		SetupRandomPickingWeights();
 
 		// keep the two best creatures
-		result[0] = currentGeneration[0].brain.toChromosomeString();
-		result[1] = currentGeneration[1].brain.toChromosomeString();
+		result[0] = currentGeneration[0].brain.ToChromosomeString();
+		result[1] = currentGeneration[1].brain.ToChromosomeString();
 
 		for(int i = 2; i < POPULATION_SIZE; i += 2) {
 
@@ -206,10 +227,10 @@ public class Evolution : MonoBehaviour {
 			int index1 = PickRandomWeightedIndex();
 			int index2 = PickRandomWeightedIndex();
 
-			string chrom1 = currentGeneration[index1].brain.toChromosomeString();
-			string chrom2 = currentGeneration[index2].brain.toChromosomeString();
+			string chrom1 = currentGeneration[index1].brain.ToChromosomeString();
+			string chrom2 = currentGeneration[index2].brain.ToChromosomeString();
 
-			string[] newChromosomes = combineChromosomes(chrom1, chrom2);
+			string[] newChromosomes = CombineChromosomes(chrom1, chrom2);
 
 			Assert.AreEqual(chrom1.Length, chrom2.Length);
 			Assert.AreEqual(chrom1.Length, newChromosomes[0].Length);
@@ -225,7 +246,7 @@ public class Evolution : MonoBehaviour {
 	/// <summary>
 	/// Takes two chromosome strings and returns an array of two new chromosome strings that are a combination of the parent strings.
 	/// </summary>
-	private string[] combineChromosomes(string chrom1, string chrom2) {
+	private string[] CombineChromosomes(string chrom1, string chrom2) {
 
 		int splitIndex = UnityEngine.Random.Range(1, chrom2.Length);
 		string[] result = new string[2];
@@ -287,7 +308,7 @@ public class Evolution : MonoBehaviour {
 	}
 
 	/** Initialized the weights array for randomly picking the  */
-	private void setupRandomPickingWeights() {
+	private void SetupRandomPickingWeights() {
 
 		int[] weights = new int[POPULATION_SIZE];
 		// fill the weights array
@@ -301,7 +322,7 @@ public class Evolution : MonoBehaviour {
 	}
 
 	/** Creates a generation of creatures with the current set of Chromosomes. */
-	private Creature[] createGeneration() {
+	private Creature[] CreateGeneration() {
 		
 		this.creature.gameObject.SetActive(true);
 
@@ -309,8 +330,8 @@ public class Evolution : MonoBehaviour {
 		Creature creature;
 
 		for(int i = 0; i < POPULATION_SIZE; i++) {
-			creature = createCreature();
-			applyBrain(creature, currentChromosomes[i]);
+			creature = CreateCreature();
+			ApplyBrain(creature, currentChromosomes[i]);
 			creatures[i] = creature;
 		}
 
@@ -325,36 +346,36 @@ public class Evolution : MonoBehaviour {
 	}
 
 	/** Creates an array of creatures. */
-	private Creature[] createCreatures() {
+	private Creature[] CreateCreatures() {
 
 		Creature[] creatures = new Creature[POPULATION_SIZE];
 
 		for(int i = 0; i < POPULATION_SIZE; i++) {
-			creatures[i] = createCreature();
+			creatures[i] = CreateCreature();
 		}
 
 		return creatures;
 	}
 
-	private Creature createCreature(){
+	private Creature CreateCreature(){
 
 		Creature creat = (Creature) ((GameObject) Instantiate(creature.gameObject, dropHeight, Quaternion.identity)).GetComponent<Creature>();
-		creat.refreshLineRenderers();
+		creat.RefreshLineRenderers();
 		return creat;
 	}
 
 	/** Applies brains to an array of creatures. */
-	private void applyBrains(Creature[] creatures, bool random){
+	private void ApplyBrains(Creature[] creatures, bool random){
 
 		for (int i = 0; i < creatures.Length; i++) {
 
 			Creature creature = creatures[i];
 			string chromosome = random ? "" : currentChromosomes[i];
-			applyBrain(creature, chromosome);
+			ApplyBrain(creature, chromosome);
 		}
 	}
 
-	private void applyBrain(Creature creature, string chromosome) {
+	private void ApplyBrain(Creature creature, string chromosome) {
 
 		Brain brain = (Brain) creature.gameObject.AddComponent(brainMap[task]);
 		brain.muscles = creature.muscles.ToArray();
@@ -365,11 +386,11 @@ public class Evolution : MonoBehaviour {
 		creature.brain = brain;
 	}
 
-	private void calculateDropHeight() {
+	private void CalculateDropHeight() {
 
-		float distanceFromGround = creature.distanceFromGround();
+		float DistanceFromGround = creature.DistanceFromGround();
 		float padding = 0.5f;
 		dropHeight = creature.transform.position;
-		dropHeight.y -= distanceFromGround - padding;
+		dropHeight.y -= DistanceFromGround - padding;
 	}
 }

@@ -22,7 +22,7 @@ public class RunningBrain : Brain {
 	// Use this for initialization
 	void Start () {
 
-		//testMatrixConversion();
+		//TestMatrixConversion();
 
 		if(IntermediateLayerSizes.Length != NUMBER_OF_LAYERS - 2) {
 			Debug.LogError("IntermediateLayerSizes has too many or too few elements.");
@@ -33,21 +33,21 @@ public class RunningBrain : Brain {
 	public override void Update ()
 	{
 		base.Update();
-		averageSpeed = (averageSpeed + creature.getVelocity().x) / 2; 
+		averageSpeed = (averageSpeed + creature.GetVelocity().x) / 2; 
 	}
 
 	/*protected override void ApplyOutputToMuscle (float output, Muscle muscle)
 	{
 		//print(output);
-		muscle.setContractionForce(output);
+		muscle.SetContractionForce(output);
 	}*/
 
-	public override void evaluateFitness ()
+	public override void EvaluateFitness ()
 	{
 		// The fitness for the running task is made up of the distance travelled to the
 		// right at the end of the time and the average weighted speed of the creature.
 		// TODO: Add average speed into calculation.
-		fitness = ( creature.getXPosition() ) / MAX_DISTANCE;
+		fitness = ( creature.GetXPosition() ) / MAX_DISTANCE;
 
 	}
 
@@ -60,21 +60,21 @@ public class RunningBrain : Brain {
 	* - number of points touching ground
 	* - creature rotation
 	*/
-	protected override void updateInputs ()
+	protected override void UpdateInputs ()
 	{
 		// distance from ground
-		inputs[0][0] = creature.distanceFromGround() + 0.5f;
+		inputs[0][0] = creature.DistanceFromGround() + 0.5f;
 		// horizontal velocity
-		Vector3 velocity = creature.getVelocity();
+		Vector3 velocity = creature.GetVelocity();
 		inputs[0][1] = velocity.x;
 		// vertical velocity
 		inputs[0][2] = velocity.y;
 		// rotational velocity
-		inputs[0][3] = creature.getAngularVelocity().z;
+		inputs[0][3] = creature.GetAngularVelocity().z;
 		// number of points touching ground
-		inputs[0][4] = creature.getNumberOfPointsTouchingGround();
+		inputs[0][4] = creature.GetNumberOfPointsTouchingGround();
 		// creature rotation
-		inputs[0][5] = creature.getRotation();
+		inputs[0][5] = creature.GetRotation();
 	}
 
 }

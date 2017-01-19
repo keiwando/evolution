@@ -4,19 +4,21 @@ using System.Collections.Generic;
 
 public class MuscleJoint : Hoverable {
 
+	public int ID;
+
 	public Vector3 position { 
 		get {
 			return transform.position;
 		} 
 	}
 
-	private List<Muscle> connectedMuscles;
+	private List<Muscle> connectedMuscles = new List<Muscle>();
 
 	// Use this for initialization
 	void Start () {
 		base.Start();
 
-		connectedMuscles = new List<Muscle>();
+		//connectedMuscles = 
 	}
 	
 	// Update is called once per frame
@@ -24,12 +26,12 @@ public class MuscleJoint : Hoverable {
 	
 	}
 
-	public void connect(Muscle muscle) {
+	public void Connect(Muscle muscle) {
 
 		connectedMuscles.Add(muscle);
 	}
 
-	public void disconnect(Muscle muscle) {
+	public void Disconnect(Muscle muscle) {
 		
 		connectedMuscles.Remove(muscle);
 	}
@@ -38,7 +40,7 @@ public class MuscleJoint : Hoverable {
 
 		foreach (Muscle muscle in connectedMuscles) {
 			if (muscle != null) {
-				muscle.deleteWithoutDisconnecting();	
+				muscle.DeleteWithoutDisconnecting();	
 			}
 		} 
 
@@ -46,7 +48,7 @@ public class MuscleJoint : Hoverable {
 	}
 
 	/** Connects the end of a Muscle prefab object to the gameobject with a hinge joint. */
-	/*public void connect(Muscle muscle) {
+	/*public void Connect(Muscle muscle) {
 
 		HingeJoint joint = gameObject.AddComponent<HingeJoint>();
 		joint.anchor = Vector3.zero;

@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.Assertions;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Muscle : BodyComponent {
+
+	private const string MATERIAL_PATH = "Materials/MuscleMaterial";
 
 	public enum MuscleAction {
 		CONTRACT, EXPAND	
@@ -45,6 +48,45 @@ public class Muscle : BodyComponent {
 	public float currentForce = 0;
 
 
+	public static Muscle Create() {
+		ID_COUNTER++;
+
+		Material muscleMaterial = Resources.Load(MATERIAL_PATH) as Material;
+
+		GameObject muscleEmpty = new GameObject();
+		muscleEmpty.name = "Muscle";
+		var muscle = muscleEmpty.AddComponent<Muscle>();
+		muscle.AddLineRenderer();
+		muscle.SetMaterial(muscleMaterial);
+		muscle.ID = ID_COUNTER;
+
+		return muscle;
+	}
+
+	public static Muscle CreateFromString(string data, List<Bone> bones) {
+
+		var parts = data.Split('%');
+		var muscleID = int.Parse(parts[0]);
+		var startID = int.Parse(parts[1]);
+		var endID = int.Parse(parts[2]);
+
+		var muscle = Muscle.Create();
+		muscle.ID = muscleID;
+		ID_COUNTER = Mathf.Max(ID_COUNTER - 1, muscle.ID);	// ID_COUNTER - 1 because the counter gets increased on Create()
+
+		foreach (var bone in bones) {
+			if(bone.ID == startID) {
+				muscle.startingJoint = bone.muscleJoint;
+			} else if (bone.ID == endID) {
+				muscle.endingJoint = bone.muscleJoint;
+			}
+		}
+
+		muscle.ConnectToJoints();
+		muscle.UpdateLinePoints();
+
+		return muscle;
+	}
 
 	// Use this for initialization
 	public override void Start () {
@@ -58,27 +100,27 @@ public class Muscle : BodyComponent {
 	// Update is called once per frame
 	void Update () {
 
-		updateLinePoints();
+		UpdateLinePoints();
 	}
 
 	void FixedUpdate() {
 		
 		if (muscleAction == MuscleAction.CONTRACT) {
-			contract();
+			Contract();
 		} else {
-			expand();	
+			Expand();	
 		}
 	}
 
 	/// <summary>
 	/// Connects the gameobject to the starting end endingJoint
 	/// </summary>
-	public void connectToJoints() {
+	public void ConnectToJoints() {
 
 		if (startingJoint == null || endingJoint == null) return;
 
-		startingJoint.connect(this);
-		endingJoint.connect(this);
+		startingJoint.Connect(this);
+		endingJoint.Connect(this);
 
 		// connect the musclejoints with a spring joint
 		spring = startingJoint.gameObject.AddComponent<SpringJoint>();
@@ -101,22 +143,22 @@ public class Muscle : BodyComponent {
 	}
 
 	/** Set the muscle contraction. O = no contraction/expansion, 1 = fully contracted. */
-	public void setContractionForce(float percent) {
+	public void SetContractionForce(float percent) {
 
 		currentForce = Mathf.Max(0.01f, Mathf.Min(MAX_MUSCLE_FORCE, percent * MAX_MUSCLE_FORCE));
 		Assert.IsFalse(float.IsNaN(currentForce), "Percent: " + percent);
 	}
 
 	/** Contracts the muscle. */
-	public void contract() {
+	public void Contract() {
 
 		if (living) {
 
-			contract(currentForce);
+			Contract(currentForce);
 		}
 	}
 
-	public void contract(float force) {
+	public void Contract(float force) {
 
 		// Apply a force on both connection joints.
 		Vector3 midPoint = (startingPoint + endingPoint) / 2;
@@ -124,19 +166,19 @@ public class Muscle : BodyComponent {
 		Vector3 endingForce = (midPoint - endingPoint).normalized;
 		Vector3 startingForce = (midPoint - startingPoint).normalized;
 
-		applyForces(force, startingForce, endingForce);
+		ApplyForces(force, startingForce, endingForce);
 	}
 
 	/** Expands the muscle. */
-	public void expand() {
+	public void Expand() {
 
 		if (living) {
 
-			expand(currentForce);
+			Expand(currentForce);
 		}
 	}
 
-	public void expand(float force) {
+	public void Expand(float force) {
 
 		// Apply a force on both connection joints.
 		Vector3 midPoint = (startingPoint + endingPoint) / 2;
@@ -144,11 +186,11 @@ public class Muscle : BodyComponent {
 		Vector3 endingForce = (endingPoint - midPoint).normalized;
 		Vector3 startingForce = (startingPoint - midPoint).normalized;
 
-		applyForces(force, startingForce, endingForce);
+		ApplyForces(force, startingForce, endingForce);
 	} 
 
 	/** Applies the starting Force to the startingJoint and endingForce to the endingJoint. force specifies the magnitude of the force. */
-	private void applyForces(float force, Vector3 startingForce, Vector3 endingForce) {
+	private void ApplyForces(float force, Vector3 startingForce, Vector3 endingForce) {
 
 		Vector3 scaleVector = new Vector3(force, force, force);
 		endingForce.Scale(scaleVector);
@@ -172,10 +214,10 @@ public class Muscle : BodyComponent {
 		
 	}
 
-	private void testContraction() {
+	private void TestContraction () {
 		if (living) {
 
-			contract(currentForce);
+			Contract(currentForce);
 		}
 	}
 
@@ -183,33 +225,33 @@ public class Muscle : BodyComponent {
 	{
 		yield return new WaitForSeconds(time);
 
-		expand();
+		Expand();
 	}
 
 	IEnumerator ContractAfterTime(float time) {
 		yield return new WaitForSeconds(time);
 
-		contract();
+		Contract();
 
 		StartCoroutine(ContractAfterTime(time));
 	}
 
-	public void addLineRenderer(){
+	public void AddLineRenderer(){
 		
 		lineRenderer = gameObject.AddComponent<LineRenderer>();
 		lineRenderer.SetWidth(LINE_WIDTH, LINE_WIDTH);
 	}
 
-	public void deleteAndAddLineRenderer(){
+	public void DeleteAndAddLineRenderer(){
 		lineRenderer = gameObject.GetComponent<LineRenderer>();
 	}
 
-	public void addCollider() {
+	public void AddCollider() {
 
-		addColliderToLine();
+		AddColliderToLine();
 	}
 
-	private void addColliderToLine() {
+	private void AddColliderToLine() {
 
 		BoxCollider col = gameObject.AddComponent<BoxCollider> (); //new GameObject("Collider").
 
@@ -241,18 +283,18 @@ public class Muscle : BodyComponent {
 		//lineRenderer.material
 	}
 
-	private void removeCollider() {
+	private void RemoveCollider() {
 		Destroy(GetComponent<Rigidbody>());
 		Destroy(GetComponent<BoxCollider>());
 	}
 
 	/** Sets the material for the attached lineRenderer. */
-	public void setMaterial(Material mat) {
+	public void SetMaterial(Material mat) {
 		lineRenderer.material = mat;
 	}
 
 	/** Points are flattened to 2D. */
-	public void setLinePoints(Vector3 startingP, Vector3 endingP) {
+	public void SetLinePoints(Vector3 startingP, Vector3 endingP) {
 
 		startingP.z = 0; 
 		endingP.z = 0;
@@ -261,30 +303,35 @@ public class Muscle : BodyComponent {
 		lineRenderer.SetPositions(new Vector3[]{ startingP, endingP });
 	}
 
-	public void updateLinePoints(){
+	public void UpdateLinePoints(){
 
 		if(startingJoint == null || endingJoint == null) return;
 
-		setLinePoints(startingPoint, endingPoint);
+		SetLinePoints(startingPoint, endingPoint);
 	}
 
-	public override void prepareForEvolution ()
-	{
-		removeCollider();
+	public override void PrepareForEvolution () {
+		
+		RemoveCollider();
 		living = true;
 	}
 
+	public override string GetSaveString () {
+		
+		return string.Format("{0}%{1}%{2}", ID, startingJoint.ID, endingJoint.ID);
+	}
+
 	/** Deletes the muscle gameobject and the springjoint. */
-	public override void delete() {
-		base.delete();
+	public override void Delete() {
+		base.Delete();
 
 		Destroy(spring);
-		startingJoint.disconnect(this);
-		endingJoint.disconnect(this);
+		startingJoint.Disconnect(this);
+		endingJoint.Disconnect(this);
 		Destroy(gameObject);
 	}
 
-	public void deleteWithoutDisconnecting() {
+	public void DeleteWithoutDisconnecting() {
 
 		Destroy(spring);
 		Destroy(gameObject);	

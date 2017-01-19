@@ -16,11 +16,11 @@ public class Creature : MonoBehaviour {
 		get { return alive; } 
 		set {
 			if (!alive) {
-				prepareForEvolution();
+				PrepareForEvolution();
 			} 
 			alive = value;
-			setKinematic(!alive);
-			updateMuscleAliveness(alive);
+			SetKinematic(!alive);
+			UpdateMuscleAliveness(alive);
 		}
 	}
 
@@ -34,7 +34,7 @@ public class Creature : MonoBehaviour {
 	
 	}
 
-	public void setKinematic(bool enabled) {
+	public void SetKinematic(bool enabled) {
 
 		foreach (Joint joint in joints) {
 			joint.GetComponent<Rigidbody>().isKinematic = enabled;
@@ -45,36 +45,36 @@ public class Creature : MonoBehaviour {
 		}
 	}
 
-	public void prepareForEvolution() {
+	public void PrepareForEvolution() {
 
 		foreach (Joint joint in joints) {
-			joint.prepareForEvolution();
+			joint.PrepareForEvolution();
 		}
 
 		foreach (Bone bone in bones) {
-			bone.prepareForEvolution();
+			bone.PrepareForEvolution();
 		}
 
 		foreach (Muscle muscle in muscles) {
-			muscle.prepareForEvolution();
+			muscle.PrepareForEvolution();
 		}
 
 		alive = true;
 	}
 
-	public void refreshLineRenderers(){
+	public void RefreshLineRenderers(){
 		foreach(Muscle muscle in muscles) {
-			muscle.deleteAndAddLineRenderer();
+			muscle.DeleteAndAddLineRenderer();
 		}
 	}
 
-	private void updateMuscleAliveness(bool alive) {
+	private void UpdateMuscleAliveness(bool alive) {
 		foreach (Muscle muscle in muscles) {
 			muscle.living = alive;
 		}
 	}
 
-	public float distanceFromGround() {
+	public float DistanceFromGround() {
 
 		float min = joints[0].center.y;
 
@@ -87,7 +87,7 @@ public class Creature : MonoBehaviour {
 	}
 
 	/** Returns the velocity of the creature */
-	public Vector3 getVelocity() {
+	public Vector3 GetVelocity() {
 
 		if (joints.Count == 0) return Vector3.zero;
 
@@ -105,7 +105,7 @@ public class Creature : MonoBehaviour {
 		return velocity;
 	}
 
-	public Vector3 getAngularVelocity() {
+	public Vector3 GetAngularVelocity() {
 
 		if (joints.Count == 0) return Vector3.zero;
 
@@ -123,7 +123,7 @@ public class Creature : MonoBehaviour {
 		return velocity;
 	}
 
-	public float getNumberOfPointsTouchingGround() {
+	public float GetNumberOfPointsTouchingGround() {
 
 		int count = 0;
 		foreach (Joint joint in joints) {
@@ -133,7 +133,7 @@ public class Creature : MonoBehaviour {
 		return count;
 	}
 
-	public float getRotation() {
+	public float GetRotation() {
 
 		if (bones.Count == 0) return 0;
 
@@ -146,7 +146,7 @@ public class Creature : MonoBehaviour {
 		return rotation / bones.Count;
 	}
 
-	public float getXPosition() {
+	public float GetXPosition() {
 
 		float total = 0;
 
@@ -157,7 +157,7 @@ public class Creature : MonoBehaviour {
 		return joints.Count == 0 ? 0 : total / joints.Count ;
 	}
 
-	public float getYPosition() {
+	public float GetYPosition() {
 
 		float total = 0;
 

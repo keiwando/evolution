@@ -57,7 +57,7 @@ abstract public class Brain : MonoBehaviour {
 	*/
 	float[][] CalcOutputs() {
 
-		updateInputs();
+		UpdateInputs();
 		float[][] S = inputs;
 
 		foreach (float[][] weightMatrix in weightMatrices) {
@@ -94,13 +94,13 @@ abstract public class Brain : MonoBehaviour {
 		else
 			muscle.muscleAction = Muscle.MuscleAction.EXPAND;
 		
-		muscle.setContractionForce(Math.Abs(percent));
+		muscle.SetContractionForce(Math.Abs(percent));
 	} 
 
-	public abstract void evaluateFitness();
+	public abstract void EvaluateFitness();
 
 	/** Turns the weight of the neural network to a string. */
-	public string toChromosomeString() {
+	public string ToChromosomeString() {
 
 		string chromosome = "";
 
@@ -111,14 +111,14 @@ abstract public class Brain : MonoBehaviour {
 		return chromosome;
 	}
 
-	public void setupWeightsFromChromosome(string chromosome) {
-		weightMatrices = weightsFromChromosome(chromosome);
+	public void SetupWeightsFromChromosome(string chromosome) {
+		weightMatrices = WeightsFromChromosome(chromosome);
 	}
 
 	/**  
 	 * Takes a chromosome string that was generated from the @ApplyOutputToMuscle function.
 	*/
-	public float[][][] weightsFromChromosome(string chromosome) {
+	public float[][][] WeightsFromChromosome(string chromosome) {
 
 		float[][][] matrices = new float[NUMBER_OF_LAYERS - 1][][];
 		int strIndex = 0;
@@ -198,7 +198,7 @@ abstract public class Brain : MonoBehaviour {
 		return result;
 	}
 
-	protected void testConversion() {
+	protected void TestConversion() {
 		float number = RandomFloat();
 		string NumberAsString = StringFromFloat(number);
 		float result = FloatFromBinaryString(NumberAsString);
@@ -206,7 +206,7 @@ abstract public class Brain : MonoBehaviour {
 
 	}
 
-	protected void testMatrixConversion() {
+	protected void TestMatrixConversion() {
 
 		float[][] testMatrix = RandomMatrixCreate(10,13);
 		string chromosome = MatrixToString(testMatrix);
@@ -261,7 +261,7 @@ abstract public class Brain : MonoBehaviour {
 				weightMatrices[i] = RandomMatrixCreate(layerSizes[i], layerSizes[i+1]);
 			}
 		} else {
-			setupWeightsFromChromosome(chromosome);
+			SetupWeightsFromChromosome(chromosome);
 		}
 
 		// initialize input matrix
@@ -272,7 +272,7 @@ abstract public class Brain : MonoBehaviour {
 
 
 	/** Load the Input values into the inputs Matrix. */
-	abstract protected void updateInputs();
+	abstract protected void UpdateInputs();
 
 	public void setMuscles(List<Muscle> muscles) {
 		this.muscles = muscles.ToArray();

@@ -18,7 +18,7 @@ public class CameraFollowScript : MonoBehaviour {
 	void Update () {
 
 		Vector3 newPos = transform.position;
-		newPos.x = toFollow.getXPosition();
+		newPos.x = toFollow.GetXPosition();
 		transform.position = newPos;
 	}
 }

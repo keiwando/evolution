@@ -1,9 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 public class ButtonManager : MonoBehaviour {
+
+	[SerializeField] private InputField generationNumberInput;
+	[SerializeField] private InputField generationTimeInput;
 
 	public SelectableButton jointButton;
 	public SelectableButton boneButton;
@@ -32,11 +36,26 @@ public class ButtonManager : MonoBehaviour {
 		foreach (SelectableButton button in buttonMap.Keys) {
 			button.manager = this;
 		}
+
+		SetupDefaultNumbers();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
+	}
+
+	private void SetupDefaultNumbers() {
+		generationNumberInput.text = "10";
+		generationTimeInput.text = "10";
+	}
+
+	public int GetPopulationInput() {
+		return Int32.Parse(generationNumberInput.text);
+	}
+
+	public int GetSimulationTime() {
+		return Int32.Parse(generationTimeInput.text);
 	}
 
 
