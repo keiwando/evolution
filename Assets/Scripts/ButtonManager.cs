@@ -58,7 +58,17 @@ public class ButtonManager : MonoBehaviour {
 	private void SetupDropDown() {
 		dropDown.ClearOptions();
 
-		dropDown.AddOptions(CreatureSaver.GetCreatureNames());
+		//dropDown.AddOptions(CreatureSaver.GetCreatureNames());
+		dropDown.AddOptions(CreateDropDownOptions());
+	}
+
+	private List<string> CreateDropDownOptions() {
+		var options = new List<string>();
+
+		options.Add("Creature");
+		options.AddRange(CreatureSaver.GetCreatureNames());
+
+		return options;
 	}
 
 	private void SetupDefaultNumbers() {

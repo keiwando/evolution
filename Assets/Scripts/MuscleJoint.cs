@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class MuscleJoint : Hoverable {
+public class MuscleJoint : MonoBehaviour { //: Hoverable
 
 	public int ID;
 
@@ -16,7 +16,7 @@ public class MuscleJoint : Hoverable {
 
 	// Use this for initialization
 	void Start () {
-		base.Start();
+		//base.Start();
 
 		//connectedMuscles = 
 	}
@@ -49,6 +49,10 @@ public class MuscleJoint : Hoverable {
 
 		connectedMuscles.Clear();
 	}
+
+	/*override void OnMouseOver() {}
+
+	override void OnMouseExit() {}*/
 
 	/** Connects the end of a Muscle prefab object to the gameobject with a hinge joint. */
 	/*public void Connect(Muscle muscle) {

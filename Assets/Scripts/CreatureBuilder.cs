@@ -569,7 +569,7 @@ public class CreatureBuilder : MonoBehaviour {
 		evolution.StartEvolution();
 	}
 
-	private void PromptCreatureSave() {
+	public void PromptCreatureSave() {
 		saveDialog.gameObject.SetActive(true);
 		saveDialog.ResetErrors();
 	}
@@ -606,7 +606,12 @@ public class CreatureBuilder : MonoBehaviour {
 
 		DeleteCreature();
 
-		CreatureSaver.LoadCreature(CreatureSaver.GetCreatureNames()[dropDown.value], this);
+		// The first option in the Dropdown list is going to be an empty creature
+		if (dropDown.value == 0) {
+			return;
+		}
+
+		CreatureSaver.LoadCreature(CreatureSaver.GetCreatureNames()[dropDown.value - 1], this);
 	}
 
 	private void TestCreatureSave() {
