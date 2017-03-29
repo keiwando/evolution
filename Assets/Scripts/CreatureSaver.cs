@@ -3,13 +3,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CreatureSaver : MonoBehaviour {
+public class IllegalFilenameException: IOException {
 
+	public override string Message {
+		get {
+			return "The filename is not valid.\n" + base.Message;
+		}
+	}
+}
+
+/// <summary>
+/// Handles saving and loading of Creatures
+/// </summary>
+public class CreatureSaver {
+
+	/// <summary>
+	/// The name of the folder that holds the creature save files.
+	/// </summary>
 	private const string SAVE_FOLDER = "CreatureSaves";
+	/// <summary>
+	/// The separator to use in the save file between the different body component types. 
+	/// </summary>
 	private const string COMPONENT_SEPARATOR = "--%%--\n";
-	private string[] SPLIT_ARRAY = new string[]{ COMPONENT_SEPARATOR };
+	/// <summary>
+	/// Used for splitting the text file by the body component types.
+	/// </summary>
+	private static string[] SPLIT_ARRAY = new string[]{ COMPONENT_SEPARATOR };
+
 	// Use this for initialization
-	void Start () {
+	public CreatureSaver () {
 		
 	}
 	
@@ -18,7 +40,39 @@ public class CreatureSaver : MonoBehaviour {
 		
 	}
 
+	/// <summary>
+	/// Loads the names of all the creature save-files into the creatureNames array.
+	/// </summary>
+	public static List<string> GetCreatureNames() {
+		
+		//Debug.Log("Loading Creature Names...");
+		
+		var info = new DirectoryInfo(Path.Combine(Application.dataPath, SAVE_FOLDER));
+		var fileInfo = info.GetFiles();
+		var names = new HashSet<string>();
+
+		foreach (FileInfo file in fileInfo) {
+			names.Add(file.Name.Split('.')[0]);
+		} 
+			
+		var creatureNames = new List<string>();
+		foreach (string name in names) {
+			creatureNames.Add(name);
+		}
+
+		creatureNames.Sort();
+
+		return creatureNames;
+	}
+
+	/// <summary>
+	/// Saves the joints, bones and muscles of a creature with a given name to a file.
+	/// The name cannot contain a dot (.)
+	/// Throws: IllegalFilenameException
+	/// </summary>
 	public static void WriteSaveFile(string name, List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
+
+		if ( name.Contains(".") || name == "" ) throw new IllegalFilenameException();
 
 		var content = "";
 		// add joint data
@@ -36,17 +90,20 @@ public class CreatureSaver : MonoBehaviour {
 			content += muscle.GetSaveString() + "\n";
 		}
 
-		if (!name.EndsWith(".txt")) {
-			name += ".txt";
-		}
+		var filename = name + ".txt";
+		/*if (!filename.EndsWith(".txt")) {
+			filename += ".txt";
+		}*/
 			
 		var path = Path.Combine(Application.dataPath, SAVE_FOLDER);
-		path = Path.Combine(path, name);
+		path = Path.Combine(path, filename);
 
 		File.WriteAllText(path, content);
+
+		//creatureNames.Add(name);
 	}
 
-	public void LoadCreature(string name, CreatureBuilder builder) {
+	public static void LoadCreature(string name, CreatureBuilder builder) {
 
 		if (!name.EndsWith(".txt")) {
 			name += ".txt";

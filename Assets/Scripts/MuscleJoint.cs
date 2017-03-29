@@ -38,9 +38,12 @@ public class MuscleJoint : Hoverable {
 
 	public void deleteAllConnected() {
 
-		foreach (Muscle muscle in connectedMuscles) {
+		var connected = new List<Muscle>(connectedMuscles);
+
+		foreach (Muscle muscle in connected) {
 			if (muscle != null) {
-				muscle.DeleteWithoutDisconnecting();	
+
+				muscle.Delete();
 			}
 		} 
 

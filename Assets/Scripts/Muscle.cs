@@ -325,12 +325,17 @@ public class Muscle : BodyComponent {
 	public override void Delete() {
 		base.Delete();
 
+		print("Muscle deleted");
+
 		Destroy(spring);
 		startingJoint.Disconnect(this);
 		endingJoint.Disconnect(this);
 		Destroy(gameObject);
 	}
 
+	/// <summary>
+	/// Do not use unless you know what you're doing.
+	/// </summary>
 	public void DeleteWithoutDisconnecting() {
 
 		Destroy(spring);

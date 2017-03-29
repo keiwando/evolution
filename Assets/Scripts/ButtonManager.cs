@@ -19,6 +19,8 @@ public class ButtonManager : MonoBehaviour {
 
 	public CreatureBuilder creatureBuilder;
 
+	public Dropdown dropDown;
+
 	private Dictionary<SelectableButton, CreatureBuilder.BodyPart> buttonMap;
 
 	// Use this for initialization
@@ -38,11 +40,25 @@ public class ButtonManager : MonoBehaviour {
 		}
 
 		SetupDefaultNumbers();
+		SetupDropDown();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
+	}
+
+	public void Refresh() {
+		SetupDropDown();
+	}
+
+	/// <summary>
+	/// Sets up the dropdown list with the names of the creatures that can be loaded.
+	/// </summary>
+	private void SetupDropDown() {
+		dropDown.ClearOptions();
+
+		dropDown.AddOptions(CreatureSaver.GetCreatureNames());
 	}
 
 	private void SetupDefaultNumbers() {

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -35,7 +36,9 @@ public class CreatureBuilder : MonoBehaviour {
 
 	public Evolution evolution;
 
-	[SerializeField] private CreatureSaver creatureSaver;
+	public SaveDialog saveDialog;
+
+	//private CreatureSaver creatureSaver;
 
 
 	/** The joints of the creature that have been placed in the scene. */
@@ -75,27 +78,8 @@ public class CreatureBuilder : MonoBehaviour {
 		// Joints are selected by default.
 		selectedPart = BodyPart.Joint;
 
-		TestCreatureSave();
+		//creatureSaver =  new CreatureSaver();
 
-
-	}
-
-	IEnumerator Foo()
-	{
-		print("Foo started at frame " + Time.frameCount);
-
-		yield return StartCoroutine(Bar());
-		//yield return null;
-		yield return Bar();
-		print("Foo ended at frame " + Time.frameCount);
-	}
-
-	IEnumerator Bar()
-	{
-		for (int i = 0; i < 2; i++) {
-			print("Bar is doing things at frame " + Time.frameCount);
-			yield return null;
-		}
 	}
 	
 	// Update is called once per frame
@@ -106,10 +90,10 @@ public class CreatureBuilder : MonoBehaviour {
 		HandleKeyboardInput();
 	}
 
-	/** 
-	 * Checks for click / touch events and handles them appropiately depending on the 
-	 * currently selected body part.
-	 */
+	/// <summary>
+	/// Checks for click / touch events and handles them appropiately depending on the 
+	/// currently selected body part.
+	/// </summary>
 	private void HandleClicks() {
 
 		if ( Input.GetMouseButtonDown(0) ) { 	// user clicked
@@ -225,6 +209,8 @@ public class CreatureBuilder : MonoBehaviour {
 	/** Handles all possible keyboard controls / shortcuts. */
 	private void HandleKeyboardInput() {
 
+		if (saveDialog != null && saveDialog.gameObject.activeSelf) return;
+
 		if (Input.anyKeyDown) {
 		
 			// J = place Joint
@@ -249,12 +235,13 @@ public class CreatureBuilder : MonoBehaviour {
 
 			// S = Save Creature
 			else if (Input.GetKeyDown(KeyCode.S)) {
-				SaveCreature();
+				//SaveCreature();
+				PromptCreatureSave();
 			}
 
 			// L = Load Creature
 			else if (Input.GetKeyDown(KeyCode.L)) {
-				LoadCreature();
+				//LoadCreature();
 			}
 
 			// T = Go to testing scene
@@ -318,6 +305,17 @@ public class CreatureBuilder : MonoBehaviour {
 			}
 		}
 		return removed;
+	}
+
+	/// <summary>
+	/// Deletes the currently visible creature.
+	/// </summary>
+	private void DeleteCreature() {
+		foreach(var joint in joints) {
+			joint.Delete();
+		}
+
+		UpdateDeletedObjects();
 	}
 
 	private void DisableAllHoverables() {
@@ -571,12 +569,44 @@ public class CreatureBuilder : MonoBehaviour {
 		evolution.StartEvolution();
 	}
 
-	public void SaveCreature() {
-		CreatureSaver.WriteSaveFile("TestCreature", joints, bones, muscles);
+	private void PromptCreatureSave() {
+		saveDialog.gameObject.SetActive(true);
+		saveDialog.ResetErrors();
 	}
 
-	public void LoadCreature() {
-		creatureSaver.LoadCreature("TestCreature", this);
+	/// <summary>
+	/// Attempts to save the current creature. Shows an error screen if something went wrong.
+	/// </summary>
+	/// <param name="name">Name.</param>
+	public void SaveCreature(string name) {
+
+		saveDialog.ResetErrors();
+
+		if (name == "") {
+			saveDialog.ShowErrorMessage("The Creature name is empty.");
+			return;
+		}
+
+		try {
+			CreatureSaver.WriteSaveFile(name, joints, bones, muscles);
+
+		} catch (IllegalFilenameException e) {
+			saveDialog.ShowErrorMessage("The name can't contain dots (.)");
+			return;
+		}
+
+		// The save was successful
+		saveDialog.gameObject.SetActive(false);
+
+		buttonManager.Refresh();
+
+	}
+
+	public void LoadCreature(Dropdown dropDown) {
+
+		DeleteCreature();
+
+		CreatureSaver.LoadCreature(CreatureSaver.GetCreatureNames()[dropDown.value], this);
 	}
 
 	private void TestCreatureSave() {
