@@ -85,6 +85,8 @@ public class Muscle : BodyComponent {
 		muscle.ConnectToJoints();
 		muscle.UpdateLinePoints();
 
+		muscle.AddCollider();
+
 		return muscle;
 	}
 

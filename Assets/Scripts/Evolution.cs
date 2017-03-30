@@ -104,7 +104,6 @@ public class Evolution : MonoBehaviour {
 
 			} else if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Backspace)) {
 				// Go back to the Creature building view.
-				// Delete the creature TODO: Keep the creature
 				SceneManager.LoadScene("CreatureBuildingScene");
 				KillGeneration();
 				Destroy(creature.gameObject);

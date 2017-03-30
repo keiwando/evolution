@@ -32,7 +32,7 @@ public class Joint : BodyComponent {
 	public static Joint CreateFromString(string data) {
 		
 		var parts = data.Split('%');
-		print(data);
+		//print(data);
 		// Format: ID - pos.x - pos.y - pos.z
 		var x = float.Parse(parts[1]);
 		var y = float.Parse(parts[2]);

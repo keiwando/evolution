@@ -36,7 +36,7 @@ public class Bone : BodyComponent {
 	}
 
 	public static Bone CreateFromString(string data, List<Joint> joints) {
-		print(data);
+		//print(data);
 		var parts = data.Split('%');
 		var boneID = int.Parse(parts[0]);
 		var jointID1 = int.Parse(parts[1]);
@@ -45,6 +45,7 @@ public class Bone : BodyComponent {
 		// Format: ID - startingJoint.ID - endingJoint.ID
 		var bone = Bone.InstantiateAtPoint(Vector3.zero);
 		bone.ID = boneID;
+		bone.muscleJoint.ID = bone.ID;
 		ID_COUNTER = Mathf.Max(ID_COUNTER, bone.ID);
 
 		// attach to joints

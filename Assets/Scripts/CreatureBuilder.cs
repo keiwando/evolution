@@ -67,6 +67,15 @@ public class CreatureBuilder : MonoBehaviour {
 	public static float CONNECTION_WIDHT = 0.5f;
 	private bool TESTING_ENABLED = true;
 
+	/// <summary>
+	/// Indicates whether it is the first time starting the program ( = no evolution has taken place yet)
+	/// </summary>
+	private static bool firstTime = true;
+	/// <summary>
+	/// The name of the last created creature
+	/// </summary>
+	private static string lastCreatureName = "Creature";
+
 	// Use this for initialization
 	void Start () {
 
@@ -78,7 +87,15 @@ public class CreatureBuilder : MonoBehaviour {
 		// Joints are selected by default.
 		selectedPart = BodyPart.Joint;
 
+		buttonManager.SetupDropDown();
 		//creatureSaver =  new CreatureSaver();
+		if (!firstTime) {
+			CreatureSaver.LoadCurrentCreature(this);
+			//print("Last creature name: " + lastCreatureName);
+			buttonManager.SetDropDownToValue(lastCreatureName);
+		}
+
+		firstTime = false;
 
 	}
 	
@@ -234,7 +251,7 @@ public class CreatureBuilder : MonoBehaviour {
 			}
 
 			// S = Save Creature
-			else if (Input.GetKeyDown(KeyCode.S)) {
+			else if (Input.GetKeyDown(KeyCode.S) && Application.platform != RuntimePlatform.WebGLPlayer) {
 				//SaveCreature();
 				PromptCreatureSave();
 			}
@@ -300,7 +317,7 @@ public class CreatureBuilder : MonoBehaviour {
 		List<T> removed = new List<T>(objects);
 		foreach (T obj in objects) {
 			if (obj == null || obj.Equals(null) || obj.gameObject == null || obj.gameObject.Equals(null) || obj.deleted) {
-				print("Removed component of type: " + typeof(T));
+				//print("Removed component of type: " + typeof(T));
 				removed.Remove(obj);
 			}
 		}
@@ -539,6 +556,11 @@ public class CreatureBuilder : MonoBehaviour {
 	/** Generates a creature and starts the evolution simulation. */
 	public void Evolve() {
 
+		// don't attempt evolution if there is no creature
+		if (joints.Count == 0) return;
+
+		CreatureSaver.SaveCurrentCreature(joints, bones, muscles);
+
 		Creature creature = BuildCreature();
 		DontDestroyOnLoad(creature.gameObject);
 
@@ -591,7 +613,7 @@ public class CreatureBuilder : MonoBehaviour {
 			CreatureSaver.WriteSaveFile(name, joints, bones, muscles);
 
 		} catch (IllegalFilenameException e) {
-			saveDialog.ShowErrorMessage("The name can't contain dots (.)");
+			saveDialog.ShowErrorMessage("The name can't contain . (dots) or _ (underscores).");
 			return;
 		}
 
@@ -606,12 +628,16 @@ public class CreatureBuilder : MonoBehaviour {
 
 		DeleteCreature();
 
+		//var name = CreatureSaver.GetCreatureNames()[dropDown.value];
+		var name = ButtonManager.CreateDropDownOptions()[dropDown.value];
+		lastCreatureName = name;
+
 		// The first option in the Dropdown list is going to be an empty creature
 		if (dropDown.value == 0) {
 			return;
 		}
 
-		CreatureSaver.LoadCreature(CreatureSaver.GetCreatureNames()[dropDown.value - 1], this);
+		CreatureSaver.LoadCreature(name, this);
 	}
 
 	private void TestCreatureSave() {

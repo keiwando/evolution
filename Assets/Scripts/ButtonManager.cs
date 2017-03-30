@@ -40,7 +40,7 @@ public class ButtonManager : MonoBehaviour {
 		}
 
 		SetupDefaultNumbers();
-		SetupDropDown();
+		//SetupDropDown();
 	}
 	
 	// Update is called once per frame
@@ -55,14 +55,23 @@ public class ButtonManager : MonoBehaviour {
 	/// <summary>
 	/// Sets up the dropdown list with the names of the creatures that can be loaded.
 	/// </summary>
-	private void SetupDropDown() {
+	public void SetupDropDown() {
 		dropDown.ClearOptions();
 
 		//dropDown.AddOptions(CreatureSaver.GetCreatureNames());
 		dropDown.AddOptions(CreateDropDownOptions());
 	}
 
-	private List<string> CreateDropDownOptions() {
+	/// <summary>
+	/// Sets the Dropdown to the given value (name).
+	/// </summary>
+	public void SetDropDownToValue(string name) {
+
+		var index = CreateDropDownOptions().IndexOf(name);
+		dropDown.value = index;
+	}
+
+	public static List<string> CreateDropDownOptions() {
 		var options = new List<string>();
 
 		options.Add("Creature");
