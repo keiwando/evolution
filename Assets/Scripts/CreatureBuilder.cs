@@ -97,6 +97,8 @@ public class CreatureBuilder : MonoBehaviour {
 
 		firstTime = false;
 
+		CreatureSaver.Test();
+
 	}
 	
 	// Update is called once per frame

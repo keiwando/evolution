@@ -57,8 +57,8 @@ public class Evolution : MonoBehaviour {
 	private Creature[] currentGeneration;
 	/** The chromosome strings of the current generation. */
 	private string[] currentChromosomes;
-	/** Stores the best creatures of each generation. */
-	private Dictionary<int,Creature> bestCreatures;
+
+	private BestCreaturesController BCController;
 
 	/** The height at which the  */
 	private Vector3 dropHeight;
@@ -116,7 +116,9 @@ public class Evolution : MonoBehaviour {
 	private void SetupEvolution() {
 
 		CalculateDropHeight();
-		bestCreatures = new Dictionary<int, Creature>();
+
+		BCController = GameObject.Find("Best Creature Controller").GetComponent<BestCreaturesController>();
+		BCController.dropHeight = dropHeight;
 
 		string[] currentChromosomes = new string[POPULATION_SIZE];
 		// The first generation will have random brains.
@@ -182,7 +184,8 @@ public class Evolution : MonoBehaviour {
 
 		print("Highest Fitness: " + currentGeneration[0].brain.fitness);
 		// save the best creature
-		bestCreatures[currentGenerationNumber] = currentGeneration[0];
+		//bestCreatures[currentGenerationNumber] = currentGeneration[0];
+		BCController.AddBestCreature(currentGenerationNumber, currentGeneration[0].brain.ToChromosomeString());
 
 		currentChromosomes = CreateNewChromosomesFromGeneration();
 		currentGenerationNumber++;

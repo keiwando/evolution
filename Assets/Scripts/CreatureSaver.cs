@@ -260,4 +260,10 @@ public class CreatureSaver {
 		return Application.platform == RuntimePlatform.WebGLPlayer;
 	} 
 
+	public static void Test() {
+		GameObject cube = new GameObject();
+		cube.AddComponent<Rigidbody>();
+		cube.AddComponent<MeshRenderer>();
+	}
+
 }
