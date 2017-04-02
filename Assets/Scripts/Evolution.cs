@@ -14,9 +14,9 @@ public class Evolution : MonoBehaviour {
 		STANDING_UP
 	}
 
-	public Task task;
+	public static Task task;
 
-	private Dictionary<Task, System.Type> brainMap;
+	private static Dictionary<Task, System.Type> brainMap;
 
 	/** The creature to be evolved. Has no brain by default. */
 	public Creature creature;
@@ -119,6 +119,7 @@ public class Evolution : MonoBehaviour {
 
 		BCController = GameObject.Find("Best Creature Controller").GetComponent<BestCreaturesController>();
 		BCController.dropHeight = dropHeight;
+		BCController.Creature = creature;
 
 		string[] currentChromosomes = new string[POPULATION_SIZE];
 		// The first generation will have random brains.
@@ -185,7 +186,9 @@ public class Evolution : MonoBehaviour {
 		print("Highest Fitness: " + currentGeneration[0].brain.fitness);
 		// save the best creature
 		//bestCreatures[currentGenerationNumber] = currentGeneration[0];
-		BCController.AddBestCreature(currentGenerationNumber, currentGeneration[0].brain.ToChromosomeString());
+		var best = currentGeneration[0];
+		BCController.AddBestCreature(currentGenerationNumber, best.brain.ToChromosomeString(), best.brain.fitness);
+
 
 		currentChromosomes = CreateNewChromosomesFromGeneration();
 		currentGenerationNumber++;
@@ -273,7 +276,7 @@ public class Evolution : MonoBehaviour {
 		if (!shouldMutate) return chromosome;
 
 		// pick a mutation index.
-		int index = UnityEngine.Random.Range(0,chromosome.Length - 1);
+		int index = UnityEngine.Random.Range(4,chromosome.Length - 1);
 		// determine a mutation length
 		int length = Mathf.Min(chromosome.Length - index - 3, UnityEngine.Random.Range(2,15));
 
@@ -377,7 +380,9 @@ public class Evolution : MonoBehaviour {
 		}
 	}
 
-	private void ApplyBrain(Creature creature, string chromosome) {
+	public static void ApplyBrain(Creature creature, string chromosome) {
+
+		if (brainMap == null) throw new System.Exception("The brain map is not initialized");
 
 		Brain brain = (Brain) creature.gameObject.AddComponent(brainMap[task]);
 		brain.muscles = creature.muscles.ToArray();

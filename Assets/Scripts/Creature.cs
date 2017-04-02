@@ -24,6 +24,15 @@ public class Creature : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// The y-position of the floor.
+	/// </summary>
+	public float FloorHeight {
+		set { floorHeight = value; }
+		get { return floorHeight; }
+	}
+	private float floorHeight = 0;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -83,7 +92,7 @@ public class Creature : MonoBehaviour {
 			min = height < min ? height : min; 
 		}
 
-		return min;
+		return min - floorHeight;
 	}
 
 	/** Returns the velocity of the creature */
