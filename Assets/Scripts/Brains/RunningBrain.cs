@@ -15,7 +15,7 @@ public class RunningBrain : Brain {
 		}
 	}
 
-	private int MAX_DISTANCE = 5000;	// The optimal distance a "perfect" creature could travel in the simulation time.
+	private int MAX_DISTANCE = 75;	// The optimal distance a "perfect" creature could travel in the simulation time.
 	//private int MAX_SPEED = 100; 
 	private float averageSpeed = 0;
 
@@ -47,7 +47,7 @@ public class RunningBrain : Brain {
 		// The fitness for the running task is made up of the distance travelled to the
 		// right at the end of the time and the average weighted speed of the creature.
 		// TODO: Add average speed into calculation.
-		fitness = ( creature.GetXPosition() ) / MAX_DISTANCE;
+		fitness = ( creature.GetXPosition() ) / (MAX_DISTANCE * SimulationTime);
 
 	}
 

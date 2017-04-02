@@ -29,7 +29,7 @@ public class BestCreaturesController : MonoBehaviour {
 	/// The list of best creature brains (as chromosome strings). The index + 1 = generation Number.
 	/// </summary>
 	private List<string> BestCreatures;
-	private Dictionary<string, float> BestFitness;
+	private List<float> BestFitness;
 
 	private Creature creature;
 	public Creature Creature {
@@ -46,7 +46,7 @@ public class BestCreaturesController : MonoBehaviour {
 	void Start () {
 		
 		BestCreatures = new List<string>();
-		BestFitness = new Dictionary<string, float>();
+		BestFitness = new List<float>();
 
 		BCThumbScreen.gameObject.SetActive(false);
 	}
@@ -86,7 +86,8 @@ public class BestCreaturesController : MonoBehaviour {
 		BCThumbScreen.gameObject.SetActive(true);
 
 		BestCreatures.Add(chromosome);
-		BestFitness.Add(chromosome, fitness);
+
+		BestFitness.Add(fitness);	  
 
 		if (currentBest == null) {
 			ShowBestCreature(1);
@@ -134,6 +135,7 @@ public class BestCreaturesController : MonoBehaviour {
 
 		currentGeneration = generation;
 		viewController.UpdateBCGeneration(generation);
+		viewController.UpdateFitness(BestFitness[generation - 1]);
 	}
 
 	private void SpawnCreature(string chromosome) {

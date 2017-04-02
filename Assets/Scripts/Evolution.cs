@@ -33,7 +33,7 @@ public class Evolution : MonoBehaviour {
 		set { SIMULATION_TIME = value; }
 		get { return SIMULATION_TIME; }
 	}
-	private int SIMULATION_TIME = 10;	// in seconds
+	private static int SIMULATION_TIME = 10;	// in seconds
 
 	public int PopulationSize {
 		set { 
@@ -183,7 +183,7 @@ public class Evolution : MonoBehaviour {
 		EvaluateCreatures(currentGeneration);
 		SortGenerationByFitness();
 
-		print("Highest Fitness: " + currentGeneration[0].brain.fitness);
+		//print("Highest Fitness: " + currentGeneration[0].brain.fitness);
 		// save the best creature
 		//bestCreatures[currentGenerationNumber] = currentGeneration[0];
 		var best = currentGeneration[0];
@@ -278,7 +278,7 @@ public class Evolution : MonoBehaviour {
 		// pick a mutation index.
 		int index = UnityEngine.Random.Range(4,chromosome.Length - 1);
 		// determine a mutation length
-		int length = Mathf.Min(chromosome.Length - index - 3, UnityEngine.Random.Range(2,15));
+		int length = Mathf.Min(Mathf.Max(0, chromosome.Length - index - 3), UnityEngine.Random.Range(2,15));
 
 		string toMutate = chromosome.Substring(index, length);
 		string mutatedPart = "";
@@ -386,6 +386,7 @@ public class Evolution : MonoBehaviour {
 
 		Brain brain = (Brain) creature.gameObject.AddComponent(brainMap[task]);
 		brain.muscles = creature.muscles.ToArray();
+		brain.SimulationTime = SIMULATION_TIME;
 
 		brain.SetupNeuralNet(chromosome);	
 

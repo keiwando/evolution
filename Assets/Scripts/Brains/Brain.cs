@@ -33,6 +33,11 @@ abstract public class Brain : MonoBehaviour {
 	protected float[][] inputs; // a 1D array would be enough ( jagged needed for multiplication) 
 	protected float[][] outputs;
 
+	/// <summary>
+	/// The time that this creature has to simulate. Factors into the fitness calculation.
+	/// </summary>
+	public float SimulationTime;
+
 	/** A value between 0 and 1 that determines how good the creature is at solving the task. 0 = bad. 1 = perfect. */
 	public float fitness;
 

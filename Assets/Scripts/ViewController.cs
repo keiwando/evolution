@@ -15,6 +15,8 @@ public class ViewController : MonoBehaviour {
 	private Color ErrorMessageColor;
 	private Coroutine FadeRoutine;
 
+	[SerializeField] private Text FitnessLabel;
+
 	// Use this for initialization
 	void Start () {
 		ErrorMessageColor = BCErrorMessage.color;
@@ -37,6 +39,12 @@ public class ViewController : MonoBehaviour {
 		
 		BCGenerationLabel.text = string.Format("Best of Gen. {0}", generation);
 		BCInputField.text = generation.ToString();
+	}
+
+	public void UpdateFitness(float fitness) {
+
+		var percentageFitness = Mathf.Round(fitness * 10000f) / 100f;
+		FitnessLabel.text = string.Format("Fitness: {0}%", percentageFitness);
 	}
 
 	public void ShowErrorMessage(string message) {
