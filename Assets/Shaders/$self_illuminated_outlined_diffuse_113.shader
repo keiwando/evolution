@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 // Upgrade NOTE: replaced 'glstate.matrix.modelview[0]' with 'UNITY_MATRIX_MV'
 // Upgrade NOTE: replaced 'glstate.matrix.mvp' with 'UNITY_MATRIX_MVP'
 // Upgrade NOTE: replaced 'glstate.matrix.projection' with 'UNITY_MATRIX_P'
@@ -49,7 +51,7 @@ Shader "Self-Illumin/Outlined Diffuse"
 
          v2f vert(appdata v) { 
             v2f o; 
-            o.pos = mul(UNITY_MATRIX_MVP, v.vertex); 
+            o.pos = UnityObjectToClipPos(v.vertex); 
             float3 norm = mul ((float3x3)UNITY_MATRIX_MV, v.normal); 
             norm.x *= UNITY_MATRIX_P[0][0]; 
             norm.y *= UNITY_MATRIX_P[1][1]; 

@@ -21,6 +21,8 @@ public class ButtonManager : MonoBehaviour {
 
 	public Dropdown dropDown;
 
+	public Dropdown taskDropDown;
+
 	private Dictionary<SelectableButton, CreatureBuilder.BodyPart> buttonMap;
 
 	// Use this for initialization
@@ -114,6 +116,21 @@ public class ButtonManager : MonoBehaviour {
 				selectButton(button);
 				break;
 			}
+		}
+	}
+
+	/// <summary>
+	/// Returns the chosen task based on the value of the taskDropDown;
+	/// </summary>
+	public Evolution.Task GetTask() {
+
+		switch(taskDropDown.captionText.text.ToUpper()) {
+
+			case "RUNNING": return Evolution.Task.RUNNING; break;
+			case "JUMPING": return Evolution.Task.JUMPING; break;
+			case "CLIMBING": return Evolution.Task.CLIMBING; break;
+
+			default: return Evolution.Task.RUNNING;
 		}
 	}
 }

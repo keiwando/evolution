@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 public class Creature : MonoBehaviour {
 
@@ -32,6 +31,13 @@ public class Creature : MonoBehaviour {
 		get { return floorHeight; }
 	}
 	private float floorHeight = 0;
+
+	public GameObject Obstacle {
+		set {
+			obstacle = value;
+		}	
+	}
+	private GameObject obstacle;
 
 	// Use this for initialization
 	void Start () {
@@ -136,7 +142,17 @@ public class Creature : MonoBehaviour {
 
 		int count = 0;
 		foreach (Joint joint in joints) {
-			count += joint.isColliding ? 1 : 0 ;
+			count += joint.isCollidingWithGround ? 1 : 0 ;
+		}
+
+		return count;
+	}
+
+	public long GetNumberOfObstacleCollisions() {
+
+		long count = 0;
+		foreach (Joint joint in joints) {
+			count += joint.isCollidingWithObstacle ? 1 : 0 ;
 		}
 
 		return count;
@@ -175,6 +191,20 @@ public class Creature : MonoBehaviour {
 		}
 
 		return joints.Count == 0 ? 0 : total / joints.Count ;
+	}
+
+	public float GetDistanceFromObstacle() {
+		//return Vector3.Distance(new Vector3(GetXPosition(), GetYPosition(), 0f), obstacle.transform.position);
+		float minDistance = float.PositiveInfinity;
+
+		var obstaclePos = obstacle.transform.position;
+		var distances = new float[joints.Count];
+
+		for (int i = 0; i < distances.Length; i++) {
+			distances[i] = Vector3.Distance(joints[i].center, obstaclePos);
+		}
+
+		return Mathf.Min(distances);
 	}
 }
 

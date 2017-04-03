@@ -16,7 +16,8 @@ public class Joint : BodyComponent {
 
 	private bool iterating;
 
-	public bool isColliding { get; private set; }
+	public bool isCollidingWithGround { get; private set; }
+	public bool isCollidingWithObstacle { get; private set; }
 
 	private static Joint InstantiateJoint(Vector3 point) {
 		return ((GameObject) Instantiate(Resources.Load(PATH), point, Quaternion.identity)).GetComponent<Joint>();
@@ -124,11 +125,20 @@ public class Joint : BodyComponent {
 	}
 
 		
-	void OnCollisionEnter() {
-		isColliding = true;
+	void OnCollisionEnter(Collision collision) {
+
+		switch(collision.gameObject.tag.ToUpper()) {
+
+		case "GROUND": isCollidingWithGround = true; break;
+		case "OBSTACLE": isCollidingWithObstacle = true; break;
+
+		default: return;
+		}	
 	}
 
-	void OnCollisionExit() {
-		isColliding = false;
+	void OnCollisionExit(Collision collision) {
+
+		isCollidingWithGround = false;
+		isCollidingWithObstacle = false;
 	}
 }

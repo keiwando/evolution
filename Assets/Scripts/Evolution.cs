@@ -10,13 +10,15 @@ public class Evolution : MonoBehaviour {
 
 	public enum Task {
 		RUNNING,
-		JUMPING_OVER_BALL,
-		STANDING_UP
+		JUMPING,
+		CLIMBING
 	}
 
 	public static Task task;
 
 	private static Dictionary<Task, System.Type> brainMap;
+
+	public GameObject obstacle;
 
 	/** The creature to be evolved. Has no brain by default. */
 	public Creature creature;
@@ -73,6 +75,7 @@ public class Evolution : MonoBehaviour {
 
 		brainMap = new Dictionary<Task, System.Type>();
 		brainMap.Add(Task.RUNNING, typeof(RunningBrain));
+		brainMap.Add(Task.JUMPING, typeof(JumpingBrain));
 
 	}
 	
@@ -383,6 +386,8 @@ public class Evolution : MonoBehaviour {
 
 		Creature creat = (Creature) ((GameObject) Instantiate(creature.gameObject, dropHeight, Quaternion.identity)).GetComponent<Creature>();
 		creat.RefreshLineRenderers();
+		creat.Obstacle = obstacle;
+
 		return creat;
 	}
 
