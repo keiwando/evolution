@@ -125,9 +125,9 @@ public class Joint : BodyComponent {
 	}
 
 		
-	void OnCollisionEnter(Collision collision) {
+	void OnTriggerEnter(Collider collider) {
 
-		switch(collision.gameObject.tag.ToUpper()) {
+		switch(collider.gameObject.tag.ToUpper()) {
 
 		case "GROUND": isCollidingWithGround = true; break;
 		case "OBSTACLE": isCollidingWithObstacle = true; break;
@@ -136,7 +136,7 @@ public class Joint : BodyComponent {
 		}	
 	}
 
-	void OnCollisionExit(Collision collision) {
+	void OnTriggerExit(Collider collider) {
 
 		isCollidingWithGround = false;
 		isCollidingWithObstacle = false;

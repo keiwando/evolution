@@ -46,6 +46,13 @@ public class BestCreaturesController : MonoBehaviour {
 	private float autoplayDuration = 15f;
 	private Coroutine autoplayRoutine;
 
+	public GameObject Obstacle {
+		set {
+			this.obstacle = value;
+		}
+	}
+	private GameObject obstacle;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -159,6 +166,7 @@ public class BestCreaturesController : MonoBehaviour {
 		var creat = CreateCreature();
 		Evolution.ApplyBrain(creat, chromosome);
 		creat.FloorHeight = floorHeight.position.y;
+		creat.Obstacle = obstacle;
 		creat.Alive = true;
 
 		BCCamera.toFollow = creat;

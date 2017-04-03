@@ -197,6 +197,8 @@ public class Creature : MonoBehaviour {
 		//return Vector3.Distance(new Vector3(GetXPosition(), GetYPosition(), 0f), obstacle.transform.position);
 		float minDistance = float.PositiveInfinity;
 
+		if (obstacle == null) return minDistance;
+
 		var obstaclePos = obstacle.transform.position;
 		var distances = new float[joints.Count];
 

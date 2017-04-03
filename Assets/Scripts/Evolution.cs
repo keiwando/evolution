@@ -423,4 +423,14 @@ public class Evolution : MonoBehaviour {
 		dropHeight = creature.transform.position;
 		dropHeight.y -= DistanceFromGround - padding;
 	}
+
+	public void UpdateCreaturesWithObstacle(GameObject obstacle) {
+
+		if (currentGeneration == null) return;
+
+		this.obstacle = obstacle;
+		foreach (var creature in currentGeneration) {
+			creature.Obstacle = obstacle;
+		}
+	}
 }

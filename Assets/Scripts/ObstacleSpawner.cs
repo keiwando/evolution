@@ -9,20 +9,28 @@ public class ObstacleSpawner : MonoBehaviour {
 	/// <summary>
 	/// The force with which the obstacles are accelerated after spawn.
 	/// </summary>
-	public float Obstacle_Force = 10f;
+	private float Obstacle_Force = 5000f;
 	/// <summary>
 	/// The time distance between the spawn of two obstacles in seconds.
 	/// </summary>
-	public float Obstacle_Distance = 4f;
+	private float Obstacle_Distance = 5f;
 
 	public Transform spawnPoint;
+
+	public BestCreaturesController BCController;
 
 	public GameObject obstacle;
 	private Rigidbody obsRigidbody;
 
+	public bool BCScene;
+
+	private Evolution evolution;
+
 	void Start () {
 
-		rigidbody = obstacle.GetComponent<Rigidbody>();
+		evolution = GameObject.Find("Evolution").GetComponent<Evolution>();
+
+		obsRigidbody = obstacle.GetComponent<Rigidbody>();
 
 		StartCoroutine(SpawnObstacle());
 	}
@@ -36,16 +44,24 @@ public class ObstacleSpawner : MonoBehaviour {
 	private IEnumerator SpawnObstacle() {
 
 		while(true) {
-			
-			yield return new WaitForSeconds(Obstacle_Distance);
-
-			if (obstacle != null) Destroy(obstacle.gameObject);
 
 			obsRigidbody.velocity = Vector3.zero;
 			obstacle.transform.position = spawnPoint.position;
 			obsRigidbody.AddForce(new Vector3(-Obstacle_Force, 0f, 0f));
+
+			UpdateObstacleKnowledge();
+
+			yield return new WaitForSeconds(Obstacle_Distance);
 		}
 
 		yield return null;
 	} 
+
+	private void UpdateObstacleKnowledge() {
+		if (!BCScene) {
+			GameObject.Find("Evolution").GetComponent<Evolution>().UpdateCreaturesWithObstacle(obstacle);	
+		} else {
+			BCController.Obstacle = obstacle;
+		}
+	}
 }

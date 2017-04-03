@@ -8,7 +8,7 @@ public class TaskManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+		SetupTask();
 	}
 	
 	// Update is called once per frame
