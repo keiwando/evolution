@@ -96,9 +96,14 @@ public class Evolution : MonoBehaviour {
 
 				FocusOnNextCreature();
 
-			} else if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Backspace)) {
+			} else if (Input.GetKeyDown(KeyCode.Escape)) {
 				GoBackToCreatureBuilding();
 			}
+
+			if (Application.platform == RuntimePlatform.Android && Input.GetKeyDown(KeyCode.Backspace)) {
+				GoBackToCreatureBuilding();
+			}
+
 		}
 	}
 

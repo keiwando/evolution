@@ -101,7 +101,7 @@ public class CreatureSaver {
 
 		var content = CreateSaveInfoFromCreature(joints, bones, muscles);
 
-		var filename = name + ".txt";
+		var filename = name.ToUpper() + ".txt";
 		/*if (!filename.EndsWith(".txt")) {
 			filename += ".txt";
 		}*/

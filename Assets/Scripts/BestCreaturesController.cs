@@ -148,6 +148,8 @@ public class BestCreaturesController : MonoBehaviour {
 	}
 
 	private void SpawnCreature(string chromosome) {
+
+		if (this.creature == null) return;
 		this.creature.gameObject.SetActive(true);
 
 		if (currentBest != null) {
