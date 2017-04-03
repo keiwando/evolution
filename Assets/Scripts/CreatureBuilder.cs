@@ -79,6 +79,8 @@ public class CreatureBuilder : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
+		CreatureSaver.SetupPlayerPrefs();
+
 		// initialize arrays
 		joints = new List<Joint>();
 		bones = new List<Bone>();
@@ -97,7 +99,8 @@ public class CreatureBuilder : MonoBehaviour {
 
 		firstTime = false;
 
-		CreatureSaver.Test();
+
+		//CreatureSaver.Test();
 
 	}
 	
@@ -263,9 +266,8 @@ public class CreatureBuilder : MonoBehaviour {
 				//LoadCreature();
 			}
 
-			// T = Go to testing scene
-			else if (TESTING_ENABLED && Input.GetKeyDown(KeyCode.T)) {
-				//TakeCreatureToTestScene();
+			// T = Go to Evolution Scene
+			else if (Input.GetKeyDown(KeyCode.T)) {
 				Evolve();
 			}
 

@@ -35,6 +35,9 @@ public class CreatureSaver {
 	private static string[] SPLIT_ARRAY = new string[]{ COMPONENT_SEPARATOR };
 
 	private static string CURRENT_SAVE_KEY = "_CurrentCreatureSave";
+	private static string CREATURE_NAMES_KEY = "_CreatureNames";
+
+	private static string RESOURCE_PATH = Path.Combine(Application.dataPath, "Resources");
 
 	// Use this for initialization
 	public CreatureSaver () {
@@ -46,8 +49,27 @@ public class CreatureSaver {
 		
 	}
 
+	// Loads the default creatures into the PlayerPrefs
+	public static void SetupPlayerPrefs() {
+
+		//PlayerPrefs.DeleteAll();
+
+		var added = new List<string>();
+
+		foreach (var name in DefaultCreatures.defaultCreatures.Keys) {
+			
+			if(!PlayerPrefs.HasKey(name)) {
+				
+				PlayerPrefs.SetString(name, DefaultCreatures.defaultCreatures[name]);
+				added.Add(name);
+			}
+		}
+
+		AddCreatureNamesToPP(added);
+	}
+
 	/// <summary>
-	/// Loads the names of all the creature save-files into the creatureNames array.
+	/// Loads the names of all the creature save-files (/Playerprefs) into the creatureNames array.
 	/// </summary>
 	public static List<string> GetCreatureNames() {
 		
@@ -56,8 +78,15 @@ public class CreatureSaver {
 		if (IsWebGL()) {
 			return GetCreatureNamesWebGL();
 		}
-		
-		var info = new DirectoryInfo(Path.Combine(Application.dataPath, SAVE_FOLDER));
+
+		var names = GetCreatureNamesFromPlayerPrefs();
+		names.Sort();
+		return names;
+
+
+		// OLD CODE! UNREACHABLE!
+		/*
+		var info = new DirectoryInfo(Path.Combine(RESOURCE_PATH, SAVE_FOLDER));
 		var fileInfo = info.GetFiles();
 		var names = new HashSet<string>();
 
@@ -76,13 +105,13 @@ public class CreatureSaver {
 
 		creatureNames.Sort();
 
-		return creatureNames;
+		return creatureNames;*/
 	}
 
 	private static List<string> GetCreatureNamesWebGL() {
 
 		var names = new List<string>();
-		foreach (var name in WebGLDefaultCreatures.DefaultCreatures.Keys) {
+		foreach (var name in DefaultCreatures.defaultCreatures.Keys) {
 			names.Add(name);
 		} 
 
@@ -90,8 +119,27 @@ public class CreatureSaver {
 		return names;
 	}
 
+	private static List<string> GetCreatureNamesFromPlayerPrefs() {
+
+		return new List<string>(PlayerPrefs.GetString(CREATURE_NAMES_KEY,"").Split('\n'));
+	}
+
+	private static void AddCreatureNamesToPP(List<string> names) {
+
+		if (names.Count == 0) return;
+
+		var namesInPP = GetCreatureNamesFromPlayerPrefs();
+		namesInPP.AddRange(names);
+		namesInPP.RemoveAll(t => t == "");
+
+		var namesString = string.Join("\n", namesInPP.ToArray());
+
+
+		PlayerPrefs.SetString(CREATURE_NAMES_KEY, namesString);
+	}
+
 	/// <summary>
-	/// Saves the joints, bones and muscles of a creature with a given name to a file.
+	/// Saves the joints, bones and muscles of a creature with a given name to a file (/Playerprefs)
 	/// The name cannot contain a dot (.)
 	/// Throws: IllegalFilenameException
 	/// </summary>
@@ -101,15 +149,25 @@ public class CreatureSaver {
 
 		var content = CreateSaveInfoFromCreature(joints, bones, muscles);
 
-		var filename = name.ToUpper() + ".txt";
+		var filename = name.ToUpper();// + ".txt";
+
+		PlayerPrefs.SetString(filename, content);
+
+		var names = GetCreatureNamesFromPlayerPrefs();
+		if (!names.Contains(filename)) {
+
+			names.Add(filename);
+			var nameString = string.Join("\n",names.ToArray());
+			PlayerPrefs.SetString(CREATURE_NAMES_KEY, nameString);
+		}
 		/*if (!filename.EndsWith(".txt")) {
 			filename += ".txt";
 		}*/
-			
-		var path = Path.Combine(Application.dataPath, SAVE_FOLDER);
+		/*	
+		var path = Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
 		path = Path.Combine(path, filename);
 
-		File.WriteAllText(path, content);
+		File.WriteAllText(path, content);*/
 	}
 
 	/// <summary>
@@ -122,28 +180,31 @@ public class CreatureSaver {
 			return;
 		}
 
-		if (!name.EndsWith(".txt")) {
+		/*if (!name.EndsWith(".txt")) {
 			name += ".txt";
-		}
+		}*/
 
-		var path = Path.Combine(Application.dataPath, SAVE_FOLDER);
+		var contents = PlayerPrefs.GetString(name);
+
+		/*
+		var path = Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
 		path = Path.Combine(path, name);
 
 		var reader = new StreamReader(path);
 		var contents = reader.ReadToEnd();
-		reader.Close();
+		reader.Close();*/
 
 		LoadCreatureFromContents(contents, builder);
 	}
 
 	private static void LoadCreatureWebGL(string name, CreatureBuilder builder) {
 
-		if (!WebGLDefaultCreatures.DefaultCreatures.ContainsKey(name)) {
+		if (!DefaultCreatures.defaultCreatures.ContainsKey(name)) {
 			Debug.Log("Creature not found!");
 			return;
 		}
 
-		var contents = WebGLDefaultCreatures.DefaultCreatures[name];
+		var contents = DefaultCreatures.defaultCreatures[name];
 
 		LoadCreatureFromContents(contents, builder);
 	}
@@ -188,14 +249,14 @@ public class CreatureSaver {
 		
 	public static void LoadCurrentCreature(CreatureBuilder builder) {
 
-		if (IsWebGL()) {
-			LoadCurrentCreatureWebGL(builder);
-			return;
-		}
-
+		//if (IsWebGL()) {
+		LoadCurrentCreaturePP(builder);
+		return;
+		//}
+		/*
 		var name = "CurrentCreature.txt";
 
-		var path = Path.Combine(Application.dataPath, SAVE_FOLDER);
+		var path = Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
 		path = Path.Combine(path, CURRENT_SAVE_FOLDER);
 		path = Path.Combine(path, name);
 
@@ -203,10 +264,11 @@ public class CreatureSaver {
 		var contents = reader.ReadToEnd();
 		reader.Close();
 
-		LoadCreatureFromContents(contents, builder);
+		LoadCreatureFromContents(contents, builder);*/
 	}
 
-	private static void LoadCurrentCreatureWebGL(CreatureBuilder builder) {
+	// PP == PlayerPrefs
+	private static void LoadCurrentCreaturePP(CreatureBuilder builder) {
 		var contents = PlayerPrefs.GetString(CURRENT_SAVE_KEY, "");
 		if (contents == "") return;
 
@@ -238,21 +300,21 @@ public class CreatureSaver {
 
 		var content = CreateSaveInfoFromCreature(joints, bones, muscles);
 
-		if (IsWebGL()) {
-			SaveCurrentCreatureWebGL(content);
-			return;
-		}
-
+		//if (IsWebGL()) {
+		SaveCurrentCreaturePP(content);
+		return;
+		//}
+		/*
 		var filename = "CurrentCreature.txt";
 
-		var path = Path.Combine(Application.dataPath, SAVE_FOLDER);
+		var path = Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
 		path = Path.Combine(path, CURRENT_SAVE_FOLDER);
 		path = Path.Combine(path, filename);
 
-		File.WriteAllText(path, content);
+		File.WriteAllText(path, content);*/
 	}
 
-	private static void SaveCurrentCreatureWebGL(string content) {
+	private static void SaveCurrentCreaturePP(string content) {
 		PlayerPrefs.SetString(CURRENT_SAVE_KEY, content);
 	}
 

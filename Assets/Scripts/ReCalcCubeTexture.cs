@@ -19,10 +19,13 @@ public class ReCalcCubeTexture : MonoBehaviour
 	{
 		if (_currentScale == transform.localScale) return;
 		if (CheckForDefaultSize()) return;
+
 		_currentScale = transform.localScale;
+
 		var mesh = GetMesh();
 		mesh.uv = SetupUvMap(mesh.uv);
 		mesh.name = "Cube Instance";
+
 		if (GetComponent<Renderer>().sharedMaterial.mainTexture.wrapMode != TextureWrapMode.Repeat)
 		{
 			GetComponent<Renderer>().sharedMaterial.mainTexture.wrapMode = TextureWrapMode.Repeat;
@@ -32,13 +35,18 @@ public class ReCalcCubeTexture : MonoBehaviour
 	private Mesh GetMesh()
 	{
 		Mesh mesh;
-		#if UNITY_EDITOR
+
+		/*#if UNITY_EDITOR_OSX
 		var meshFilter = GetComponent<MeshFilter>();
 		var meshCopy = Instantiate(meshFilter.sharedMesh);
 		mesh = meshFilter.mesh = meshCopy;
-		#else
-		mesh = GetComponent<MeshFilter>().mesh
-		#endif
+		#else*/
+		//mesh = GetComponent<MeshFilter>().mesh;
+		var meshFilter = GetComponent<MeshFilter>();
+		var meshCopy = Instantiate(meshFilter.sharedMesh);
+		mesh = meshFilter.mesh = meshCopy;
+		//#endif
+
 		return mesh;
 	}
 
@@ -77,17 +85,20 @@ public class ReCalcCubeTexture : MonoBehaviour
 		meshUVs[14] = new Vector2(0, 0);
 		meshUVs[12] = new Vector2(width, depth);
 		meshUVs[15] = new Vector2(0, depth);
+
 		return meshUVs;
 	}
 
 	private bool CheckForDefaultSize()
 	{
 		if (_currentScale != Vector3.one) return false;
+
 		var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 		DestroyImmediate(GetComponent<MeshFilter>());
 		gameObject.AddComponent<MeshFilter>();
 		GetComponent<MeshFilter>().sharedMesh = cube.GetComponent<MeshFilter>().sharedMesh;
 		DestroyImmediate(cube);
+
 		return true;
 	}
 }
