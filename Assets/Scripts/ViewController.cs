@@ -115,4 +115,8 @@ public class ViewController : MonoBehaviour {
 	public void UpdateAutoPlayDurationLabel(float duration) {
 		AutoplayDurationLabel.text = string.Format("Duration {0}s", duration);
 	}
+
+	public void GoBackToCreatureBuilding() {
+		evolution.GoBackToCreatureBuilding();
+	}
 }

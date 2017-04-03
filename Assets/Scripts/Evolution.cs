@@ -97,14 +97,18 @@ public class Evolution : MonoBehaviour {
 				FocusOnNextCreature();
 
 			} else if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Backspace)) {
-				// Go back to the Creature building view.
-				SceneManager.LoadScene("CreatureBuildingScene");
-				KillGeneration();
-				Destroy(creature.gameObject);
-				Destroy(this.gameObject);
-				running = false;
+				GoBackToCreatureBuilding();
 			}
 		}
+	}
+
+	public void GoBackToCreatureBuilding() {
+		// Go back to the Creature building view.
+		SceneManager.LoadScene("CreatureBuildingScene");
+		KillGeneration();
+		Destroy(creature.gameObject);
+		Destroy(this.gameObject);
+		running = false;
 	}
 
 	public void FocusOnNextCreature() {
