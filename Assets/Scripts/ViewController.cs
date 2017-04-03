@@ -17,8 +17,16 @@ public class ViewController : MonoBehaviour {
 
 	[SerializeField] private Text FitnessLabel;
 
+	[SerializeField] private GameObject AutoplaySettings;
+	[SerializeField] private Text AutoplayDurationLabel;
+
+	private Evolution evolution;
+
 	// Use this for initialization
 	void Start () {
+
+		evolution = GameObject.Find("Evolution").GetComponent<Evolution>();
+
 		ErrorMessageColor = BCErrorMessage.color;
 	}
 	
@@ -89,5 +97,22 @@ public class ViewController : MonoBehaviour {
 		yield return new WaitForSeconds(seconds);
 
 		FadeRoutine = StartCoroutine(FadeOutErrorMessage(3.5f));
+	}
+
+	public void FocusOnNextCreature() {
+		evolution.FocusOnNextCreature();
+	}
+
+	public void FocusOnPreviousCreature() {
+		evolution.FocusOnPreviousCreature();
+	}
+
+	public void ViewAutoPlaySettings (bool active){
+		
+		AutoplaySettings.gameObject.SetActive(active);
+	}
+
+	public void UpdateAutoPlayDurationLabel(float duration) {
+		AutoplayDurationLabel.text = string.Format("Duration {0}s", duration);
 	}
 }

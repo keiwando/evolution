@@ -90,17 +90,11 @@ public class Evolution : MonoBehaviour {
 
 			if (Input.GetKeyDown(KeyCode.LeftArrow)) {
 
-				CameraFollowScript cam = Camera.main.GetComponent<CameraFollowScript>();
-				int index = cam.currentlyWatchingIndex;
-				cam.currentlyWatchingIndex = index - 1 < 0 ? currentGeneration.Length - 1 : index - 1;
-				cam.toFollow = currentGeneration[index];
+				FocusOnPreviousCreature();
 			
 			} else if (Input.GetKeyDown(KeyCode.RightArrow)) {
 
-				CameraFollowScript cam = Camera.main.GetComponent<CameraFollowScript>();
-				int index = (cam.currentlyWatchingIndex + 1 ) % POPULATION_SIZE ;
-				cam.currentlyWatchingIndex = index;
-				cam.toFollow = currentGeneration[index];
+				FocusOnNextCreature();
 
 			} else if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Backspace)) {
 				// Go back to the Creature building view.
@@ -111,6 +105,20 @@ public class Evolution : MonoBehaviour {
 				running = false;
 			}
 		}
+	}
+
+	public void FocusOnNextCreature() {
+		CameraFollowScript cam = Camera.main.GetComponent<CameraFollowScript>();
+		int index = (cam.currentlyWatchingIndex + 1 ) % POPULATION_SIZE ;
+		cam.currentlyWatchingIndex = index;
+		cam.toFollow = currentGeneration[index];
+	}
+
+	public void FocusOnPreviousCreature() {
+		CameraFollowScript cam = Camera.main.GetComponent<CameraFollowScript>();
+		int index = cam.currentlyWatchingIndex;
+		cam.currentlyWatchingIndex = index - 1 < 0 ? currentGeneration.Length - 1 : index - 1;
+		cam.toFollow = currentGeneration[index];
 	}
 
 	private void SetupEvolution() {

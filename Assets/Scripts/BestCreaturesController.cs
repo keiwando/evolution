@@ -42,6 +42,10 @@ public class BestCreaturesController : MonoBehaviour {
 	/// </summary>
 	private int currentGeneration;
 
+	private bool autoplayEnabled = true;
+	private float autoplayDuration = 15f;
+	private Coroutine autoplayRoutine;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -116,7 +120,7 @@ public class BestCreaturesController : MonoBehaviour {
 		}
 		
 		// check to see if the selected generation was already simulated. If not, show a message.
-		if (BestCreatures.Count < generation) {
+		if (!GenerationSimulated(generation)) {
 
 			viewController.UpdateBCGeneration(currentGeneration);
 			viewController.ShowErrorMessage(string.Format("Generation {0} has not been simulated yet.\n\nCurrently Simulated up to Generation {1}", generation, BestCreatures.Count));
@@ -128,10 +132,15 @@ public class BestCreaturesController : MonoBehaviour {
 		ShowBestCreature(generation);
 	}
 
+	private bool GenerationSimulated(int generation) {
+		return BestCreatures.Count >= generation;
+	}
+
 	private void ShowBestCreature(int generation) {
 		
 		var chromosome = BestCreatures[generation - 1];
 		SpawnCreature(chromosome);
+		AutoPlay();
 
 		currentGeneration = generation;
 		viewController.UpdateBCGeneration(generation);
@@ -174,5 +183,44 @@ public class BestCreaturesController : MonoBehaviour {
 		GenerationSelected(currentGeneration - 1);
 	}
 
+	private void AutoPlay() {
+
+		StopAutoPlay();
+		autoplayRoutine = StartCoroutine(ShowNextAfterTime(autoplayDuration));
+	}
+
+	private IEnumerator ShowNextAfterTime(float time) {
+		yield return new WaitForSeconds(time);
+
+		// Check to see if the next generation has been simulated yet,
+		// otherwise wait for 1 / 3 of time again.
+		while (!GenerationSimulated(currentGeneration + 1)) {
+			yield return new WaitForSeconds(time / 3);
+		}
+
+		GoToNextGeneration();
+	}
+
+	private void StopAutoPlay() {
+		
+		if (autoplayRoutine != null) StopCoroutine(autoplayRoutine);
+	}
+
+	public void AutoPlaySwitched(bool value) {
+
+		autoplayEnabled = value;
+		if (value) {
+			AutoPlay();
+		} else {
+			StopAutoPlay();
+		}
+
+		viewController.ViewAutoPlaySettings(value);
+	}
+
+	public void AutoPlayDurationChanged(float value) {
+		autoplayDuration = value;
+		viewController.UpdateAutoPlayDurationLabel(value);
+	}
 
 }
