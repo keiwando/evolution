@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
-public class RunningBrain : Brain {
+public class ObstacleJumpingBrain : Brain {
 
 	protected override int NUMBER_OF_INPUTS {
 		get {
-			return 6;
+			return 7;
 		}
 	}
 
@@ -15,39 +15,33 @@ public class RunningBrain : Brain {
 		}
 	}
 
-	private int MAX_DISTANCE = 60;	// The optimal distance a "perfect" creature could travel in the simulation time.
-	private int MAX_SPEED = 60;
-	//private int MAX_SPEED = 100; 
-	private float averageSpeed = 0;
+	private long numOfCollisionsWithObstacle = 0;
+
+	private float MAX_HEIGHT = 20f;
+
+	private float maxHeightJumped;
 
 	// Use this for initialization
 	void Start () {
-
-		//TestMatrixConversion();
-
 		if(IntermediateLayerSizes.Length != NUMBER_OF_LAYERS - 2) {
 			Debug.LogError("IntermediateLayerSizes has too many or not enough elements.");
 		}
 	}
 	
 	// Update is called once per frame
-	public override void Update ()
-	{
+	void Update () {
 		base.Update();
-		averageSpeed = (averageSpeed + creature.GetVelocity().x) / 2; 
+
+		numOfCollisionsWithObstacle += creature.GetNumberOfObstacleCollisions();
 	}
 
-	/*protected override void ApplyOutputToMuscle (float output, Muscle muscle)
-	{
-		//print(output);
-		muscle.SetContractionForce(output);
-	}*/
+	public override void EvaluateFitness (){
 
-	public override void EvaluateFitness ()
-	{
-		// The fitness for the running task is made up of the distance travelled to the
-		// right at the end of the time and the average weighted speed of the creature.
-		fitness = (creature.GetXPosition() + 0.5f * Mathf.Abs(averageSpeed)) / ((MAX_DISTANCE * SimulationTime) + MAX_SPEED);
+		//print(string.Format("Number of obstacle collisions: {0}", numOfCollisionsWithObstacle));
+		var heightFitness = Mathf.Clamp(maxHeightJumped / MAX_HEIGHT, 0f, 1f);
+		var collisionFitness = Mathf.Clamp(100f - (numOfCollisionsWithObstacle * 12) / GetComponent<Creature>().joints.Count, 0f, 100f) / 100f;
+
+		fitness = 0.5f * (heightFitness + collisionFitness);
 	}
 
 	/*Inputs:
@@ -58,11 +52,13 @@ public class RunningBrain : Brain {
 	* - rotational velocity
 	* - number of points touching ground
 	* - creature rotation
+	* - distance from obstacle
 	*/
-	protected override void UpdateInputs ()
-	{
+	protected override void UpdateInputs (){
+		
 		// distance from ground
 		inputs[0][0] = creature.DistanceFromGround();
+		maxHeightJumped = Mathf.Max(inputs[0][0], maxHeightJumped);
 		// horizontal velocity
 		Vector3 velocity = creature.GetVelocity();
 		inputs[0][1] = velocity.x;
@@ -74,6 +70,7 @@ public class RunningBrain : Brain {
 		inputs[0][4] = creature.GetNumberOfPointsTouchingGround();
 		// creature rotation
 		inputs[0][5] = creature.GetRotation();
+		// TODO: distance from obstacle
+		inputs[0][6] = creature.GetDistanceFromObstacle();
 	}
-
 }

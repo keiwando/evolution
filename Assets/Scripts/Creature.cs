@@ -39,9 +39,11 @@ public class Creature : MonoBehaviour {
 	}
 	private GameObject obstacle;
 
+	private LayerMask groundDistanceLayerMask;
+
 	// Use this for initialization
 	void Start () {
-		
+		groundDistanceLayerMask = LayerMask.NameToLayer("Ground");
 	}
 	
 	// Update is called once per frame
@@ -90,6 +92,16 @@ public class Creature : MonoBehaviour {
 	}
 
 	public float DistanceFromGround() {
+		RaycastHit hit;
+
+		if(Physics.Raycast(GetLowestPoint(), Vector3.down, out hit, groundDistanceLayerMask)) {
+			return hit.distance;
+		}
+
+		return 0f;
+	}
+
+	public float DistanceFromFlatFloor() {
 
 		float min = joints[0].center.y;
 
@@ -191,6 +203,19 @@ public class Creature : MonoBehaviour {
 		}
 
 		return joints.Count == 0 ? 0 : total / joints.Count ;
+	}
+
+	public Vector3 GetLowestPoint() {
+
+		Vector3 min = joints[0].transform.position;
+
+		foreach (var joint in joints) {
+			if (min.y > joint.transform.position.y) {
+				min = joint.transform.position;
+			}
+		}
+
+		return min;
 	}
 
 	public float GetDistanceFromObstacle() {

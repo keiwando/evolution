@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
-public class RunningBrain : Brain {
+public class ClimbingBrain : Brain {
 
 	protected override int NUMBER_OF_INPUTS {
 		get {
@@ -15,39 +15,26 @@ public class RunningBrain : Brain {
 		}
 	}
 
-	private int MAX_DISTANCE = 60;	// The optimal distance a "perfect" creature could travel in the simulation time.
-	private int MAX_SPEED = 60;
-	//private int MAX_SPEED = 100; 
-	private float averageSpeed = 0;
+	private float MAX_HEIGHT = 50f;
+
 
 	// Use this for initialization
 	void Start () {
-
-		//TestMatrixConversion();
-
 		if(IntermediateLayerSizes.Length != NUMBER_OF_LAYERS - 2) {
 			Debug.LogError("IntermediateLayerSizes has too many or not enough elements.");
 		}
 	}
-	
+
 	// Update is called once per frame
-	public override void Update ()
-	{
+	void Update () {
 		base.Update();
-		averageSpeed = (averageSpeed + creature.GetVelocity().x) / 2; 
+	
 	}
 
-	/*protected override void ApplyOutputToMuscle (float output, Muscle muscle)
-	{
-		//print(output);
-		muscle.SetContractionForce(output);
-	}*/
+	public override void EvaluateFitness (){
 
-	public override void EvaluateFitness ()
-	{
-		// The fitness for the running task is made up of the distance travelled to the
-		// right at the end of the time and the average weighted speed of the creature.
-		fitness = (creature.GetXPosition() + 0.5f * Mathf.Abs(averageSpeed)) / ((MAX_DISTANCE * SimulationTime) + MAX_SPEED);
+		// The fitness for the climbing task is made up of the final distance from the ground.
+		fitness = Mathf.Clamp(creature.DistanceFromFlatFloor() / MAX_HEIGHT , 0f, 1f);
 	}
 
 	/*Inputs:
@@ -59,8 +46,8 @@ public class RunningBrain : Brain {
 	* - number of points touching ground
 	* - creature rotation
 	*/
-	protected override void UpdateInputs ()
-	{
+	protected override void UpdateInputs (){
+
 		// distance from ground
 		inputs[0][0] = creature.DistanceFromGround();
 		// horizontal velocity
@@ -75,5 +62,4 @@ public class RunningBrain : Brain {
 		// creature rotation
 		inputs[0][5] = creature.GetRotation();
 	}
-
 }

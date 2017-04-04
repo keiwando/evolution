@@ -266,8 +266,8 @@ public class CreatureBuilder : MonoBehaviour {
 				//LoadCreature();
 			}
 
-			// T = Go to Evolution Scene
-			else if (Input.GetKeyDown(KeyCode.T)) {
+			// E = Go to Evolution Scene
+			else if (Input.GetKeyDown(KeyCode.E)) {
 				Evolve();
 			}
 

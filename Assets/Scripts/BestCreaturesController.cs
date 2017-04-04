@@ -214,6 +214,9 @@ public class BestCreaturesController : MonoBehaviour {
 	private void StopAutoPlay() {
 		
 		if (autoplayRoutine != null) StopCoroutine(autoplayRoutine);
+		//StopCoroutine(autoplayRoutine);
+		print("Stopped Autoplay");
+		print(autoplayRoutine);
 	}
 
 	public void AutoPlaySwitched(bool value) {

@@ -109,6 +109,8 @@ abstract public class Brain : MonoBehaviour {
 
 		string chromosome = "";
 
+		if (creature.muscles.Count == 0) return chromosome;
+
 		for(int i = 0; i < weightMatrices.Length; i++) {
 			chromosome += MatrixToString(weightMatrices[i]);
 		}

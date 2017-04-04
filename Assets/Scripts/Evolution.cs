@@ -11,6 +11,7 @@ public class Evolution : MonoBehaviour {
 	public enum Task {
 		RUNNING,
 		JUMPING,
+		OBSTACLE_JUMP,
 		CLIMBING
 	}
 
@@ -75,7 +76,9 @@ public class Evolution : MonoBehaviour {
 
 		brainMap = new Dictionary<Task, System.Type>();
 		brainMap.Add(Task.RUNNING, typeof(RunningBrain));
+		brainMap.Add(Task.OBSTACLE_JUMP, typeof(ObstacleJumpingBrain));
 		brainMap.Add(Task.JUMPING, typeof(JumpingBrain));
+		brainMap.Add(Task.CLIMBING, typeof(ClimbingBrain));
 
 	}
 	

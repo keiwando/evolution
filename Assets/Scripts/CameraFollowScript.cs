@@ -11,12 +11,17 @@ public class CameraFollowScript : MonoBehaviour {
 
 	public int currentlyWatchingIndex;
 
+	public bool DiagonalLock = false;
+
 	private Camera camera;
+
+	private Vector3 startPos;
 
 	// Use this for initialization
 	void Start () {
 
 		camera = GetComponent<Camera>();
+		startPos = camera.transform.position;
 
 		toFollow = GameObject.Find("Creature").GetComponent<Creature>();
 
@@ -24,12 +29,17 @@ public class CameraFollowScript : MonoBehaviour {
 			SwitchToMiniViewport();
 		}
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 
 		Vector3 newPos = transform.position;
 		newPos.x = toFollow.GetXPosition();
+
+		if (DiagonalLock) {
+			newPos.y = (newPos.x - startPos.x) + startPos.y;
+		}
+
 		transform.position = newPos;
 	}
 
@@ -40,5 +50,6 @@ public class CameraFollowScript : MonoBehaviour {
 	public void SwitchToFullscreen() {
 		camera.targetTexture = null;
 	}
+
 
 }

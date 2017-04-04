@@ -128,6 +128,7 @@ public class ButtonManager : MonoBehaviour {
 
 			case "RUNNING": return Evolution.Task.RUNNING; break;
 			case "JUMPING": return Evolution.Task.JUMPING; break;
+			case "OBSTACLE JUMP": return Evolution.Task.OBSTACLE_JUMP; break;
 			case "CLIMBING": return Evolution.Task.CLIMBING; break;
 
 			default: return Evolution.Task.RUNNING;
