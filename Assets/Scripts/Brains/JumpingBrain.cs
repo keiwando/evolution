@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class JumpingBrain : Brain {
 
@@ -50,6 +51,8 @@ public class JumpingBrain : Brain {
 	protected override void UpdateInputs (){
 
 		// distance from ground
+		Assert.IsNotNull(creature, "Creature is null");
+		Assert.IsNotNull(inputs, "Input array is null");
 		inputs[0][0] = creature.DistanceFromGround();
 		maxHeightJumped = Mathf.Max(inputs[0][0], maxHeightJumped);
 		// horizontal velocity

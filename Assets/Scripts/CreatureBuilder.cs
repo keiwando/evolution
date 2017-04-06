@@ -588,7 +588,7 @@ public class CreatureBuilder : MonoBehaviour {
 
 		while(!loadingOperation.isDone){
 
-			print(loadingOperation.progress);
+			//print(loadingOperation.progress);
 			yield return null;
 		}
 			

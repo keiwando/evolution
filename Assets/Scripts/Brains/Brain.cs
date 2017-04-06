@@ -264,7 +264,7 @@ abstract public class Brain : MonoBehaviour {
 
 			weightMatrices = new float[NUMBER_OF_LAYERS - 1][][]; //new float[NUMBER_OF_LAYERS - 1];
 			for (int i = 0; i < NUMBER_OF_LAYERS - 1; i++) {
-				print("layersize: index: " + i + " size: " + layerSizes[i+1]);
+				//print("layersize: index: " + i + " size: " + layerSizes[i+1]);
 				weightMatrices[i] = RandomMatrixCreate(layerSizes[i], layerSizes[i+1]);
 			}
 		} else {

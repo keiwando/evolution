@@ -43,7 +43,7 @@ abstract public class Hoverable: MonoBehaviour {
 	}
 
 	void OnMouseExit() {
-
+		
 		hovering = false;
 
 		GetComponent<Renderer>().material.SetColor("_EmissionColor", defaultEmissionColor);

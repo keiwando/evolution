@@ -53,6 +53,8 @@ public class CreatureSaver {
 	public static void SetupPlayerPrefs() {
 
 		//PlayerPrefs.DeleteAll();
+		// Debug
+		//Debug.Log(PlayerPrefs.GetString("SPRING"));
 
 		var added = new List<string>();
 
@@ -321,11 +323,5 @@ public class CreatureSaver {
 	private static bool IsWebGL() {
 		return Application.platform == RuntimePlatform.WebGLPlayer;
 	} 
-
-	public static void Test() {
-		GameObject cube = new GameObject();
-		cube.AddComponent<Rigidbody>();
-		cube.AddComponent<MeshRenderer>();
-	}
 
 }

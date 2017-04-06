@@ -170,6 +170,15 @@ public class Creature : MonoBehaviour {
 		return count;
 	}
 
+	public void AddObstacleCollidingJointsToSet(HashSet<Joint> collidedJoints) {
+		foreach (var joint in joints) {
+			if (joint.isCollidingWithObstacle) {
+				collidedJoints.Add(joint);
+			}
+		}
+		//print(string.Format("Percentage of collided joints: {0}%", ((float)collidedJoints.Count/joints.Count) * 100f)); 
+	}
+
 	public float GetRotation() {
 
 		if (bones.Count == 0) return 0;

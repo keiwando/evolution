@@ -138,7 +138,10 @@ public class Joint : BodyComponent {
 
 	void OnTriggerExit(Collider collider) {
 
-		isCollidingWithGround = false;
-		isCollidingWithObstacle = false;
+		if (collider.tag.ToUpper() == "OBSTACLE") 
+			isCollidingWithObstacle = false;
+		else
+			isCollidingWithGround = false;
+		
 	}
 }
