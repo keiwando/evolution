@@ -78,7 +78,7 @@ public class ObstacleJumpingBrain : Brain {
 		inputs[0][4] = creature.GetNumberOfPointsTouchingGround();
 		// creature rotation
 		inputs[0][5] = creature.GetRotation();
-		// TODO: distance from obstacle
+		// distance from obstacle
 		inputs[0][6] = creature.GetDistanceFromObstacle();
 	}
 }
