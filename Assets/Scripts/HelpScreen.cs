@@ -6,7 +6,8 @@ public class HelpScreen : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+		this.gameObject.SetActive(false);
+		this.gameObject.SetActive(true);
 	}
 	
 	// Update is called once per frame
