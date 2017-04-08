@@ -88,11 +88,11 @@ public class ButtonManager : MonoBehaviour {
 	}
 
 	public int GetPopulationInput() {
-		return Int32.Parse(generationNumberInput.text);
+		return Mathf.Clamp(Int32.Parse(generationNumberInput.text), 2, 10000000);
 	}
 
 	public int GetSimulationTime() {
-		return Int32.Parse(generationTimeInput.text);
+		return Mathf.Clamp(Int32.Parse(generationTimeInput.text), 1, 100000);
 	}
 
 

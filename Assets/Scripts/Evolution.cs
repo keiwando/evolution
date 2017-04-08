@@ -40,11 +40,7 @@ public class Evolution : MonoBehaviour {
 
 	public int PopulationSize {
 		set { 
-			if (value % 2 == 0) {
-				POPULATION_SIZE = value;
-			} else {
-				POPULATION_SIZE = value + 1;	
-			}
+			POPULATION_SIZE = value + (value % 2);
 		}
 		get { return POPULATION_SIZE; }
 	}
