@@ -36,8 +36,8 @@ public class ClimbingBrain : Brain {
 		MAX_HEIGHT *= SimulationTime / 10f;
 		// The fitness for the climbing task is made up of the final distance from the ground.
 		fitness = Mathf.Clamp((creature.DistanceFromFlatFloor() / MAX_HEIGHT) + 0.5f, 0f, 1f);
-		print(string.Format("Climbing fitness: {0}",fitness));
-		print(string.Format("Distance from floor: {0}", creature.DistanceFromFlatFloor()));
+		//print(string.Format("Climbing fitness: {0}",fitness));
+		//print(string.Format("Distance from floor: {0}", creature.DistanceFromFlatFloor()));
 	}
 
 	/*Inputs:
