@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 public class ButtonManager : MonoBehaviour {
 
+	private static int DEFAULT_POPULATION_COUNT = 10;
+	private static int IOS_DEFAULT_POPULATION_COUNT = 5;
+
 	[SerializeField] private InputField generationNumberInput;
 	[SerializeField] private InputField generationTimeInput;
 
@@ -83,7 +86,12 @@ public class ButtonManager : MonoBehaviour {
 	}
 
 	private void SetupDefaultNumbers() {
-		generationNumberInput.text = "10";
+
+		if (Application.platform == RuntimePlatform.IPhonePlayer) 
+			generationNumberInput.text = IOS_DEFAULT_POPULATION_COUNT.ToString();
+		else 
+			generationNumberInput.text = DEFAULT_POPULATION_COUNT.ToString();
+		
 		generationTimeInput.text = "10";
 	}
 

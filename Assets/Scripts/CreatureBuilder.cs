@@ -112,6 +112,17 @@ public class CreatureBuilder : MonoBehaviour {
 		HandleKeyboardInput();
 	}
 
+	private bool isPointerOverUIObject(){
+
+		PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+		eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+		List<RaycastResult> results = new List<RaycastResult>();
+		EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+
+		return results.Count > 0;
+	}
+
 	/// <summary>
 	/// Checks for click / touch events and handles them appropiately depending on the 
 	/// currently selected body part.
@@ -121,6 +132,7 @@ public class CreatureBuilder : MonoBehaviour {
 		if ( Input.GetMouseButtonDown(0) ) { 	// user clicked
 
 			if (EventSystem.current.IsPointerOverGameObject()) return;
+			if (isPointerOverUIObject()) return;
 			
 			if (selectedPart == BodyPart.Joint) {			// Place a JOINT
 				PlaceJoint(ScreenToWorldPoint(Input.mousePosition));
