@@ -358,6 +358,20 @@ public class CreatureBuilder : MonoBehaviour {
 		SetShouldHighlight(muscles, false);
 	}
 
+	private void ResetHoverableColliders() {
+
+		ResetHoverableColliders(joints);
+		ResetHoverableColliders(bones);
+	}
+
+	private void ResetHoverableColliders<T>(List<T> hoverables) where T: Hoverable {
+
+		foreach (Hoverable hov in hoverables) {
+
+			hov.ResetHitbox();
+		}
+	} 
+
 	private void SetMouseHoverTexture(Texture2D texture) {
 
 		foreach (Joint joint in joints) {
@@ -574,6 +588,8 @@ public class CreatureBuilder : MonoBehaviour {
 
 		// don't attempt evolution if there is no creature
 		if (joints.Count == 0) return;
+
+		ResetHoverableColliders();
 
 		CreatureSaver.SaveCurrentCreature(joints, bones, muscles);
 

@@ -3,7 +3,21 @@ using System.Collections;
 
 abstract public class Hoverable: MonoBehaviour {
 
-	public bool shouldHighlight;
+	public bool shouldHighlight {
+		set {
+			_shouldHighlight = value;
+
+
+			#if (UNITY_ANDROID || UNITY_IOS) 
+			if (_shouldHighlight) {
+				//ResetHitbox();
+				EnlargeHitbox();
+			}
+			#endif
+		}
+		get { return _shouldHighlight; }
+	}
+	private bool _shouldHighlight;
 
 	/** Specifies whether the mouse is hovering over the object. */
 	public bool hovering { get; private set; }
@@ -20,6 +34,11 @@ abstract public class Hoverable: MonoBehaviour {
 	private Color highlightEmissionColor;
 	private Color defaultEmissionColor;
 
+	// Mobile input adjustments
+	private const float hitBoxIncrease = 2f; 
+	private float defaultColliderRadius = 0.5f; 
+	private bool isEnlarged = false;
+
 	public virtual void Start() {
 
 		defaultShader = Shader.Find("Standard");
@@ -27,6 +46,14 @@ abstract public class Hoverable: MonoBehaviour {
 
 		highlightEmissionColor = new Color(0.7132353f, 0.5433174f, 0.2884408f, 1f);
 		defaultEmissionColor = GetComponent<Renderer>().material.GetColor("_EmissionColor");
+
+
+
+		#if (UNITY_ANDROID || UNITY_IOS) 
+
+		// increase the size of the hovering hitbox for easier creature building
+		//EnlargeHitbox();
+		#endif
 	}
 
 	void OnMouseOver() {
@@ -49,4 +76,53 @@ abstract public class Hoverable: MonoBehaviour {
 		GetComponent<Renderer>().material.SetColor("_EmissionColor", defaultEmissionColor);
 		Cursor.SetCursor(null, Vector2.zero, cursorMode);
 	}
+
+	public void EnlargeHitbox() {
+
+		if (isEnlarged) return;
+
+		isEnlarged = true;
+
+		var capsuleCollider = GetComponent<CapsuleCollider>();
+
+		if ( capsuleCollider == null ) {
+
+			var sphereCollider = GetComponent<SphereCollider>();
+
+			if (sphereCollider != null) {
+
+				defaultColliderRadius = sphereCollider.radius;
+				sphereCollider.radius *= hitBoxIncrease;
+			}
+		} else {
+
+			defaultColliderRadius = capsuleCollider.radius;
+			capsuleCollider.radius *= hitBoxIncrease;
+		}
+
+	}
+
+	public void ResetHitbox() {
+
+		isEnlarged = false;
+
+		print("collider size reset");
+
+		var capsuleCollider = GetComponent<CapsuleCollider>();
+
+		if ( capsuleCollider == null ) {
+
+			var sphereCollider = GetComponent<SphereCollider>();
+
+			if (sphereCollider != null) {
+
+				sphereCollider.radius = defaultColliderRadius;
+			}
+		} else {
+			
+			capsuleCollider.radius = defaultColliderRadius;
+		}
+	}
+
+
 }
