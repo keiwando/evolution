@@ -20,6 +20,10 @@ public class ViewController : MonoBehaviour {
 	[SerializeField] private GameObject AutoplaySettings;
 	[SerializeField] private Text AutoplayDurationLabel;
 
+	[SerializeField] private Text SavedLabel;
+	private Color savedLabelColor;
+	private Coroutine savedLabelFadeRoutine;
+
 	private Evolution evolution;
 
 	// Use this for initialization
@@ -28,6 +32,7 @@ public class ViewController : MonoBehaviour {
 		evolution = GameObject.Find("Evolution").GetComponent<Evolution>();
 
 		ErrorMessageColor = BCErrorMessage.color;
+		savedLabelColor = SavedLabel.color;
 	}
 	
 	// Update is called once per frame
@@ -118,5 +123,58 @@ public class ViewController : MonoBehaviour {
 
 	public void GoBackToCreatureBuilding() {
 		evolution.GoBackToCreatureBuilding();
+	}
+
+	public void SaveSimulation() {
+
+		evolution.SaveSimulation();
+
+		ShowSavedLabel();
+	}
+
+	private void ShowSavedLabel() {
+		
+		SavedLabel.gameObject.SetActive(true);
+
+		if (savedLabelFadeRoutine != null) {
+			StopCoroutine(savedLabelFadeRoutine);	
+		}
+
+		StartCoroutine(WaitBeforeSavedLabelFadeOut(1));
+	}
+
+	private void HideSavedLabel() {
+
+		SavedLabel.gameObject.SetActive(false);
+
+		if (savedLabelFadeRoutine != null) {
+			StopCoroutine(savedLabelFadeRoutine);	
+		}
+	}
+
+	private IEnumerator WaitBeforeSavedLabelFadeOut(int seconds) {
+
+		yield return new WaitForSeconds(seconds);
+
+		savedLabelFadeRoutine = StartCoroutine(FadeOutSavedLabel(3.5f));
+	}
+
+	private IEnumerator FadeOutSavedLabel(float duration) {
+
+		float start = Time.time;
+		float elapsed = 0f;
+
+		while (elapsed < duration) {
+
+			elapsed = Time.time - start;
+			float normalizedTime = Mathf.Clamp(elapsed / duration, 0, 1);
+
+			SavedLabel.color = Color.Lerp(savedLabelColor, Color.clear, normalizedTime);
+
+			yield return null;
+		}
+
+		SavedLabel.gameObject.SetActive(false);
+		SavedLabel.color = savedLabelColor;
 	}
 }

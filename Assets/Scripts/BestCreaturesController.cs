@@ -67,6 +67,10 @@ public class BestCreaturesController : MonoBehaviour {
 		
 	}
 
+	public void ShowBCThumbScreen() {
+		BCThumbScreen.gameObject.SetActive(true);
+	}
+
 	/// <summary>
 	/// Shows the best creatures "scene".
 	/// </summary>
@@ -104,6 +108,16 @@ public class BestCreaturesController : MonoBehaviour {
 			ShowBestCreature(1);
 		}
 	}
+
+	/// <summary>
+	/// Only call this when loading a saved evolution simulation.
+	/// </summary>
+	public void RunBestCreatures(int generation) {
+
+		currentGeneration = generation;
+
+		ShowBestCreature(generation);
+	} 
 
 	/// <summary>
 	/// This function is called when the user finished selecting a new generation to show. 
@@ -236,4 +250,26 @@ public class BestCreaturesController : MonoBehaviour {
 		viewController.UpdateAutoPlayDurationLabel(value);
 	}
 
+	public void SetBestChromosomes(List<ChromosomeInfo> bestChroms) {
+
+		BestCreatures.Clear();
+		BestFitness.Clear();
+
+		foreach (var chromosomeInfo in bestChroms) {
+
+			BestCreatures.Add(chromosomeInfo.chromosome);
+			BestFitness.Add(chromosomeInfo.fitness);
+		}
+	}
+
+	public List<ChromosomeInfo> GetBestChromosomes() {
+
+		var bestChroms = new List<ChromosomeInfo>();
+
+		for (int i = 0; i < BestCreatures.Count; i++) {
+			bestChroms.Add(new ChromosomeInfo(BestCreatures[i], BestFitness[i]));
+		}
+
+		return bestChroms;
+	}
 }

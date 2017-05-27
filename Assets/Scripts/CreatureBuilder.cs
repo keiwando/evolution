@@ -577,10 +577,25 @@ public class CreatureBuilder : MonoBehaviour {
 	/** Generates a creature and brings it to the testScene. */
 	public void TakeCreatureToTestScene() {
 
+		/*Creature creature = BuildCreature();
+		DontDestroyOnLoad(creature.gameObject);
+
+		SceneManager.LoadScene("TestingScene");*/
+	}
+
+	/// <summary>
+	/// Creates the creature and attached it to the evolution.
+	/// </summary>
+	public void AttachCreatureToEvolution(Evolution evolution) {
+
+		ResetHoverableColliders();
+
+		CreatureSaver.SaveCurrentCreature(lastCreatureName, joints, bones, muscles);
+
 		Creature creature = BuildCreature();
 		DontDestroyOnLoad(creature.gameObject);
 
-		SceneManager.LoadScene("TestingScene");
+		evolution.creature = creature;
 	}
 
 	/** Generates a creature and starts the evolution simulation. */
@@ -591,7 +606,7 @@ public class CreatureBuilder : MonoBehaviour {
 
 		ResetHoverableColliders();
 
-		CreatureSaver.SaveCurrentCreature(joints, bones, muscles);
+		CreatureSaver.SaveCurrentCreature(lastCreatureName, joints, bones, muscles);
 
 		Creature creature = BuildCreature();
 		DontDestroyOnLoad(creature.gameObject);
@@ -624,6 +639,37 @@ public class CreatureBuilder : MonoBehaviour {
 		print("Starting Evolution");
 		evolution.StartEvolution();
 	}
+
+	/// <summary>
+	/// Changes to the evolution scene for continuing a saved simulation.
+	/// </summary>
+	public void ContinueEvolution(Evolution evolution, Action completion) {
+
+		AttachCreatureToEvolution(evolution);
+
+		AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
+		sceneLoading.allowSceneActivation = true;
+		DontDestroyOnLoad(evolution.gameObject);
+
+		StartCoroutine(WaitForEvolutionSceneToLoadForLoad(sceneLoading, completion));
+		DontDestroyOnLoad(this);
+	}
+
+	IEnumerator WaitForEvolutionSceneToLoadForLoad(AsyncOperation loadingOperation, Action completion) {
+
+		while(!loadingOperation.isDone){
+
+			//print(loadingOperation.progress);
+			yield return null;
+		}
+
+		Destroy(this.gameObject);
+		print("Continuing Evolution");
+
+		completion();
+
+	}
+
 
 	public void PromptCreatureSave() {
 		saveDialog.gameObject.SetActive(true);

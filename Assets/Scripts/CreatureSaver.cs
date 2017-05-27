@@ -35,7 +35,9 @@ public class CreatureSaver {
 	private static string[] SPLIT_ARRAY = new string[]{ COMPONENT_SEPARATOR };
 
 	private static string CURRENT_SAVE_KEY = "_CurrentCreatureSave";
+	private static string CURRENT_CREATURE_NAME_KEY = "_CurrentCreatureName";
 	private static string CREATURE_NAMES_KEY = "_CreatureNames";
+
 
 	private static string RESOURCE_PATH = Path.Combine(Application.dataPath, "Resources");
 
@@ -214,7 +216,7 @@ public class CreatureSaver {
 	/// <summary>
 	/// Loads a creature from the contents of a save file.
 	/// </summary>
-	private static void LoadCreatureFromContents(string contents, CreatureBuilder builder) {
+	public static void LoadCreatureFromContents(string contents, CreatureBuilder builder) {
 
 		BodyComponent.ResetID();
 		var components = contents.Split(SPLIT_ARRAY, System.StringSplitOptions.None);
@@ -277,6 +279,15 @@ public class CreatureSaver {
 		LoadCreatureFromContents(contents, builder);
 	}
 
+	/// <summary>
+	/// Returns the save data of the current creature.
+	/// </summary>
+	/// <returns>The current creature data.</returns>
+	public static string GetCurrentCreatureData() {
+
+		return PlayerPrefs.GetString(CURRENT_SAVE_KEY, "");
+	}
+
 	private static string CreateSaveInfoFromCreature(List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
 
 		var content = "";
@@ -298,12 +309,14 @@ public class CreatureSaver {
 		return content;
 	}
 
-	public static void SaveCurrentCreature(List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
+	public static void SaveCurrentCreature(string name, List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
 
 		var content = CreateSaveInfoFromCreature(joints, bones, muscles);
 
 		//if (IsWebGL()) {
 		SaveCurrentCreaturePP(content);
+
+		SaveCurrentCreatureName(name);
 		return;
 		//}
 		/*
@@ -314,6 +327,14 @@ public class CreatureSaver {
 		path = Path.Combine(path, filename);
 
 		File.WriteAllText(path, content);*/
+	}
+
+	private static void SaveCurrentCreatureName(string name) {
+		PlayerPrefs.SetString(CURRENT_CREATURE_NAME_KEY, name);
+	}
+
+	public static string GetCurrentCreatureName() {
+		return PlayerPrefs.GetString(CURRENT_CREATURE_NAME_KEY, "Creature");
 	}
 
 	private static void SaveCurrentCreaturePP(string content) {

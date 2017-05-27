@@ -9,10 +9,33 @@ using System;
 public class Evolution : MonoBehaviour {
 
 	public enum Task {
-		RUNNING,
-		JUMPING,
-		OBSTACLE_JUMP,
-		CLIMBING
+		RUNNING = 0,
+		JUMPING = 1,
+		OBSTACLE_JUMP = 2,
+		CLIMBING = 3
+	}
+
+	// TODO: Rewrite this whole logic
+	public static Task TaskForNumber(int n) {
+		switch(n) {
+		case 0: return Task.RUNNING; break;
+		case 1: return Task.JUMPING; break;
+		case 2: return Task.OBSTACLE_JUMP; break;
+		case 3: return Task.CLIMBING; break;
+		}
+
+		return Task.RUNNING;
+	}
+
+	public static string TaskToString(Task task) {
+		switch(task) {
+		case Task.RUNNING: return "Running";
+		case Task.JUMPING: return "Jumping"; 
+		case Task.OBSTACLE_JUMP: return "ObstacleJump";
+		case Task.CLIMBING: return "Climbing";
+		}
+
+		return "Running";
 	}
 
 	public static Task task;
@@ -161,6 +184,54 @@ public class Evolution : MonoBehaviour {
 			}
 			lastMuscle = creature.muscles[0];
 		}
+	}
+
+	/// <summary>
+	/// Continues the evolution from the save state. 
+	/// 
+	/// This function call has to replace calls to StartEvolution (and therefore also SetupEvolution) when a simulation would be started
+	/// from the beginning.
+	/// 
+	/// </summary>
+	/// <param name="generationNum">The generation number that the simulation should continue at from.</param>
+	/// <param name="timePerGen">The time for each generation simulation.</param>
+	/// <param name="bestChromosomes">The list of best chromosomes of the already simluated generations.</param>
+	/// <param name="currentChromosomes">A list of chromosomes of creatures of the last (current) generation.</param>
+	public void ContinueEvolution(int generationNum, int timePerGen, List<ChromosomeInfo> bestChromosomes, List<string> currentChromosomes) {
+
+		viewController = GameObject.Find("ViewController").GetComponent<ViewController>();
+		Assert.IsNotNull(viewController);
+
+		this.currentGenerationNumber = generationNum;
+		this.SimulationTime = timePerGen;
+
+		this.currentChromosomes = currentChromosomes.ToArray();
+		this.POPULATION_SIZE = currentChromosomes.Count;
+
+		creature.Alive = false;
+		running = true;
+
+		viewController.UpdateGeneration(generationNum);
+
+		// Setup Evolution call
+		CalculateDropHeight();
+
+		BCController = GameObject.Find("Best Creature Controller").GetComponent<BestCreaturesController>();
+		BCController.dropHeight = dropHeight;
+		BCController.Creature = creature;
+
+		BCController.SetBestChromosomes(bestChromosomes);
+		BCController.ShowBCThumbScreen();
+		BCController.RunBestCreatures(generationNum - 1);
+
+		currentGeneration = CreateGeneration();
+
+		SimulateGeneration();
+
+
+		creature.gameObject.SetActive(false);
+
+		Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
 	}
 
 	/** Starts the Evolution for the current */
@@ -431,5 +502,17 @@ public class Evolution : MonoBehaviour {
 		foreach (var creature in currentGeneration) {
 			creature.Obstacle = obstacle;
 		}
+	}
+
+	public void SaveSimulation() {
+
+		if (currentGenerationNumber == 1) return;
+
+		var creatureName = CreatureSaver.GetCurrentCreatureName();
+		var creatureSaveData = CreatureSaver.GetCurrentCreatureData();
+		var bestChromosomes = BCController.GetBestChromosomes();
+		var currentChromosomes = new List<string>(this.currentChromosomes);
+
+		EvolutionSaver.WriteSaveFile(creatureName, task, SIMULATION_TIME, currentGenerationNumber, creatureSaveData, bestChromosomes, currentChromosomes); 
 	}
 }
