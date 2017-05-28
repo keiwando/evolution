@@ -42,7 +42,7 @@ public class EvolutionSaver {
 	//private static string CURRENT_SAVE_KEY = "_CurrentCreatureSave";
 	//private static string CREATURE_NAMES_KEY = "_CreatureNames";
 
-	private static string RESOURCE_PATH = Path.Combine(Application.dataPath, "Resources");
+	private static string RESOURCE_PATH = Path.Combine(Application.persistentDataPath, SAVE_FOLDER);
 
 	/// <summary>
 	/// Saves the given information about an evolution simulation of a creature in a file, so that
@@ -83,7 +83,7 @@ public class EvolutionSaver {
 		}
 		stringBuilder.Append(COMPONENT_SEPARATOR);
 
-		var path = Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
+		var path = RESOURCE_PATH; //Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
 		path = Path.Combine(path, filename);
 
 		File.WriteAllText(path, stringBuilder.ToString());
@@ -96,7 +96,7 @@ public class EvolutionSaver {
 		}
 
 		// check if the file exists
-		var path = Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
+		var path = RESOURCE_PATH; //Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
 		path = Path.Combine(path, filename);
 
 		var reader = new StreamReader(path);
@@ -149,11 +149,17 @@ public class EvolutionSaver {
 	/// <returns>The evolution save filenames.</returns>
 	public static List<string> GetEvolutionSaveFilenames() {
 
-		var info = new DirectoryInfo(Path.Combine(RESOURCE_PATH, SAVE_FOLDER));
+		CreateSaveFolder();
+
+		//var info = new DirectoryInfo(Path.Combine(RESOURCE_PATH, SAVE_FOLDER));
+		var info = new DirectoryInfo(RESOURCE_PATH);
 		var fileInfo = info.GetFiles();
 		var names = new HashSet<string>();
 
-		foreach (FileInfo file in fileInfo) {
+		var filesList = new List<FileInfo>(fileInfo);
+		filesList.Sort((f1,f2) => f2.CreationTime.CompareTo(f1.CreationTime)); // Sort descending
+
+		foreach (FileInfo file in filesList) {
 
 			if (file.Name.Contains(".txt")) {
 
@@ -167,5 +173,9 @@ public class EvolutionSaver {
 		}
 
 		return filenames;
+	}
+
+	private static void CreateSaveFolder() {
+		Directory.CreateDirectory(RESOURCE_PATH);
 	}
 }

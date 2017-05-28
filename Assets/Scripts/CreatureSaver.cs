@@ -56,7 +56,7 @@ public class CreatureSaver {
 
 		//PlayerPrefs.DeleteAll();
 		// Debug
-		//Debug.Log(PlayerPrefs.GetString("SPRING"));
+		//PrintCreatureData("FROGGER");
 
 		var added = new List<string>();
 
@@ -345,4 +345,13 @@ public class CreatureSaver {
 		return Application.platform == RuntimePlatform.WebGLPlayer;
 	} 
 
+	/// <summary>
+	/// Prints the creature data stored in the Playerprefs for the specified creature. Used for debugging
+	/// and manually adding stored creatures to the default creatures that come with the app.
+	/// </summary>
+	/// <param name="name">Name.</param>
+	private static void PrintCreatureData(string name) {
+		var data = PlayerPrefs.GetString(name.ToUpper(), "");
+		Debug.Log(name + " data: \n" + data);
+	}
 }
