@@ -95,6 +95,8 @@ public class EvolutionSaver {
 			filename += ".txt";
 		}
 
+		var creatureName = filename.Split('-')[0].Replace(" ", "");
+
 		// check if the file exists
 		var path = RESOURCE_PATH; //Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
 		path = Path.Combine(path, filename);
@@ -139,6 +141,7 @@ public class EvolutionSaver {
 
 		creatureBuilder.ContinueEvolution(evolution, () => {
 
+			CreatureSaver.SaveCurrentCreatureName(creatureName);
 			evolution.ContinueEvolution(currentGeneration, timePerGen, bestChromosomes, currentChromosomes);
 		});
 	}

@@ -329,7 +329,7 @@ public class CreatureSaver {
 		File.WriteAllText(path, content);*/
 	}
 
-	private static void SaveCurrentCreatureName(string name) {
+	public static void SaveCurrentCreatureName(string name) {
 		PlayerPrefs.SetString(CURRENT_CREATURE_NAME_KEY, name);
 	}
 
