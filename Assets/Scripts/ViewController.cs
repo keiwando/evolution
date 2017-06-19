@@ -132,7 +132,7 @@ public class ViewController : MonoBehaviour {
 		ShowSavedLabel();
 	}
 
-	private void ShowSavedLabel() {
+	public void ShowSavedLabel() {
 		
 		SavedLabel.gameObject.SetActive(true);
 
@@ -176,5 +176,10 @@ public class ViewController : MonoBehaviour {
 
 		SavedLabel.gameObject.SetActive(false);
 		SavedLabel.color = savedLabelColor;
+	}
+
+	public void AutoPlayToggled(bool val) {
+
+		evolution.SetAutoSaveEnabled(val);
 	}
 }

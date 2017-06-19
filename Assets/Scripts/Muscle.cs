@@ -65,10 +65,21 @@ public class Muscle : BodyComponent {
 
 	public static Muscle CreateFromString(string data, List<Bone> bones) {
 
+		var muscleID = 0;
+		var startID = 0;
+		var endID = 0;
+
 		var parts = data.Split('%');
-		var muscleID = int.Parse(parts[0]);
-		var startID = int.Parse(parts[1]);
-		var endID = int.Parse(parts[2]);
+		try {
+			muscleID = int.Parse(parts[0]);
+			startID = int.Parse(parts[1]);
+			endID = int.Parse(parts[2]);
+		
+		} catch (System.FormatException e) {
+
+			Debug.Log(string.Format("x{0}x", data));
+			throw e;
+		}
 
 		var muscle = Muscle.Create();
 		muscle.ID = muscleID;

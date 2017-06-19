@@ -43,7 +43,7 @@ public class BestCreaturesController : MonoBehaviour {
 	private int currentGeneration;
 
 	private bool autoplayEnabled = true;
-	private float autoplayDuration = 15f;
+	private float autoplayDuration = 10f;
 	private Coroutine autoplayRoutine;
 
 	public GameObject Obstacle {

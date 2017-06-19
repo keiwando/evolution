@@ -90,6 +90,9 @@ public class Evolution : MonoBehaviour {
 	// UI
 	private ViewController viewController;
 
+	// Auto-Save
+	private AutoSaver autoSaver;
+
 	// Use this for initialization
 	void Start () {
 
@@ -173,6 +176,7 @@ public class Evolution : MonoBehaviour {
 
 		Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
 
+		autoSaver = new AutoSaver();
 		//TestCopy();
 	}
 
@@ -212,6 +216,8 @@ public class Evolution : MonoBehaviour {
 		running = true;
 
 		viewController.UpdateGeneration(generationNum);
+
+		autoSaver = new AutoSaver();
 
 		// Setup Evolution call
 		CalculateDropHeight();
@@ -279,6 +285,11 @@ public class Evolution : MonoBehaviour {
 		var best = currentGeneration[0];
 		BCController.AddBestCreature(currentGenerationNumber, best.brain.ToChromosomeString(), best.brain.fitness);
 
+		var saved = autoSaver.Update(currentGenerationNumber, this);
+
+		if (saved) {
+			viewController.ShowSavedLabel();
+		}
 
 		currentChromosomes = CreateNewChromosomesFromGeneration();
 		currentGenerationNumber++;
@@ -504,15 +515,26 @@ public class Evolution : MonoBehaviour {
 		}
 	}
 
-	public void SaveSimulation() {
+	/// <summary>
+	/// Saves the simulation.
+	/// </summary>
+	/// <returns>The filename of the savefile.</returns>
+	public string SaveSimulation() {
 
-		if (currentGenerationNumber == 1) return;
+		if (currentGenerationNumber == 1) return null;
 
 		var creatureName = CreatureSaver.GetCurrentCreatureName();
 		var creatureSaveData = CreatureSaver.GetCurrentCreatureData();
 		var bestChromosomes = BCController.GetBestChromosomes();
 		var currentChromosomes = new List<string>(this.currentChromosomes);
 
-		EvolutionSaver.WriteSaveFile(creatureName, task, SIMULATION_TIME, currentGenerationNumber, creatureSaveData, bestChromosomes, currentChromosomes); 
+		return EvolutionSaver.WriteSaveFile(creatureName, task, SIMULATION_TIME, currentGenerationNumber, creatureSaveData, bestChromosomes, currentChromosomes); 
+	}
+
+	public void SetAutoSaveEnabled(bool value) {
+
+		if (autoSaver != null) {
+			autoSaver.Enabled = value;	
+		}
 	}
 }
