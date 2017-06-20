@@ -76,6 +76,10 @@ public class CreatureBuilder : MonoBehaviour {
 	/// </summary>
 	private static string lastCreatureName = "Creature";
 
+	// MARK: pinch to move the camera
+	private Vector3 lastTouchPos = Vector3.zero;
+	private bool firstMovementTouch = true;
+
 	// Use this for initialization
 	void Start () {
 
@@ -128,6 +132,35 @@ public class CreatureBuilder : MonoBehaviour {
 	/// currently selected body part.
 	/// </summary>
 	private void HandleClicks() {
+
+		// Middle click or two touches to move the camera
+		if ( (Input.GetMouseButton(2) && Input.touchCount == 0) || Input.touchCount == 2) {
+
+			//if (EventSystem.current.IsPointerOverGameObject() || isPointerOverUIObject()) return;
+
+			var position = Input.mousePosition;
+
+			if (Input.touchCount == 2) {
+
+				position = GetPinchCenter(Input.touches[0], Input.touches[1]);
+			}
+
+			position = ScreenToWorldPoint(position);
+
+			var distance = position - lastTouchPos;
+			
+			firstMovementTouch = false;
+			lastTouchPos = position;
+
+			if (firstMovementTouch) { return; }
+
+			// move the camera by the distance
+
+
+			return;
+		} else {
+			firstMovementTouch = true;
+		}
 
 		if ( Input.GetMouseButtonDown(0) ) { 	// user clicked
 
@@ -286,6 +319,18 @@ public class CreatureBuilder : MonoBehaviour {
 
 			buttonManager.selectButton(selectedPart);
 		}
+	}
+
+	private Vector3 GetPinchCenter(Vector2 touch1, Vector2 touch2) {
+
+		var center2D = 0.5f * (touch1 + touch2);
+
+		return Vector3(center2D.x, center2D.y);
+	}
+
+	private void MoveCameraByDistance(Vector3 distance) {
+
+
 	}
 
 	/**

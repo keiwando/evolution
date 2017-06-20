@@ -6,8 +6,23 @@ using System.Collections.Generic;
 
 public class ButtonManager : MonoBehaviour {
 
+	// MARK: PlayerPref keys
+
+	private const string POPULATION_COUNT_KEY = "POPULATION_COUNT";
+	private const string GENERATION_TIME_KEY = "GENERATION_TIME";
+	private const string TASK_KEY = "EVOLUTION_TASK";
+
+	private static string[] TASK_OPTIONS = new string[] {"RUNNING", "JUMPING", "OBSTACLE JUMP", "CLIMBING"};
+
 	private static int DEFAULT_POPULATION_COUNT = 10;
 	private static int IOS_DEFAULT_POPULATION_COUNT = 5;
+
+	private const float CAMERA_MAX_X = 2;
+	private const float CAMERA_MIN_X = -CAMERA_MAX_X;
+	private const float CAMERA_MAX_Y = 1;
+	private const float CAMERA_MIN_Y = -CAMERA_MAX_Y;
+
+	[Serializable] private Camera buildingCamera;
 
 	[SerializeField] private InputField generationNumberInput;
 	[SerializeField] private InputField generationTimeInput;
@@ -28,6 +43,8 @@ public class ButtonManager : MonoBehaviour {
 
 	private Dictionary<SelectableButton, CreatureBuilder.BodyPart> buttonMap;
 
+
+
 	// Use this for initialization
 	void Start () {
 
@@ -45,6 +62,7 @@ public class ButtonManager : MonoBehaviour {
 		}
 
 		SetupDefaultNumbers();
+		SetupTaskDropDown();
 		//SetupDropDown();
 	}
 	
@@ -85,22 +103,42 @@ public class ButtonManager : MonoBehaviour {
 		return options;
 	}
 
+	private void SetupTaskDropDown() {
+
+		var taskString = PlayerPrefs.GetString(TASK_KEY, "RUNNING");
+		var index = new List<string>(TASK_OPTIONS).IndexOf(taskString);
+
+		taskDropDown.value = index;
+	}
+
 	private void SetupDefaultNumbers() {
 
-		if (Application.platform == RuntimePlatform.IPhonePlayer) 
+		/*if (Application.platform == RuntimePlatform.IPhonePlayer) 
 			generationNumberInput.text = IOS_DEFAULT_POPULATION_COUNT.ToString();
 		else 
 			generationNumberInput.text = DEFAULT_POPULATION_COUNT.ToString();
-		
-		generationTimeInput.text = "10";
+			*/
+
+		generationNumberInput.text = PlayerPrefs.GetInt(POPULATION_COUNT_KEY, DEFAULT_POPULATION_COUNT).ToString();
+
+		generationTimeInput.text = PlayerPrefs.GetInt(GENERATION_TIME_KEY, 10).ToString();
+		//generationTimeInput.text = "10";
 	}
 
 	public int GetPopulationInput() {
-		return Mathf.Clamp(Int32.Parse(generationNumberInput.text), 2, 10000000);
+
+		var num = Mathf.Clamp(Int32.Parse(generationNumberInput.text), 2, 10000000);
+		PlayerPrefs.SetInt(POPULATION_COUNT_KEY, num);
+
+		return num;
 	}
 
 	public int GetSimulationTime() {
-		return Mathf.Clamp(Int32.Parse(generationTimeInput.text), 1, 100000);
+
+		var time = Mathf.Clamp(Int32.Parse(generationTimeInput.text), 1, 100000);
+		PlayerPrefs.SetInt(GENERATION_TIME_KEY, time);
+
+		return time;
 	}
 
 
@@ -132,7 +170,12 @@ public class ButtonManager : MonoBehaviour {
 	/// </summary>
 	public Evolution.Task GetTask() {
 
-		switch(taskDropDown.captionText.text.ToUpper()) {
+		var taskString = taskDropDown.captionText.text.ToUpper();
+		PlayerPrefs.SetString(TASK_KEY, taskString);
+
+		return Evolution.TaskFromString(taskString);
+
+		/*switch(taskDropDown.captionText.text.ToUpper()) {
 
 			case "RUNNING": return Evolution.Task.RUNNING; break;
 			case "JUMPING": return Evolution.Task.JUMPING; break;
@@ -140,6 +183,18 @@ public class ButtonManager : MonoBehaviour {
 			case "CLIMBING": return Evolution.Task.CLIMBING; break;
 
 			default: return Evolution.Task.RUNNING;
-		}
+		}*/
 	}
+
+	public void MoveCamera(Vector3 distance) {
+
+		var position = buildingCamera.transform.position + distance;
+
+		position.x = Mathf.Clamp(position.x, CAMERA_MIN_X, CAMERA_MAX_X);
+		position.y = Mathf.Clamp(position.y, CAMERA_MIN_Y, CAMERA_MAX_Y);
+
+		camera.transform.position = position;
+	}
+
+	//
 }

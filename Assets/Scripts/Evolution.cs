@@ -38,6 +38,19 @@ public class Evolution : MonoBehaviour {
 		return "Running";
 	}
 
+	public static Task TaskFromString(string task) {
+
+		switch(task.ToUpper()) {
+
+		case "RUNNING": return Task.RUNNING; break;
+		case "JUMPING": return Task.JUMPING; break;
+		case "OBSTACLE JUMP": return Task.OBSTACLE_JUMP; break;
+		case "CLIMBING": return Task.CLIMBING; break;
+
+		default: return Task.RUNNING;
+		}
+	}
+
 	public static Task task;
 
 	private static Dictionary<Task, System.Type> brainMap;
