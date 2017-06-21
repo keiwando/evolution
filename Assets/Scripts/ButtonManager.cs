@@ -17,12 +17,15 @@ public class ButtonManager : MonoBehaviour {
 	private static int DEFAULT_POPULATION_COUNT = 10;
 	private static int IOS_DEFAULT_POPULATION_COUNT = 5;
 
-	private const float CAMERA_MAX_X = 2;
-	private const float CAMERA_MIN_X = -CAMERA_MAX_X;
-	private const float CAMERA_MAX_Y = 1;
-	private const float CAMERA_MIN_Y = -CAMERA_MAX_Y;
+	private float CAMERA_MAX_X;
+	private float CAMERA_MIN_X;
+	private float CAMERA_MAX_Y;
+	private float CAMERA_MIN_Y;
 
-	[Serializable] private Camera buildingCamera;
+	private const float CAMERA_DX = 12f;
+	private const float CAMERA_DY = 7f;
+
+	[SerializeField] private Camera buildingCamera;
 
 	[SerializeField] private InputField generationNumberInput;
 	[SerializeField] private InputField generationTimeInput;
@@ -60,6 +63,13 @@ public class ButtonManager : MonoBehaviour {
 		foreach (SelectableButton button in buttonMap.Keys) {
 			button.manager = this;
 		}
+
+		var cameraPos = buildingCamera.transform.position;
+
+		CAMERA_MIN_X = cameraPos.x - CAMERA_DX;
+		CAMERA_MAX_X = cameraPos.x + CAMERA_DX;
+		CAMERA_MIN_Y = cameraPos.y - CAMERA_DY;
+		CAMERA_MAX_Y = cameraPos.y + CAMERA_DY;
 
 		SetupDefaultNumbers();
 		SetupTaskDropDown();
@@ -188,12 +198,13 @@ public class ButtonManager : MonoBehaviour {
 
 	public void MoveCamera(Vector3 distance) {
 
+		distance.z = 0;
 		var position = buildingCamera.transform.position + distance;
 
 		position.x = Mathf.Clamp(position.x, CAMERA_MIN_X, CAMERA_MAX_X);
 		position.y = Mathf.Clamp(position.y, CAMERA_MIN_Y, CAMERA_MAX_Y);
 
-		camera.transform.position = position;
+		buildingCamera.gameObject.transform.position = position;
 	}
 
 	//

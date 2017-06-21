@@ -142,24 +142,31 @@ public class CreatureBuilder : MonoBehaviour {
 
 			if (Input.touchCount == 2) {
 
-				position = GetPinchCenter(Input.touches[0], Input.touches[1]);
+				position = GetPinchCenter(Input.touches[0].position, Input.touches[1].position);
 			}
 
-			position = ScreenToWorldPoint(position);
+			//position = ScreenToWorldPoint(position);
 
-			var distance = position - lastTouchPos;
-			
-			firstMovementTouch = false;
+
+			var distance = lastTouchPos - position;
 			lastTouchPos = position;
 
-			if (firstMovementTouch) { return; }
+			if (firstMovementTouch) { 
+				firstMovementTouch = false;
+				return; 
+			}
+
+			firstMovementTouch = false;
 
 			// move the camera by the distance
-
+			distance = ScreenToWorldDistance(distance);
+			buttonManager.MoveCamera(distance);
 
 			return;
 		} else {
+			
 			firstMovementTouch = true;
+			lastTouchPos = Vector3.zero;
 		}
 
 		if ( Input.GetMouseButtonDown(0) ) { 	// user clicked
@@ -325,12 +332,7 @@ public class CreatureBuilder : MonoBehaviour {
 
 		var center2D = 0.5f * (touch1 + touch2);
 
-		return Vector3(center2D.x, center2D.y);
-	}
-
-	private void MoveCameraByDistance(Vector3 distance) {
-
-
+		return new Vector3(center2D.x, center2D.y);
 	}
 
 	/**
@@ -589,6 +591,14 @@ public class CreatureBuilder : MonoBehaviour {
 
 	private Vector3 ScreenToWorldPoint(Vector3 point) {
 		return Camera.main.ScreenToWorldPoint(point);
+	}
+
+	private Vector3 ScreenToWorldDistance(Vector3 distance) {
+
+		var p1 = ScreenToWorldPoint(new Vector3(0,0,0));
+		var p2 = ScreenToWorldPoint(distance);
+
+		return p2 - p1;
 	}
 
 	/** Returns the gameobject that consists of the bodyparts that have been placed in the scene */
