@@ -56,7 +56,9 @@ abstract public class Hoverable: MonoBehaviour {
 		#endif
 	}
 
-	void OnMouseOver() {
+	/*void OnMouseOver() {
+
+		print("Hovering");
 
 		hovering = true;
 
@@ -71,6 +73,29 @@ abstract public class Hoverable: MonoBehaviour {
 
 	void OnMouseExit() {
 		
+		hovering = false;
+
+		GetComponent<Renderer>().material.SetColor("_EmissionColor", defaultEmissionColor);
+		Cursor.SetCursor(null, Vector2.zero, cursorMode);
+	}*/
+
+	void OnHover() {
+		//print("OnHover");
+
+		hovering = true;
+
+		hotSpot = mouseHoverTexture == null ? Vector2.zero : new Vector2(mouseHoverTexture.width / 2, mouseHoverTexture.height / 2);
+
+		if (shouldHighlight) {
+
+			GetComponent<Renderer>().material.SetColor("_EmissionColor", highlightEmissionColor);
+			Cursor.SetCursor(mouseHoverTexture, hotSpot, cursorMode);
+		}
+	}
+
+	void OnHoverExit() {
+		print("OnHoverExit");
+
 		hovering = false;
 
 		GetComponent<Renderer>().material.SetColor("_EmissionColor", defaultEmissionColor);
@@ -106,7 +131,7 @@ abstract public class Hoverable: MonoBehaviour {
 
 		isEnlarged = false;
 
-		print("collider size reset");
+		//print("collider size reset");
 
 		var capsuleCollider = GetComponent<CapsuleCollider>();
 
