@@ -71,7 +71,7 @@ public class ButtonManager : MonoBehaviour {
 		CAMERA_MIN_Y = cameraPos.y - CAMERA_DY;
 		CAMERA_MAX_Y = cameraPos.y + CAMERA_DY;
 
-		SetupDefaultNumbers();
+		SetupInputFields();
 		SetupTaskDropDown();
 		//SetupDropDown();
 	}
@@ -121,6 +121,19 @@ public class ButtonManager : MonoBehaviour {
 		taskDropDown.value = index;
 	}
 
+	private void SetupInputFields() {
+
+		generationNumberInput.onEndEdit.AddListener(delegate {
+			PopulationSizeChanged();
+		});
+
+		generationTimeInput.onEndEdit.AddListener(delegate {
+			SimulationTimeChanged();
+		});
+
+		SetupDefaultNumbers();
+	}
+
 	private void SetupDefaultNumbers() {
 
 		/*if (Application.platform == RuntimePlatform.IPhonePlayer) 
@@ -149,6 +162,18 @@ public class ButtonManager : MonoBehaviour {
 		PlayerPrefs.SetInt(GENERATION_TIME_KEY, time);
 
 		return time;
+	}
+
+	public void PopulationSizeChanged() {
+		// Make sure the size is at least 2
+		var num = Mathf.Clamp(Int32.Parse(generationNumberInput.text), 2, 10000000);
+		generationNumberInput.text = num.ToString();
+	}
+
+	public void SimulationTimeChanged() {
+		// Make sure the time is at least 1
+		var time = Mathf.Clamp(Int32.Parse(generationTimeInput.text), 1, 100000);
+		generationTimeInput.text = time.ToString();
 	}
 
 
