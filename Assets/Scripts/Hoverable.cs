@@ -94,7 +94,7 @@ abstract public class Hoverable: MonoBehaviour {
 	}
 
 	void OnHoverExit() {
-		print("OnHoverExit");
+		//print("OnHoverExit");
 
 		hovering = false;
 

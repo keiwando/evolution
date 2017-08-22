@@ -52,10 +52,17 @@ public class Joint : BodyComponent {
 
 		//joints 
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	/// <summary>
+	/// Moves the joint to the specified position and updates all of the connected objects.
+	/// </summary>
+	public void MoveTo(Vector3 newPosition) {
+
+		transform.position = newPosition;
+
+		foreach (var connectedBone in joints.Keys) {
+			connectedBone.RefreshBonePlacement();
+		}
 	}
 
 	/** Connects a Bone to the gameobject with a hinge joint. */

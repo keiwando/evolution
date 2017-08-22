@@ -34,6 +34,7 @@ public class ButtonManager : MonoBehaviour {
 	public SelectableButton boneButton;
 	public SelectableButton muscleButton;
 
+	public SelectableButton moveButton;
 	public SelectableButton deleteButton;
 
 	public SelectableButton selectedButton;
@@ -44,19 +45,20 @@ public class ButtonManager : MonoBehaviour {
 
 	public Dropdown taskDropDown;
 
-	private Dictionary<SelectableButton, CreatureBuilder.BodyPart> buttonMap;
+	private Dictionary<SelectableButton, CreatureBuilder.BuildSelection> buttonMap;
 
 
 
 	// Use this for initialization
 	void Start () {
 
-		buttonMap = new Dictionary<SelectableButton, CreatureBuilder.BodyPart>();
+		buttonMap = new Dictionary<SelectableButton, CreatureBuilder.BuildSelection>();
 
-		buttonMap.Add(jointButton, CreatureBuilder.BodyPart.Joint);
-		buttonMap.Add(boneButton, CreatureBuilder.BodyPart.Bone);
-		buttonMap.Add(muscleButton, CreatureBuilder.BodyPart.Muscle);
-		buttonMap.Add(deleteButton, CreatureBuilder.BodyPart.None);
+		buttonMap.Add(jointButton, CreatureBuilder.BuildSelection.Joint);
+		buttonMap.Add(boneButton, CreatureBuilder.BuildSelection.Bone);
+		buttonMap.Add(muscleButton, CreatureBuilder.BuildSelection.Muscle);
+		buttonMap.Add(deleteButton, CreatureBuilder.BuildSelection.Delete);
+		buttonMap.Add(moveButton, CreatureBuilder.BuildSelection.Move);
 
 		selectedButton.Selected = true;
 
@@ -189,7 +191,7 @@ public class ButtonManager : MonoBehaviour {
 		}
 	}
 
-	public void selectButton(CreatureBuilder.BodyPart part) {
+	public void selectButton(CreatureBuilder.BuildSelection part) {
 		
 		foreach ( SelectableButton button in buttonMap.Keys) {
 			
@@ -209,16 +211,6 @@ public class ButtonManager : MonoBehaviour {
 		PlayerPrefs.SetString(TASK_KEY, taskString);
 
 		return Evolution.TaskFromString(taskString);
-
-		/*switch(taskDropDown.captionText.text.ToUpper()) {
-
-			case "RUNNING": return Evolution.Task.RUNNING; break;
-			case "JUMPING": return Evolution.Task.JUMPING; break;
-			case "OBSTACLE JUMP": return Evolution.Task.OBSTACLE_JUMP; break;
-			case "CLIMBING": return Evolution.Task.CLIMBING; break;
-
-			default: return Evolution.Task.RUNNING;
-		}*/
 	}
 
 	public void MoveCamera(Vector3 distance) {

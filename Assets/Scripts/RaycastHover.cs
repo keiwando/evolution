@@ -40,10 +40,16 @@ public class RaycastHover : MonoBehaviour {
 	}
 
 	private void SendOnHover(Collider collider) {
+
+		if (collider == null || collider.gameObject == null) return;
+
 		collider.SendMessage("OnHover", SendMessageOptions.DontRequireReceiver);
 	}
 
 	private void SendOnHoverExit(Collider collider) {
+
+		if (collider == null || collider.gameObject == null) return;
+
 		collider.SendMessage("OnHoverExit", SendMessageOptions.DontRequireReceiver);
 	}
 }

@@ -338,7 +338,7 @@ public class Muscle : BodyComponent {
 	public override void Delete() {
 		base.Delete();
 
-		print("Muscle deleted");
+		//print("Muscle deleted");
 
 		Destroy(spring);
 		startingJoint.Disconnect(this);

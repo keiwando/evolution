@@ -70,7 +70,7 @@ public class Bone : BodyComponent {
 
 	}
 
-	/** Places the currentBone between the specified points. (Points flattened to 2D) */
+	/** Places the bone between the specified points. (Points flattened to 2D) */
 	private void PlaceBetweenPoints(Vector3 start, Vector3 end, float width) {
 
 		// flatten the vectors to 2D
@@ -85,7 +85,20 @@ public class Bone : BodyComponent {
 		transform.position = position;
 		transform.up = offset;
 		transform.localScale = scale;
+	}
 
+	/// <summary>
+	/// Places the bone between the two joints.
+	/// </summary>
+	public void RefreshBonePlacement() {
+
+		if (startingJoint == null || endingJoint == null) return;
+
+		var width = transform.localScale.z;
+		var jPos1 = startingJoint.transform.position;
+		var jPos2 = endingJoint.transform.position;
+
+		PlaceBetweenPoints(jPos1, jPos2, width);
 	}
 
 	/** Connects the gameobject to the starting end endingJoint */

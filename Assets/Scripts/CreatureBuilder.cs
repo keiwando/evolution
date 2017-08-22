@@ -9,8 +9,9 @@ using System;
 
 public class CreatureBuilder : MonoBehaviour {
 
-	public enum BodyPart {
-		None,
+	public enum BuildSelection {
+		Delete,
+		Move,
 		Joint, 
 		Bone, 
 		Muscle
@@ -48,8 +49,8 @@ public class CreatureBuilder : MonoBehaviour {
 	/** The muscles that have been placed in the scene. */
 	private List<Muscle> muscles;
 
-	private BodyPart selectedPart;
-	public BodyPart SelectedPart {
+	private BuildSelection selectedPart;
+	public BuildSelection SelectedPart {
 		get { return selectedPart; }
 		set {
 			selectedPart = value;
@@ -60,8 +61,11 @@ public class CreatureBuilder : MonoBehaviour {
 	/** The Bone that is currently being placed. */
 	private Bone currentBone;
 
-	/** The Muscle that is currentyl being placed. */
+	/** The Muscle that is currently being placed. */
 	private Muscle currentMuscle;
+
+	/** The joint that is currently being moved. */
+	private Joint currentMovingJoint;
 
 
 	public static float CONNECTION_WIDHT = 0.5f;
@@ -91,7 +95,7 @@ public class CreatureBuilder : MonoBehaviour {
 		muscles = new List<Muscle>();
 
 		// Joints are selected by default.
-		selectedPart = BodyPart.Joint;
+		selectedPart = BuildSelection.Joint;
 
 		buttonManager.SetupDropDown();
 		//creatureSaver =  new CreatureSaver();
@@ -174,10 +178,10 @@ public class CreatureBuilder : MonoBehaviour {
 			if (EventSystem.current.IsPointerOverGameObject()) return;
 			if (isPointerOverUIObject()) return;
 			
-			if (selectedPart == BodyPart.Joint) {			// Place a JOINT
+			if (selectedPart == BuildSelection.Joint) {			// Place a JOINT
 				PlaceJoint(ScreenToWorldPoint(Input.mousePosition));
 
-			} else if (selectedPart == BodyPart.Bone ) {	// Start placing BONE
+			} else if (selectedPart == BuildSelection.Bone ) {	// Start placing BONE
 				// find the selected joint
 				Joint joint = GetHoveringObject<Joint>(joints);
 
@@ -187,7 +191,7 @@ public class CreatureBuilder : MonoBehaviour {
 					PlaceConnectionBetweenPoints(currentBone.gameObject, joint.center, ScreenToWorldPoint(Input.mousePosition), CONNECTION_WIDHT);
 				}
 
-			} else if (selectedPart == BodyPart.Muscle) {	// Start placing MUSCLE
+			} else if (selectedPart == BuildSelection.Muscle) {	// Start placing MUSCLE
 				// find the selected bone
 				Bone bone = GetHoveringObject<Bone>(bones);
 
@@ -200,7 +204,7 @@ public class CreatureBuilder : MonoBehaviour {
 					//PlaceConnectionBetweenPoints(currentMuscle.gameObject, joint.position, mousePos, CONNECTION_WIDHT);
 					currentMuscle.SetLinePoints(joint.position, mousePos);
 				}
-			} else if (selectedPart == BodyPart.None) { // Delete selected object
+			} else if (selectedPart == BuildSelection.Delete) { // Delete selected object
 
 				//UpdateDeletedObjects();
 
@@ -219,12 +223,18 @@ public class CreatureBuilder : MonoBehaviour {
 				}
 
 				//UpdateDeletedObjects();
+			} else if (selectedPart == BuildSelection.Move) {
+				// Make sure the user is hovering over a joint
+				Joint joint = GetHoveringObject<Joint>(joints);
 
+				if (joint != null) {
+					currentMovingJoint = joint;
+				}
 			}
 
 		} else if (Input.GetMouseButton(0)) {
 			// Mouse click & hold
-			if (selectedPart == BodyPart.Bone ) {
+			if (selectedPart == BuildSelection.Bone ) {
 
 				if (currentBone != null) {
 					// check if user is hovering over an ending joint which is not the same as the starting
@@ -240,7 +250,7 @@ public class CreatureBuilder : MonoBehaviour {
 					PlaceConnectionBetweenPoints(currentBone.gameObject, currentBone.startingPoint, endingPoint, CONNECTION_WIDHT);	
 				}	
 
-			} else if (selectedPart == BodyPart.Muscle) {
+			} else if (selectedPart == BuildSelection.Muscle) {
 
 				if (currentMuscle != null) {
 					// check if user is hovering over an ending joint which is not the same as the starting
@@ -265,16 +275,29 @@ public class CreatureBuilder : MonoBehaviour {
 					//PlaceConnectionBetweenPoints(currentMuscle.gameObject, currentMuscle.startingPoint, endingPoint, CONNECTION_WIDHT);
 					currentMuscle.SetLinePoints(currentMuscle.startingPoint, endingPoint);
 				}
-			}
+			
+			} else if (selectedPart == BuildSelection.Move) {
+				
+				if (currentMovingJoint != null) {
+
+					// Move the joint to the mouse position.
+					var newPoint = ScreenToWorldPoint(Input.mousePosition);
+					newPoint.z = 0;
+
+					currentMovingJoint.MoveTo(newPoint);
+				}
+			} 
 
 		} else if ( Input.GetMouseButtonUp(0) ) {
 
-			if (selectedPart == BodyPart.Bone ) {
-				
+			if (selectedPart == BuildSelection.Bone ) {
 				PlaceCurrentBone();	
-			} else if (selectedPart == BodyPart.Muscle) {
-
+			
+			} else if (selectedPart == BuildSelection.Muscle) {
 				PlaceCurrentMuscle();
+
+			} else if (selectedPart == BuildSelection.Move) {
+				currentMovingJoint = null;
 			}
 		} 
 
@@ -289,22 +312,22 @@ public class CreatureBuilder : MonoBehaviour {
 		
 			// J = place Joint
 			if (Input.GetKeyDown(KeyCode.J)) {
-				SelectedPart = BodyPart.Joint;
+				SelectedPart = BuildSelection.Joint;
 			}
 
 			// B = place body connection
 			else if (Input.GetKeyDown(KeyCode.B)) {
-				SelectedPart = BodyPart.Bone;
+				SelectedPart = BuildSelection.Bone;
 			}
 
 			// M = place muscle
 			else if (Input.GetKeyDown(KeyCode.M)) {
-				SelectedPart = BodyPart.Muscle;
+				SelectedPart = BuildSelection.Muscle;
 			}
 
 			// D = Delete component
 			else if (Input.GetKeyDown(KeyCode.D)) {
-				SelectedPart = BodyPart.None;
+				SelectedPart = BuildSelection.Delete;
 			}
 
 			// S = Save Creature
@@ -343,20 +366,20 @@ public class CreatureBuilder : MonoBehaviour {
 
 		SetMouseHoverTexture(null);
 
-		if (selectedPart == BodyPart.Joint ) {
+		if (selectedPart == BuildSelection.Joint ) {
 			// disable Highlights
 			DisableAllHoverables();
-		} else if (selectedPart == BodyPart.Bone ) {
+		} else if (selectedPart == BuildSelection.Bone || selectedPart == BuildSelection.Move) {
 			// make the joints hoverable
 			SetShouldHighlight(joints, true);
 			SetShouldHighlight(bones, false);
 			SetShouldHighlight(muscles, false);
-		} else if (selectedPart == BodyPart.Muscle ) {
+		} else if (selectedPart == BuildSelection.Muscle ) {
 			// make the bones hoverables
 			SetShouldHighlight(joints, false);
 			SetShouldHighlight(bones, true);
 			SetShouldHighlight(muscles, false);
-		} else if (selectedPart == BodyPart.None) {
+		} else if (selectedPart == BuildSelection.Delete) {
 			// make everything highlightable
 			SetShouldHighlight(joints, true);
 			SetShouldHighlight(bones, true);

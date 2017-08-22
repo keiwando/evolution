@@ -41,7 +41,7 @@ public class SelectableButton : MonoBehaviour {
 	}
 
 	public void OnClick() {
-		print("Click");
+		//print("Click");
 		manager.selectButton(this);
 	}
 
