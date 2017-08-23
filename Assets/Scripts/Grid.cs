@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour {
 
-	private const float gridAreaSize = 70; 
+	private const float gridAreaSize = 70f; 
 
 	public float Size {
 		get { return gridSize; }
@@ -21,6 +21,16 @@ public class Grid : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
+		//if (PlayerPrefs.GetInt(SettingsMenu.GRID_ENABLED_KEY, 0) == 1) {
+
+		SetupGrid();	
+		//} else {
+		//	gameObject.SetActive(false);
+		//}
+	}
+
+	public void VisualRefresh() {
 		SetupGrid();
 	}
 
@@ -34,9 +44,17 @@ public class Grid : MonoBehaviour {
 
 	private float ClosestHorizontalLine(float y) {
 
-		var k = Mathf.Floor((y - bottom) / gridSize);
+		// top - k * gridSize > x > top - (k+1) * gridSize
+
+		/*var k = Mathf.Floor((y - bottom) / gridSize);
 		var bottomY = k * gridSize + bottom;
 		var topY = bottomY + gridSize;
+
+		return y - bottomY > topY - y ? topY : bottomY;*/
+
+		var k = Mathf.Floor((top - y) / gridSize);
+		var topY = top - k * gridSize;
+		var bottomY = topY - gridSize;
 
 		return y - bottomY > topY - y ? topY : bottomY;
 	} 
@@ -125,4 +143,5 @@ public class Grid : MonoBehaviour {
 	private Vector3 Vec(float x, float y) {
 		return new Vector3(x, y, 0);
 	}
+		
 }
