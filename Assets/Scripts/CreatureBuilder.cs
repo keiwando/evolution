@@ -39,6 +39,8 @@ public class CreatureBuilder : MonoBehaviour {
 
 	public SaveDialog saveDialog;
 
+	public Grid grid;
+
 	//private CreatureSaver creatureSaver;
 
 
@@ -67,7 +69,8 @@ public class CreatureBuilder : MonoBehaviour {
 	/** The joint that is currently being moved. */
 	private Joint currentMovingJoint;
 
-
+	/// The minimum distance between two joints when they are placed (Can be moved closer together using "Move").
+	private float jointNonOverlapRadius = 0.6f;
 	public static float CONNECTION_WIDHT = 0.5f;
 	private bool TESTING_ENABLED = true;
 
@@ -179,7 +182,26 @@ public class CreatureBuilder : MonoBehaviour {
 			if (isPointerOverUIObject()) return;
 			
 			if (selectedPart == BuildSelection.Joint) {			// Place a JOINT
-				PlaceJoint(ScreenToWorldPoint(Input.mousePosition));
+
+				var pos = ScreenToWorldPoint(Input.mousePosition);
+				pos.z = 0;
+				// Grid logic
+				if (grid.gameObject.activeSelf) {
+					pos = grid.ClosestPointOnGrid(pos);
+				}
+
+				// Make sure the joint doesn't overlap another one
+				bool noOverlap = true;
+				foreach (var joint in joints) {
+					if ((joint.center - pos).magnitude < jointNonOverlapRadius) {
+						noOverlap = false;
+						break;
+					}
+				}
+
+				if (noOverlap) {
+					PlaceJoint(pos);
+				}
 
 			} else if (selectedPart == BuildSelection.Bone ) {	// Start placing BONE
 				// find the selected joint
@@ -282,6 +304,10 @@ public class CreatureBuilder : MonoBehaviour {
 
 					// Move the joint to the mouse position.
 					var newPoint = ScreenToWorldPoint(Input.mousePosition);
+
+					if (grid.gameObject.activeSelf) {
+						newPoint = grid.ClosestPointOnGrid(newPoint);
+					}
 					newPoint.z = 0;
 
 					currentMovingJoint.MoveTo(newPoint);
@@ -413,7 +439,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/// <summary>
 	/// Deletes the currently visible creature.
 	/// </summary>
-	private void DeleteCreature() {
+	public void DeleteCreature() {
 		foreach(var joint in joints) {
 			joint.Delete();
 		}
@@ -703,6 +729,7 @@ public class CreatureBuilder : MonoBehaviour {
 		StartCoroutine(WaitForEvolutionSceneToLoad(sceneLoading));
 		DontDestroyOnLoad(this);
 		//evolution.StartEvolution();
+		//Time.timeScale = 5.0f;
 	}
 
 	IEnumerator WaitForEvolutionSceneToLoad(AsyncOperation loadingOperation) {

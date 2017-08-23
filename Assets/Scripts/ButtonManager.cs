@@ -39,6 +39,9 @@ public class ButtonManager : MonoBehaviour {
 
 	public SelectableButton selectedButton;
 
+	public Button creatureDeleteButton;
+	public DeleteConfirmationDialog deleteConfirmation;
+
 	public CreatureBuilder creatureBuilder;
 
 	public Dropdown dropDown;
@@ -115,6 +118,14 @@ public class ButtonManager : MonoBehaviour {
 		return options;
 	}
 
+	public void CreatureDropdownValueChanged(Int32 index) {
+
+		var options = CreateDropDownOptions();
+		var customCreatureSelected = options[index].ToUpper() != "CREATURE";
+
+		creatureDeleteButton.gameObject.SetActive(customCreatureSelected);
+	}
+
 	private void SetupTaskDropDown() {
 
 		var taskString = PlayerPrefs.GetString(TASK_KEY, "RUNNING");
@@ -178,6 +189,32 @@ public class ButtonManager : MonoBehaviour {
 		generationTimeInput.text = time.ToString();
 	}
 
+	public void ShowCreatureDeleteButton() {
+		creatureDeleteButton.gameObject.SetActive(true);
+	}
+
+	public void HideCreatureDeleteButton() {
+		creatureDeleteButton.gameObject.SetActive(false);
+	}
+
+	public void DeleteCurrentCreatureSave() {
+
+		var selectedCreatureIndex = dropDown.value;
+		var options = CreateDropDownOptions();
+
+		var currentCreatureName = options[selectedCreatureIndex];
+
+		if (currentCreatureName.ToUpper() != "CREATURE") {
+			deleteConfirmation.ConfirmDeletionFor(currentCreatureName, delegate(string name) {
+			
+				CreatureSaver.DeleteCreatureSave(currentCreatureName);
+
+				creatureBuilder.DeleteCreature();
+				SetupDropDown();
+				dropDown.value = 0;
+			});
+		}
+	}
 
 	public void selectButton(SelectableButton button) {
 

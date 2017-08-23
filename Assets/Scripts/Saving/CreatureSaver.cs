@@ -350,6 +350,19 @@ public class CreatureSaver {
 		return Application.platform == RuntimePlatform.WebGLPlayer;
 	} 
 
+	public static void DeleteCreatureSave(string name) {
+
+		var filename = name.ToUpper();// + ".txt";
+
+		PlayerPrefs.SetString(filename, "");
+
+		var names = GetCreatureNamesFromPlayerPrefs();
+		names.Remove(filename);
+
+		var nameString = string.Join("\n", names.ToArray());
+		PlayerPrefs.SetString(CREATURE_NAMES_KEY, nameString);
+	}
+
 	/// <summary>
 	/// Prints the creature data stored in the Playerprefs for the specified creature. Used for debugging
 	/// and manually adding stored creatures to the default creatures that come with the app.

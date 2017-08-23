@@ -102,6 +102,10 @@ abstract public class Hoverable: MonoBehaviour {
 		Cursor.SetCursor(null, Vector2.zero, cursorMode);
 	}
 
+	void OnDestroy() {
+		Cursor.SetCursor(null, Vector2.zero, cursorMode);
+	}
+
 	public void EnlargeHitbox() {
 
 		if (isEnlarged) return;

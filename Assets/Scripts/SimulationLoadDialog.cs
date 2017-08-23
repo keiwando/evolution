@@ -12,6 +12,8 @@ public class SimulationLoadDialog : MonoBehaviour {
 
 	[SerializeField] private GameObject bugFixEmpty;
 
+	[SerializeField] private DeleteConfirmationDialog deleteConfirmation;
+
 	private const string NO_SAVE_FILES = "You haven't saved any simulations yet";
 
 	private bool saveFilesExist = false;
@@ -76,6 +78,24 @@ public class SimulationLoadDialog : MonoBehaviour {
 
 		dropdown.ClearOptions();
 		dropdown.AddOptions(saveFiles);
+	}
+
+	public void PromptSavefileDelete() {
+
+		var filename = dropdown.options[dropdown.value].text;
+
+		if (filename == NO_SAVE_FILES) return;
+
+		filename += ".txt";
+
+		//deleteConfirmation.ConfirmDeletionFor(filename);
+		deleteConfirmation.ConfirmDeletionFor(filename, delegate(string name) {
+
+			EvolutionSaver.DeleteSaveFile(filename);
+
+			SetupDropDown();
+			dropdown.value = 0;
+		});
 	}
 
 }
