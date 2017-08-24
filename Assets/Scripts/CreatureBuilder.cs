@@ -21,6 +21,8 @@ public class CreatureBuilder : MonoBehaviour {
 
 	public ButtonManager buttonManager;
 
+	public SettingsMenu settingsMenu;
+
 	/** The joint that can connect multiple Bones. */
 	public GameObject jointPreset;
 
@@ -359,7 +361,7 @@ public class CreatureBuilder : MonoBehaviour {
 			// S = Save Creature
 			else if (Input.GetKeyDown(KeyCode.S) && Application.platform != RuntimePlatform.WebGLPlayer) {
 				//SaveCreature();
-				PromptCreatureSave();
+				//PromptCreatureSave();
 			}
 
 			// L = Load Creature
@@ -721,10 +723,14 @@ public class CreatureBuilder : MonoBehaviour {
 		DontDestroyOnLoad(evolution.gameObject);
 		evolution.creature = creature;
 
-		evolution.PopulationSize = buttonManager.GetPopulationInput();
-		evolution.SimulationTime = buttonManager.GetSimulationTime();
+		//evolution.PopulationSize = buttonManager.GetPopulationInput();
+		//evolution.SimulationTime = buttonManager.GetSimulationTime();
 
-		Evolution.task = buttonManager.GetTask();
+		evolution.PopulationSize = settingsMenu.GetPopulationSize();
+		evolution.SimulationTime = settingsMenu.GetSimulationTime();
+
+		//Evolution.task = buttonManager.GetTask();
+		Evolution.task = settingsMenu.GetTask();
 
 		StartCoroutine(WaitForEvolutionSceneToLoad(sceneLoading));
 		DontDestroyOnLoad(this);

@@ -7,6 +7,8 @@ public class AutoScroll : MonoBehaviour {
 	public float topY;
 	public float bottomY;
 
+	public bool scrollByScreenHeight;
+
 	public float scrollTime = 0.7f;
 
 	public AnimationCurve curve;
@@ -20,6 +22,11 @@ public class AutoScroll : MonoBehaviour {
 	void Start() {
 
 		rectTransform = GetComponent<RectTransform>();
+
+		if (scrollByScreenHeight) {
+			bottomY = topY + Screen.height;
+			print("Screen height: " + Screen.height);
+		}
 	}
 
 	public void ScrollToTop() {

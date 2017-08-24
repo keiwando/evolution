@@ -20,10 +20,13 @@ public class EvolutionSettings {
 	public int populationSize;
 
 	/// <summary>
+	/// The number of creatures to simulate at once. Has to be less than
+	/// the populationSize.
+	/// </summary>
+	public int batchSize;
+
+	/// <summary>
 	/// The task that the creatures need to perform.
 	/// </summary>
 	public Evolution.Task task;
-
-
-
 }

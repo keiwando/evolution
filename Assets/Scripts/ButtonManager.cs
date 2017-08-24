@@ -76,8 +76,8 @@ public class ButtonManager : MonoBehaviour {
 		CAMERA_MIN_Y = cameraPos.y - CAMERA_DY;
 		CAMERA_MAX_Y = cameraPos.y + CAMERA_DY;
 
-		SetupInputFields();
-		SetupTaskDropDown();
+		//SetupInputFields();
+		//SetupTaskDropDown();
 		//SetupDropDown();
 	}
 	
@@ -126,7 +126,7 @@ public class ButtonManager : MonoBehaviour {
 		creatureDeleteButton.gameObject.SetActive(customCreatureSelected);
 	}
 
-	private void SetupTaskDropDown() {
+	/*private void SetupTaskDropDown() {
 
 		var taskString = PlayerPrefs.GetString(TASK_KEY, "RUNNING");
 		var index = new List<string>(TASK_OPTIONS).IndexOf(taskString);
@@ -148,12 +148,6 @@ public class ButtonManager : MonoBehaviour {
 	}
 
 	private void SetupDefaultNumbers() {
-
-		/*if (Application.platform == RuntimePlatform.IPhonePlayer) 
-			generationNumberInput.text = IOS_DEFAULT_POPULATION_COUNT.ToString();
-		else 
-			generationNumberInput.text = DEFAULT_POPULATION_COUNT.ToString();
-			*/
 
 		generationNumberInput.text = PlayerPrefs.GetInt(POPULATION_COUNT_KEY, DEFAULT_POPULATION_COUNT).ToString();
 
@@ -187,7 +181,7 @@ public class ButtonManager : MonoBehaviour {
 		// Make sure the time is at least 1
 		var time = Mathf.Clamp(Int32.Parse(generationTimeInput.text), 1, 100000);
 		generationTimeInput.text = time.ToString();
-	}
+	}*/
 
 	public void ShowCreatureDeleteButton() {
 		creatureDeleteButton.gameObject.SetActive(true);
@@ -239,6 +233,7 @@ public class ButtonManager : MonoBehaviour {
 		}
 	}
 
+	/*
 	/// <summary>
 	/// Returns the chosen task based on the value of the taskDropDown;
 	/// </summary>
@@ -248,7 +243,7 @@ public class ButtonManager : MonoBehaviour {
 		PlayerPrefs.SetString(TASK_KEY, taskString);
 
 		return Evolution.TaskFromString(taskString);
-	}
+	}*/
 
 	public void MoveCamera(Vector3 distance) {
 
