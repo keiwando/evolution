@@ -10,11 +10,11 @@ public class ObstacleJumpingBrain : Brain {
 		}
 	}
 
-	protected override int[] IntermediateLayerSizes {
+	/*protected override int[] IntermediateLayerSizes {
 		get {
 			return new int[]{ 10 };
 		}
-	}
+	}*/
 
 	private long numOfCollisionsWithObstacle = 0;
 	private HashSet<Joint> collidedJoints;

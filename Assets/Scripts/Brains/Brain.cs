@@ -16,9 +16,13 @@ abstract public class Brain : MonoBehaviour {
 	/** The Creature that this brain belongs to. */
 	public Creature creature;
 
+	public NeuralNetworkSettings networkSettings = new NeuralNetworkSettings(); // TODO: inject this value
+
 	private bool isActive;
 
-	protected int NUMBER_OF_LAYERS = 3;
+	//protected int NUMBER_OF_LAYERS = 3;
+
+	protected int NUMBER_OF_LAYERS { get { return networkSettings.numberOfIntermediateLayers + 2; } }
 	abstract protected int NUMBER_OF_INPUTS { get; }
 	protected int NUMBER_OF_OUTPUTS; 	// will be determined by the muscle size
 
@@ -26,7 +30,12 @@ abstract public class Brain : MonoBehaviour {
 	private float MAXWEIGHT = 3.0f;
 
 	protected int[] layerSizes;
-	abstract protected int[] IntermediateLayerSizes { get; }
+	//abstract protected int[] IntermediateLayerSizes { get; }
+	protected int[] IntermediateLayerSizes { 
+		get {
+			return networkSettings.nodesPerIntermediateLayer;		
+		}
+	}
 
 	protected float[][][] weightMatrices;
 

@@ -9,11 +9,11 @@ public class ClimbingBrain : Brain {
 		}
 	}
 
-	protected override int[] IntermediateLayerSizes {
+	/*protected override int[] IntermediateLayerSizes {
 		get {
 			return new int[]{ 10 };
 		}
-	}
+	}*/
 
 	private float MAX_HEIGHT = 100f;
 

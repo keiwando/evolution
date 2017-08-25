@@ -145,7 +145,13 @@ public class EvolutionSaver {
 
 		var currentGeneration = bestChromosomes.Count + 1;
 
-		evolution.Settings.task = taskType;
+		var settings = new EvolutionSettings(); // TODO: Load settings from savefile
+		settings.task = taskType;
+		settings.simulationTime = timePerGen;
+		settings.populationSize = currentChromosomes.Count;
+
+		//evolution.Settings.task = taskType;
+		evolution.Settings = settings;
 
 		creatureBuilder.ContinueEvolution(evolution, () => {
 

@@ -10,7 +10,7 @@ public class NeuralNetworkSettings {
 
 	public int numberOfIntermediateLayers { get { return nodesPerIntermediateLayer.Length; } }
 
-	public int[] nodesPerIntermediateLayer;
+	public int[] nodesPerIntermediateLayer = new int[] { 10 };
 
 	/// <summary>
 	/// String format: 

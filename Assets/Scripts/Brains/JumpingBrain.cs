@@ -10,11 +10,11 @@ public class JumpingBrain : Brain {
 		}
 	}
 
-	protected override int[] IntermediateLayerSizes {
+	/*protected override int[] IntermediateLayerSizes {
 		get {
 			return new int[]{ 10 };
 		}
-	}
+	}*/
 
 
 	// Use this for initialization
