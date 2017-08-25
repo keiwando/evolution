@@ -14,10 +14,28 @@ public class VisualNeuralNetwork : MonoBehaviour {
 
 	public float verticalNodeDistance;
 
-	public NeuralNetworkSettings networkSettings;
+	public NeuralNetworkSettings networkSettings {
+		set {
+			_settings = value;
+			Refresh();
+		}
+		get {
+			return _settings;
+		}
+	}
+	private NeuralNetworkSettings _settings;
 
-	private float leftEdge { get { return - Screen.width *  maxNetworkWidth / 2; } }
-	private float rightEdge { get{ return - leftEdge; } }
+	private float horizontalNodeDistance {
+		get {
+			return (rightEdge - leftEdge) / (networkSettings.numberOfIntermediateLayers + 1);
+		}
+	}
+
+	private float canvasWidth = 1.0f;
+	private float canvasHeight = 1.0f;
+
+	private float leftEdge { get { return - canvasWidth *  maxNetworkWidth / 2; } }
+	private float rightEdge { get { return - leftEdge; } }
 
 	private List<Image> visualNodes = new List<Image>();
 	private List<Image> nodeConnections = new List<Image>();
@@ -27,16 +45,25 @@ public class VisualNeuralNetwork : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		networkSettings = new NeuralNetworkSettings();
-		networkSettings.nodesPerIntermediateLayer = new int[]{ 3, 10, 5, 7, 6, 2, 14 };
-
+		Setup();
 		Refresh();
+	}
+
+	public void Setup() {
+		var canvas = GameObject.FindGameObjectWithTag("SettingsCanvas");
+		var canvasRect = canvas.GetComponent<RectTransform>().rect;
+		canvasWidth = canvasRect.width;
+		canvasHeight = canvasRect.height;
+
+		_settings = NeuralNetworkSettingsManager.GetNetworkSettings();
 	}
 
 	public void Refresh() {
 
 		var maxNodesPerLayer = networkSettings.nodesPerIntermediateLayer.Max();
 		minifyingScale = Mathf.Min(1.0f, 10f / maxNodesPerLayer);
+
+		//print("Min scale: " + minifyingScale);
 
 		DeleteCurrentNet();
 
@@ -69,10 +96,9 @@ public class VisualNeuralNetwork : MonoBehaviour {
 			
 			} else {
 				// The next layer is an intermediate layer
-				//print(i);
 				var numOfNodesInLayer = networkSettings.nodesPerIntermediateLayer[i];
 				var top = -((numOfNodesInLayer - 1) * verticalNodeDistance * minifyingScale) / 2;
-				var xPos = leftEdge + (i + 1) * (rightEdge - leftEdge) / (networkSettings.numberOfIntermediateLayers + 1);
+				var xPos = GetXPosForIntermediateLayer(i);
 
 				for (int j = 0; j < numOfNodesInLayer; j++) {
 
@@ -101,6 +127,11 @@ public class VisualNeuralNetwork : MonoBehaviour {
 		}
 
 		visualNodes.AddRange(nextLayer);
+
+		// Move all of the connection up in the hierarchy so that they are drawn first
+		foreach (var connection in nodeConnections) {
+			connection.transform.SetSiblingIndex(0);
+		}
 	}
 
 	private void DeleteCurrentNet() {
@@ -137,9 +168,11 @@ public class VisualNeuralNetwork : MonoBehaviour {
 
 		Vector3 diff = end - start;
 
+		var lengthMultiply = 1.0f * canvasWidth / Screen.width;
+
 		var rectTransform = connection.GetComponent<RectTransform>();
 	
-		rectTransform.sizeDelta = new Vector2(diff.magnitude, 1f);
+		rectTransform.sizeDelta = new Vector2(diff.magnitude * lengthMultiply, 1f);
 		rectTransform.localScale = new Vector3(1, 5 * minifyingScale, 1);
 
 		rectTransform.pivot = new Vector2(0.5f, 0.5f);
@@ -147,5 +180,10 @@ public class VisualNeuralNetwork : MonoBehaviour {
 
 		float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
 		rectTransform.rotation = Quaternion.Euler(0,0, angle);
+	}
+
+	public float GetXPosForIntermediateLayer(int index) {
+		
+		return leftEdge + (index + 1) * horizontalNodeDistance;
 	}
 }

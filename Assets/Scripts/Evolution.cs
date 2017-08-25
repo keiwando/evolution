@@ -51,7 +51,13 @@ public class Evolution : MonoBehaviour {
 		}
 	}
 
-	public static Task task;
+	public EvolutionSettings Settings {
+		set { settings = value; }
+		get { return settings; }
+	}
+	private EvolutionSettings settings;
+
+	//public static Task task;
 
 	private static Dictionary<Task, System.Type> brainMap;
 
@@ -68,21 +74,10 @@ public class Evolution : MonoBehaviour {
 		}
 	}
 
-	public int SimulationTime {
-		set { SIMULATION_TIME = value; }
-		get { return SIMULATION_TIME; }
+	//private float MUTATION_RATE = 0.5f;
+	private float MUTATION_RATE {
+		get { return settings.mutationRate / 100f; }
 	}
-	private static int SIMULATION_TIME = 10;	// in seconds
-
-	public int PopulationSize {
-		set { 
-			POPULATION_SIZE = value + (value % 2);
-		}
-		get { return POPULATION_SIZE; }
-	}
-	private int POPULATION_SIZE = 10;
-
-	private float MUTATION_RATE = 0.5f;
 
 	private int currentGenerationNumber = 1;
 
@@ -159,7 +154,7 @@ public class Evolution : MonoBehaviour {
 
 	public void FocusOnNextCreature() {
 		CameraFollowScript cam = Camera.main.GetComponent<CameraFollowScript>();
-		int index = (cam.currentlyWatchingIndex + 1 ) % POPULATION_SIZE ;
+		int index = (cam.currentlyWatchingIndex + 1 ) % settings.populationSize ;
 		cam.currentlyWatchingIndex = index;
 		cam.toFollow = currentGeneration[index];
 	}
@@ -179,7 +174,7 @@ public class Evolution : MonoBehaviour {
 		BCController.dropHeight = dropHeight;
 		BCController.Creature = creature;
 
-		string[] currentChromosomes = new string[POPULATION_SIZE];
+		string[] currentChromosomes = new string[settings.populationSize];
 		// The first generation will have random brains.
 		currentGeneration = CreateCreatures();
 		ApplyBrains(currentGeneration, true);
@@ -220,10 +215,10 @@ public class Evolution : MonoBehaviour {
 		Assert.IsNotNull(viewController);
 
 		this.currentGenerationNumber = generationNum;
-		this.SimulationTime = timePerGen;
+		this.settings.simulationTime = timePerGen;
 
 		this.currentChromosomes = currentChromosomes.ToArray();
-		this.POPULATION_SIZE = currentChromosomes.Count;
+		this.settings.populationSize = currentChromosomes.Count;
 
 		creature.Alive = false;
 		running = true;
@@ -271,7 +266,7 @@ public class Evolution : MonoBehaviour {
 			creature.Alive = true;
 		}
 
-		StartCoroutine(StopSimulationAfterTime(SIMULATION_TIME));
+		StartCoroutine(StopSimulationAfterTime(settings.simulationTime));
 	}
 
 	IEnumerator StopSimulationAfterTime(float time)
@@ -333,14 +328,14 @@ public class Evolution : MonoBehaviour {
 
 	private string[] CreateNewChromosomesFromGeneration() {
 
-		string[] result = new string[POPULATION_SIZE];
+		string[] result = new string[settings.populationSize];
 		SetupRandomPickingWeights();
 
 		// keep the two best creatures
 		result[0] = currentGeneration[0].brain.ToChromosomeString();
 		result[1] = currentGeneration[1].brain.ToChromosomeString();
 
-		for(int i = 2; i < POPULATION_SIZE; i += 2) {
+		for(int i = 2; i < settings.populationSize; i += 2) {
 
 			// randomly pick two creatures and let them "mate"
 			int index1 = PickRandomWeightedIndex();
@@ -417,7 +412,7 @@ public class Evolution : MonoBehaviour {
 
 		int number = UnityEngine.Random.Range(0, randomPickingWeights[0] - 1);
 		// find the index in the random pickingweights
-		for(int i = POPULATION_SIZE - 1; i >= 0; i--) {
+		for(int i = settings.populationSize - 1; i >= 0; i--) {
 			if( randomPickingWeights[i] >= number ) {
 				return i;
 			}
@@ -429,10 +424,10 @@ public class Evolution : MonoBehaviour {
 	/** Initialized the weights array for randomly picking the  */
 	private void SetupRandomPickingWeights() {
 
-		int[] weights = new int[POPULATION_SIZE];
+		int[] weights = new int[settings.populationSize];
 		// fill the weights array
 		int value = 1;
-		for (int i = 0; i < POPULATION_SIZE; i++) {
+		for (int i = 0; i < settings.populationSize; i++) {
 			weights[weights.Length - 1 - i] = value;
 			value += i;
 		}
@@ -445,10 +440,10 @@ public class Evolution : MonoBehaviour {
 		
 		this.creature.gameObject.SetActive(true);
 
-		Creature[] creatures = new Creature[POPULATION_SIZE];
+		Creature[] creatures = new Creature[settings.populationSize];
 		Creature creature;
 
-		for(int i = 0; i < POPULATION_SIZE; i++) {
+		for(int i = 0; i < settings.populationSize; i++) {
 			creature = CreateCreature();
 			ApplyBrain(creature, currentChromosomes[i]);
 			creatures[i] = creature;
@@ -467,9 +462,9 @@ public class Evolution : MonoBehaviour {
 	/** Creates an array of creatures. */
 	private Creature[] CreateCreatures() {
 
-		Creature[] creatures = new Creature[POPULATION_SIZE];
+		Creature[] creatures = new Creature[settings.populationSize];
 
-		for(int i = 0; i < POPULATION_SIZE; i++) {
+		for(int i = 0; i < settings.populationSize; i++) {
 			creatures[i] = CreateCreature();
 		}
 
@@ -496,13 +491,13 @@ public class Evolution : MonoBehaviour {
 		}
 	}
 
-	public static void ApplyBrain(Creature creature, string chromosome) {
+	public void ApplyBrain(Creature creature, string chromosome) {
 
 		if (brainMap == null) throw new System.Exception("The brain map is not initialized");
 
-		Brain brain = (Brain) creature.gameObject.AddComponent(brainMap[task]);
+		Brain brain = (Brain) creature.gameObject.AddComponent(brainMap[settings.task]);
 		brain.muscles = creature.muscles.ToArray();
-		brain.SimulationTime = SIMULATION_TIME;
+		brain.SimulationTime = settings.simulationTime;
 
 		brain.SetupNeuralNet(chromosome);	
 
@@ -541,7 +536,7 @@ public class Evolution : MonoBehaviour {
 		var bestChromosomes = BCController.GetBestChromosomes();
 		var currentChromosomes = new List<string>(this.currentChromosomes);
 
-		return EvolutionSaver.WriteSaveFile(creatureName, task, SIMULATION_TIME, currentGenerationNumber, creatureSaveData, bestChromosomes, currentChromosomes); 
+		return EvolutionSaver.WriteSaveFile(creatureName, settings.task, settings.simulationTime, currentGenerationNumber, creatureSaveData, bestChromosomes, currentChromosomes); 
 	}
 
 	public void SetAutoSaveEnabled(bool value) {

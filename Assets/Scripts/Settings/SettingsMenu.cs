@@ -9,7 +9,8 @@ public class SettingsMenu : MonoBehaviour {
 	public const string GRID_SIZE_KEY = "GRID_SIZE";
 	public const string GRID_ENABLED_KEY = "GRID_ENABLED";
 
-	public const string KEEP_BEST_CREATURE_KEY = "KEEP_BEST_CREATURE";
+	public const string KEEP_BEST_CREATURE_KEY = "KEEP_BEST_CREATURE"; 
+	public const string MUTATION_RATE_KEY = "MUTATION_RATE"; 
 
 	private const string POPULATION_COUNT_KEY = "POPULATION_COUNT";
 	private const string GENERATION_TIME_KEY = "GENERATION_TIME";
@@ -17,6 +18,8 @@ public class SettingsMenu : MonoBehaviour {
 	private const string BATCH_SIMULATION_ENABLED_KEY = "BATCH_SIMULATION_ENABLED";
 
 	private const string TASK_KEY = "EVOLUTION_TASK";
+
+	private const string EVOLUTION_SETTINGS_KEY = "EVOLUTION_SETTINGS";
 
 	private static string[] TASK_OPTIONS = new string[] {"RUNNING", "JUMPING", "OBSTACLE JUMP", "CLIMBING"};
 
@@ -48,6 +51,9 @@ public class SettingsMenu : MonoBehaviour {
 	// Evolution Task
 	[SerializeField] private Dropdown taskDropdown;
 
+	// Mutation rate
+	[SerializeField] private InputField mutationRateInput;
+
 	// Use this for initialization
 	void Start () {
 		Setup();
@@ -55,7 +61,7 @@ public class SettingsMenu : MonoBehaviour {
 
 	private void Setup() {
 
-		SetupInputFields();
+		SetupInputFieldCallbacks();
 		SetupTaskDropDown();
 
 		// Setup the grid stuff
@@ -68,14 +74,54 @@ public class SettingsMenu : MonoBehaviour {
 		grid.gameObject.SetActive(gridEnabled);
 		gridToggle.isOn = gridEnabled;
 
-		var keepBestCreatures = PlayerPrefs.GetInt(KEEP_BEST_CREATURE_KEY, 0) == 1;
+		// Evolution settings
+		var settings = LoadEvolutionSettings();
+
+		keepBestCreaturesToggle.isOn = settings.keepBestCreatures;
+
+		BatchSizeToggled(settings.simulateInBatches);
+		batchSizeToggle.isOn = settings.simulateInBatches;
+
+		batchSizeInput.text = settings.batchSize.ToString();
+		populationSizeInput.text = settings.populationSize.ToString();
+		simulationTimeInput.text = settings.simulationTime.ToString();
+		mutationRateInput.text = settings.mutationRate.ToString();
+
+		/*var keepBestCreatures = PlayerPrefs.GetInt(KEEP_BEST_CREATURE_KEY, 0) == 1;
 		keepBestCreaturesToggle.isOn = keepBestCreatures;
 
 		var batchSimulationEnabled = PlayerPrefs.GetInt(BATCH_SIMULATION_ENABLED_KEY, 0) == 1;
 		BatchSizeToggled(batchSimulationEnabled);
-		batchSizeToggle.isOn = batchSimulationEnabled;
+		batchSizeToggle.isOn = batchSimulationEnabled;*/
+	}
 
-		//contentContainer.ScrollToTop();
+	private void SetupTaskDropDown() {
+
+		var taskString = PlayerPrefs.GetString(TASK_KEY, "RUNNING");
+		var index = new List<string>(TASK_OPTIONS).IndexOf(taskString);
+
+		taskDropdown.value = index;
+	}
+
+	private void SetupInputFieldCallbacks() {
+
+		populationSizeInput.onEndEdit.AddListener(delegate {
+			PopulationSizeChanged();
+		});
+
+		simulationTimeInput.onEndEdit.AddListener(delegate {
+			SimulationTimeChanged();
+		});
+
+		batchSizeInput.onEndEdit.AddListener(delegate {
+			BatchSizeChanged();
+		});
+
+		mutationRateInput.onEndEdit.AddListener(delegate {
+			MutationRateChanged();
+		});
+
+		//SetupDefaultNumbers();
 	}
 
 	public void Show() {
@@ -107,80 +153,50 @@ public class SettingsMenu : MonoBehaviour {
 	}
 
 	public void KeepBestCreaturesToggled(bool value) {
-		PlayerPrefs.SetInt(KEEP_BEST_CREATURE_KEY, value ? 1 : 0);
-	}
 
-	private void SetupTaskDropDown() {
-
-		var taskString = PlayerPrefs.GetString(TASK_KEY, "RUNNING");
-		var index = new List<string>(TASK_OPTIONS).IndexOf(taskString);
-
-		taskDropdown.value = index;
-	}
-
-	private void SetupInputFields() {
-
-		populationSizeInput.onEndEdit.AddListener(delegate {
-			PopulationSizeChanged();
-		});
-
-		simulationTimeInput.onEndEdit.AddListener(delegate {
-			SimulationTimeChanged();
-		});
-
-		batchSizeInput.onEndEdit.AddListener(delegate {
-			BatchSizeChanged();
-		});
-
-		SetupDefaultNumbers();
-	}
-
-	private void SetupDefaultNumbers() {
-
-		var populationSize = PlayerPrefs.GetInt(POPULATION_COUNT_KEY, DEFAULT_POPULATION_COUNT);
-		populationSizeInput.text = populationSize.ToString();
-
-		simulationTimeInput.text = PlayerPrefs.GetInt(GENERATION_TIME_KEY, 10).ToString();
-
-		batchSizeInput.text = ClampBatchSize(PlayerPrefs.GetInt(BATCH_SIZE_KEY, populationSize)).ToString();
-	}
-
-	public int GetPopulationSize() {
-
-		var num = Mathf.Clamp(Int32.Parse(populationSizeInput.text), 2, 10000000);
-		PlayerPrefs.SetInt(POPULATION_COUNT_KEY, num);
-
-		return num;
-	}
-
-	public int GetSimulationTime() {
-
-		var time = Mathf.Clamp(Int32.Parse(simulationTimeInput.text), 1, 100000);
-		PlayerPrefs.SetInt(GENERATION_TIME_KEY, time);
-
-		return time;
+		var settings = LoadEvolutionSettings();
+		settings.keepBestCreatures = value;
+		SaveEvolutionSettings(settings);
 	}
 
 	private void PopulationSizeChanged() {
 		// Make sure the size is at least 2
 		var num = Mathf.Clamp(Int32.Parse(populationSizeInput.text), 2, 10000000);
 		populationSizeInput.text = num.ToString();
+
+		var settings = LoadEvolutionSettings();
+		settings.populationSize = num;
+		SaveEvolutionSettings(settings);
 	}
 
 	private void SimulationTimeChanged() {
 		// Make sure the time is at least 1
 		var time = Mathf.Clamp(Int32.Parse(simulationTimeInput.text), 1, 100000);
 		simulationTimeInput.text = time.ToString();
+
+		var settings = LoadEvolutionSettings();
+		settings.simulationTime = time;
+		SaveEvolutionSettings(settings);
 	}
 
-	private int BatchSizeChanged() {
-		// Make sure the size is between 1 and the population size
-		//var populationSize = Mathf.Clamp(Int32.Parse(populationSizeInput.text), 2, 10000000);
+	private void MutationRateChanged() {
+		// Clamp between 1 and 100 %
+		var rate = Mathf.Clamp(int.Parse(mutationRateInput.text), 1, 100);
+		mutationRateInput.text = rate.ToString();
 
-		var batchSize = ClampBatchSize(Int32.Parse(batchSizeInput.text)); //Mathf.Clamp(Int32.Parse(batchSizeInput.text), 1, populationSize);
+		var settings = LoadEvolutionSettings();
+		settings.mutationRate = rate;
+		SaveEvolutionSettings(settings);
+	}
+
+	private void BatchSizeChanged() {
+		// Make sure the size is between 1 and the population size
+		var batchSize = ClampBatchSize(Int32.Parse(batchSizeInput.text));
 		batchSizeInput.text = batchSize.ToString();
 
-		return batchSize;
+		var settings = LoadEvolutionSettings();
+		settings.batchSize = batchSize;
+		SaveEvolutionSettings(settings);
 	}
 
 	private int ClampBatchSize(int size) {
@@ -190,16 +206,14 @@ public class SettingsMenu : MonoBehaviour {
 		return Mathf.Clamp(size, 1, populationSize);
 	}
 
-	private int GetBatchSize() {
-
-		return BatchSizeChanged();
-	}
-
 	public void BatchSizeToggled(bool val) {
 
-		PlayerPrefs.SetInt(BATCH_SIMULATION_ENABLED_KEY, val ? 1 : 0);
-
+		//PlayerPrefs.SetInt(BATCH_SIMULATION_ENABLED_KEY, val ? 1 : 0);
 		batchSizeInput.gameObject.SetActive(val);
+
+		var settings = LoadEvolutionSettings();
+		settings.simulateInBatches = val;
+		SaveEvolutionSettings(settings);
 	}
 
 	/// <summary>
@@ -208,12 +222,23 @@ public class SettingsMenu : MonoBehaviour {
 	public Evolution.Task GetTask() {
 
 		var taskString = taskDropdown.captionText.text.ToUpper();
-		PlayerPrefs.SetString(TASK_KEY, taskString);
+		//PlayerPrefs.SetString(TASK_KEY, taskString);
+		var task = Evolution.TaskFromString(taskString);
+		
+		var settings = LoadEvolutionSettings();
+		settings.task = task;
+		SaveEvolutionSettings(settings);
 
-		return Evolution.TaskFromString(taskString);
+		return task;
 	}
 
 	public EvolutionSettings GetEvolutionSettings() {
+		return LoadEvolutionSettings();
+	}
+	/// <summary>
+	/// Creates and returns an EvolutionSettings object based on the current user inputs.
+	/// </summary>
+	/*public EvolutionSettings GetEvolutionSettings() {
 
 		var settings = new EvolutionSettings();
 
@@ -222,7 +247,42 @@ public class SettingsMenu : MonoBehaviour {
 		settings.populationSize = GetPopulationSize();
 		settings.simulationTime = GetSimulationTime();
 		settings.task = GetTask();
+		settings.mutationRate = GetMutationRate();
 
 		return settings;
+	}*/
+
+	/// <summary>
+	/// Saves the evolution settings based on the current input values.
+	/// </summary>
+	/*public void SaveEvolutionSettings() {
+
+		var settings = GetEvolutionSettings();
+
+		SaveEvolutionSettings(settings);
+	}*/
+
+	private void SaveEvolutionSettings(EvolutionSettings settings) {
+		PlayerPrefs.SetString(EVOLUTION_SETTINGS_KEY, settings.Encode());
+	}
+
+	/// <summary>
+	/// Loads the currently stored Evolution settings.
+	/// </summary>
+	/// <returns>The evolution settings.</returns>
+	private EvolutionSettings LoadEvolutionSettings() {
+
+		var settingsString = PlayerPrefs.GetString(EVOLUTION_SETTINGS_KEY, "");
+
+		if (settingsString == "") {
+			// Default settings
+			return new EvolutionSettings();
+		}
+
+		return EvolutionSettings.Decode(settingsString);
+	}
+
+	public NeuralNetworkSettings GetNeuralNetworkSettings() {
+		return NeuralNetworkSettingsManager.GetNetworkSettings();
 	}
 }

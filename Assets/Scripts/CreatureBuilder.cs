@@ -726,11 +726,15 @@ public class CreatureBuilder : MonoBehaviour {
 		//evolution.PopulationSize = buttonManager.GetPopulationInput();
 		//evolution.SimulationTime = buttonManager.GetSimulationTime();
 
-		evolution.PopulationSize = settingsMenu.GetPopulationSize();
-		evolution.SimulationTime = settingsMenu.GetSimulationTime();
+		var settings = settingsMenu.GetEvolutionSettings();
+
+		//evolution.PopulationSize = settings.populationSize;
+		//evolution.SimulationTime = settings.simulationTime;
 
 		//Evolution.task = buttonManager.GetTask();
-		Evolution.task = settingsMenu.GetTask();
+		//Evolution.task = settings.task;
+
+		evolution.Settings = settings;
 
 		StartCoroutine(WaitForEvolutionSceneToLoad(sceneLoading));
 		DontDestroyOnLoad(this);

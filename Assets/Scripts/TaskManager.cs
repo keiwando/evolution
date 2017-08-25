@@ -13,8 +13,13 @@ public class TaskManager : MonoBehaviour {
 
 	public CameraFollowScript[] cameras;
 
+	private Evolution evolution;
+
 	// Use this for initialization
 	void Start () {
+
+		evolution = GameObject.FindGameObjectWithTag("Evolution").GetComponent<Evolution>();
+
 		SetupTask();
 	}
 	
@@ -25,7 +30,7 @@ public class TaskManager : MonoBehaviour {
 
 	private void SetupTask() {
 
-		switch(Evolution.task) {
+		switch(evolution.Settings.task) {
 			
 		case Evolution.Task.RUNNING: SetupRunningTask(); break;
 		case Evolution.Task.JUMPING: SetupJumpingTask(); break;

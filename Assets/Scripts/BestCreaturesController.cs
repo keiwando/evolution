@@ -53,8 +53,12 @@ public class BestCreaturesController : MonoBehaviour {
 	}
 	private GameObject obstacle;
 
+	private Evolution evolution;
+
 	// Use this for initialization
 	void Start () {
+
+		evolution = GameObject.FindGameObjectWithTag("Evolution").GetComponent<Evolution>();
 		
 		BestCreatures = new List<string>();
 		BestFitness = new List<float>();
@@ -178,7 +182,7 @@ public class BestCreaturesController : MonoBehaviour {
 		}
 
 		var creat = CreateCreature();
-		Evolution.ApplyBrain(creat, chromosome);
+		evolution.ApplyBrain(creat, chromosome);
 		creat.FloorHeight = floorHeight.position.y;
 		creat.Obstacle = obstacle;
 		creat.Alive = true;

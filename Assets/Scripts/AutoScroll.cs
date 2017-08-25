@@ -23,9 +23,13 @@ public class AutoScroll : MonoBehaviour {
 
 		rectTransform = GetComponent<RectTransform>();
 
+		var canvas = GameObject.FindGameObjectWithTag("SettingsCanvas");
+		var canvasHeight = canvas.GetComponent<RectTransform>().rect.height;
+
 		if (scrollByScreenHeight) {
-			bottomY = topY + Screen.height;
-			print("Screen height: " + Screen.height);
+			//bottomY = topY + Screen.height;
+			bottomY = topY + canvasHeight;
+			//print("Screen height: " + Screen.height);
 		}
 	}
 
