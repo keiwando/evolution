@@ -95,14 +95,6 @@ public class SettingsMenu : MonoBehaviour {
 		batchSizeToggle.isOn = batchSimulationEnabled;*/
 	}
 
-	private void SetupTaskDropDown() {
-
-		var taskString = PlayerPrefs.GetString(TASK_KEY, "RUNNING");
-		var index = new List<string>(TASK_OPTIONS).IndexOf(taskString);
-
-		taskDropdown.value = index;
-	}
-
 	private void SetupInputFieldCallbacks() {
 
 		populationSizeInput.onEndEdit.AddListener(delegate {
@@ -122,6 +114,25 @@ public class SettingsMenu : MonoBehaviour {
 		});
 
 		//SetupDefaultNumbers();
+	}
+
+	private void SetupTaskDropDown() {
+
+		//var taskString = PlayerPrefs.GetString(TASK_KEY, "RUNNING");
+		var settings = LoadEvolutionSettings();
+		var taskString = Evolution.TaskToString(settings.task).ToUpper();
+
+		var index = new List<string>(TASK_OPTIONS).IndexOf(taskString);
+
+		taskDropdown.value = index;
+	}
+
+	public void TaskChanged() {
+
+		print("Task changed");
+		var settings = LoadEvolutionSettings();
+		settings.task = Evolution.TaskFromString(taskDropdown.captionText.text);
+		SaveEvolutionSettings(settings);
 	}
 
 	public void Show() {

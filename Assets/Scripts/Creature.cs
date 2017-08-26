@@ -227,6 +227,19 @@ public class Creature : MonoBehaviour {
 		return min;
 	}
 
+	public Vector3 GetHighestPoint() {
+
+		Vector3 max = joints[0].transform.position;
+
+		foreach (var joint in joints) {
+			if (max.y < joint.transform.position.y) {
+				max = joint.transform.position;
+			}
+		}
+
+		return max;
+	}
+
 	public float GetDistanceFromObstacle() {
 		//return Vector3.Distance(new Vector3(GetXPosition(), GetYPosition(), 0f), obstacle.transform.position);
 		float minDistance = float.PositiveInfinity;

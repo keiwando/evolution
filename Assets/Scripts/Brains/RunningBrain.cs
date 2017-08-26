@@ -48,7 +48,7 @@ public class RunningBrain : Brain {
 		// The fitness for the running task is made up of the distance travelled to the
 		// right at the end of the time and the average weighted speed of the creature.
 		//fitness = (creature.GetXPosition() + 0.5f * Mathf.Abs(averageSpeed)) / ((MAX_DISTANCE * SimulationTime) + MAX_SPEED);
-		fitness = creature.GetXPosition() / (MAX_DISTANCE * SimulationTime);
+		fitness = Mathf.Clamp(creature.GetXPosition() / (MAX_DISTANCE * SimulationTime), 0f, 1f);
 	}
 
 	/*Inputs:
