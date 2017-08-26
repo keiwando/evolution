@@ -16,7 +16,7 @@ public class AutoSaver {
 	/// </summary>
 	public int GenerationDistance = 10;
 
-	private int lastSavedGeneration = -100;
+	//private int lastSavedGeneration = -100;
 
 	private string lastSaveFileName = "";
 
@@ -36,7 +36,7 @@ public class AutoSaver {
 
 		var lastSave = this.lastSaveFileName;
 
-		this.lastSavedGeneration = generation;
+		//this.lastSavedGeneration = generation;
 		this.lastSaveFileName = evolution.SaveSimulation();
 
 		// Delete the last auto-saved file

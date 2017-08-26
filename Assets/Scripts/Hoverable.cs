@@ -22,7 +22,7 @@ abstract public class Hoverable: MonoBehaviour {
 	/** Specifies whether the mouse is hovering over the object. */
 	public bool hovering { get; private set; }
 
-	private Shader defaultShader;
+	//private Shader defaultShader;
 	protected Shader highlightingShader;
 
 	public Texture2D mouseHoverTexture;
@@ -41,7 +41,7 @@ abstract public class Hoverable: MonoBehaviour {
 
 	public virtual void Start() {
 
-		defaultShader = Shader.Find("Standard");
+		//defaultShader = Shader.Find("Standard");
 		highlightingShader = Shader.Find("Self-Illumin/Outlined Diffuse");
 
 		highlightEmissionColor = new Color(0.7132353f, 0.5433174f, 0.2884408f, 1f);

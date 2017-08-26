@@ -25,7 +25,7 @@ public class SettingsMenu : MonoBehaviour {
 
 	private const float DEFAULT_GRID_SIZE = 2.0f;
 
-	private static int DEFAULT_POPULATION_COUNT = 10;
+	//private static int DEFAULT_POPULATION_COUNT = 10;
 
 	[SerializeField] private AutoScroll contentContainer;
 
@@ -129,7 +129,6 @@ public class SettingsMenu : MonoBehaviour {
 
 	public void TaskChanged() {
 
-		print("Task changed");
 		var settings = LoadEvolutionSettings();
 		settings.task = Evolution.TaskFromString(taskDropdown.captionText.text);
 		SaveEvolutionSettings(settings);

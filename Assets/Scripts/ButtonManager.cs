@@ -8,14 +8,14 @@ public class ButtonManager : MonoBehaviour {
 
 	// MARK: PlayerPref keys
 
-	private const string POPULATION_COUNT_KEY = "POPULATION_COUNT";
-	private const string GENERATION_TIME_KEY = "GENERATION_TIME";
-	private const string TASK_KEY = "EVOLUTION_TASK";
+	//private const string POPULATION_COUNT_KEY = "POPULATION_COUNT";
+	//private const string GENERATION_TIME_KEY = "GENERATION_TIME";
+	//private const string TASK_KEY = "EVOLUTION_TASK";
 
-	private static string[] TASK_OPTIONS = new string[] {"RUNNING", "JUMPING", "OBSTACLE JUMP", "CLIMBING"};
+	//private static string[] TASK_OPTIONS = new string[] {"RUNNING", "JUMPING", "OBSTACLE JUMP", "CLIMBING"};
 
-	private static int DEFAULT_POPULATION_COUNT = 10;
-	private static int IOS_DEFAULT_POPULATION_COUNT = 5;
+	//private static int DEFAULT_POPULATION_COUNT = 10;
+	//private static int IOS_DEFAULT_POPULATION_COUNT = 5;
 
 	private float CAMERA_MAX_X;
 	private float CAMERA_MIN_X;

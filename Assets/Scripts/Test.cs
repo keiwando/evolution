@@ -44,11 +44,11 @@ public class Test : MonoBehaviour {
 
 	// Creates two Cylinders as bodyconnections and connects them using a
 	// Hinge Joint
-	private void testBuilding() {
+	/*private void testBuilding() {
 
 		Vector3 leftPosition = new Vector3(-10,0,0);
 		Vector3 rightPosition = new Vector3(10, 0,0);
 
 		GameObject body1 = (GameObject) Instantiate(cylinderPrefab, leftPosition, Quaternion.identity);
-	}
+	}*/
 }

@@ -32,7 +32,7 @@ public class VisualNeuralNetwork : MonoBehaviour {
 	}
 
 	private float canvasWidth = 1.0f;
-	private float canvasHeight = 1.0f;
+	//private float canvasHeight = 1.0f;
 
 	private float leftEdge { get { return - canvasWidth *  maxNetworkWidth / 2; } }
 	private float rightEdge { get { return - leftEdge; } }
@@ -53,7 +53,7 @@ public class VisualNeuralNetwork : MonoBehaviour {
 		var canvas = GameObject.FindGameObjectWithTag("SettingsCanvas");
 		var canvasRect = canvas.GetComponent<RectTransform>().rect;
 		canvasWidth = canvasRect.width;
-		canvasHeight = canvasRect.height;
+		//canvasHeight = canvasRect.height;
 
 		_settings = NeuralNetworkSettingsManager.GetNetworkSettings();
 	}

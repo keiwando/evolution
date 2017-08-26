@@ -7,7 +7,7 @@ public class ZoomSlider : MonoBehaviour {
 
 	private float zoomLength = 15;
 	private float minZoom;
-	private float maxZoom;
+	//private float maxZoom;
 
 	public Slider slider;
 
@@ -16,7 +16,7 @@ public class ZoomSlider : MonoBehaviour {
 
 		float currentZoom = Camera.main.orthographicSize;
 		minZoom = currentZoom - zoomLength / 2;
-		maxZoom = currentZoom + zoomLength + 2;
+		//maxZoom = currentZoom + zoomLength + 2;
 	}
 	
 	// Update is called once per frame

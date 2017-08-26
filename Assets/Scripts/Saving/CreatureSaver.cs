@@ -34,14 +34,14 @@ public class CreatureSaver {
 	/// Used for splitting the text file by the body component types.
 	/// </summary>
 	private static string[] SPLIT_ARRAY = new string[]{ COMPONENT_SEPARATOR };
-	private static string[] NEWLINE_SPLIT = new string[] { Environment.NewLine };
+	//private static string[] NEWLINE_SPLIT = new string[] { Environment.NewLine };
 
 	private static string CURRENT_SAVE_KEY = "_CurrentCreatureSave";
 	private static string CURRENT_CREATURE_NAME_KEY = "_CurrentCreatureName";
 	private static string CREATURE_NAMES_KEY = "_CreatureNames";
 
 
-	private static string RESOURCE_PATH = Path.Combine(Application.dataPath, "Resources");
+	//private static string RESOURCE_PATH = Path.Combine(Application.dataPath, "Resources");
 
 	// Use this for initialization
 	public CreatureSaver () {

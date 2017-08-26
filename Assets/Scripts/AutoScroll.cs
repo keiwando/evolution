@@ -17,11 +17,11 @@ public class AutoScroll : MonoBehaviour {
 
 	private Coroutine scrollRoutine;
 
-	private RectTransform rectTransform;
+	//private RectTransform rectTransform;
 
 	void Start() {
 
-		rectTransform = GetComponent<RectTransform>();
+		//rectTransform = GetComponent<RectTransform>();
 
 		var canvas = GameObject.FindGameObjectWithTag("SettingsCanvas");
 		var canvasHeight = canvas.GetComponent<RectTransform>().rect.height;

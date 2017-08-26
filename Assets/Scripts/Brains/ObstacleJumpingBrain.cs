@@ -16,7 +16,7 @@ public class ObstacleJumpingBrain : Brain {
 		}
 	}*/
 
-	private long numOfCollisionsWithObstacle = 0;
+	//private long numOfCollisionsWithObstacle = 0;
 	private HashSet<Joint> collidedJoints;
 
 	private float MAX_HEIGHT = 20f;
@@ -34,7 +34,7 @@ public class ObstacleJumpingBrain : Brain {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	public override void Update () {
 		base.Update();
 
 		//numOfCollisionsWithObstacle += creature.GetNumberOfObstacleCollisions();

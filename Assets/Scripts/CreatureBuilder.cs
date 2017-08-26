@@ -17,7 +17,7 @@ public class CreatureBuilder : MonoBehaviour {
 		Muscle
 	}
 
-	[SerializeField] private bool gridEnabled = false;
+	//[SerializeField] private bool gridEnabled = false;
 
 	public ButtonManager buttonManager;
 
@@ -74,7 +74,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/// The minimum distance between two joints when they are placed (Can be moved closer together using "Move").
 	private float jointNonOverlapRadius = 0.6f;
 	public static float CONNECTION_WIDHT = 0.5f;
-	private bool TESTING_ENABLED = true;
+	//private bool TESTING_ENABLED = true;
 
 	/// <summary>
 	/// Indicates whether it is the first time starting the program ( = no evolution has taken place yet)
@@ -810,6 +810,7 @@ public class CreatureBuilder : MonoBehaviour {
 
 		} catch (IllegalFilenameException e) {
 			saveDialog.ShowErrorMessage("The name can't contain . (dots) or _ (underscores).");
+			print(e.Message);
 			return;
 		}
 

@@ -15,9 +15,8 @@ public class RunningBrain : Brain {
 		}
 	}*/
 
-	private int MAX_DISTANCE = 60;	// The optimal distance a "perfect" creature could travel in the simulation time.
-	private int MAX_SPEED = 60;
-	//private int MAX_SPEED = 100; 
+	private int MAX_DISTANCE = 55;	// The optimal distance a "perfect" creature could travel in the simulation time.
+	//private int MAX_SPEED = 60;
 	private float averageSpeed = 0;
 
 	// Use this for initialization

@@ -28,12 +28,11 @@ public class JumpingBrain : Brain {
 	private const float MAX_HEIGHT = 20f;
 
 	private float maxHeightJumped;
-	private float maxWeightedAverageHeight;
+	private float maxWeightedAverageHeight = 0f;
 
 	// Update is called once per frame
-	void Update () {
+	public override void Update () {
 		base.Update();
-
 	}
 
 	public override void EvaluateFitness (){
@@ -61,6 +60,8 @@ public class JumpingBrain : Brain {
 		maxHeightJumped = Mathf.Max(inputs[0][0], maxHeightJumped);
 		float maxHeight = creature.GetHighestPoint().y - creature.GetLowestPoint().y + inputs[0][0];
 
+		//print(inputs[0][0] + " : " + maxHeight);
+
 		CalculateWeightedAverageHeight(inputs[0][0], maxHeight);
 		// horizontal velocity
 		Vector3 velocity = creature.GetVelocity();
@@ -77,7 +78,10 @@ public class JumpingBrain : Brain {
 
 	private void CalculateWeightedAverageHeight(float minHeight, float maxHeight) {
 
-		// (weights) minHeight : maxHeight => 3 : 1
-		maxWeightedAverageHeight = Mathf.Max((3 * minHeight + maxHeight) / (4 * MAX_HEIGHT), maxWeightedAverageHeight);
+		// (weights) minHeight : maxHeight => 4 : 1
+		maxWeightedAverageHeight = Mathf.Max((4 * minHeight + maxHeight) / 5, maxWeightedAverageHeight);
+
+		//print(maxWeightedAverageHeight + " : " + (maxHeight / (4 * MAX_HEIGHT)) + " : " + maxHeight);
+
 	}
 }

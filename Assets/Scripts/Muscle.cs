@@ -39,7 +39,7 @@ public class Muscle : BodyComponent {
 
 	private float LINE_WIDTH = 0.5f;
 
-	private float CONTRACTION_FACTOR = 0.2f;
+	//private float CONTRACTION_FACTOR = 0.2f;
 
 	private float SPRING_STRENGTH = 1000; //30000;
 
@@ -212,7 +212,7 @@ public class Muscle : BodyComponent {
 		Assert.IsFalse(float.IsNaN(endingForce.x),"force: " + force);
 		Assert.IsFalse(float.IsNaN(startingForce.x),"force: " + force);
 
-		Rigidbody rb = endingJoint.GetComponent<Rigidbody>();
+		//Rigidbody rb = endingJoint.GetComponent<Rigidbody>();
 
 		//startingJoint.GetComponent<Rigidbody>().AddForce(startingForce);
 		//endingJoint.GetComponent<Rigidbody>().AddForce(endingForce);
@@ -252,7 +252,9 @@ public class Muscle : BodyComponent {
 	public void AddLineRenderer(){
 		
 		lineRenderer = gameObject.AddComponent<LineRenderer>();
-		lineRenderer.SetWidth(LINE_WIDTH, LINE_WIDTH);
+		//lineRenderer.SetWidth(LINE_WIDTH, LINE_WIDTH); // Deprecated
+		lineRenderer.startWidth = LINE_WIDTH;
+		lineRenderer.endWidth = LINE_WIDTH;
 	}
 
 	public void DeleteAndAddLineRenderer(){
@@ -366,6 +368,11 @@ public class Muscle : BodyComponent {
 
 		return (m.startingJoint.Equals(startingJoint) && m.endingJoint.Equals(endingJoint)) ||
 			(m.startingJoint.Equals(endingJoint) && m.endingJoint.Equals(startingJoint));
+	}
+
+	public override int GetHashCode ()
+	{
+		return base.GetHashCode ();
 	}
 
 	private void OnDestroy()

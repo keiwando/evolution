@@ -29,7 +29,8 @@ public class BestCreaturesController : MonoBehaviour {
 	/// The list of best creature brains (as chromosome strings). The index + 1 = generation Number.
 	/// </summary>
 	private List<string> BestCreatures;
-	private List<float> BestFitness;
+	//private List<float> BestFitness;
+	private List<CreatureStats> BestCreatureStats;
 
 	private Creature creature;
 	public Creature Creature {
@@ -42,7 +43,7 @@ public class BestCreaturesController : MonoBehaviour {
 	/// </summary>
 	private int currentGeneration;
 
-	private bool autoplayEnabled = true;
+	//private bool autoplayEnabled = true;
 	private float autoplayDuration = 10f;
 	private Coroutine autoplayRoutine;
 
@@ -61,7 +62,8 @@ public class BestCreaturesController : MonoBehaviour {
 		evolution = GameObject.FindGameObjectWithTag("Evolution").GetComponent<Evolution>();
 		
 		BestCreatures = new List<string>();
-		BestFitness = new List<float>();
+		//BestFitness = new List<float>();
+		BestCreatureStats = new List<CreatureStats>();
 
 		BCThumbScreen.gameObject.SetActive(false);
 	}
@@ -99,14 +101,17 @@ public class BestCreaturesController : MonoBehaviour {
 		BCCamera.SwitchToMiniViewport();
 	}
 
-	public void AddBestCreature(int generation, string chromosome, float fitness) {
+	//public void AddBestCreature(int generation, string chromosome, float fitness) {
+	public void AddBestCreature(int generation, string chromosome, CreatureStats stats) {
+		
 		if (generation <= 0) throw new UnityException();
 
 		BCThumbScreen.gameObject.SetActive(true);
 
 		BestCreatures.Add(chromosome);
 
-		BestFitness.Add(fitness);	  
+		//BestFitness.Add(fitness);	  
+		BestCreatureStats.Add(stats);
 
 		if (currentBest == null) {
 			ShowBestCreature(1);
@@ -169,7 +174,9 @@ public class BestCreaturesController : MonoBehaviour {
 
 		currentGeneration = generation;
 		viewController.UpdateBCGeneration(generation);
-		viewController.UpdateFitness(BestFitness[generation - 1]);
+		//viewController.UpdateFitness(BestFitness[generation - 1]);
+		//viewController.UpdateFitness(BestCreatureStats[generation - 1].fitness); // TODO: Change 
+		viewController.UpdateStats(BestCreatureStats[generation - 1]);
 	}
 
 	private void SpawnCreature(string chromosome) {
@@ -239,7 +246,7 @@ public class BestCreaturesController : MonoBehaviour {
 
 	public void AutoPlaySwitched(bool value) {
 
-		autoplayEnabled = value;
+		//autoplayEnabled = value;
 		if (value) {
 			AutoPlay();
 		} else {
@@ -254,24 +261,50 @@ public class BestCreaturesController : MonoBehaviour {
 		viewController.UpdateAutoPlayDurationLabel(value);
 	}
 
-	public void SetBestChromosomes(List<ChromosomeInfo> bestChroms) {
+	/*public void SetBestChromosomes(List<ChromosomeInfo> bestChroms) {
 
 		BestCreatures.Clear();
 		BestFitness.Clear();
+		//BestCreatureStats.Clear();
 
 		foreach (var chromosomeInfo in bestChroms) {
 
 			BestCreatures.Add(chromosomeInfo.chromosome);
 			BestFitness.Add(chromosomeInfo.fitness);
 		}
+	}*/
+
+	public void SetBestChromosomes(List<ChromosomeStats> bestChroms) {
+
+		BestCreatures.Clear();
+		//BestFitness.Clear();
+		BestCreatureStats.Clear();
+
+		foreach (var chromosomeInfo in bestChroms) {
+
+			BestCreatures.Add(chromosomeInfo.chromosome);
+			BestCreatureStats.Add(chromosomeInfo.stats);
+			//BestFitness.Add(chromosomeInfo.fitness);
+		}
 	}
 
-	public List<ChromosomeInfo> GetBestChromosomes() {
+	/*public List<ChromosomeInfo> GetBestChromosomes() {
 
 		var bestChroms = new List<ChromosomeInfo>();
 
 		for (int i = 0; i < BestCreatures.Count; i++) {
 			bestChroms.Add(new ChromosomeInfo(BestCreatures[i], BestFitness[i]));
+		}
+
+		return bestChroms;
+	}*/
+
+	public List<ChromosomeStats> GetBestChromosomes() {
+
+		var bestChroms = new List<ChromosomeStats>();
+
+		for (int i = 0; i < BestCreatures.Count; i++) {
+			bestChroms.Add(new ChromosomeStats(BestCreatures[i], BestCreatureStats[i]));
 		}
 
 		return bestChroms;

@@ -26,9 +26,8 @@ public class ClimbingBrain : Brain {
 	}
 
 	// Update is called once per frame
-	void Update () {
+	public override void Update () {
 		base.Update();
-	
 	}
 
 	public override void EvaluateFitness (){

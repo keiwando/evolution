@@ -12,7 +12,8 @@ public class Joint : BodyComponent {
 		} 
 	}
 
-	private Dictionary<Bone, HingeJoint> joints = new Dictionary<Bone, HingeJoint>();
+	//private Dictionary<Bone, HingeJoint> joints = new Dictionary<Bone, HingeJoint>();
+	private Dictionary<Bone, UnityEngine.Joint> joints = new Dictionary<Bone, UnityEngine.Joint>();
 
 	private bool iterating;
 
@@ -66,9 +67,28 @@ public class Joint : BodyComponent {
 	}
 
 	/** Connects a Bone to the gameobject with a hinge joint. */
+	/*public void Connect(Bone bone) {
+
+		HingeJoint joint = gameObject.AddComponent<HingeJoint>();
+		joint.anchor = Vector3.zero;
+		joint.axis = new Vector3(0, 0, 1);
+		joint.autoConfigureConnectedAnchor = true;
+		joint.useSpring = true;
+		//var spring = joint.spring;
+		//spring.spring = 1000f;
+		//joint.spring = spring;
+		//joint.connectedAnchor = new Vector3(0, 1.14f, 0);
+		joint.enablePreprocessing = false;
+
+		joint.connectedBody = bone.gameObject.GetComponent<Rigidbody>();
+
+		joints.Add(bone, joint);
+	}*/
+
 	public void Connect(Bone bone) {
 
 		HingeJoint joint = gameObject.AddComponent<HingeJoint>();
+		//ConfigurableJoint joint = gameObject.AddComponent<ConfigurableJoint>();
 		joint.anchor = Vector3.zero;
 		joint.axis = new Vector3(0, 0, 1);
 		joint.autoConfigureConnectedAnchor = true;
@@ -87,7 +107,7 @@ public class Joint : BodyComponent {
 	/** Disconnects the bone from the joint. */
 	public void Disconnect(Bone bone) {
 
-		HingeJoint joint = joints[bone];
+		UnityEngine.Joint joint = joints[bone];
 		Destroy(joint);
 		if (!iterating)
 			joints.Remove(bone);

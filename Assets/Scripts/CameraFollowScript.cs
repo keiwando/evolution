@@ -13,7 +13,7 @@ public class CameraFollowScript : MonoBehaviour {
 
 	public bool DiagonalLock = false;
 
-	private Camera camera;
+	new private Camera camera;
 
 	private Vector3 startPos;
 

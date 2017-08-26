@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// The EvolutionSaver provides function for saving and loading the state of a simulation in / from a file.
 /// 
-/// The Evolution Save files have the following format:
+/// The Evolution Save files have the following format (VERSION 1):
 /// Filename: CreatureName - Date - Generation
 /// 
 /// Content: 
@@ -23,8 +23,37 @@ using UnityEngine.SceneManagement;
 /// A list of the best chromosomes (for each chromosome:  chromosome : fitness)
 /// -separator-
 /// A list of the current chromosomes (The chromosomes of all creatures of the last simulating generation)
+/// 
+/// -------------------------------------------------------------------------------------------------------
+/// 
+/// /// The Evolution Save files have the following format (VERSION 2):
+/// Filename: CreatureName - Date - Generation
+/// 
+/// Content: 
+/// 
+/// v save format version (v 2)
+/// -separator-
+/// Encoded Evolution Settings
+/// -separator-
+/// Encoded Neural Network Settings
+/// -separator-
+/// CreatureSaveData - created by the CreatureSaver class
+/// -separator-
+/// A list of the best chromosomes (for each chromosome:  chromosome : (CreatureStats encoded))
+/// -separator-
+/// A list of the current chromosomes (The chromosomes of all creatures of the last simulating generation)
+
 /// </summary>
 public class EvolutionSaver {
+
+	/// <summary>
+	/// The current save file format version. This number has nothing to do with the Application.version.
+	/// It should be the first line of every savefile prepended by a v so that it can be immediately identified how to interpret
+	/// the rest of the file.
+	/// The first savefiles do not contain a version number (1), but instead immediately start with the simulation task as an int, 
+	/// which is how they can be differentiated from the rest (They don't start with a v).
+	/// </summary>
+	private static int version = 2;
 
 	/// <summary>
 	/// The name of the folder that holds the creature save files.
@@ -55,21 +84,33 @@ public class EvolutionSaver {
 	/// 
 	/// Returns: The filename of the saved file.
 	/// </summary>
-	public static string WriteSaveFile(string creatureName, Evolution.Task task, int timePerGen, int generationNumber, string creatureSaveData, List<ChromosomeInfo> bestChromosomes, List<string> currentChromosomes) {
+	//public static string WriteSaveFile(string creatureName, Evolution.Task task, int timePerGen, int generationNumber, string creatureSaveData, List<ChromosomeInfo> bestChromosomes, List<string> currentChromosomes) {
+	public static string WriteSaveFile(string creatureName, EvolutionSettings settings, NeuralNetworkSettings networkSettings, int generationNumber, string creatureSaveData, List<ChromosomeStats> bestChromosomes, List<string> currentChromosomes) {
 
 		var date = System.DateTime.Now.ToString("yyyy-MM-dd");
-		var taskName = Evolution.TaskToString(task);
+		//var taskName = Evolution.TaskToString(task);
 
-		var filename = string.Format("{0} - {1} - {2} - Gen({3}).txt", creatureName, taskName, date, generationNumber);    // MAYBE IMPORTANT FOR THE FUTURE: Changed from Gen:i to Gen(i)
+		var filename = string.Format("{0} - {1} - {2} - Gen({3}).txt", creatureName, settings.task, date, generationNumber);    // MAYBE IMPORTANT FOR THE FUTURE: Changed from Gen:i to Gen(i)
 
 		var stringBuilder = new StringBuilder();
 
 		// Add the task type
-		stringBuilder.AppendLine(((int)task).ToString());
+		//stringBuilder.AppendLine(((int)task).ToString());
+
+		// Add the version number
+		stringBuilder.AppendLine(string.Format("v {0}", version.ToString()));
 		stringBuilder.Append(COMPONENT_SEPARATOR);
 
 		// Add the time per generation
-		stringBuilder.AppendLine(timePerGen.ToString());
+		//stringBuilder.AppendLine(settings.simulationTime.ToString());
+		//stringBuilder.Append(COMPONENT_SEPARATOR);
+
+		// Add the encoded evolution settings
+		stringBuilder.AppendLine(settings.Encode());
+		stringBuilder.Append(COMPONENT_SEPARATOR);
+
+		// Add the encoded neural network settings
+		stringBuilder.AppendLine(networkSettings.Encode());
 		stringBuilder.Append(COMPONENT_SEPARATOR);
 
 		// Add the creature save data 
@@ -103,7 +144,7 @@ public class EvolutionSaver {
 			filename += ".txt";
 		}
 
-		var creatureName = filename.Split('-')[0].Replace(" ", "");
+		//var creatureName = filename.Split('-')[0].Replace(" ", "");
 
 		// check if the file exists
 		var path = RESOURCE_PATH; //Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
@@ -116,7 +157,43 @@ public class EvolutionSaver {
 		var components = contents.Split(SPLIT_ARRAY, System.StringSplitOptions.None);
 
 		// extract the save data from the file contents.
-		var taskType = Evolution.TaskForNumber(int.Parse(components[0].Replace(Environment.NewLine, "")));
+		// determine the version of the save file.
+		// if the first line doesn't start with a v the version is 1
+
+		if (components[0].ToUpper()[0] == 'V') {
+
+			var version = int.Parse(components[0].Split(' ')[1]);
+
+			if (version == 2) {
+
+				LoadSimulationFromSaveFileV2(filename, contents, creatureBuilder, evolution);
+
+			} else {
+				throw new System.Exception("Unknown Save file format!");
+			}
+			
+		} else {
+			// V1
+			LoadSimulationFromSaveFileV1(filename, contents, creatureBuilder, evolution);
+		}
+
+		/*
+		try {
+			var version = int.Parse(components[0]);
+
+			if (version == 2) {
+
+				LoadSimulationFromSaveFileV2(filename, contents, creatureBuilder, evolution);
+			
+			} else {
+				throw new System.Exception("Unknown Save file format!");
+			}
+
+		} catch {
+			LoadSimulationFromSaveFileV1(filename, contents, creatureBuilder, evolution);
+		}*/
+
+		/*var taskType = Evolution.TaskForNumber(int.Parse(components[0].Replace(Environment.NewLine, "")));
 
 		var timePerGen = int.Parse(components[1].Replace(Environment.NewLine, ""));
 
@@ -145,10 +222,85 @@ public class EvolutionSaver {
 
 		var currentGeneration = bestChromosomes.Count + 1;
 
-		var settings = new EvolutionSettings(); // TODO: Load settings from savefile
+		var settings = new EvolutionSettings();
 		settings.task = taskType;
 		settings.simulationTime = timePerGen;
 		settings.populationSize = currentChromosomes.Count;
+
+		var networkSettings = new NeuralNetworkSettings();
+
+		//evolution.Settings.task = taskType;
+		//evolution.Settings = settings;
+
+		creatureBuilder.ContinueEvolution(evolution, () => {
+
+			CreatureSaver.SaveCurrentCreatureName(creatureName);
+			//evolution.ContinueEvolution(currentGeneration, timePerGen, bestChromosomes, currentChromosomes);
+			evolution.ContinueEvolution(currentGeneration, settings, networkSettings, bestChromosomes, currentGeneration);
+		});*/
+	}
+
+	/// <summary>
+	/// Loads the simulation from save file of format version 1.
+	/// </summary>
+	/// <param name="filename">The Filename has to end on .txt .</param>
+	/// <param name="content">The Content of the save file.</param>
+	private static void LoadSimulationFromSaveFileV1(string filename, string content, CreatureBuilder creatureBuilder, Evolution evolution) { 
+
+		var creatureName = filename.Split('-')[0].Replace(" ", "");
+
+		// check if the file exists
+		/*var path = RESOURCE_PATH; //Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
+		path = Path.Combine(path, filename);
+
+		var reader = new StreamReader(path);
+		var contents = reader.ReadToEnd();
+		reader.Close();*/
+
+		//var components = contents.Split(SPLIT_ARRAY, System.StringSplitOptions.None);
+		var components = content.Split(SPLIT_ARRAY, System.StringSplitOptions.None);
+
+		// extract the save data from the file contents.
+		var taskType = Evolution.TaskForNumber(int.Parse(components[0].Replace(Environment.NewLine, "")));
+
+		var timePerGen = int.Parse(components[1].Replace(Environment.NewLine, ""));
+
+		var creatureData = components[2];
+		CreatureSaver.LoadCreatureFromContents(creatureData, creatureBuilder);
+
+		var bestChromosomesData = new List<string>(components[3].Split(NEWLINE_SPLIT, StringSplitOptions.None));
+		var bestChromosomes = new List<ChromosomeStats>();
+
+		foreach (var chromosomeData in bestChromosomesData) {
+
+			if (chromosomeData != "") {
+
+				var chromosomeInfo = ChromosomeInfo.FromString(chromosomeData);
+				var chromosomeStats = new ChromosomeStats(chromosomeInfo.chromosome, new CreatureStats());
+				chromosomeStats.stats.fitness = chromosomeInfo.fitness;
+
+				bestChromosomes.Add(chromosomeStats);	
+			}
+		}
+
+		var chromosomeComponents = components[4].Split(NEWLINE_SPLIT, StringSplitOptions.None);
+		var currentChromosomes = new List<string>();
+
+		foreach (var chromosome in chromosomeComponents) {
+
+			if (chromosome != "") {
+				currentChromosomes.Add(chromosome);
+			}
+		}
+
+		var currentGeneration = bestChromosomes.Count + 1;
+
+		var settings = new EvolutionSettings();
+		settings.task = taskType;
+		settings.simulationTime = timePerGen;
+		settings.populationSize = currentChromosomes.Count;
+
+		var networkSettings = new NeuralNetworkSettings();
 
 		//evolution.Settings.task = taskType;
 		evolution.Settings = settings;
@@ -156,7 +308,58 @@ public class EvolutionSaver {
 		creatureBuilder.ContinueEvolution(evolution, () => {
 
 			CreatureSaver.SaveCurrentCreatureName(creatureName);
-			evolution.ContinueEvolution(currentGeneration, timePerGen, bestChromosomes, currentChromosomes);
+			//evolution.ContinueEvolution(currentGeneration, timePerGen, bestChromosomes, currentChromosomes);
+			evolution.ContinueEvolution(currentGeneration, settings, networkSettings, bestChromosomes, currentChromosomes);
+		});
+	}
+
+	/// <summary>
+	/// Loads the simulation from save file with the format version 2
+	/// </summary>
+	/// <param name="filename">The Filename has to end on .txt .</param>
+	/// <param name="content">The Content of the save file.</param>
+	private static void LoadSimulationFromSaveFileV2(string filename, string content, CreatureBuilder creatureBuilder, Evolution evolution) {
+
+		var creatureName = filename.Split('-')[0].Replace(" ", "");
+
+		var components = content.Split(SPLIT_ARRAY, System.StringSplitOptions.None);
+
+		var evolutionSettings = EvolutionSettings.Decode(components[1]);
+		var networkSettings = NeuralNetworkSettings.Decode(components[2]);
+
+		var creatureData = components[3];
+		CreatureSaver.LoadCreatureFromContents(creatureData, creatureBuilder);
+
+		var bestChromosomesData = new List<string>(components[4].Split(NEWLINE_SPLIT, StringSplitOptions.None));
+		var bestChromosomes = new List<ChromosomeStats>();
+
+		foreach (var chromosomeData in bestChromosomesData) {
+
+			if (chromosomeData != "") {
+				bestChromosomes.Add(ChromosomeStats.FromString(chromosomeData));	
+			}
+		}
+
+		var chromosomeComponents = components[5].Split(NEWLINE_SPLIT, StringSplitOptions.None);
+		var currentChromosomes = new List<string>();
+
+		foreach (var chromosome in chromosomeComponents) {
+
+			if (chromosome != "") {
+				currentChromosomes.Add(chromosome);
+			}
+		}
+
+		var currentGeneration = bestChromosomes.Count + 1;
+
+		//evolution.Settings.task = taskType;
+		evolution.Settings = evolutionSettings;
+
+		creatureBuilder.ContinueEvolution(evolution, () => {
+
+			CreatureSaver.SaveCurrentCreatureName(creatureName);
+			//evolution.ContinueEvolution(currentGeneration, timePerGen, bestChromosomes, currentChromosomes);
+			evolution.ContinueEvolution(currentGeneration, evolutionSettings, networkSettings, bestChromosomes, currentChromosomes);
 		});
 	}
 

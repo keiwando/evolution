@@ -16,7 +16,7 @@ public class SimulationLoadDialog : MonoBehaviour {
 
 	private const string NO_SAVE_FILES = "You haven't saved any simulations yet";
 
-	private bool saveFilesExist = false;
+	//private bool saveFilesExists = false;
 
 	// Use this for initialization
 	void Start () {
@@ -69,7 +69,7 @@ public class SimulationLoadDialog : MonoBehaviour {
 		if (filenames.Count == 0) {
 			saveFiles.Add(NO_SAVE_FILES);
 		} else {
-			saveFilesExist = true;
+			//saveFilesExists = true;
 		}
 
 		foreach (var name in filenames) {

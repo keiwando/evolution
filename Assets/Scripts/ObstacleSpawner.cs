@@ -24,11 +24,11 @@ public class ObstacleSpawner : MonoBehaviour {
 
 	public bool BCScene;
 
-	private Evolution evolution;
+	//private Evolution evolution;
 
 	void Start () {
 
-		evolution = GameObject.Find("Evolution").GetComponent<Evolution>();
+		//evolution = GameObject.Find("Evolution").GetComponent<Evolution>();
 
 		obsRigidbody = obstacle.GetComponent<Rigidbody>();
 
@@ -54,7 +54,7 @@ public class ObstacleSpawner : MonoBehaviour {
 			yield return new WaitForSeconds(Obstacle_Distance);
 		}
 
-		yield return null;
+		//yield return null;
 	} 
 
 	private void UpdateObstacleKnowledge() {

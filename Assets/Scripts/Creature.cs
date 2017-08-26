@@ -41,6 +41,8 @@ public class Creature : MonoBehaviour {
 
 	private LayerMask groundDistanceLayerMask;
 
+	private float maxJumpingHeight;
+
 	// Use this for initialization
 	void Start () {
 		groundDistanceLayerMask = LayerMask.NameToLayer("Ground");
@@ -48,7 +50,8 @@ public class Creature : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+
+		maxJumpingHeight = Mathf.Max(maxJumpingHeight, DistanceFromGround());
 	}
 
 	public void SetKinematic(bool enabled) {
@@ -254,6 +257,25 @@ public class Creature : MonoBehaviour {
 		}
 
 		return Mathf.Min(distances);
+	}
+
+	public CreatureStats GetStatistics() {
+
+		var stats = new CreatureStats();
+
+		brain.EvaluateFitness();
+
+		stats.fitness = brain.fitness;
+		stats.horizontalDistanceTravelled = GetXPosition();
+		stats.verticalDistanceTravelled = GetYPosition();
+		stats.averageSpeed = stats.horizontalDistanceTravelled / brain.SimulationTime;
+		stats.numberOfBones = bones.Count;
+		stats.numberOfMuscles = muscles.Count;
+		stats.simulationTime = Mathf.RoundToInt(brain.SimulationTime);
+		stats.weight = muscles.Count + 2 * bones.Count;
+		stats.maxJumpingHeight = maxJumpingHeight;
+
+		return stats;
 	}
 }
 

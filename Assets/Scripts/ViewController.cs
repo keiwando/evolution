@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +17,8 @@ public class ViewController : MonoBehaviour {
 	private Coroutine FadeRoutine;
 
 	[SerializeField] private Text FitnessLabel;
+
+	[SerializeField] private Text CreatureStatsLabelField;
 
 	[SerializeField] private GameObject AutoplaySettings;
 	[SerializeField] private Text AutoplayDurationLabel;
@@ -62,6 +65,30 @@ public class ViewController : MonoBehaviour {
 
 		var percentageFitness = Mathf.Round(fitness * 10000f) / 100f;
 		FitnessLabel.text = string.Format("Fitness: {0}%", percentageFitness);
+	}
+
+	public void UpdateStats(CreatureStats stats) {
+
+		UpdateFitness(stats.fitness);
+
+		if (stats.simulationTime > 0) {
+			// There are more creature stats known
+			var stringBuilder = new StringBuilder();
+
+			stringBuilder.AppendLine("Simulation Time:  " + stats.simulationTime);
+			stringBuilder.AppendLine("Average Speed:  " + stats.averageSpeed.ToString("0.00") + " m/s");
+			stringBuilder.AppendLine("Horiz. distance from start:  " + stats.horizontalDistanceTravelled.ToString("0.0") + "m");
+			stringBuilder.AppendLine("Vert. distance from start:  " + stats.verticalDistanceTravelled.ToString("0.0") + "m");
+			stringBuilder.AppendLine("Maximum jumping height:  " + stats.maxJumpingHeight.ToString("0.0") + "m");
+			stringBuilder.AppendLine("Number of bones:  " + stats.numberOfBones);
+			stringBuilder.AppendLine("Number of muscles:  " + stats.numberOfMuscles);
+			stringBuilder.AppendLine("Weight:  " + stats.weight + "kg");
+
+			CreatureStatsLabelField.text = stringBuilder.ToString();
+		
+		} else {
+			CreatureStatsLabelField.text = "";	
+		}
 	}
 
 	public void ShowErrorMessage(string message) {

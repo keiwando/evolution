@@ -18,10 +18,10 @@ public class Evolution : MonoBehaviour {
 	// TODO: Rewrite this whole logic
 	public static Task TaskForNumber(int n) {
 		switch(n) {
-		case 0: return Task.RUNNING; break;
-		case 1: return Task.JUMPING; break;
-		case 2: return Task.OBSTACLE_JUMP; break;
-		case 3: return Task.CLIMBING; break;
+		case 0: return Task.RUNNING; 
+		case 1: return Task.JUMPING; 
+		case 2: return Task.OBSTACLE_JUMP; 
+		case 3: return Task.CLIMBING;
 		}
 
 		return Task.RUNNING;
@@ -42,10 +42,10 @@ public class Evolution : MonoBehaviour {
 
 		switch(task.ToUpper()) {
 
-		case "RUNNING": return Task.RUNNING; break;
-		case "JUMPING": return Task.JUMPING; break;
-		case "OBSTACLE JUMP": return Task.OBSTACLE_JUMP; break;
-		case "CLIMBING": return Task.CLIMBING; break;
+		case "RUNNING": return Task.RUNNING; 
+		case "JUMPING": return Task.JUMPING; 
+		case "OBSTACLE JUMP": return Task.OBSTACLE_JUMP;
+		case "CLIMBING": return Task.CLIMBING; 
 
 		default: return Task.RUNNING;
 		}
@@ -232,16 +232,21 @@ public class Evolution : MonoBehaviour {
 	/// <param name="timePerGen">The time for each generation simulation.</param>
 	/// <param name="bestChromosomes">The list of best chromosomes of the already simluated generations.</param>
 	/// <param name="currentChromosomes">A list of chromosomes of creatures of the last (current) generation.</param>
-	public void ContinueEvolution(int generationNum, int timePerGen, List<ChromosomeInfo> bestChromosomes, List<string> currentChromosomes) {
+	//public void ContinueEvolution(int generationNum, int timePerGen, List<ChromosomeInfo> bestChromosomes, List<string> currentChromosomes) {
+	public void ContinueEvolution(int generationNum, EvolutionSettings evolutionSettings, NeuralNetworkSettings networkSettings, List<ChromosomeStats> bestChromosomes, List<string> currentChromosomes) {
+
+		this.settings = evolutionSettings;
+		this.brainSettings = networkSettings;
 
 		viewController = GameObject.Find("ViewController").GetComponent<ViewController>();
 		Assert.IsNotNull(viewController);
 
 		this.currentGenerationNumber = generationNum;
-		this.settings.simulationTime = timePerGen;
+		//this.settings.simulationTime = timePerGen;
+
 
 		this.currentChromosomes = currentChromosomes.ToArray();
-		this.settings.populationSize = currentChromosomes.Count;
+		//this.settings.populationSize = currentChromosomes.Count;
 
 		creature.Alive = false;
 		running = true;
@@ -298,7 +303,7 @@ public class Evolution : MonoBehaviour {
 		BCController.dropHeight = dropHeight;
 		BCController.Creature = creature;
 
-		string[] currentChromosomes = new string[settings.populationSize];
+		//string[] currentChromosomes = new string[settings.populationSize];
 		// The first generation will have random brains.
 		currentGeneration = CreateCreatures();
 		ApplyBrains(currentGeneration, true);
@@ -388,7 +393,8 @@ public class Evolution : MonoBehaviour {
 		// save the best creature
 		//bestCreatures[currentGenerationNumber] = currentGeneration[0];
 		var best = currentGeneration[0];
-		BCController.AddBestCreature(currentGenerationNumber, best.brain.ToChromosomeString(), best.brain.fitness);
+		//BCController.AddBestCreature(currentGenerationNumber, best.brain.ToChromosomeString(), best.brain.fitness);
+		BCController.AddBestCreature(currentGenerationNumber, best.brain.ToChromosomeString(), best.GetStatistics());
 
 		var saved = autoSaver.Update(currentGenerationNumber, this);
 
@@ -646,7 +652,8 @@ public class Evolution : MonoBehaviour {
 		var bestChromosomes = BCController.GetBestChromosomes();
 		var currentChromosomes = new List<string>(this.currentChromosomes);
 
-		return EvolutionSaver.WriteSaveFile(creatureName, settings.task, settings.simulationTime, currentGenerationNumber, creatureSaveData, bestChromosomes, currentChromosomes); 
+		//return EvolutionSaver.WriteSaveFile(creatureName, settings.task, settings.simulationTime, currentGenerationNumber, creatureSaveData, bestChromosomes, currentChromosomes); 
+		return EvolutionSaver.WriteSaveFile(creatureName, settings, brainSettings, currentGenerationNumber, creatureSaveData, bestChromosomes, currentChromosomes);
 	}
 
 	public void SetAutoSaveEnabled(bool value) {
