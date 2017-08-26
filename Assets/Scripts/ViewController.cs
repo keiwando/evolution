@@ -44,6 +44,10 @@ public class ViewController : MonoBehaviour {
 		
 		var text = string.Format("Generation {0}", generation);
 
+		if (evolution.ShouldSimulateInBatches) {
+			text += string.Format(" (Batch {0}/{1})", evolution.CurrentBatchNumber, Mathf.Ceil((float)evolution.Settings.populationSize / evolution.CurrentBatchSize));
+		}
+
 		generationLabel.text = text;
 		EVOLGenerationLabel.text = text;
 	}

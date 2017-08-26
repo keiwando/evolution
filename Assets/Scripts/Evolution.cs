@@ -89,16 +89,50 @@ public class Evolution : MonoBehaviour {
 
 	private int[] randomPickingWeights;
 
-	/** The current generation of Creatures. */
+	/// <summary>
+	/// The current generation of Creatures.
+	/// </summary>
 	private Creature[] currentGeneration;
-	/** The chromosome strings of the current generation. */
+
+	/// <summary>
+	/// The chromosome strings of the current generation.
+	/// </summary>
 	private string[] currentChromosomes;
+
+	// Batch simulation
+
+	private bool simulateInBatchesCached;
+	public bool ShouldSimulateInBatches { get { return simulateInBatchesCached; } }
+
+	// If generation should be simulated in batches the batch size needs to be cached
+	// at the beginning of each generation simulation to prevent problems with the adjustable
+	// settings.
+	private int batchSizeCached;
+	public int CurrentBatchSize { get { return batchSizeCached; } }
+
+	/// <summary>
+	/// The numbe of the currently simulating batch. Between 1 and Ceil(populationSize / batchSizeCached)
+	/// </summary>
+	private int currentlySimulatingBatch;
+	public int CurrentBatchNumber { get { return currentlySimulatingBatch; } }
+
+	/// <summary>
+	/// The currently simulating batch of creatures (a subset of currentGeneration).
+	/// </summary>
+	private Creature[] currentCreatureBatch;
+
+
 
 	private BestCreaturesController BCController;
 
-	/** The height at which the  */
+	/// <summary>
+	/// The height from the ground from which the creatures should be dropped on spawn.
+	/// </summary>
 	private Vector3 dropHeight;
 
+	/// <summary>
+	/// Whether the simulation is currently running or not. (Paused is still true)
+	/// </summary>
 	private bool running;
 
 	// UI
@@ -159,6 +193,7 @@ public class Evolution : MonoBehaviour {
 	}
 
 	public void FocusOnNextCreature() {
+		
 		CameraFollowScript cam = Camera.main.GetComponent<CameraFollowScript>();
 		int index = (cam.currentlyWatchingIndex + 1 ) % settings.populationSize ;
 		cam.currentlyWatchingIndex = index;
@@ -166,35 +201,17 @@ public class Evolution : MonoBehaviour {
 	}
 
 	public void FocusOnPreviousCreature() {
+		
 		CameraFollowScript cam = Camera.main.GetComponent<CameraFollowScript>();
 		int index = cam.currentlyWatchingIndex;
 		cam.currentlyWatchingIndex = index - 1 < 0 ? currentGeneration.Length - 1 : index - 1;
 		cam.toFollow = currentGeneration[index];
 	}
 
-	private void SetupEvolution() {
 
-		CalculateDropHeight();
 
-		BCController = GameObject.Find("Best Creature Controller").GetComponent<BestCreaturesController>();
-		BCController.dropHeight = dropHeight;
-		BCController.Creature = creature;
-
-		string[] currentChromosomes = new string[settings.populationSize];
-		// The first generation will have random brains.
-		currentGeneration = CreateCreatures();
-		ApplyBrains(currentGeneration, true);
-		SimulateGeneration();
-
-		creature.gameObject.SetActive(false);
-
-		Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
-
-		autoSaver = new AutoSaver();
-		//TestCopy();
-	}
-
-	private void TestCopy() {
+	/*private void TestCopy() {
+		
 		Muscle lastMuscle = null;
 		foreach(Creature creatures in currentGeneration) {
 			if (lastMuscle != null) {
@@ -202,7 +219,7 @@ public class Evolution : MonoBehaviour {
 			}
 			lastMuscle = creature.muscles[0];
 		}
-	}
+	}*/
 
 	/// <summary>
 	/// Continues the evolution from the save state. 
@@ -246,6 +263,14 @@ public class Evolution : MonoBehaviour {
 
 		currentGeneration = CreateGeneration();
 
+		// Batch simulation
+		currentlySimulatingBatch = 1;
+		simulateInBatchesCached = settings.simulateInBatches;
+		batchSizeCached = settings.simulateInBatches ? settings.batchSize : settings.populationSize;
+		var currentBatchSize = Mathf.Min(batchSizeCached, settings.populationSize - ((currentlySimulatingBatch - 1) * batchSizeCached));
+		currentCreatureBatch = new Creature[currentBatchSize]; // TODO: Batch
+		Array.Copy(currentGeneration, 0, currentCreatureBatch, 0, currentBatchSize);
+
 		SimulateGeneration();
 
 
@@ -265,11 +290,54 @@ public class Evolution : MonoBehaviour {
 		SetupEvolution();
 	}
 
-	/** Simulates the task for every creature in the current generation. */
+	private void SetupEvolution() {
+
+		CalculateDropHeight();
+
+		BCController = GameObject.Find("Best Creature Controller").GetComponent<BestCreaturesController>();
+		BCController.dropHeight = dropHeight;
+		BCController.Creature = creature;
+
+		string[] currentChromosomes = new string[settings.populationSize];
+		// The first generation will have random brains.
+		currentGeneration = CreateCreatures();
+		ApplyBrains(currentGeneration, true);
+
+		// Batch simulation
+		currentlySimulatingBatch = 1;
+		simulateInBatchesCached = settings.simulateInBatches;
+		batchSizeCached = settings.simulateInBatches ? settings.batchSize : settings.populationSize;
+		var currentBatchSize = Mathf.Min(batchSizeCached, settings.populationSize - ((currentlySimulatingBatch - 1) * batchSizeCached));
+		currentCreatureBatch = new Creature[currentBatchSize]; // TODO: Batch
+		Array.Copy(currentGeneration, 0, currentCreatureBatch, 0, currentBatchSize);
+
+		SimulateGeneration();
+
+		creature.gameObject.SetActive(false);
+
+		Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
+
+		viewController.UpdateGeneration(currentGenerationNumber);
+
+		autoSaver = new AutoSaver();
+		//TestCopy();
+	}
+		
+	/// <summary>
+	/// Simulates the task for every creature in the current batch
+	/// </summary>
 	private void SimulateGeneration() {
 
-		foreach( Creature creature in currentGeneration ) {
+		//foreach( Creature creature in currentGeneration ) { // TODO: Batch
+
+		foreach (Creature creature in currentGeneration) {
+			creature.Alive = false;
+			creature.gameObject.SetActive(false);
+		}
+
+		foreach (Creature creature in currentCreatureBatch) {
 			creature.Alive = true;
+			creature.gameObject.SetActive(true);
 		}
 
 		StartCoroutine(StopSimulationAfterTime(settings.simulationTime));
@@ -279,9 +347,31 @@ public class Evolution : MonoBehaviour {
 	{
 		yield return new WaitForSeconds(time);
 
-		EndSimulation();
+		// Batch simulation // TODO: Batch
+		// Check if all of the batches of the current generation were simulated.
+		var creaturesLeft = settings.populationSize - (currentlySimulatingBatch * batchSizeCached);
+		if (simulateInBatchesCached && creaturesLeft > 0 ) {
+			// Simulate the next batch first
+
+			var currentBatchSize = Mathf.Min(batchSizeCached, creaturesLeft);
+			currentCreatureBatch = new Creature[currentBatchSize];
+			Array.Copy(currentGeneration, currentlySimulatingBatch * batchSizeCached, currentCreatureBatch, 0, currentBatchSize);
+			currentlySimulatingBatch += 1;
+
+			viewController.UpdateGeneration(currentGenerationNumber);
+
+			Camera.main.GetComponent<CameraFollowScript>().toFollow = currentCreatureBatch[0];
+
+			SimulateGeneration();
+
+		} else {
+			EndSimulation();	
+		}
 	}
 
+	/// <summary>
+	/// Ends the simulation of the current creature batch.
+	/// </summary>
 	private void EndSimulation() {
 
 		if(!running) return;
@@ -289,6 +379,7 @@ public class Evolution : MonoBehaviour {
 		foreach( Creature creature in currentGeneration ) {
 			creature.Alive = false;
 		}
+
 
 		EvaluateCreatures(currentGeneration);
 		SortGenerationByFitness();
@@ -312,9 +403,16 @@ public class Evolution : MonoBehaviour {
 		currentGeneration = CreateGeneration();
 		Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
 
+		// Batch simulation
+		currentlySimulatingBatch = 1;
+		simulateInBatchesCached = settings.simulateInBatches;
+		batchSizeCached = settings.simulateInBatches ? settings.batchSize : settings.populationSize;
+		var currentBatchSize = Mathf.Min(batchSizeCached, settings.populationSize);
+		currentCreatureBatch = new Creature[currentBatchSize]; // TODO: Batch
+		Array.Copy(currentGeneration, 0, currentCreatureBatch, 0, currentBatchSize);
+
 		// Update the view
 		viewController.UpdateGeneration(currentGenerationNumber);
-
 
 		SimulateGeneration();
 
@@ -352,7 +450,9 @@ public class Evolution : MonoBehaviour {
 			Assert.AreEqual(chrom1.Length, newChromosomes[0].Length);
 
 			result[i] = newChromosomes[0];
-			result[i+1] = newChromosomes[1];
+			if (i + 1 < result.Length) {
+				result[i+1] = newChromosomes[1];
+			}
 		}
 
 		if (settings.keepBestCreatures) {
