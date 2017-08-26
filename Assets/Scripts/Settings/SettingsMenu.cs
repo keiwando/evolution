@@ -9,7 +9,7 @@ public class SettingsMenu : MonoBehaviour {
 	public const string GRID_SIZE_KEY = "GRID_SIZE";
 	public const string GRID_ENABLED_KEY = "GRID_ENABLED";
 
-	public const string KEEP_BEST_CREATURE_KEY = "KEEP_BEST_CREATURE"; 
+	/*public const string KEEP_BEST_CREATURE_KEY = "KEEP_BEST_CREATURE"; 
 	public const string MUTATION_RATE_KEY = "MUTATION_RATE"; 
 
 	private const string POPULATION_COUNT_KEY = "POPULATION_COUNT";
@@ -17,7 +17,7 @@ public class SettingsMenu : MonoBehaviour {
 	private const string BATCH_SIZE_KEY = "BATCH_SIZE";
 	private const string BATCH_SIMULATION_ENABLED_KEY = "BATCH_SIMULATION_ENABLED";
 
-	private const string TASK_KEY = "EVOLUTION_TASK";
+	private const string TASK_KEY = "EVOLUTION_TASK";*/
 
 	private const string EVOLUTION_SETTINGS_KEY = "EVOLUTION_SETTINGS";
 
@@ -212,7 +212,9 @@ public class SettingsMenu : MonoBehaviour {
 
 	private int ClampBatchSize(int size) {
 
-		var populationSize = Mathf.Clamp(Int32.Parse(populationSizeInput.text), 2, 10000000);
+		//var populationSize = Mathf.Clamp(Int32.Parse(populationSizeInput.text), 2, 10000000);
+		var settings = LoadEvolutionSettings();
+		var populationSize = settings.populationSize;
 
 		return Mathf.Clamp(size, 1, populationSize);
 	}

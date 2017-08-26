@@ -16,7 +16,7 @@ abstract public class Brain : MonoBehaviour {
 	/** The Creature that this brain belongs to. */
 	public Creature creature;
 
-	public NeuralNetworkSettings networkSettings = new NeuralNetworkSettings(); // TODO: inject this value
+	public NeuralNetworkSettings networkSettings; // = new NeuralNetworkSettings(); // TODO: inject this value
 
 	private bool isActive;
 

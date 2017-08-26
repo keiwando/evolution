@@ -5,9 +5,9 @@ using UnityEngine;
 public class EvolutionSettings {
 
 	/// <summary>
-	/// Specifies whether or not the best creature of every generation is copied into the next generation.
+	/// Specifies whether or not the best two creatures of every generation are copied into the next generation.
 	/// </summary>
-	public bool keepBestCreatures = false;
+	public bool keepBestCreatures = true;
 
 	/// <summary>
 	/// The simulation time per generation.

@@ -57,6 +57,12 @@ public class Evolution : MonoBehaviour {
 	}
 	private EvolutionSettings settings;
 
+	public NeuralNetworkSettings BrainSettings {
+		set { brainSettings = value; }
+		get { return brainSettings; }
+	}
+	private NeuralNetworkSettings brainSettings;
+
 	//public static Task task;
 
 	private static Dictionary<Task, System.Type> brainMap;
@@ -331,11 +337,7 @@ public class Evolution : MonoBehaviour {
 		string[] result = new string[settings.populationSize];
 		SetupRandomPickingWeights();
 
-		// keep the two best creatures
-		result[0] = currentGeneration[0].brain.ToChromosomeString();
-		result[1] = currentGeneration[1].brain.ToChromosomeString();
-
-		for(int i = 2; i < settings.populationSize; i += 2) {
+		for(int i = 0; i < settings.populationSize; i += 2) {
 
 			// randomly pick two creatures and let them "mate"
 			int index1 = PickRandomWeightedIndex();
@@ -351,6 +353,13 @@ public class Evolution : MonoBehaviour {
 
 			result[i] = newChromosomes[0];
 			result[i+1] = newChromosomes[1];
+		}
+
+		if (settings.keepBestCreatures) {
+			
+			// keep the two best creatures
+			result[0] = currentGeneration[0].brain.ToChromosomeString();
+			result[1] = currentGeneration[1].brain.ToChromosomeString();
 		}
 
 		return result;
@@ -498,6 +507,7 @@ public class Evolution : MonoBehaviour {
 		Brain brain = (Brain) creature.gameObject.AddComponent(brainMap[settings.task]);
 		brain.muscles = creature.muscles.ToArray();
 		brain.SimulationTime = settings.simulationTime;
+		brain.networkSettings = brainSettings;
 
 		brain.SetupNeuralNet(chromosome);	
 

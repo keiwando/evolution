@@ -735,6 +735,7 @@ public class CreatureBuilder : MonoBehaviour {
 		//Evolution.task = settings.task;
 
 		evolution.Settings = settings;
+		evolution.BrainSettings = settingsMenu.GetNeuralNetworkSettings();
 
 		StartCoroutine(WaitForEvolutionSceneToLoad(sceneLoading));
 		DontDestroyOnLoad(this);
