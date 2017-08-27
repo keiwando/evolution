@@ -193,19 +193,48 @@ public class Evolution : MonoBehaviour {
 	}
 
 	public void FocusOnNextCreature() {
-		
+
 		CameraFollowScript cam = Camera.main.GetComponent<CameraFollowScript>();
-		int index = (cam.currentlyWatchingIndex + 1 ) % settings.populationSize ;
+		int index = (cam.currentlyWatchingIndex + 1 ) % currentCreatureBatch.Length;
 		cam.currentlyWatchingIndex = index;
-		cam.toFollow = currentGeneration[index];
+		//cam.toFollow = currentGeneration[index];
+		cam.toFollow = currentCreatureBatch[index];
+
+		RefreshVisibleCreatures();
 	}
 
 	public void FocusOnPreviousCreature() {
-		
+
 		CameraFollowScript cam = Camera.main.GetComponent<CameraFollowScript>();
 		int index = cam.currentlyWatchingIndex;
-		cam.currentlyWatchingIndex = index - 1 < 0 ? currentGeneration.Length - 1 : index - 1;
-		cam.toFollow = currentGeneration[index];
+		//cam.currentlyWatchingIndex = index - 1 < 0 ? currentGeneration.Length - 1 : index - 1;
+		cam.currentlyWatchingIndex = index - 1 < 0 ? currentCreatureBatch.Length - 1 : index - 1;
+		//cam.toFollow = currentGeneration[index];
+		cam.toFollow = currentCreatureBatch[cam.currentlyWatchingIndex];
+
+		//print("Index: " + index);
+
+		RefreshVisibleCreatures();
+	}
+
+	public void RefreshVisibleCreatures() {
+
+		// Determine if all or only one creature should be visible
+		if (settings.showOneAtATime) {
+
+			foreach (var creature in currentCreatureBatch) {
+				creature.SetOnInvisibleLayer();
+			}
+
+			CameraFollowScript cam = Camera.main.GetComponent<CameraFollowScript>();
+			currentCreatureBatch[cam.currentlyWatchingIndex].SetOnVisibleLayer();
+		
+		} else {
+
+			foreach (var creature in currentCreatureBatch) {
+				creature.SetOnVisibleLayer();
+			}
+		}
 	}
 
 
@@ -281,7 +310,12 @@ public class Evolution : MonoBehaviour {
 
 		creature.gameObject.SetActive(false);
 
-		Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
+		//Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
+		var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
+		cameraFollow.toFollow = currentGeneration[0];
+		cameraFollow.currentlyWatchingIndex = 0;
+
+		RefreshVisibleCreatures();
 	}
 
 	/** Starts the Evolution for the current */
@@ -320,7 +354,11 @@ public class Evolution : MonoBehaviour {
 
 		creature.gameObject.SetActive(false);
 
-		Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
+		var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
+		cameraFollow.toFollow = currentGeneration[0];
+		cameraFollow.currentlyWatchingIndex = 0;
+
+		RefreshVisibleCreatures();
 
 		viewController.UpdateGeneration(currentGenerationNumber);
 
@@ -365,7 +403,12 @@ public class Evolution : MonoBehaviour {
 
 			viewController.UpdateGeneration(currentGenerationNumber);
 
-			Camera.main.GetComponent<CameraFollowScript>().toFollow = currentCreatureBatch[0];
+			//Camera.main.GetComponent<CameraFollowScript>().toFollow = currentCreatureBatch[0];
+			var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
+			cameraFollow.toFollow = currentCreatureBatch[0];
+			cameraFollow.currentlyWatchingIndex = 0;
+
+			RefreshVisibleCreatures();
 
 			SimulateGeneration();
 
@@ -407,7 +450,11 @@ public class Evolution : MonoBehaviour {
 
 		KillGeneration();
 		currentGeneration = CreateGeneration();
-		Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
+
+		//Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
+		var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
+		cameraFollow.toFollow = currentGeneration[0];
+		cameraFollow.currentlyWatchingIndex = 0;
 
 		// Batch simulation
 		currentlySimulatingBatch = 1;
@@ -419,6 +466,8 @@ public class Evolution : MonoBehaviour {
 
 		// Update the view
 		viewController.UpdateGeneration(currentGenerationNumber);
+
+		RefreshVisibleCreatures();
 
 		SimulateGeneration();
 

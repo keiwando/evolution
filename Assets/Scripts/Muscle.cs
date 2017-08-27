@@ -55,6 +55,7 @@ public class Muscle : BodyComponent {
 
 		GameObject muscleEmpty = new GameObject();
 		muscleEmpty.name = "Muscle";
+		muscleEmpty.layer = LayerMask.NameToLayer("Creature");
 		var muscle = muscleEmpty.AddComponent<Muscle>();
 		muscle.AddLineRenderer();
 		muscle.SetMaterial(muscleMaterial);

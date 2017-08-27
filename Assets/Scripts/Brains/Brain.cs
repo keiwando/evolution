@@ -23,7 +23,7 @@ abstract public class Brain : MonoBehaviour {
 	//protected int NUMBER_OF_LAYERS = 3;
 
 	protected int NUMBER_OF_LAYERS { get { return networkSettings.numberOfIntermediateLayers + 2; } }
-	abstract protected int NUMBER_OF_INPUTS { get; }
+	abstract public int NUMBER_OF_INPUTS { get; }
 	protected int NUMBER_OF_OUTPUTS; 	// will be determined by the muscle size
 
 	private float MINWEIGHT = -3.0f;

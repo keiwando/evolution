@@ -4,7 +4,7 @@ using UnityEngine.Assertions;
 
 public class JumpingBrain : Brain {
 
-	protected override int NUMBER_OF_INPUTS {
+	public override int NUMBER_OF_INPUTS {
 		get {
 			return 6;
 		}

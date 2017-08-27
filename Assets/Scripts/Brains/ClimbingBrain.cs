@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ClimbingBrain : Brain {
 
-	protected override int NUMBER_OF_INPUTS {
+	public override int NUMBER_OF_INPUTS {
 		get {
 			return 6;
 		}

@@ -277,5 +277,35 @@ public class Creature : MonoBehaviour {
 
 		return stats;
 	}
+
+	public void SetOnVisibleLayer() {
+
+		foreach (var bone in bones) {
+			bone.gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
+		}
+
+		foreach (var joint in joints) {
+			joint.gameObject.layer = LayerMask.NameToLayer("VisibleJoint");
+		}
+
+		foreach (var muscle in muscles) {
+			muscle.gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
+		}
+	}
+
+	public void SetOnInvisibleLayer() {
+
+		foreach (var bone in bones) {
+			bone.gameObject.layer = LayerMask.NameToLayer("Creature");
+		}
+
+		foreach (var joint in joints) {
+			joint.gameObject.layer = LayerMask.NameToLayer("Joint");
+		}
+
+		foreach (var muscle in muscles) {
+			muscle.gameObject.layer = LayerMask.NameToLayer("Creature");
+		}
+	}
 }
 

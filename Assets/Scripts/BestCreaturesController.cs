@@ -176,7 +176,8 @@ public class BestCreaturesController : MonoBehaviour {
 		viewController.UpdateBCGeneration(generation);
 		//viewController.UpdateFitness(BestFitness[generation - 1]);
 		//viewController.UpdateFitness(BestCreatureStats[generation - 1].fitness); // TODO: Change 
-		viewController.UpdateStats(BestCreatureStats[generation - 1]);
+		//viewController.UpdateStats(BestCreatureStats[generation - 1]);
+		viewController.UpdateStats(this.currentBest, BestCreatureStats[generation - 1]);
 	}
 
 	private void SpawnCreature(string chromosome) {

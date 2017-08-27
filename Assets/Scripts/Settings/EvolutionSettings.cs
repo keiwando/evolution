@@ -40,6 +40,8 @@ public class EvolutionSettings {
 	/// </summary>
 	public int mutationRate = 50;
 
+	public bool showOneAtATime = false;
+
 	/// <summary>
 	/// Encodes this instance into a string decodable by the Decode function.
 	/// </summary>

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +16,8 @@ public class ViewController : MonoBehaviour {
 	[SerializeField] private Text BCErrorMessage;
 	private Color ErrorMessageColor;
 	private Coroutine FadeRoutine;
+
+	[SerializeField] private Toggle showOneAtATimeToggle;
 
 	[SerializeField] private Text FitnessLabel;
 
@@ -36,6 +39,12 @@ public class ViewController : MonoBehaviour {
 
 		ErrorMessageColor = BCErrorMessage.color;
 		savedLabelColor = SavedLabel.color;
+
+		showOneAtATimeToggle.isOn = evolution.Settings.showOneAtATime;
+		showOneAtATimeToggle.onValueChanged.AddListener(delegate(bool arg0) {
+			evolution.Settings.showOneAtATime = arg0;
+			evolution.RefreshVisibleCreatures();
+		});
 	}
 	
 	// Update is called once per frame
@@ -67,7 +76,7 @@ public class ViewController : MonoBehaviour {
 		FitnessLabel.text = string.Format("Fitness: {0}%", percentageFitness);
 	}
 
-	public void UpdateStats(CreatureStats stats) {
+	public void UpdateStats(Creature creature, CreatureStats stats) {
 
 		UpdateFitness(stats.fitness);
 
@@ -84,6 +93,26 @@ public class ViewController : MonoBehaviour {
 			stringBuilder.AppendLine("Number of muscles:  " + stats.numberOfMuscles);
 			stringBuilder.AppendLine("Weight:  " + stats.weight + "kg");
 
+			// Add the neural network stats:
+			var networkStats = creature.brain.networkSettings;
+
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("Neural Net: " + (networkStats.numberOfIntermediateLayers + 2) + " layers");
+
+			//var numberOfInputs = Evolution.brainMap.Va
+
+			var numberOfInputs = creature.brain.NUMBER_OF_INPUTS;
+			var numberOfNodes = numberOfInputs + networkStats.nodesPerIntermediateLayer.Sum() + stats.numberOfMuscles;
+
+			var nodeSum = numberOfInputs.ToString() + " + ";
+			foreach (var intermed in networkStats.nodesPerIntermediateLayer) {
+				nodeSum += intermed.ToString() + " + ";
+			}
+			nodeSum += stats.numberOfMuscles.ToString();
+
+			stringBuilder.AppendLine(numberOfNodes + string.Format(" nodes ({0})", nodeSum));
+
+			// Display the stats
 			CreatureStatsLabelField.text = stringBuilder.ToString();
 		
 		} else {
