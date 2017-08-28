@@ -143,5 +143,4 @@ public class Bone : BodyComponent {
 		return distanceToLower < distanceToUpper ? lowerMuscleJoint : upperMuscleJoint;
 	}*/
 
-
 }

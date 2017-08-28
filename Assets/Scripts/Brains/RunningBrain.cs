@@ -68,12 +68,29 @@ public class RunningBrain : Brain {
 		inputs[0][1] = velocity.x;
 		// vertical velocity
 		inputs[0][2] = velocity.y;
+
+		// TODO: REMOVe debug
+		if (creature.DEBUG) print(string.Format("Velocity: ({0}, {1})", velocity.x, velocity.y));
+
 		// rotational velocity
 		inputs[0][3] = creature.GetAngularVelocity().z;
 		// number of points touching ground
 		inputs[0][4] = creature.GetNumberOfPointsTouchingGround();
 		// creature rotation
 		inputs[0][5] = creature.GetRotation();
+	}
+
+	/// <summary>
+	/// Prints all of the input values.
+	/// </summary>
+	protected virtual void DEBUG_PRINT() {
+
+		print("Distance from ground: " + inputs[0][0]);
+		print("Horiz vel: " + inputs[0][1]);
+		print("Vert vel: " + inputs[0][2]);
+		print("rot vel: " + inputs[0][3]);
+		print("points touchnig gr: " + inputs[0][4]);
+		print("rotation: " + inputs[0][5] + "\n");
 	}
 
 }

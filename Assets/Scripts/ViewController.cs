@@ -25,12 +25,18 @@ public class ViewController : MonoBehaviour {
 
 	[SerializeField] private GameObject AutoplaySettings;
 	[SerializeField] private Text AutoplayDurationLabel;
+	[SerializeField] private Toggle autoplayToggle;
 
 	[SerializeField] private Text SavedLabel;
 	private Color savedLabelColor;
 	private Coroutine savedLabelFadeRoutine;
 
+	[SerializeField] private Slider timeScaleSlider;
+	[SerializeField] private Text timeScaleLabel;
+
 	private Evolution evolution;
+
+	public bool shouldAutoplay { get { return autoplayToggle.isOn; } }
 
 	// Use this for initialization
 	void Start () {
@@ -44,6 +50,11 @@ public class ViewController : MonoBehaviour {
 		showOneAtATimeToggle.onValueChanged.AddListener(delegate(bool arg0) {
 			evolution.Settings.showOneAtATime = arg0;
 			evolution.RefreshVisibleCreatures();
+		});
+
+		timeScaleSlider.onValueChanged.AddListener(delegate(float arg0) {
+			evolution.TimeScale = arg0;
+			timeScaleLabel.text = arg0.ToString("0.0") + "X";
 		});
 	}
 	
@@ -84,11 +95,13 @@ public class ViewController : MonoBehaviour {
 			// There are more creature stats known
 			var stringBuilder = new StringBuilder();
 
-			stringBuilder.AppendLine("Simulation Time:  " + stats.simulationTime);
-			stringBuilder.AppendLine("Average Speed:  " + stats.averageSpeed.ToString("0.00") + " m/s");
-			stringBuilder.AppendLine("Horiz. distance from start:  " + stats.horizontalDistanceTravelled.ToString("0.0") + "m");
-			stringBuilder.AppendLine("Vert. distance from start:  " + stats.verticalDistanceTravelled.ToString("0.0") + "m");
-			stringBuilder.AppendLine("Maximum jumping height:  " + stats.maxJumpingHeight.ToString("0.0") + "m");
+			// Divide the lengths by 5 because of gravity scaling
+
+			stringBuilder.AppendLine("Simulation Time:  " + stats.simulationTime + "s");
+			stringBuilder.AppendLine("Average Speed:  " + (stats.averageSpeed / 5).ToString("0.00") + " m/s");
+			stringBuilder.AppendLine("Horiz. distance from start:  " + (stats.horizontalDistanceTravelled / 5).ToString("0.0") + "m");
+			stringBuilder.AppendLine("Vert. distance from start:  " + (stats.verticalDistanceTravelled / 5).ToString("0.0") + "m");
+			stringBuilder.AppendLine("Maximum jumping height:  " + (stats.maxJumpingHeight / 5).ToString("0.0") + "m");
 			stringBuilder.AppendLine("Number of bones:  " + stats.numberOfBones);
 			stringBuilder.AppendLine("Number of muscles:  " + stats.numberOfMuscles);
 			stringBuilder.AppendLine("Weight:  " + stats.weight + "kg");

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq; // REMOVE WHEN NOT TESTING!
@@ -16,7 +17,7 @@ abstract public class Brain : MonoBehaviour {
 	/** The Creature that this brain belongs to. */
 	public Creature creature;
 
-	public NeuralNetworkSettings networkSettings; // = new NeuralNetworkSettings(); // TODO: inject this value
+	public NeuralNetworkSettings networkSettings; 
 
 	private bool isActive;
 
@@ -50,6 +51,8 @@ abstract public class Brain : MonoBehaviour {
 	/** A value between 0 and 1 that determines how good the creature is at solving the task. 0 = bad. 1 = perfect. */
 	public float fitness;
 
+	private StringBuilder sBuilder;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -59,9 +62,20 @@ abstract public class Brain : MonoBehaviour {
 	virtual public void Update () {
 		
 		if (isActive) {
+
+			// DEBUG
+			/*if (creature == null) {
+				print("NO creature set");
+				creature = gameObject.GetComponent<Creature>();
+			}*/
+
+			//if (creature.DEBUG) DEBUG_PRINT_INPUTS();
 			
 			outputs = CalcOutputs();
 			ApplyOutputs(outputs);
+
+			//if (creature.DEBUG) DEBUG_PRINT_OUTPUTS();
+
 		} 
 	}
 
@@ -93,6 +107,11 @@ abstract public class Brain : MonoBehaviour {
 		for(int i = 0; i < outputs[0].Length; i++) {
 			float output = float.IsNaN(outputs[0][i]) ? 0 : outputs[0][i];
 			ApplyOutputToMuscle(output, muscles[i]);
+
+			// TODO: Remove debug
+			if (creature.DEBUG && float.IsNaN(outputs[0][i])) {
+				print(i + " NAN");
+			}
 		}
 	}
 
@@ -246,8 +265,6 @@ abstract public class Brain : MonoBehaviour {
 				}
 			}
 		}
-			
-				
 
 		return true;
 
@@ -394,5 +411,34 @@ abstract public class Brain : MonoBehaviour {
 		}
 
 		return sum;
+	}
+
+	/*protected virtual void DEBUG_PRINT() {
+		print("bedug rint");
+	}*/
+
+	protected virtual void DEBUG_PRINT_INPUTS() {
+
+		sBuilder = new StringBuilder();
+
+		sBuilder.AppendLine("Distance from ground: " + inputs[0][0]);
+		sBuilder.AppendLine("Horiz vel: " + inputs[0][1]);
+		sBuilder.AppendLine("Vert vel: " + inputs[0][2]);
+		sBuilder.AppendLine("rot vel: " + inputs[0][3]);
+		sBuilder.AppendLine("points touchnig gr: " + inputs[0][4]);
+		sBuilder.AppendLine("rotation: " + inputs[0][5] + "\n");
+
+		//print(sBuilder.ToString());
+	}
+
+	protected virtual void DEBUG_PRINT_OUTPUTS() {
+
+		//var sBuilder = new StringBuilder();
+
+		for (int i = 0; i < creature.muscles.Count; i++) {
+			sBuilder.AppendLine("Muscle " + (i+1) + " : " + outputs[0][i]);
+		}
+
+		print(sBuilder.ToString());
 	}
 }

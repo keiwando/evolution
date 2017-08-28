@@ -718,7 +718,8 @@ public class CreatureBuilder : MonoBehaviour {
 		DontDestroyOnLoad(creature.gameObject);
 
 		//SceneManager.LoadScene("EvolutionScene");
-		AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
+		//AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
+		AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("TestEvolutionScene");
 		sceneLoading.allowSceneActivation = true;
 		DontDestroyOnLoad(evolution.gameObject);
 		evolution.creature = creature;
@@ -763,7 +764,8 @@ public class CreatureBuilder : MonoBehaviour {
 
 		AttachCreatureToEvolution(evolution);
 
-		AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
+		//AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
+		AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("TestEvolutionScene");
 		sceneLoading.allowSceneActivation = true;
 		DontDestroyOnLoad(evolution.gameObject);
 

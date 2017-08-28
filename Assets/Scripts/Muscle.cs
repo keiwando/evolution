@@ -147,8 +147,10 @@ public class Muscle : BodyComponent {
 		spring.connectedAnchor = endingJoint.position;
 		spring.connectedBody = endingJoint.GetComponent<Rigidbody>();
 
-		spring.enablePreprocessing = false;
+		spring.enablePreprocessing = true;
 		spring.enableCollision = false;
+
+
 
 		// break forces
 		//spring.breakForce = 5000;

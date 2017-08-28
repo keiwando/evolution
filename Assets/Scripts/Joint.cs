@@ -97,7 +97,8 @@ public class Joint : BodyComponent {
 		//spring.spring = 1000f;
 		//joint.spring = spring;
 		//joint.connectedAnchor = new Vector3(0, 1.14f, 0);
-		joint.enablePreprocessing = false;
+		joint.enablePreprocessing = true;
+		joint.enableCollision = false;
 
 		joint.connectedBody = bone.gameObject.GetComponent<Rigidbody>();
 
@@ -168,7 +169,6 @@ public class Joint : BodyComponent {
 		if (collider.tag.ToUpper() == "OBSTACLE") 
 			isCollidingWithObstacle = false;
 		else
-			isCollidingWithGround = false;
-		
+			isCollidingWithGround = false;	
 	}
 }

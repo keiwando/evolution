@@ -43,6 +43,8 @@ public class Creature : MonoBehaviour {
 
 	private float maxJumpingHeight;
 
+	public bool DEBUG = false;
+
 	// Use this for initialization
 	void Start () {
 		groundDistanceLayerMask = LayerMask.NameToLayer("Ground");
@@ -98,7 +100,10 @@ public class Creature : MonoBehaviour {
 		RaycastHit hit;
 
 		if(Physics.Raycast(GetLowestPoint(), Vector3.down, out hit, groundDistanceLayerMask)) {
-			return hit.distance;
+			//if (DEBUG) print("Collider name: " + hit.collider.gameObject.name + " :tag: " + hit.collider.gameObject.tag);
+			if (hit.collider.gameObject.tag.ToUpper() == "GROUND") {
+				return hit.distance;
+			}
 		}
 
 		return 0f;
@@ -135,7 +140,7 @@ public class Creature : MonoBehaviour {
 		return velocity;
 	}
 
-	public Vector3 GetAngularVelocity() {
+	/*public Vector3 GetAngularVelocity() {
 
 		if (joints.Count == 0) return Vector3.zero;
 
@@ -151,6 +156,24 @@ public class Creature : MonoBehaviour {
 		velocity.z /= joints.Count;
 
 		return velocity;
+	}*/
+
+	public Vector3 GetAngularVelocity() {
+
+		if (bones.Count == 0) return Vector3.zero;
+
+		//calculate the average velocity of the bones.
+		Vector3 velocity = Vector3.zero;
+
+		foreach (var bone in bones) {
+			velocity += bone.GetComponent<Rigidbody>().angularVelocity;
+		}
+
+		velocity.x /= bones.Count;
+		velocity.y /= bones.Count;
+		velocity.z /= bones.Count;
+
+		return velocity;
 	}
 
 	public float GetNumberOfPointsTouchingGround() {
@@ -159,7 +182,7 @@ public class Creature : MonoBehaviour {
 		foreach (Joint joint in joints) {
 			count += joint.isCollidingWithGround ? 1 : 0 ;
 		}
-
+			
 		return count;
 	}
 
@@ -191,7 +214,7 @@ public class Creature : MonoBehaviour {
 		foreach( Bone bone in bones) {
 			rotation += bone.transform.rotation.z;
 		}
-
+			
 		return rotation / bones.Count;
 	}
 
@@ -272,7 +295,7 @@ public class Creature : MonoBehaviour {
 		stats.numberOfBones = bones.Count;
 		stats.numberOfMuscles = muscles.Count;
 		stats.simulationTime = Mathf.RoundToInt(brain.SimulationTime);
-		stats.weight = muscles.Count + 2 * bones.Count;
+		stats.weight = joints.Count + 2 * bones.Count;
 		stats.maxJumpingHeight = maxJumpingHeight;
 
 		return stats;
@@ -282,6 +305,7 @@ public class Creature : MonoBehaviour {
 
 		foreach (var bone in bones) {
 			bone.gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
+			bone.muscleJoint.gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
 		}
 
 		foreach (var joint in joints) {
@@ -297,6 +321,7 @@ public class Creature : MonoBehaviour {
 
 		foreach (var bone in bones) {
 			bone.gameObject.layer = LayerMask.NameToLayer("Creature");
+			bone.muscleJoint.gameObject.layer = LayerMask.NameToLayer("Creature");
 		}
 
 		foreach (var joint in joints) {
@@ -306,6 +331,26 @@ public class Creature : MonoBehaviour {
 		foreach (var muscle in muscles) {
 			muscle.gameObject.layer = LayerMask.NameToLayer("Creature");
 		}
+	}
+
+	public void SetOnBestCreatureLayer() {
+
+		foreach (var bone in bones) {
+			bone.gameObject.layer = LayerMask.NameToLayer("BestCreatureCreature");
+			bone.muscleJoint.gameObject.layer = LayerMask.NameToLayer("BestCreatureCreature");
+		}
+
+		foreach (var joint in joints) {
+			joint.gameObject.layer = LayerMask.NameToLayer("BestCreatureJoint");
+		}
+
+		foreach (var muscle in muscles) {
+			muscle.gameObject.layer = LayerMask.NameToLayer("BestCreatureCreature");
+		}
+	}
+
+	void OnDestroy() {
+		//print("Creature script destroyed");
 	}
 }
 

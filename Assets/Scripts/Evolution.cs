@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 public class Evolution : MonoBehaviour {
 
@@ -31,7 +32,7 @@ public class Evolution : MonoBehaviour {
 		switch(task) {
 		case Task.RUNNING: return "Running";
 		case Task.JUMPING: return "Jumping"; 
-		case Task.OBSTACLE_JUMP: return "ObstacleJump";
+		case Task.OBSTACLE_JUMP: return "Obstacle Jump";
 		case Task.CLIMBING: return "Climbing";
 		}
 
@@ -141,6 +142,9 @@ public class Evolution : MonoBehaviour {
 	// Auto-Save
 	private AutoSaver autoSaver;
 
+	// TODO: Remove after debugging
+	private bool repeatGenDebug = false;
+
 	// Use this for initialization
 	void Start () {
 
@@ -156,6 +160,17 @@ public class Evolution : MonoBehaviour {
 	void Update () {
 
 		HandleKeyboardInput();
+
+		// TODO: DEBUG Remove
+		if (Input.GetKeyDown(KeyCode.P)) {
+			//toFollow.DEBUG = !toFollow.DEBUG;
+			var toggleCreature = currentCreatureBatch[Camera.main.GetComponent<CameraFollowScript>().currentlyWatchingIndex];
+			toggleCreature.DEBUG = !toggleCreature.DEBUG;
+		}
+
+		if (Input.GetKeyDown(KeyCode.R)) {
+			repeatGenDebug = !repeatGenDebug;
+		}
 	}
 
 	private void HandleKeyboardInput() {
@@ -342,6 +357,7 @@ public class Evolution : MonoBehaviour {
 		currentGeneration = CreateCreatures();
 		ApplyBrains(currentGeneration, true);
 
+
 		// Batch simulation
 		currentlySimulatingBatch = 1;
 		simulateInBatchesCached = settings.simulateInBatches;
@@ -428,7 +444,6 @@ public class Evolution : MonoBehaviour {
 			creature.Alive = false;
 		}
 
-
 		EvaluateCreatures(currentGeneration);
 		SortGenerationByFitness();
 
@@ -436,6 +451,12 @@ public class Evolution : MonoBehaviour {
 		// save the best creature
 		//bestCreatures[currentGenerationNumber] = currentGeneration[0];
 		var best = currentGeneration[0];
+		//print(string.Format("Gen: {0} \n{1}", currentGenerationNumber, best.brain.ToChromosomeString()));
+		//var distances = currentGeneration.Select(delegate(Creature arg) {
+		//	return arg.GetXPosition().ToString("0.000");
+		//});
+		//print("Distances: " + string.Join(", ", distances.ToArray()));
+
 		//BCController.AddBestCreature(currentGenerationNumber, best.brain.ToChromosomeString(), best.brain.fitness);
 		BCController.AddBestCreature(currentGenerationNumber, best.brain.ToChromosomeString(), best.GetStatistics());
 
@@ -445,8 +466,13 @@ public class Evolution : MonoBehaviour {
 			viewController.ShowSavedLabel();
 		}
 
+		// TODO: REmove debug if statement
+		if (!repeatGenDebug) {
+
 		currentChromosomes = CreateNewChromosomesFromGeneration();
 		currentGenerationNumber++;
+
+		}
 
 		KillGeneration();
 		currentGeneration = CreateGeneration();
@@ -569,7 +595,7 @@ public class Evolution : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Picks an index between 0 and POPULATION_SIZE. The first indices as more likely to be picked. The weights decrease towards to.
+	/// Picks an index between 0 and POPULATION_SIZE. The first indices are more likely to be picked. The weights decrease towards to.
 	/// </summary>
 	/// <returns>The randomly weighted index.</returns>
 	private int PickRandomWeightedIndex() {
@@ -635,7 +661,7 @@ public class Evolution : MonoBehaviour {
 		return creatures;
 	}
 
-	private Creature CreateCreature(){
+	public Creature CreateCreature(){
 
 		Creature creat = (Creature) ((GameObject) Instantiate(creature.gameObject, dropHeight, Quaternion.identity)).GetComponent<Creature>();
 		creat.RefreshLineRenderers();
