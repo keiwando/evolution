@@ -142,10 +142,6 @@ public class Evolution : MonoBehaviour {
 	// Auto-Save
 	private AutoSaver autoSaver;
 
-	// DEBUG: TODO: REMOVE!!
-	public Creature currentBest;
-	public Creature[] currentBestArr;
-
 	// Use this for initialization
 	void Start () {
 
@@ -239,29 +235,8 @@ public class Evolution : MonoBehaviour {
 			foreach (var creature in currentCreatureBatch) {
 				creature.SetOnVisibleLayer();
 			}
-
-			// TODO: REMOVE DEBUG
-			print("DEBUG 4");
-			foreach (var creature in currentBestArr) {
-				creature.SetOnVisibleLayer();
-			}
-
-			// END DEBUG
 		}
 	}
-
-
-
-	/*private void TestCopy() {
-		
-		Muscle lastMuscle = null;
-		foreach(Creature creatures in currentGeneration) {
-			if (lastMuscle != null) {
-				print("Muscles Equal: " + lastMuscle.Equals(creature.muscles[0]));
-			}
-			lastMuscle = creature.muscles[0];
-		}
-	}*/
 
 	/// <summary>
 	/// Continues the evolution from the save state. 
@@ -314,9 +289,6 @@ public class Evolution : MonoBehaviour {
 		currentCreatureBatch = new Creature[currentBatchSize]; 
 
 		Array.Copy(currentGeneration, 0, currentCreatureBatch, 0, currentBatchSize);
-		//Array.Copy(currentBestArr, 0, currentCreatureBatch, 0, currentBatchSize);
-		//currentGeneration = currentBestArr;
-
 
 		creature.gameObject.SetActive(false);
 
@@ -327,8 +299,6 @@ public class Evolution : MonoBehaviour {
 		cameraFollow.currentlyWatchingIndex = 0;
 
 		RefreshVisibleCreatures();
-
-		print("DEBUG 5");
 	}
 
 	/** Starts the Evolution for the current */
@@ -376,7 +346,6 @@ public class Evolution : MonoBehaviour {
 		viewController.UpdateGeneration(currentGenerationNumber);
 
 		autoSaver = new AutoSaver();
-		//TestCopy();
 	}
 		
 	/// <summary>
@@ -385,32 +354,14 @@ public class Evolution : MonoBehaviour {
 	private void SimulateGeneration() {
 
 		foreach (Creature creature in currentGeneration) {
-			print("alive false: " + creature.name);
 			creature.Alive = false;
 			creature.gameObject.SetActive(false);
 		}
 
 		foreach (Creature creature in currentCreatureBatch) {
-			print("alive 2 true: " + creature.name);
 			creature.Alive = true;
 			creature.gameObject.SetActive(true);
 		}
-
-		// TODO: REMOVE DEBUG
-		/*
-		foreach (Creature creature in currentBestArr) {
-			print("alive 3 false: " + creature.name);
-			creature.Alive = false;
-			creature.gameObject.SetActive(false);
-		}
-
-		foreach (Creature creature in currentBestArr) {
-			print("alive 4 true: " + creature.name);
-			creature.Alive = true;
-			creature.gameObject.SetActive(true);
-		}*/
-
-		// END DEBUG
 
 		StartCoroutine(StopSimulationAfterTime(settings.simulationTime));
 	}
@@ -638,33 +589,6 @@ public class Evolution : MonoBehaviour {
 			creature.name = "Creature " + (i+1);
 		}
 
-
-		// TODO: REMOVE DEBUG
-		/*
-		print("Debug 1");
-		//currentBest = CreateCreature();
-		//ApplyBrain(currentBest, currentChromosomes[0]);
-		//currentBest.name = "Current Best Test";
-		//currentBest.Alive = true;
-
-		var testSet = new List<Creature>();
-
-		for(int i = 0; i < settings.populationSize; i++) {
-			creature = CreateCreature();
-			ApplyBrain(creature, currentChromosomes[i]);
-			testSet.Add(creature);
-			//creatures[i] = creature;
-
-			creature.name = "Test Creature " + (i+1);
-
-			//creature.Alive = true;
-		}
-
-		currentBestArr = testSet.ToArray();
-		// DEBUG END
-		*/
-
-
 		this.creature.gameObject.SetActive(false);
 		return creatures;
 	}
@@ -753,7 +677,6 @@ public class Evolution : MonoBehaviour {
 		var bestChromosomes = BCController.GetBestChromosomes();
 		var currentChromosomes = new List<string>(this.currentChromosomes);
 
-		//return EvolutionSaver.WriteSaveFile(creatureName, settings.task, settings.simulationTime, currentGenerationNumber, creatureSaveData, bestChromosomes, currentChromosomes); 
 		return EvolutionSaver.WriteSaveFile(creatureName, settings, brainSettings, currentGenerationNumber, creatureSaveData, bestChromosomes, currentChromosomes);
 	}
 
@@ -762,25 +685,5 @@ public class Evolution : MonoBehaviour {
 		if (autoSaver != null) {
 			autoSaver.Enabled = value;	
 		}
-	}
-
-	/** Creates a generation of creatures with the current set of Chromosomes. */
-	public Creature[] CreateTestCreatureSet(string chromosome) {
-
-		this.creature.gameObject.SetActive(true);
-
-		Creature[] creatures = new Creature[settings.populationSize];
-
-		for(int i = 0; i < settings.populationSize; i++) {
-			
-			var creature = CreateCreature();
-			ApplyBrain(creature, chromosome);
-			creatures[i] = creature;
-
-			creature.name = "Best Creature " + (i+1);
-		}
-
-		this.creature.gameObject.SetActive(false);
-		return creatures;
 	}
 }

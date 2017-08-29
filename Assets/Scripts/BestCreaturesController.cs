@@ -57,9 +57,6 @@ public class BestCreaturesController : MonoBehaviour {
 
 	private Evolution evolution;
 
-	// TODO: DEBUG:
-	private Creature[] currentTestSet;
-
 	// Use this for initialization
 	void Start () {
 
@@ -106,8 +103,7 @@ public class BestCreaturesController : MonoBehaviour {
 		MainCamera.SwitchToFullscreen();
 		BCCamera.SwitchToMiniViewport();
 	}
-
-	//public void AddBestCreature(int generation, string chromosome, float fitness) {
+		
 	public void AddBestCreature(int generation, string chromosome, CreatureStats stats) {
 		
 		if (generation <= 0) throw new UnityException();
@@ -116,7 +112,6 @@ public class BestCreaturesController : MonoBehaviour {
 
 		BestCreatures.Add(chromosome);
 
-		//BestFitness.Add(fitness);	  
 		BestCreatureStats.Add(stats);
 
 		if (currentBest == null) {
@@ -183,74 +178,6 @@ public class BestCreaturesController : MonoBehaviour {
 		viewController.UpdateStats(this.currentBest, BestCreatureStats[generation - 1]);
 	}
 
-	/*private void SpawnCreature(string chromosome) {
-
-		if (this.creature == null) return;
-
-		if (currentBest != null) {
-			Destroy(currentBest.gameObject);
-		}
-
-		this.creature.gameObject.SetActive(true);
-			
-		var creat = evolution.CreateCreature();
-		evolution.ApplyBrain(creat, chromosome);
-
-		this.creature.gameObject.SetActive(false);
-
-		BCCamera.toFollow = creat;
-		//creat.FloorHeight = floorHeight.position.y;
-		//creat.Obstacle = obstacle;
-		creat.SetOnBestCreatureLayer();
-		//creat.SetOnVisibleLayer();
-		currentBest = creat;
-
-		creat.Alive = true;
-		print("Chromosome test: " + TestChromosome(chromosome));
-	}
-	
-	private void SpawnCreature(string chromosome) {
-
-		if (this.creature == null) return;
-
-		if (currentBest != null) {
-			Destroy(currentBest.gameObject);
-		}
-
-		if (currentTestSet != null) {
-			foreach (var creat in currentTestSet) {
-				Destroy(creat.gameObject);
-			}
-		}
-
-		var creatures = evolution.CreateTestCreatureSet(chromosome);
-		//var creatures = DuplicateCurrentSimulation();
-		currentTestSet = creatures;
-
-		//if (creatures.Length > 0) {
-
-		//var c = evolution.CreateCreature();
-
-		BCCamera.toFollow = creatures[0];
-		currentBest = creatures[0];
-
-		foreach (var creat in creatures) {
-			creat.SetOnBestCreatureLayer();
-
-			creat.Alive = false;
-			creat.gameObject.SetActive(false);
-		}
-
-		foreach (var creat in creatures) {
-			//creat.SetOnBestCreatureLayer();
-
-			creat.Alive = true;	
-			creat.gameObject.SetActive(true);
-		}
-		//}
-		//print("Chromosome test: " + TestChromosome(chromosome));
-	}*/
-
 	private void SpawnCreature(string chromosome) {
 
 		if (this.creature == null) return;
@@ -267,14 +194,12 @@ public class BestCreaturesController : MonoBehaviour {
 
 		creature.SetOnBestCreatureLayer();
 
+		// THIS IS NEEDED! DO NOT REMOVE! IMPORTANT!
 		creature.Alive = false;
 		creature.gameObject.SetActive(false);
 
 		creature.Alive = true;
 		creature.gameObject.SetActive(true);
-
-		//}
-		//print("Chromosome test: " + TestChromosome(chromosome));
 	}
 
 	private Creature CreateCreature(){
@@ -282,40 +207,6 @@ public class BestCreaturesController : MonoBehaviour {
 		Creature creat = (Creature) ((GameObject) Instantiate(creature.gameObject, dropHeight, Quaternion.identity)).GetComponent<Creature>();
 		creat.RefreshLineRenderers();
 		return creat;
-	}
-
-	private Creature[] CreateTestSet(string chromosome) {
-
-		this.creature.gameObject.SetActive(true);
-
-		var bestCreatures = new List<Creature>();
-
-		for (int i = 0; i < 10; i++) {
-
-			var creat = evolution.CreateCreature();
-			evolution.ApplyBrain(creat, chromosome);
-
-			creat.name = "Best Creature " + (i + 1);
-
-			bestCreatures.Add(creat);
-		}
-
-		this.creature.gameObject.SetActive(false);
-
-		return bestCreatures.ToArray();
-	}
-
-	private Creature[] DuplicateCurrentSimulation() {
-
-		var creatures = new List<Creature>();
-
-		foreach (var creat in evolution.currentGeneration) {
-			//creatures.Add(Instantiate(creat));
-			var c = (Creature)((GameObject)Instantiate(creat.gameObject)).GetComponent<Creature>();
-			creatures.Add(c);
-		}
-
-		return creatures.ToArray();
 	}
 
 	public void GoToNextGeneration() {
@@ -395,22 +286,5 @@ public class BestCreaturesController : MonoBehaviour {
 		}
 
 		return bestChroms;
-	}
-
-	/// <summary>
-	/// Checks if the given chromosome is part of the currently simulating generation.
-	/// </summary>
-	/// <param name="chromosome">Chromosome.</param>
-	private string TestChromosome(string chromosome) {
-
-		/*var allChromosomes = evolution.currentGeneration.Select(delegate(Creature arg) {
-			return arg.brain.ToChromosomeString();
-		});*/
-
-		if (evolution.currentGeneration == null || evolution.currentGeneration.Count() == 0) return "";
-
-		return evolution.currentGeneration.First(delegate(Creature arg) {
-			return arg.brain.ToChromosomeString() == chromosome;
-		}).name;
 	}
 }
