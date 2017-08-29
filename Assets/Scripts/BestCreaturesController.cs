@@ -62,7 +62,6 @@ public class BestCreaturesController : MonoBehaviour {
 		evolution = GameObject.FindGameObjectWithTag("Evolution").GetComponent<Evolution>();
 		
 		BestCreatures = new List<string>();
-		//BestFitness = new List<float>();
 		BestCreatureStats = new List<CreatureStats>();
 
 		BCThumbScreen.gameObject.SetActive(false);
@@ -71,20 +70,6 @@ public class BestCreaturesController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		// TODO: Remove Debug
-
-		if (Input.GetKeyDown(KeyCode.D)) {
-			currentBest.DEBUG = !currentBest.DEBUG;
-		}
-
-		if (Input.GetKeyDown(KeyCode.I)) {
-			print("-----------------------------------------------------------------------------------------------");
-		}
-
-		if (Input.GetKeyDown(KeyCode.V)) {
-			var chromosome = currentBest.brain.ToChromosomeString();
-			print(string.Format("Gen: {0} \n{1}", BestCreatures.IndexOf(chromosome) + 1, chromosome));
-		}
 	}
 
 	public void ShowBCThumbScreen() {
@@ -188,9 +173,6 @@ public class BestCreaturesController : MonoBehaviour {
 
 		currentGeneration = generation;
 		viewController.UpdateBCGeneration(generation);
-		//viewController.UpdateFitness(BestFitness[generation - 1]);
-		//viewController.UpdateFitness(BestCreatureStats[generation - 1].fitness); // TODO: Change 
-		//viewController.UpdateStats(BestCreatureStats[generation - 1]);
 		viewController.UpdateStats(this.currentBest, BestCreatureStats[generation - 1]);
 	}
 
@@ -202,11 +184,10 @@ public class BestCreaturesController : MonoBehaviour {
 		if (currentBest != null) {
 			Destroy(currentBest.gameObject);
 		}
-
-		//var creat = CreateCreature();
+			
 		var creat = evolution.CreateCreature();
 		evolution.ApplyBrain(creat, chromosome);
-		//creat.FloorHeight = floorHeight.position.y;
+		creat.FloorHeight = floorHeight.position.y;
 		creat.Obstacle = obstacle;
 		creat.Alive = true;
 
@@ -221,7 +202,6 @@ public class BestCreaturesController : MonoBehaviour {
 
 	private Creature CreateCreature(){
 
-		//Creature creat = (Creature) ((GameObject) Instantiate(creature.gameObject, dropHeight + floorHeight.position, Quaternion.identity)).GetComponent<Creature>();
 		Creature creat = (Creature) ((GameObject) Instantiate(creature.gameObject, dropHeight, Quaternion.identity)).GetComponent<Creature>();
 		creat.RefreshLineRenderers();
 		return creat;
@@ -264,9 +244,6 @@ public class BestCreaturesController : MonoBehaviour {
 	private void StopAutoPlay() {
 		
 		if (autoplayRoutine != null) StopCoroutine(autoplayRoutine);
-		//StopCoroutine(autoplayRoutine);
-		//print("Stopped Autoplay");
-		//print(autoplayRoutine);
 	}
 
 	public void AutoPlaySwitched(bool value) {
@@ -286,43 +263,17 @@ public class BestCreaturesController : MonoBehaviour {
 		viewController.UpdateAutoPlayDurationLabel(value);
 	}
 
-	/*public void SetBestChromosomes(List<ChromosomeInfo> bestChroms) {
-
-		BestCreatures.Clear();
-		BestFitness.Clear();
-		//BestCreatureStats.Clear();
-
-		foreach (var chromosomeInfo in bestChroms) {
-
-			BestCreatures.Add(chromosomeInfo.chromosome);
-			BestFitness.Add(chromosomeInfo.fitness);
-		}
-	}*/
-
 	public void SetBestChromosomes(List<ChromosomeStats> bestChroms) {
 
 		BestCreatures.Clear();
-		//BestFitness.Clear();
 		BestCreatureStats.Clear();
 
 		foreach (var chromosomeInfo in bestChroms) {
 
 			BestCreatures.Add(chromosomeInfo.chromosome);
 			BestCreatureStats.Add(chromosomeInfo.stats);
-			//BestFitness.Add(chromosomeInfo.fitness);
 		}
 	}
-
-	/*public List<ChromosomeInfo> GetBestChromosomes() {
-
-		var bestChroms = new List<ChromosomeInfo>();
-
-		for (int i = 0; i < BestCreatures.Count; i++) {
-			bestChroms.Add(new ChromosomeInfo(BestCreatures[i], BestFitness[i]));
-		}
-
-		return bestChroms;
-	}*/
 
 	public List<ChromosomeStats> GetBestChromosomes() {
 

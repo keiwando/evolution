@@ -62,20 +62,9 @@ abstract public class Brain : MonoBehaviour {
 	virtual public void Update () {
 		
 		if (isActive) {
-
-			// DEBUG
-			/*if (creature == null) {
-				print("NO creature set");
-				creature = gameObject.GetComponent<Creature>();
-			}*/
-
-			//if (creature.DEBUG) DEBUG_PRINT_INPUTS();
 			
 			outputs = CalcOutputs();
 			ApplyOutputs(outputs);
-
-			//if (creature.DEBUG) DEBUG_PRINT_OUTPUTS();
-
 		} 
 	}
 
@@ -107,11 +96,6 @@ abstract public class Brain : MonoBehaviour {
 		for(int i = 0; i < outputs[0].Length; i++) {
 			float output = float.IsNaN(outputs[0][i]) ? 0 : outputs[0][i];
 			ApplyOutputToMuscle(output, muscles[i]);
-
-			// TODO: Remove debug
-			if (creature.DEBUG && float.IsNaN(outputs[0][i])) {
-				print(i + " NAN");
-			}
 		}
 	}
 
@@ -413,9 +397,6 @@ abstract public class Brain : MonoBehaviour {
 		return sum;
 	}
 
-	/*protected virtual void DEBUG_PRINT() {
-		print("bedug rint");
-	}*/
 
 	protected virtual void DEBUG_PRINT_INPUTS() {
 

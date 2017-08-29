@@ -10,12 +10,6 @@ public class JumpingBrain : Brain {
 		}
 	}
 
-	/*protected override int[] IntermediateLayerSizes {
-		get {
-			return new int[]{ 10 };
-		}
-	}*/
-
 
 	// Use this for initialization
 	void Start () {
@@ -80,8 +74,5 @@ public class JumpingBrain : Brain {
 
 		// (weights) minHeight : maxHeight => 4 : 1
 		maxWeightedAverageHeight = Mathf.Max((4 * minHeight + maxHeight) / 5, maxWeightedAverageHeight);
-
-		//print(maxWeightedAverageHeight + " : " + (maxHeight / (4 * MAX_HEIGHT)) + " : " + maxHeight);
-
 	}
 }

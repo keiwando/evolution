@@ -144,8 +144,6 @@ public class EvolutionSaver {
 			filename += ".txt";
 		}
 
-		//var creatureName = filename.Split('-')[0].Replace(" ", "");
-
 		// check if the file exists
 		var path = RESOURCE_PATH; //Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
 		path = Path.Combine(path, filename);
@@ -176,68 +174,6 @@ public class EvolutionSaver {
 			// V1
 			LoadSimulationFromSaveFileV1(filename, contents, creatureBuilder, evolution);
 		}
-
-		/*
-		try {
-			var version = int.Parse(components[0]);
-
-			if (version == 2) {
-
-				LoadSimulationFromSaveFileV2(filename, contents, creatureBuilder, evolution);
-			
-			} else {
-				throw new System.Exception("Unknown Save file format!");
-			}
-
-		} catch {
-			LoadSimulationFromSaveFileV1(filename, contents, creatureBuilder, evolution);
-		}*/
-
-		/*var taskType = Evolution.TaskForNumber(int.Parse(components[0].Replace(Environment.NewLine, "")));
-
-		var timePerGen = int.Parse(components[1].Replace(Environment.NewLine, ""));
-
-		var creatureData = components[2];
-		CreatureSaver.LoadCreatureFromContents(creatureData, creatureBuilder);
-
-		var bestChromosomesData = new List<string>(components[3].Split(NEWLINE_SPLIT, StringSplitOptions.None));
-		var bestChromosomes = new List<ChromosomeInfo>();
-
-		foreach (var chromosomeData in bestChromosomesData) {
-
-			if (chromosomeData != "") {
-				bestChromosomes.Add(ChromosomeInfo.FromString(chromosomeData));	
-			}
-		}
-
-		var chromosomeComponents = components[4].Split(NEWLINE_SPLIT, StringSplitOptions.None);
-		var currentChromosomes = new List<string>();
-
-		foreach (var chromosome in chromosomeComponents) {
-
-			if (chromosome != "") {
-				currentChromosomes.Add(chromosome);
-			}
-		}
-
-		var currentGeneration = bestChromosomes.Count + 1;
-
-		var settings = new EvolutionSettings();
-		settings.task = taskType;
-		settings.simulationTime = timePerGen;
-		settings.populationSize = currentChromosomes.Count;
-
-		var networkSettings = new NeuralNetworkSettings();
-
-		//evolution.Settings.task = taskType;
-		//evolution.Settings = settings;
-
-		creatureBuilder.ContinueEvolution(evolution, () => {
-
-			CreatureSaver.SaveCurrentCreatureName(creatureName);
-			//evolution.ContinueEvolution(currentGeneration, timePerGen, bestChromosomes, currentChromosomes);
-			evolution.ContinueEvolution(currentGeneration, settings, networkSettings, bestChromosomes, currentGeneration);
-		});*/
 	}
 
 	/// <summary>
@@ -249,15 +185,6 @@ public class EvolutionSaver {
 
 		var creatureName = filename.Split('-')[0].Replace(" ", "");
 
-		// check if the file exists
-		/*var path = RESOURCE_PATH; //Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
-		path = Path.Combine(path, filename);
-
-		var reader = new StreamReader(path);
-		var contents = reader.ReadToEnd();
-		reader.Close();*/
-
-		//var components = contents.Split(SPLIT_ARRAY, System.StringSplitOptions.None);
 		var components = content.Split(SPLIT_ARRAY, System.StringSplitOptions.None);
 
 		// extract the save data from the file contents.
@@ -302,13 +229,11 @@ public class EvolutionSaver {
 
 		var networkSettings = new NeuralNetworkSettings();
 
-		//evolution.Settings.task = taskType;
 		evolution.Settings = settings;
 
 		creatureBuilder.ContinueEvolution(evolution, () => {
 
 			CreatureSaver.SaveCurrentCreatureName(creatureName);
-			//evolution.ContinueEvolution(currentGeneration, timePerGen, bestChromosomes, currentChromosomes);
 			evolution.ContinueEvolution(currentGeneration, settings, networkSettings, bestChromosomes, currentChromosomes);
 		});
 	}
@@ -352,13 +277,11 @@ public class EvolutionSaver {
 
 		var currentGeneration = bestChromosomes.Count + 1;
 
-		//evolution.Settings.task = taskType;
 		evolution.Settings = evolutionSettings;
 
 		creatureBuilder.ContinueEvolution(evolution, () => {
 
 			CreatureSaver.SaveCurrentCreatureName(creatureName);
-			//evolution.ContinueEvolution(currentGeneration, timePerGen, bestChromosomes, currentChromosomes);
 			evolution.ContinueEvolution(currentGeneration, evolutionSettings, networkSettings, bestChromosomes, currentChromosomes);
 		});
 	}

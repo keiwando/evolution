@@ -112,13 +112,10 @@ public class SettingsMenu : MonoBehaviour {
 		mutationRateInput.onEndEdit.AddListener(delegate {
 			MutationRateChanged();
 		});
-
-		//SetupDefaultNumbers();
 	}
 
 	private void SetupTaskDropDown() {
 
-		//var taskString = PlayerPrefs.GetString(TASK_KEY, "RUNNING");
 		var settings = LoadEvolutionSettings();
 		var taskString = Evolution.TaskToString(settings.task).ToUpper();
 
@@ -211,7 +208,6 @@ public class SettingsMenu : MonoBehaviour {
 
 	private int ClampBatchSize(int size) {
 
-		//var populationSize = Mathf.Clamp(Int32.Parse(populationSizeInput.text), 2, 10000000);
 		var settings = LoadEvolutionSettings();
 		var populationSize = settings.populationSize;
 
@@ -220,7 +216,6 @@ public class SettingsMenu : MonoBehaviour {
 
 	public void BatchSizeToggled(bool val) {
 
-		//PlayerPrefs.SetInt(BATCH_SIMULATION_ENABLED_KEY, val ? 1 : 0);
 		batchSizeInput.gameObject.SetActive(val);
 
 		var settings = LoadEvolutionSettings();
@@ -234,7 +229,6 @@ public class SettingsMenu : MonoBehaviour {
 	public Evolution.Task GetTask() {
 
 		var taskString = taskDropdown.captionText.text.ToUpper();
-		//PlayerPrefs.SetString(TASK_KEY, taskString);
 		var task = Evolution.TaskFromString(taskString);
 		
 		var settings = LoadEvolutionSettings();
@@ -247,32 +241,6 @@ public class SettingsMenu : MonoBehaviour {
 	public EvolutionSettings GetEvolutionSettings() {
 		return LoadEvolutionSettings();
 	}
-	/// <summary>
-	/// Creates and returns an EvolutionSettings object based on the current user inputs.
-	/// </summary>
-	/*public EvolutionSettings GetEvolutionSettings() {
-
-		var settings = new EvolutionSettings();
-
-		settings.batchSize = GetBatchSize();
-		settings.keepBestCreatures = keepBestCreaturesToggle.isOn;
-		settings.populationSize = GetPopulationSize();
-		settings.simulationTime = GetSimulationTime();
-		settings.task = GetTask();
-		settings.mutationRate = GetMutationRate();
-
-		return settings;
-	}*/
-
-	/// <summary>
-	/// Saves the evolution settings based on the current input values.
-	/// </summary>
-	/*public void SaveEvolutionSettings() {
-
-		var settings = GetEvolutionSettings();
-
-		SaveEvolutionSettings(settings);
-	}*/
 
 	private void SaveEvolutionSettings(EvolutionSettings settings) {
 		PlayerPrefs.SetString(EVOLUTION_SETTINGS_KEY, settings.Encode());

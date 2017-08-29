@@ -112,8 +112,6 @@ public class ViewController : MonoBehaviour {
 			stringBuilder.AppendLine();
 			stringBuilder.AppendLine("Neural Net: " + (networkStats.numberOfIntermediateLayers + 2) + " layers");
 
-			//var numberOfInputs = Evolution.brainMap.Va
-
 			var numberOfInputs = creature.brain.NUMBER_OF_INPUTS;
 			var numberOfNodes = numberOfInputs + networkStats.nodesPerIntermediateLayer.Sum() + stats.numberOfMuscles;
 

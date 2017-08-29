@@ -20,7 +20,6 @@ public class TaskManager : MonoBehaviour {
 
 		evolution = GameObject.FindGameObjectWithTag("Evolution").GetComponent<Evolution>();
 
-		//TODO: Update this
 		SetupTask();
 	}
 	

@@ -6,17 +6,6 @@ using System.Collections.Generic;
 
 public class ButtonManager : MonoBehaviour {
 
-	// MARK: PlayerPref keys
-
-	//private const string POPULATION_COUNT_KEY = "POPULATION_COUNT";
-	//private const string GENERATION_TIME_KEY = "GENERATION_TIME";
-	//private const string TASK_KEY = "EVOLUTION_TASK";
-
-	//private static string[] TASK_OPTIONS = new string[] {"RUNNING", "JUMPING", "OBSTACLE JUMP", "CLIMBING"};
-
-	//private static int DEFAULT_POPULATION_COUNT = 10;
-	//private static int IOS_DEFAULT_POPULATION_COUNT = 5;
-
 	private float CAMERA_MAX_X;
 	private float CAMERA_MIN_X;
 	private float CAMERA_MAX_Y;
@@ -75,10 +64,6 @@ public class ButtonManager : MonoBehaviour {
 		CAMERA_MAX_X = cameraPos.x + CAMERA_DX;
 		CAMERA_MIN_Y = cameraPos.y - CAMERA_DY;
 		CAMERA_MAX_Y = cameraPos.y + CAMERA_DY;
-
-		//SetupInputFields();
-		//SetupTaskDropDown();
-		//SetupDropDown();
 	}
 	
 	// Update is called once per frame
@@ -96,7 +81,6 @@ public class ButtonManager : MonoBehaviour {
 	public void SetupDropDown() {
 		dropDown.ClearOptions();
 
-		//dropDown.AddOptions(CreatureSaver.GetCreatureNames());
 		dropDown.AddOptions(CreateDropDownOptions());
 	}
 
@@ -125,63 +109,6 @@ public class ButtonManager : MonoBehaviour {
 
 		creatureDeleteButton.gameObject.SetActive(customCreatureSelected);
 	}
-
-	/*private void SetupTaskDropDown() {
-
-		var taskString = PlayerPrefs.GetString(TASK_KEY, "RUNNING");
-		var index = new List<string>(TASK_OPTIONS).IndexOf(taskString);
-
-		taskDropDown.value = index;
-	}
-
-	private void SetupInputFields() {
-
-		generationNumberInput.onEndEdit.AddListener(delegate {
-			PopulationSizeChanged();
-		});
-
-		generationTimeInput.onEndEdit.AddListener(delegate {
-			SimulationTimeChanged();
-		});
-
-		SetupDefaultNumbers();
-	}
-
-	private void SetupDefaultNumbers() {
-
-		generationNumberInput.text = PlayerPrefs.GetInt(POPULATION_COUNT_KEY, DEFAULT_POPULATION_COUNT).ToString();
-
-		generationTimeInput.text = PlayerPrefs.GetInt(GENERATION_TIME_KEY, 10).ToString();
-		//generationTimeInput.text = "10";
-	}
-
-	public int GetPopulationInput() {
-
-		var num = Mathf.Clamp(Int32.Parse(generationNumberInput.text), 2, 10000000);
-		PlayerPrefs.SetInt(POPULATION_COUNT_KEY, num);
-
-		return num;
-	}
-
-	public int GetSimulationTime() {
-
-		var time = Mathf.Clamp(Int32.Parse(generationTimeInput.text), 1, 100000);
-		PlayerPrefs.SetInt(GENERATION_TIME_KEY, time);
-
-		return time;
-	}
-
-	public void PopulationSizeChanged() {
-		// Make sure the size is at least 2
-		var num = Mathf.Clamp(Int32.Parse(generationNumberInput.text), 2, 10000000);
-		generationNumberInput.text = num.ToString();
-	}
-
-	public void SimulationTimeChanged() {
-		// Make sure the time is at least 1
-		var time = Mathf.Clamp(Int32.Parse(generationTimeInput.text), 1, 100000);
-		generationTimeInput.text = time.ToString();
-	}*/
 
 	public void ShowCreatureDeleteButton() {
 		creatureDeleteButton.gameObject.SetActive(true);
@@ -233,18 +160,6 @@ public class ButtonManager : MonoBehaviour {
 		}
 	}
 
-	/*
-	/// <summary>
-	/// Returns the chosen task based on the value of the taskDropDown;
-	/// </summary>
-	public Evolution.Task GetTask() {
-
-		var taskString = taskDropDown.captionText.text.ToUpper();
-		PlayerPrefs.SetString(TASK_KEY, taskString);
-
-		return Evolution.TaskFromString(taskString);
-	}*/
-
 	public void MoveCamera(Vector3 distance) {
 
 		distance.z = 0;
@@ -255,6 +170,4 @@ public class ButtonManager : MonoBehaviour {
 
 		buildingCamera.gameObject.transform.position = position;
 	}
-
-	//
 }

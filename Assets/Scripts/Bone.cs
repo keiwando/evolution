@@ -134,13 +134,4 @@ public class Bone : BodyComponent {
 		return string.Format("{0}%{1}%{2}", ID, startingJoint.ID, endingJoint.ID);
 	}
 
-	/*
-	public MuscleJoint getClosestMuscleJoint(Vector3 mousePosition){
-
-		float distanceToUpper = (upperMuscleJoint.position - mousePosition).magnitude;
-		float distanceToLower = (lowerMuscleJoint.position - mousePosition).magnitude;
-
-		return distanceToLower < distanceToUpper ? lowerMuscleJoint : upperMuscleJoint;
-	}*/
-
 }

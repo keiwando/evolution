@@ -142,9 +142,6 @@ public class Evolution : MonoBehaviour {
 	// Auto-Save
 	private AutoSaver autoSaver;
 
-	// TODO: Remove after debugging
-	private bool repeatGenDebug = false;
-
 	// Use this for initialization
 	void Start () {
 
@@ -160,17 +157,6 @@ public class Evolution : MonoBehaviour {
 	void Update () {
 
 		HandleKeyboardInput();
-
-		// TODO: DEBUG Remove
-		if (Input.GetKeyDown(KeyCode.P)) {
-			//toFollow.DEBUG = !toFollow.DEBUG;
-			var toggleCreature = currentCreatureBatch[Camera.main.GetComponent<CameraFollowScript>().currentlyWatchingIndex];
-			toggleCreature.DEBUG = !toggleCreature.DEBUG;
-		}
-
-		if (Input.GetKeyDown(KeyCode.R)) {
-			repeatGenDebug = !repeatGenDebug;
-		}
 	}
 
 	private void HandleKeyboardInput() {
@@ -286,11 +272,7 @@ public class Evolution : MonoBehaviour {
 		Assert.IsNotNull(viewController);
 
 		this.currentGenerationNumber = generationNum;
-		//this.settings.simulationTime = timePerGen;
-
-
 		this.currentChromosomes = currentChromosomes.ToArray();
-		//this.settings.populationSize = currentChromosomes.Count;
 
 		creature.Alive = false;
 		running = true;
@@ -317,15 +299,13 @@ public class Evolution : MonoBehaviour {
 		simulateInBatchesCached = settings.simulateInBatches;
 		batchSizeCached = settings.simulateInBatches ? settings.batchSize : settings.populationSize;
 		var currentBatchSize = Mathf.Min(batchSizeCached, settings.populationSize - ((currentlySimulatingBatch - 1) * batchSizeCached));
-		currentCreatureBatch = new Creature[currentBatchSize]; // TODO: Batch
+		currentCreatureBatch = new Creature[currentBatchSize]; 
 		Array.Copy(currentGeneration, 0, currentCreatureBatch, 0, currentBatchSize);
 
 		SimulateGeneration();
 
-
 		creature.gameObject.SetActive(false);
 
-		//Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
 		var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
 		cameraFollow.toFollow = currentGeneration[0];
 		cameraFollow.currentlyWatchingIndex = 0;
@@ -352,7 +332,6 @@ public class Evolution : MonoBehaviour {
 		BCController.dropHeight = dropHeight;
 		BCController.Creature = creature;
 
-		//string[] currentChromosomes = new string[settings.populationSize];
 		// The first generation will have random brains.
 		currentGeneration = CreateCreatures();
 		ApplyBrains(currentGeneration, true);
@@ -363,7 +342,7 @@ public class Evolution : MonoBehaviour {
 		simulateInBatchesCached = settings.simulateInBatches;
 		batchSizeCached = settings.simulateInBatches ? settings.batchSize : settings.populationSize;
 		var currentBatchSize = Mathf.Min(batchSizeCached, settings.populationSize - ((currentlySimulatingBatch - 1) * batchSizeCached));
-		currentCreatureBatch = new Creature[currentBatchSize]; // TODO: Batch
+		currentCreatureBatch = new Creature[currentBatchSize];
 		Array.Copy(currentGeneration, 0, currentCreatureBatch, 0, currentBatchSize);
 
 		SimulateGeneration();
@@ -387,8 +366,6 @@ public class Evolution : MonoBehaviour {
 	/// </summary>
 	private void SimulateGeneration() {
 
-		//foreach( Creature creature in currentGeneration ) { // TODO: Batch
-
 		foreach (Creature creature in currentGeneration) {
 			creature.Alive = false;
 			creature.gameObject.SetActive(false);
@@ -406,7 +383,6 @@ public class Evolution : MonoBehaviour {
 	{
 		yield return new WaitForSeconds(time);
 
-		// Batch simulation // TODO: Batch
 		// Check if all of the batches of the current generation were simulated.
 		var creaturesLeft = settings.populationSize - (currentlySimulatingBatch * batchSizeCached);
 		if (simulateInBatchesCached && creaturesLeft > 0 ) {
@@ -419,7 +395,6 @@ public class Evolution : MonoBehaviour {
 
 			viewController.UpdateGeneration(currentGenerationNumber);
 
-			//Camera.main.GetComponent<CameraFollowScript>().toFollow = currentCreatureBatch[0];
 			var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
 			cameraFollow.toFollow = currentCreatureBatch[0];
 			cameraFollow.currentlyWatchingIndex = 0;
@@ -447,17 +422,9 @@ public class Evolution : MonoBehaviour {
 		EvaluateCreatures(currentGeneration);
 		SortGenerationByFitness();
 
-		//print("Highest Fitness: " + currentGeneration[0].brain.fitness);
 		// save the best creature
-		//bestCreatures[currentGenerationNumber] = currentGeneration[0];
 		var best = currentGeneration[0];
-		//print(string.Format("Gen: {0} \n{1}", currentGenerationNumber, best.brain.ToChromosomeString()));
-		//var distances = currentGeneration.Select(delegate(Creature arg) {
-		//	return arg.GetXPosition().ToString("0.000");
-		//});
-		//print("Distances: " + string.Join(", ", distances.ToArray()));
 
-		//BCController.AddBestCreature(currentGenerationNumber, best.brain.ToChromosomeString(), best.brain.fitness);
 		BCController.AddBestCreature(currentGenerationNumber, best.brain.ToChromosomeString(), best.GetStatistics());
 
 		var saved = autoSaver.Update(currentGenerationNumber, this);
@@ -466,18 +433,12 @@ public class Evolution : MonoBehaviour {
 			viewController.ShowSavedLabel();
 		}
 
-		// TODO: REmove debug if statement
-		if (!repeatGenDebug) {
-
 		currentChromosomes = CreateNewChromosomesFromGeneration();
 		currentGenerationNumber++;
-
-		}
 
 		KillGeneration();
 		currentGeneration = CreateGeneration();
 
-		//Camera.main.GetComponent<CameraFollowScript>().toFollow = currentGeneration[0];
 		var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
 		cameraFollow.toFollow = currentGeneration[0];
 		cameraFollow.currentlyWatchingIndex = 0;
@@ -487,7 +448,7 @@ public class Evolution : MonoBehaviour {
 		simulateInBatchesCached = settings.simulateInBatches;
 		batchSizeCached = settings.simulateInBatches ? settings.batchSize : settings.populationSize;
 		var currentBatchSize = Mathf.Min(batchSizeCached, settings.populationSize);
-		currentCreatureBatch = new Creature[currentBatchSize]; // TODO: Batch
+		currentCreatureBatch = new Creature[currentBatchSize]; 
 		Array.Copy(currentGeneration, 0, currentCreatureBatch, 0, currentBatchSize);
 
 		// Update the view

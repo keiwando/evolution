@@ -245,10 +245,9 @@ public class CreatureSaver {
 		}
 		// create all the muscles
 		foreach (var data in muscleStrings) {
-			//Debug.Log("Muscle " + data);
-			//Debug.Log("Data length: " + data.Length);
+			
 			if (data.Length > 1) {
-				//Debug.Log("Muscle " + data);
+				
 				muscles.Add(Muscle.CreateFromString(data, bones));
 			}
 		}

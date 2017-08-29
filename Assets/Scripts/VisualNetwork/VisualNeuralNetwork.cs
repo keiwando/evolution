@@ -63,8 +63,6 @@ public class VisualNeuralNetwork : MonoBehaviour {
 		var maxNodesPerLayer = networkSettings.nodesPerIntermediateLayer.Max();
 		minifyingScale = Mathf.Min(1.0f, 10f / maxNodesPerLayer);
 
-		//print("Min scale: " + minifyingScale);
-
 		DeleteCurrentNet();
 
 		SetupVisualNet();

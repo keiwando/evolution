@@ -17,19 +17,13 @@ public class AutoScroll : MonoBehaviour {
 
 	private Coroutine scrollRoutine;
 
-	//private RectTransform rectTransform;
-
 	void Start() {
-
-		//rectTransform = GetComponent<RectTransform>();
-
+		
 		var canvas = GameObject.FindGameObjectWithTag("SettingsCanvas");
 		var canvasHeight = canvas.GetComponent<RectTransform>().rect.height;
 
 		if (scrollByScreenHeight) {
-			//bottomY = topY + Screen.height;
 			bottomY = topY + canvasHeight;
-			//print("Screen height: " + Screen.height);
 		}
 	}
 
@@ -60,8 +54,6 @@ public class AutoScroll : MonoBehaviour {
 		var startingPos = transform.localPosition;
 		var endingPos = new Vector3(transform.localPosition.x, y, transform.localPosition.z);
 
-		//print("End y: " + y);
-
 		while (elapsedTime <= time) {
 
 			transform.localPosition = Vector3.Lerp(startingPos, endingPos, curve.Evaluate(elapsedTime / time));
@@ -70,9 +62,5 @@ public class AutoScroll : MonoBehaviour {
 
 			yield return null;
 		}
-
-		//transform.localPosition = endingPos;
-
-		//print("actual end y: " + transform.position.y);
 	}
 }

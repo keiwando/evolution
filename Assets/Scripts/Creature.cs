@@ -100,7 +100,7 @@ public class Creature : MonoBehaviour {
 		RaycastHit hit;
 
 		if(Physics.Raycast(GetLowestPoint(), Vector3.down, out hit, groundDistanceLayerMask)) {
-			//if (DEBUG) print("Collider name: " + hit.collider.gameObject.name + " :tag: " + hit.collider.gameObject.tag);
+			
 			if (hit.collider.gameObject.tag.ToUpper() == "GROUND") {
 				return hit.distance;
 			}
@@ -139,24 +139,6 @@ public class Creature : MonoBehaviour {
 
 		return velocity;
 	}
-
-	/*public Vector3 GetAngularVelocity() {
-
-		if (joints.Count == 0) return Vector3.zero;
-
-		//calculate the average velocity of the joints.
-		Vector3 velocity = Vector3.zero;
-
-		foreach (Joint joint in joints) {
-			velocity += joint.GetComponent<Rigidbody>().angularVelocity;
-		}
-
-		velocity.x /= joints.Count;
-		velocity.y /= joints.Count;
-		velocity.z /= joints.Count;
-
-		return velocity;
-	}*/
 
 	public Vector3 GetAngularVelocity() {
 
@@ -267,7 +249,7 @@ public class Creature : MonoBehaviour {
 	}
 
 	public float GetDistanceFromObstacle() {
-		//return Vector3.Distance(new Vector3(GetXPosition(), GetYPosition(), 0f), obstacle.transform.position);
+		
 		float minDistance = float.PositiveInfinity;
 
 		if (obstacle == null) return minDistance;
