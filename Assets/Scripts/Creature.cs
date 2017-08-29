@@ -43,7 +43,7 @@ public class Creature : MonoBehaviour {
 
 	private float maxJumpingHeight;
 
-	public bool DEBUG = false;
+	//public bool DEBUG = false;
 
 	// Use this for initialization
 	void Start () {

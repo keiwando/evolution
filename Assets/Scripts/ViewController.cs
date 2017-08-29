@@ -26,6 +26,7 @@ public class ViewController : MonoBehaviour {
 	[SerializeField] private GameObject AutoplaySettings;
 	[SerializeField] private Text AutoplayDurationLabel;
 	[SerializeField] private Toggle autoplayToggle;
+	public Slider autoplaySlider;
 
 	[SerializeField] private Text SavedLabel;
 	private Color savedLabelColor;
