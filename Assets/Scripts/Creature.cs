@@ -291,7 +291,7 @@ public class Creature : MonoBehaviour {
 		stats.fitness = brain.fitness;
 		stats.horizontalDistanceTravelled = GetXPosition();
 		stats.verticalDistanceTravelled = GetYPosition();
-		stats.averageSpeed = stats.horizontalDistanceTravelled / brain.SimulationTime;
+		stats.averageSpeed = Mathf.Sqrt(Mathf.Pow(stats.horizontalDistanceTravelled / brain.SimulationTime, 2) + Mathf.Pow(stats.verticalDistanceTravelled / brain.SimulationTime, 2));
 		stats.numberOfBones = bones.Count;
 		stats.numberOfMuscles = muscles.Count;
 		stats.simulationTime = Mathf.RoundToInt(brain.SimulationTime);
@@ -315,6 +315,8 @@ public class Creature : MonoBehaviour {
 		foreach (var muscle in muscles) {
 			muscle.gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
 		}
+
+		gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
 	}
 
 	public void SetOnInvisibleLayer() {
@@ -331,6 +333,8 @@ public class Creature : MonoBehaviour {
 		foreach (var muscle in muscles) {
 			muscle.gameObject.layer = LayerMask.NameToLayer("Creature");
 		}
+
+		gameObject.layer = LayerMask.NameToLayer("Creature");
 	}
 
 	public void SetOnBestCreatureLayer() {
@@ -347,6 +351,8 @@ public class Creature : MonoBehaviour {
 		foreach (var muscle in muscles) {
 			muscle.gameObject.layer = LayerMask.NameToLayer("BestCreatureCreature");
 		}
+
+		gameObject.layer = LayerMask.NameToLayer("BestCreatureCreature");
 	}
 
 	void OnDestroy() {
