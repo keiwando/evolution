@@ -65,7 +65,8 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 
 		var input = ((GameObject)Instantiate(Resources.Load(INPUT_FIELD_PREFAB_NAME))).GetComponent<InputField>();
 
-		input.transform.SetParent(transform);
+		//input.transform.SetParent(transform);
+		input.transform.SetParent(transform, false);
 		input.transform.localPosition = position;
 
 		return input;
