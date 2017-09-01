@@ -243,6 +243,8 @@ public class CreatureBuilder : MonoBehaviour {
 					toDelete.Delete();
 					UpdateDeletedObjects();
 
+					ResetCurrentCreatureName(); // The creature was modified
+
 					Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
 				}
 
@@ -253,6 +255,8 @@ public class CreatureBuilder : MonoBehaviour {
 
 				if (joint != null) {
 					currentMovingJoint = joint;
+
+					ResetCurrentCreatureName(); // The creature was modified
 				}
 			}
 
@@ -313,6 +317,8 @@ public class CreatureBuilder : MonoBehaviour {
 					newPoint.z = 0;
 
 					currentMovingJoint.MoveTo(newPoint);
+
+					ResetCurrentCreatureName(); // The creature was modified
 				}
 			} 
 
@@ -328,7 +334,6 @@ public class CreatureBuilder : MonoBehaviour {
 				currentMovingJoint = null;
 			}
 		} 
-
 	}
 
 	/** Handles all possible keyboard controls / shortcuts. */
@@ -436,6 +441,15 @@ public class CreatureBuilder : MonoBehaviour {
 			}
 		}
 		return removed;
+	}
+
+	/// <summary>
+	/// Resets the value of the creature dropdown to Creature and 
+	/// </summary>
+	private void ResetCurrentCreatureName() {
+
+		lastCreatureName = "Creature";
+		//buttonManager.SetDropDownToValue(lastCreatureName);
 	}
 
 	/// <summary>
@@ -599,6 +613,8 @@ public class CreatureBuilder : MonoBehaviour {
 		} else {
 			currentBone.ConnectToJoints();
 			bones.Add(currentBone);
+
+			ResetCurrentCreatureName(); // The creature was modified
 		}
 
 		currentBone = null;
@@ -629,6 +645,8 @@ public class CreatureBuilder : MonoBehaviour {
 			currentMuscle.ConnectToJoints();
 			currentMuscle.AddCollider();
 			muscles.Add(currentMuscle);
+
+			ResetCurrentCreatureName(); // The creature was modified
 		}
 
 		currentMuscle = null;
