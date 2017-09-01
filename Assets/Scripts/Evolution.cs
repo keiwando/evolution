@@ -9,49 +9,6 @@ using System.Linq;
 
 public class Evolution : MonoBehaviour {
 
-	public enum Task {
-		RUNNING = 0,
-		JUMPING = 1,
-		OBSTACLE_JUMP = 2,
-		CLIMBING = 3
-	}
-
-	// TODO: Rewrite this whole logic
-	public static Task TaskForNumber(int n) {
-		switch(n) {
-		case 0: return Task.RUNNING; 
-		case 1: return Task.JUMPING; 
-		case 2: return Task.OBSTACLE_JUMP; 
-		case 3: return Task.CLIMBING;
-		}
-
-		return Task.RUNNING;
-	}
-
-	public static string TaskToString(Task task) {
-		switch(task) {
-		case Task.RUNNING: return "Running";
-		case Task.JUMPING: return "Jumping"; 
-		case Task.OBSTACLE_JUMP: return "Obstacle Jump";
-		case Task.CLIMBING: return "Climbing";
-		}
-
-		return "Running";
-	}
-
-	public static Task TaskFromString(string task) {
-
-		switch(task.ToUpper()) {
-
-		case "RUNNING": return Task.RUNNING; 
-		case "JUMPING": return Task.JUMPING; 
-		case "OBSTACLE JUMP": return Task.OBSTACLE_JUMP;
-		case "CLIMBING": return Task.CLIMBING; 
-
-		default: return Task.RUNNING;
-		}
-	}
-
 	public EvolutionSettings Settings {
 		set { settings = value; }
 		get { return settings; }
@@ -66,7 +23,7 @@ public class Evolution : MonoBehaviour {
 
 	//public static Task task;
 
-	private static Dictionary<Task, System.Type> brainMap;
+	private static Dictionary<EvolutionTask, System.Type> brainMap;
 
 	public GameObject obstacle;
 
@@ -145,12 +102,11 @@ public class Evolution : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		brainMap = new Dictionary<Task, System.Type>();
-		brainMap.Add(Task.RUNNING, typeof(RunningBrain));
-		brainMap.Add(Task.OBSTACLE_JUMP, typeof(ObstacleJumpingBrain));
-		brainMap.Add(Task.JUMPING, typeof(JumpingBrain));
-		brainMap.Add(Task.CLIMBING, typeof(ClimbingBrain));
-
+		brainMap = new Dictionary<EvolutionTask, System.Type>();
+		brainMap.Add(EvolutionTask.RUNNING, typeof(RunningBrain));
+		brainMap.Add(EvolutionTask.OBSTACLE_JUMP, typeof(ObstacleJumpingBrain));
+		brainMap.Add(EvolutionTask.JUMPING, typeof(JumpingBrain));
+		brainMap.Add(EvolutionTask.CLIMBING, typeof(ClimbingBrain));
 	}
 	
 	// Update is called once per frame

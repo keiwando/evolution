@@ -9,23 +9,11 @@ public class SettingsMenu : MonoBehaviour {
 	public const string GRID_SIZE_KEY = "GRID_SIZE";
 	public const string GRID_ENABLED_KEY = "GRID_ENABLED";
 
-	/*public const string KEEP_BEST_CREATURE_KEY = "KEEP_BEST_CREATURE"; 
-	public const string MUTATION_RATE_KEY = "MUTATION_RATE"; 
-
-	private const string POPULATION_COUNT_KEY = "POPULATION_COUNT";
-	private const string GENERATION_TIME_KEY = "GENERATION_TIME";
-	private const string BATCH_SIZE_KEY = "BATCH_SIZE";
-	private const string BATCH_SIMULATION_ENABLED_KEY = "BATCH_SIMULATION_ENABLED";
-
-	private const string TASK_KEY = "EVOLUTION_TASK";*/
-
 	private const string EVOLUTION_SETTINGS_KEY = "EVOLUTION_SETTINGS";
 
 	private static string[] TASK_OPTIONS = new string[] {"RUNNING", "JUMPING", "OBSTACLE JUMP", "CLIMBING"};
 
 	private const float DEFAULT_GRID_SIZE = 2.0f;
-
-	//private static int DEFAULT_POPULATION_COUNT = 10;
 
 	[SerializeField] private AutoScroll contentContainer;
 
@@ -117,7 +105,7 @@ public class SettingsMenu : MonoBehaviour {
 	private void SetupTaskDropDown() {
 
 		var settings = LoadEvolutionSettings();
-		var taskString = Evolution.TaskToString(settings.task).ToUpper();
+		var taskString = settings.task.StringRepresentation().ToUpper();
 
 		var index = new List<string>(TASK_OPTIONS).IndexOf(taskString);
 
@@ -127,7 +115,7 @@ public class SettingsMenu : MonoBehaviour {
 	public void TaskChanged() {
 
 		var settings = LoadEvolutionSettings();
-		settings.task = Evolution.TaskFromString(taskDropdown.captionText.text);
+		settings.task = EvolutionTaskUtil.TaskFromString(taskDropdown.captionText.text);
 		SaveEvolutionSettings(settings);
 	}
 
@@ -226,10 +214,10 @@ public class SettingsMenu : MonoBehaviour {
 	/// <summary>
 	/// Returns the chosen task based on the value of the taskDropDown;
 	/// </summary>
-	public Evolution.Task GetTask() {
+	public EvolutionTask GetTask() {
 
 		var taskString = taskDropdown.captionText.text.ToUpper();
-		var task = Evolution.TaskFromString(taskString);
+		var task = EvolutionTaskUtil.TaskFromString(taskString);
 		
 		var settings = LoadEvolutionSettings();
 		settings.task = task;

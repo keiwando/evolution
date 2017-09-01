@@ -33,7 +33,7 @@ public class EvolutionSettings {
 	/// <summary>
 	/// The task that the creatures need to perform.
 	/// </summary>
-	public Evolution.Task task = Evolution.Task.RUNNING;
+	public EvolutionTask task = EvolutionTask.RUNNING;
 
 	/// <summary>
 	/// Specifies the probability of chromosome mutation as a percentage between 1 and 100.
@@ -51,7 +51,7 @@ public class EvolutionSettings {
 		// ^ without spaces. enum value as string
 
 		return "((#" + keepBestCreatures.ToString() + "#" + simulationTime.ToString() + "#" + populationSize.ToString() + "#" + simulateInBatches.ToString() + "#"
-			+ batchSize.ToString() + "#" + Evolution.TaskToString(task) + "#" + mutationRate.ToString() + "#))";
+			+ batchSize.ToString() + "#" + task.StringRepresentation() + "#" + mutationRate.ToString() + "#))";
 
 	}
 
@@ -65,7 +65,7 @@ public class EvolutionSettings {
 		settings.populationSize = int.Parse(parts[3]);
 		settings.simulateInBatches = bool.Parse(parts[4]);
 		settings.batchSize = int.Parse(parts[5]);
-		settings.task = Evolution.TaskFromString(parts[6]);
+		settings.task = EvolutionTaskUtil.TaskFromString(parts[6]);
 		settings.mutationRate = int.Parse(parts[7]);
 
 		return settings;

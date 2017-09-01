@@ -188,7 +188,7 @@ public class EvolutionSaver {
 		var components = content.Split(SPLIT_ARRAY, System.StringSplitOptions.None);
 
 		// extract the save data from the file contents.
-		var taskType = Evolution.TaskForNumber(int.Parse(components[0].Replace(Environment.NewLine, "")));
+		var taskType = EvolutionTaskUtil.TaskForNumber(int.Parse(components[0].Replace(Environment.NewLine, "")));
 
 		var timePerGen = int.Parse(components[1].Replace(Environment.NewLine, ""));
 

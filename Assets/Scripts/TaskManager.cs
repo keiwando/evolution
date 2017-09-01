@@ -32,10 +32,10 @@ public class TaskManager : MonoBehaviour {
 
 		switch(evolution.Settings.task) {
 			
-		case Evolution.Task.RUNNING: SetupRunningTask(); break;
-		case Evolution.Task.JUMPING: SetupJumpingTask(); break;
-		case Evolution.Task.OBSTACLE_JUMP: SetupObstacleJumpingTask(); break;
-		case Evolution.Task.CLIMBING: SetupClimbingTask(); break;
+		case EvolutionTask.RUNNING: SetupRunningTask(); break;
+		case EvolutionTask.JUMPING: SetupJumpingTask(); break;
+		case EvolutionTask.OBSTACLE_JUMP: SetupObstacleJumpingTask(); break;
+		case EvolutionTask.CLIMBING: SetupClimbingTask(); break;
 		}
 	}
 
