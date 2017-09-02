@@ -317,6 +317,13 @@ public class Muscle : BodyComponent {
 		startingP.z = 0; 
 		endingP.z = 0;
 
+		//Assert.IsNotNull(lineRenderer);
+		//lineRenderer.SetPositions(new Vector3[]{ startingP, endingP });
+		SetLinePoints3D(startingP, endingP);
+	}
+
+	public void SetLinePoints3D(Vector3 startingP, Vector3 endingP) {
+
 		Assert.IsNotNull(lineRenderer);
 		lineRenderer.SetPositions(new Vector3[]{ startingP, endingP });
 	}
