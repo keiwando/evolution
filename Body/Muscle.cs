@@ -332,7 +332,8 @@ public class Muscle : BodyComponent {
 
 		if(startingJoint == null || endingJoint == null) return;
 
-		SetLinePoints(startingPoint, endingPoint);
+		//SetLinePoints(startingPoint, endingPoint);
+		SetLinePoints3D(startingPoint, endingPoint);
 	}
 
 	public override void PrepareForEvolution () {
