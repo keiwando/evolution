@@ -77,6 +77,19 @@ public class Bone : BodyComponent {
 		start.z = 0;
 		end.z = 0;
 
+		/*Vector3 offset = end - start;
+		Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
+		Vector3 position = start + (offset / 2.0f);
+
+
+		transform.position = position;
+		transform.up = offset;
+		transform.localScale = scale;*/
+		PlaceBetweenPoints3D(start, end, width);
+	}
+
+	private void PlaceBetweenPoints3D(Vector3 start, Vector3 end, float width) {
+
 		Vector3 offset = end - start;
 		Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
 		Vector3 position = start + (offset / 2.0f);
@@ -99,6 +112,17 @@ public class Bone : BodyComponent {
 		var jPos2 = endingJoint.transform.position;
 
 		PlaceBetweenPoints(jPos1, jPos2, width);
+	}
+
+	public void RefreshBonePlacement3D() {
+
+		if (startingJoint == null || endingJoint == null) return;
+
+		var width = transform.localScale.z;
+		var jPos1 = startingJoint.transform.position;
+		var jPos2 = endingJoint.transform.position;
+
+		PlaceBetweenPoints3D(jPos1, jPos2, width);
 	}
 
 	/** Connects the gameobject to the starting end endingJoint */
