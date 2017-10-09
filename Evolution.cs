@@ -169,8 +169,6 @@ public class Evolution : MonoBehaviour {
 		//cam.toFollow = currentGeneration[index];
 		cam.toFollow = currentCreatureBatch[cam.currentlyWatchingIndex];
 
-		//print("Index: " + index);
-
 		RefreshVisibleCreatures();
 	}
 

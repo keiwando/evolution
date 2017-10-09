@@ -78,7 +78,7 @@ public class ViewController : MonoBehaviour {
 
 	public void UpdateBCGeneration(int generation) {
 		
-		BCGenerationLabel.text = string.Format("Best of Gen. {0}", generation);
+		BCGenerationLabel.text = string.Format("Best of Gen.");
 		BCInputField.text = generation.ToString();
 	}
 
