@@ -92,7 +92,7 @@ public class Joint : BodyComponent {
 		joint.anchor = Vector3.zero;
 		joint.axis = new Vector3(0, 0, 1);
 		joint.autoConfigureConnectedAnchor = true;
-		joint.useSpring = true;
+		joint.useSpring = false;
 		//var spring = joint.spring;
 		//spring.spring = 1000f;
 		//joint.spring = spring;
