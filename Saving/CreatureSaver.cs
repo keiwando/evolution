@@ -292,7 +292,7 @@ public class CreatureSaver {
 		return PlayerPrefs.GetString(CURRENT_SAVE_KEY, "");
 	}
 
-	private static string CreateSaveInfoFromCreature(List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
+	public static string CreateSaveInfoFromCreature(List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
 
 		var content = "";
 		// add joint data

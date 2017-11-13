@@ -142,6 +142,7 @@ public class Evolution : MonoBehaviour {
 
 	public void GoBackToCreatureBuilding() {
 		// Go back to the Creature building view.
+		Screen.sleepTimeout = SleepTimeout.SystemSetting;
 		SceneManager.LoadScene("CreatureBuildingScene");
 		KillGeneration();
 		Destroy(creature.gameObject);
