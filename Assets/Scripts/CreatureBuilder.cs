@@ -379,6 +379,11 @@ public class CreatureBuilder : MonoBehaviour {
 				Evolve();
 			}
 
+			// P = Print the current creature's save string
+			else if (Input.GetKeyDown(KeyCode.P)) {
+				print(CreatureSaver.CreateSaveInfoFromCreature(joints, bones, muscles));
+			}
+
 
 			buttonManager.selectButton(selectedPart);
 		}
@@ -756,6 +761,8 @@ public class CreatureBuilder : MonoBehaviour {
 		evolution.Settings = settings;
 		evolution.BrainSettings = settingsMenu.GetNeuralNetworkSettings();
 
+		SetMobileNoSleep();
+
 		StartCoroutine(WaitForEvolutionSceneToLoad(sceneLoading));
 		DontDestroyOnLoad(this);
 		//evolution.StartEvolution();
@@ -779,6 +786,8 @@ public class CreatureBuilder : MonoBehaviour {
 	/// Changes to the evolution scene for continuing a saved simulation.
 	/// </summary>
 	public void ContinueEvolution(Evolution evolution, Action completion) {
+
+		SetMobileNoSleep();
 
 		AttachCreatureToEvolution(evolution);
 
@@ -876,6 +885,14 @@ public class CreatureBuilder : MonoBehaviour {
 		}
 
 	} 
+
+	private void SetMobileNoSleep() {
+		Screen.sleepTimeout = SleepTimeout.NeverSleep;
+	}
+
+	private void SetMobileDefaultSleep() {
+		Screen.sleepTimeout = SleepTimeout.SystemSetting;
+	}
 
 
 }
