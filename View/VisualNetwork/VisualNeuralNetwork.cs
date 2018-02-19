@@ -14,6 +14,13 @@ public class VisualNeuralNetwork : MonoBehaviour {
 
 	public float verticalNodeDistance;
 
+	/// <summary>
+	/// The maximum number of visual connections between two consecutive layers.
+	/// Needed for performance reasons. Too many connections are not needed anyway
+	/// and will just cause the whole app to crash. 
+	/// </summary>
+	[SerializeField] private int maxNumberOfConnections;
+
 	public NeuralNetworkSettings networkSettings {
 		set {
 			_settings = value;
@@ -109,10 +116,18 @@ public class VisualNeuralNetwork : MonoBehaviour {
 				}
 			}
 
-			// Connect all of the current layer nodes with all of the next layer nodes.
-			foreach (var node in currentLayer) {
-				foreach (var nextNode in nextLayer) {
+			// Connect the current layer nodes with the next layer nodes.
+			var outConnectionsPerNode = Mathf.Min(maxNumberOfConnections / currentLayer.Count, nextLayer.Count);
+			var nextIndices = Enumerable.Range(0, nextLayer.Count);
+			var rand = new System.Random();
 
+			foreach (var node in currentLayer) {
+
+				var indices = nextIndices.OrderBy(x => rand.Next()).Take(outConnectionsPerNode);
+
+				foreach (var ind in indices) {
+
+					var nextNode = nextLayer[ind];
 					var connection = InstantiateNodeConnection();
 					PlaceNodeConnectionBetween(node.transform.position, nextNode.transform.position, connection);
 
