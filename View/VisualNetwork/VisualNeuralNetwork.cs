@@ -9,6 +9,8 @@ public class VisualNeuralNetwork : MonoBehaviour {
 	private const string NODE_PREFAB_NAME = "Prefabs/Node";
 	private const string NODE_CONNECTION_PREFAB_NAME = "Prefabs/Brain Node Connection";
 
+	public LineRenderer lineRenderer;
+
 	// As a multiple of the screen width 
 	public float maxNetworkWidth;
 
@@ -42,7 +44,11 @@ public class VisualNeuralNetwork : MonoBehaviour {
 	//private float canvasHeight = 1.0f;
 
 	private float leftEdge { get { return - canvasWidth *  maxNetworkWidth / 2; } }
-	private float rightEdge { get { return - leftEdge; } }
+	private float rightEdge { get { return - leftEdge; } } 
+
+	private float lineOffsetX { get { return 1.5f * leftEdge; } }
+	private float lineOffsetY = 500f;
+	private float lineZ = -10;
 
 	private List<Image> visualNodes = new List<Image>();
 	private List<Image> nodeConnections = new List<Image>();
@@ -53,7 +59,7 @@ public class VisualNeuralNetwork : MonoBehaviour {
 	void Start () {
 
 		Setup();
-		Refresh();
+		//Refresh();
 	}
 
 	public void Setup() {
@@ -66,13 +72,79 @@ public class VisualNeuralNetwork : MonoBehaviour {
 	}
 
 	public void Refresh() {
-
+		
 		var maxNodesPerLayer = networkSettings.nodesPerIntermediateLayer.Max();
 		minifyingScale = Mathf.Min(1.0f, 10f / maxNodesPerLayer);
 
 		DeleteCurrentNet();
 
 		SetupVisualNet();
+		//SetupVisualNetWithLineRenderer();
+	}
+
+	private void SetupVisualNetWithLineRenderer() {
+
+		var currentLayer = new List<Image>();
+		var nextLayer = new List<Image>();
+
+		var vertices = new List<Vector3>();
+
+		for (int i = 0; i < networkSettings.numberOfIntermediateLayers + 1; i++) {
+
+			currentLayer.Clear();
+			currentLayer.AddRange(nextLayer);
+			nextLayer.Clear();
+
+			if (i == 0) {
+				var input = InstantiateNode();
+				input.transform.localPosition = new Vector3(leftEdge, 0, transform.position.z);
+				currentLayer.Add(input);
+			} 
+
+			// Create the next layer nodes
+			if (i == networkSettings.numberOfIntermediateLayers) {
+				var output = InstantiateNode();
+				output.transform.localPosition = new Vector3(rightEdge, 0, transform.position.z);
+
+				nextLayer.Add(output);
+
+			} else {
+				// The next layer is an intermediate layer
+				var numOfNodesInLayer = networkSettings.nodesPerIntermediateLayer[i];
+				var top = -((numOfNodesInLayer - 1) * verticalNodeDistance * minifyingScale) / 2;
+				var xPos = GetXPosForIntermediateLayer(i);
+
+				for (int j = 0; j < numOfNodesInLayer; j++) {
+
+					var yPos = top + j * verticalNodeDistance * minifyingScale;
+
+					var node = InstantiateNode();
+					node.transform.localPosition = new Vector3(xPos, yPos, transform.position.z);
+
+					nextLayer.Add(node);
+				}
+			}
+
+			for (int c = 0; c < currentLayer.Count; c++) {
+				for (int n = 0; n < nextLayer.Count; n++) {
+					ToNodeAndBack(currentLayer[c], nextLayer[n], vertices);
+				}
+				ToNode(nextLayer[0], vertices);
+			}
+
+			visualNodes.AddRange(currentLayer);
+			currentLayer.Clear();
+		}
+			
+		lineRenderer.positionCount = vertices.Count;
+		lineRenderer.SetPositions(vertices.ToArray());
+
+		visualNodes.AddRange(nextLayer);
+
+		// Move all of the connection up in the hierarchy so that they are drawn first
+		foreach (var connection in nodeConnections) {
+			connection.transform.SetSiblingIndex(0);
+		}
 	}
 
 	private void SetupVisualNet() {
@@ -121,6 +193,12 @@ public class VisualNeuralNetwork : MonoBehaviour {
 			var nextIndices = Enumerable.Range(0, nextLayer.Count);
 			var rand = new System.Random();
 
+			float scaleY = Mathf.Min(Mathf.Max(1.0f, 1f/((float)outConnectionsPerNode / (float)nextLayer.Count)), 4f);
+			/*print("outConn = " + outConnectionsPerNode);
+			print("nextLC = " + nextLayer.Count);
+			print("1/(o/n) = " + 1.0f/(outConnectionsPerNode/nextLayer.Count));
+			print("scaleY = " + scaleY);*/
+
 			foreach (var node in currentLayer) {
 
 				var indices = nextIndices.OrderBy(x => rand.Next()).Take(outConnectionsPerNode);
@@ -129,9 +207,19 @@ public class VisualNeuralNetwork : MonoBehaviour {
 
 					var nextNode = nextLayer[ind];
 					var connection = InstantiateNodeConnection();
-					PlaceNodeConnectionBetween(node.transform.position, nextNode.transform.position, connection);
+					PlaceNodeConnectionBetween(node.transform.position, nextNode.transform.position, scaleY, connection);
 
 					nodeConnections.Add(connection);
+				}
+				if (currentLayer.IndexOf(node) == 0 && !indices.Contains(0)) {
+					var conn = InstantiateNodeConnection();
+					PlaceNodeConnectionBetween(currentLayer[0].transform.position, nextLayer[0].transform.position, scaleY, conn);
+					nodeConnections.Add(conn);
+				}
+				if (currentLayer.IndexOf(node) == currentLayer.Count - 1 && !indices.Contains(nextLayer.Count - 1)) {
+					var conn = InstantiateNodeConnection();
+					PlaceNodeConnectionBetween(currentLayer[currentLayer.Count - 1].transform.position, nextLayer[nextLayer.Count - 1].transform.position, scaleY, conn);
+					nodeConnections.Add(conn);
 				}
 			}
 
@@ -145,6 +233,24 @@ public class VisualNeuralNetwork : MonoBehaviour {
 		foreach (var connection in nodeConnections) {
 			connection.transform.SetSiblingIndex(0);
 		}
+	}
+
+	private void ToNode(Image node, List<Vector3> vertices) {
+		vertices.Add(new Vector3(node.transform.position.x + lineOffsetX, node.transform.position.y + lineOffsetY, lineZ));
+	}
+
+	private void ToNodeAndBack(Image start, Image end, List<Vector3> vertices) {
+		vertices.Add(new Vector3(start.transform.position.x + lineOffsetX, start.transform.position.y + lineOffsetY, lineZ));
+		vertices.Add(new Vector3(end.transform.position.x + lineOffsetX, end.transform.position.y + lineOffsetY, lineZ));
+		vertices.Add(new Vector3(start.transform.position.x + lineOffsetX, start.transform.position.y + lineOffsetY, lineZ));
+	}
+
+	private List<Vector3> ToNodeAndBack(Image start, Image end) {
+		return new List<Vector3> { start.transform.position, end.transform.position, start.transform.position };
+	}
+
+	private List<Vector3> ToPointAndBack(Vector3 start, Vector3 end) {
+		return new List<Vector3> { start, end, start };
 	}
 
 	private void DeleteCurrentNet() {
@@ -177,7 +283,7 @@ public class VisualNeuralNetwork : MonoBehaviour {
 		return img;
 	}
 
-	private void PlaceNodeConnectionBetween(Vector3 start, Vector3 end, Image connection) {
+	private void PlaceNodeConnectionBetween(Vector3 start, Vector3 end, float scaleY, Image connection) {
 
 		Vector3 diff = end - start;
 
@@ -186,7 +292,7 @@ public class VisualNeuralNetwork : MonoBehaviour {
 		var rectTransform = connection.GetComponent<RectTransform>();
 	
 		rectTransform.sizeDelta = new Vector2(diff.magnitude * lengthMultiply, 1f);
-		rectTransform.localScale = new Vector3(1, 5 * minifyingScale, 1);
+		rectTransform.localScale = new Vector3(1, 5 * minifyingScale * scaleY, 1);
 
 		rectTransform.pivot = new Vector2(0.5f, 0.5f);
 		rectTransform.position = (start + end) / 2;

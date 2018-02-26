@@ -175,6 +175,14 @@ public class Evolution : MonoBehaviour {
 
 	public void RefreshVisibleCreatures() {
 
+		if (currentCreatureBatch == null) { return; }
+
+		var contractionVisibility = PlayerPrefs.GetInt(PlayerPrefsKeys.SHOW_MUSCLE_CONTRACTION, 0) == 1;
+
+		foreach (var creature in currentCreatureBatch) {
+			creature.RefreshMuscleContractionVisibility(contractionVisibility);
+		}
+
 		// Determine if all or only one creature should be visible
 		if (settings.showOneAtATime) {
 

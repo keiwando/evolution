@@ -76,6 +76,11 @@ public class BestCreaturesController : MonoBehaviour {
 
 	}
 
+	public void RefreshMuscleContractionVisibility() {
+		if (currentBest != null) 
+			currentBest.RefreshMuscleContractionVisibility(PlayerPrefs.GetInt(PlayerPrefsKeys.SHOW_MUSCLE_CONTRACTION, 0) == 1);
+	}
+
 	public void ShowBCThumbScreen() {
 		BCThumbScreen.gameObject.SetActive(true);
 	}

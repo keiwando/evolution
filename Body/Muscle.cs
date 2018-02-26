@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class Muscle : BodyComponent {
 
 	private const string MATERIAL_PATH = "Materials/MuscleMaterial";
+	private const string BLUE_MATERIAL_PATH = "Materials/MuscleMaterialBlue";
 
 	public enum MuscleAction {
 		CONTRACT, EXPAND	
@@ -35,7 +36,31 @@ public class Muscle : BodyComponent {
 	/// <summary>
 	/// Specifies whether the muscle should contract and expand or not.
 	/// </summary>
-	public bool living;
+	public bool living {
+		set {
+			_living = value;
+			if (_living) {
+				ShouldShowContraction = PlayerPrefs.GetInt(PlayerPrefsKeys.SHOW_MUSCLE_CONTRACTION, 0) == 1;
+				//print("Should show contraction");
+			}
+		}
+		get { return _living; }
+	}
+	private bool _living;
+
+	public bool ShouldShowContraction { 
+		get {
+			return shouldShowContraction;
+		} 
+		set {
+			shouldShowContraction = value;
+			if (!value) {
+				SetRedMaterial();
+				SetLineWidth(1f);
+			}
+		} 
+	}
+	private bool shouldShowContraction;
 
 	private float LINE_WIDTH = 0.5f;
 
@@ -47,11 +72,18 @@ public class Muscle : BodyComponent {
 
 	public float currentForce = 0;
 
+	// MARK: contraction visibility
+	private Material redMaterial;
+	private Material blueMaterial;
+
+	private float minLineWidth = 0.5f;
+	private float maxLineWidth = 1.5f;
 
 	public static Muscle Create() {
 		ID_COUNTER++;
 
 		Material muscleMaterial = Resources.Load(MATERIAL_PATH) as Material;
+		Material blueMaterial = Resources.Load(BLUE_MATERIAL_PATH) as Material;
 
 		GameObject muscleEmpty = new GameObject();
 		muscleEmpty.name = "Muscle";
@@ -60,6 +92,9 @@ public class Muscle : BodyComponent {
 		muscle.AddLineRenderer();
 		muscle.SetMaterial(muscleMaterial);
 		muscle.ID = ID_COUNTER;
+
+		muscle.redMaterial = muscleMaterial;
+		muscle.blueMaterial = blueMaterial;
 
 		return muscle;
 	}
@@ -107,14 +142,13 @@ public class Muscle : BodyComponent {
 		base.Start();
 
 		highlightingShader = Shader.Find("Standard");
-
-
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
 		UpdateLinePoints();
+		UpdateContractionVisibility();
 	}
 
 	void FixedUpdate() {
@@ -150,12 +184,9 @@ public class Muscle : BodyComponent {
 		spring.enablePreprocessing = true;
 		spring.enableCollision = false;
 
-
-
 		// break forces
 		//spring.breakForce = 5000;
 		//spring.breakTorque = 5000;
-
 	}
 
 	/** Set the muscle contraction. O = no contraction/expansion, 1 = fully contracted. */
@@ -215,10 +246,6 @@ public class Muscle : BodyComponent {
 		Assert.IsFalse(float.IsNaN(endingForce.x),"force: " + force);
 		Assert.IsFalse(float.IsNaN(startingForce.x),"force: " + force);
 
-		//Rigidbody rb = endingJoint.GetComponent<Rigidbody>();
-
-		//startingJoint.GetComponent<Rigidbody>().AddForce(startingForce);
-		//endingJoint.GetComponent<Rigidbody>().AddForce(endingForce);
 		startingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(startingForce ,startingJoint.position);
 		endingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(endingForce, endingJoint.position);
 	}
@@ -296,9 +323,6 @@ public class Muscle : BodyComponent {
 		// Add a rigidbody
 		Rigidbody rBody = gameObject.AddComponent<Rigidbody>();
 		rBody.isKinematic = true;
-
-		//lineRenderer.material.shader = Shader.Find("Standard");
-		//lineRenderer.material
 	}
 
 	private void RemoveCollider() {
@@ -306,9 +330,42 @@ public class Muscle : BodyComponent {
 		Destroy(GetComponent<BoxCollider>());
 	}
 
+	private void UpdateContractionVisibility() {
+
+		if (!ShouldShowContraction) { return; }
+
+		var alpha = currentForce / MAX_MUSCLE_FORCE;
+		//print("Alpha = " + alpha);
+
+		if (muscleAction == MuscleAction.CONTRACT) {
+			SetRedMaterial();
+		} else if (muscleAction == MuscleAction.EXPAND) {
+			SetBlueMaterial();
+		}
+
+		SetLineWidth(minLineWidth + alpha * (maxLineWidth - minLineWidth));
+	}
+
 	/** Sets the material for the attached lineRenderer. */
 	public void SetMaterial(Material mat) {
 		lineRenderer.material = mat;
+	}
+
+	private void SetRedMaterial() {
+
+		if (redMaterial == null) redMaterial = Resources.Load(MATERIAL_PATH) as Material;
+		lineRenderer.material = redMaterial;
+	}
+
+	private void SetBlueMaterial() {
+		
+		if (blueMaterial == null) blueMaterial = Resources.Load(BLUE_MATERIAL_PATH) as Material;
+		lineRenderer.material = blueMaterial;
+	}
+
+	private void SetLineWidth(float width) {
+		//lineRenderer.startWidth = lineRenderer.endWidth = width;
+		lineRenderer.widthMultiplier = width;
 	}
 
 	/** Points are flattened to 2D. */

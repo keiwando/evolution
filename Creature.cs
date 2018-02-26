@@ -76,7 +76,7 @@ public class Creature : MonoBehaviour {
 		foreach (Bone bone in bones) {
 			bone.PrepareForEvolution();
 		}
-
+			
 		foreach (Muscle muscle in muscles) {
 			muscle.PrepareForEvolution();
 		}
@@ -85,8 +85,14 @@ public class Creature : MonoBehaviour {
 	}
 
 	public void RefreshLineRenderers(){
-		foreach(Muscle muscle in muscles) {
+		foreach (Muscle muscle in muscles) {
 			muscle.DeleteAndAddLineRenderer();
+		}
+	}
+
+	public void RefreshMuscleContractionVisibility(bool visible) {
+		foreach (Muscle muscle in muscles) {
+			muscle.ShouldShowContraction = visible;
 		}
 	}
 

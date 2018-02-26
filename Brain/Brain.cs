@@ -59,7 +59,7 @@ abstract public class Brain : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	virtual public void Update () {
+	virtual public void FixedUpdate () {
 		
 		if (isActive) {
 			

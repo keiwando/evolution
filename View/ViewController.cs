@@ -18,6 +18,7 @@ public class ViewController : MonoBehaviour {
 	private Coroutine FadeRoutine;
 
 	[SerializeField] private Toggle showOneAtATimeToggle;
+	[SerializeField] private Toggle showMuscleContractionToggle;
 
 	[SerializeField] private Text FitnessLabel;
 
@@ -37,6 +38,8 @@ public class ViewController : MonoBehaviour {
 
 	private Evolution evolution;
 
+	[SerializeField] private BestCreaturesController bcController;
+
 	public bool shouldAutoplay { get { return autoplayToggle.isOn; } }
 
 	// Use this for initialization
@@ -51,6 +54,14 @@ public class ViewController : MonoBehaviour {
 		showOneAtATimeToggle.onValueChanged.AddListener(delegate(bool arg0) {
 			evolution.Settings.showOneAtATime = arg0;
 			evolution.RefreshVisibleCreatures();
+		});
+
+		showMuscleContractionToggle.isOn = PlayerPrefs.GetInt(PlayerPrefsKeys.SHOW_MUSCLE_CONTRACTION, 0) == 1;
+		showMuscleContractionToggle.onValueChanged.AddListener(delegate(bool arg0) {
+			PlayerPrefs.SetInt(PlayerPrefsKeys.SHOW_MUSCLE_CONTRACTION, arg0 ? 1 : 0);
+			PlayerPrefs.Save();
+			evolution.RefreshVisibleCreatures();
+			bcController.RefreshMuscleContractionVisibility();
 		});
 
 		timeScaleSlider.onValueChanged.AddListener(delegate(float arg0) {
