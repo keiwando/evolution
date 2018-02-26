@@ -25,8 +25,8 @@ public class JumpingBrain : Brain {
 	private float maxWeightedAverageHeight = 0f;
 
 	// Update is called once per frame
-	public override void Update () {
-		base.Update();
+	public override void FixedUpdate () {
+		base.FixedUpdate();
 	}
 
 	public override void EvaluateFitness (){

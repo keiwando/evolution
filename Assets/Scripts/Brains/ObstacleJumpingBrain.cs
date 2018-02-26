@@ -29,8 +29,8 @@ public class ObstacleJumpingBrain : Brain {
 	}
 	
 	// Update is called once per frame
-	public override void Update () {
-		base.Update();
+	public override void FixedUpdate () {
+		base.FixedUpdate();
 
 		//numOfCollisionsWithObstacle += creature.GetNumberOfObstacleCollisions();
 		creature.AddObstacleCollidingJointsToSet(collidedJoints);

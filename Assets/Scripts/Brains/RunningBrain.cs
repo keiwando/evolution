@@ -30,9 +30,9 @@ public class RunningBrain : Brain {
 	}
 	
 	// Update is called once per frame
-	public override void Update ()
+	public override void FixedUpdate ()
 	{
-		base.Update();
+		base.FixedUpdate();
 		averageSpeed = (averageSpeed + creature.GetVelocity().x) / 2; 
 	}
 
