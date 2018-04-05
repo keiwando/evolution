@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UI.Extensions;
 using System.Linq;
 
 public class VisualNeuralNetwork : MonoBehaviour {
@@ -9,7 +10,9 @@ public class VisualNeuralNetwork : MonoBehaviour {
 	private const string NODE_PREFAB_NAME = "Prefabs/Node";
 	private const string NODE_CONNECTION_PREFAB_NAME = "Prefabs/Brain Node Connection";
 
-	public LineRenderer lineRenderer;
+	//public LineRenderer lineRenderer;
+	public UILineRenderer lineRenderer;
+	public UILineRenderer strokeRenderer;
 
 	// As a multiple of the screen width 
 	public float maxNetworkWidth;
@@ -46,8 +49,10 @@ public class VisualNeuralNetwork : MonoBehaviour {
 	private float leftEdge { get { return - canvasWidth *  maxNetworkWidth / 2; } }
 	private float rightEdge { get { return - leftEdge; } } 
 
-	private float lineOffsetX { get { return 1.5f * leftEdge; } }
-	private float lineOffsetY = 500f;
+	private float lineOffsetX { get { return 1.4f * leftEdge; } }
+	//private float lineOffsetX = 0f;
+	//private float lineOffsetY = 365f;
+	private float lineOffsetY = 0f;
 	private float lineZ = -10;
 
 	private List<Image> visualNodes = new List<Image>();
@@ -136,8 +141,11 @@ public class VisualNeuralNetwork : MonoBehaviour {
 			currentLayer.Clear();
 		}
 			
-		lineRenderer.positionCount = vertices.Count;
-		lineRenderer.SetPositions(vertices.ToArray());
+		//lineRenderer.positionCount = vertices.Count;
+		//lineRenderer.SetPositions(vertices.ToArray());
+
+		lineRenderer.Points = vertices.Select(p => new Vector2(p.x, p.y)).ToArray();
+		strokeRenderer.Points = lineRenderer.Points;
 
 		visualNodes.AddRange(nextLayer);
 
