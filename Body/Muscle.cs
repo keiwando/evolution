@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class Muscle : BodyComponent {
 
-	private const string MATERIAL_PATH = "Materials/MuscleMaterial";
+	private const string MATERIAL_PATH = "Materials/MuscleMaterial2";
 	private const string BLUE_MATERIAL_PATH = "Materials/MuscleMaterialBlue";
 
 	public enum MuscleAction {
@@ -285,6 +285,8 @@ public class Muscle : BodyComponent {
 		//lineRenderer.SetWidth(LINE_WIDTH, LINE_WIDTH); // Deprecated
 		lineRenderer.startWidth = LINE_WIDTH;
 		lineRenderer.endWidth = LINE_WIDTH;
+
+		lineRenderer.generateLightingData = true;
 	}
 
 	public void DeleteAndAddLineRenderer(){

@@ -46,6 +46,34 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class EvolutionSaver {
 
+	private class SplitOptions {
+
+		private string COMPONENT_SEPARATOR_BASE = "--?%%%?--";
+		public string COMPONENT_SEPARATOR {
+			get { return COMPONENT_SEPARATOR_BASE + NEWLINE; }
+		}
+
+		public string[] SPLIT_ARRAY;
+		public string[] NEWLINE_SPLIT;
+		public string NEWLINE {
+			get { return newline; }
+		} 
+		private string newline = Environment.NewLine;
+
+		public SplitOptions(){
+			
+			SPLIT_ARRAY = new string[] { COMPONENT_SEPARATOR };
+			NEWLINE_SPLIT = new string[] { NEWLINE };
+		}
+
+		public SplitOptions(string newline) {
+
+			this.newline = newline;
+			this.SPLIT_ARRAY = new string[] { COMPONENT_SEPARATOR };
+			this.NEWLINE_SPLIT = new string[] { NEWLINE };
+		}
+	}
+
 	/// <summary>
 	/// The current save file format version. This number has nothing to do with the Application.version.
 	/// It should be the first line of every savefile prepended by a v so that it can be immediately identified how to interpret
@@ -64,12 +92,13 @@ public class EvolutionSaver {
 	/// The separator to use in the save file between the file components such as the creature data,
 	/// and the chromosome lists. 
 	/// </summary>
-	private static readonly string COMPONENT_SEPARATOR = "--?%%%?--" + Environment.NewLine;
+	//private static readonly string COMPONENT_SEPARATOR_BASE = "--?%%%?--";
+	//private static readonly string COMPONENT_SEPARATOR = COMPONENT_SEPARATOR_BASE + Environment.NewLine;
 	/// <summary>
 	/// Used for splitting the text file by the body component types.
 	/// </summary>
-	private static string[] SPLIT_ARRAY = new string[]{ COMPONENT_SEPARATOR };
-	private static string[] NEWLINE_SPLIT = new string[] { Environment.NewLine };
+	//private static string[] SPLIT_ARRAY = new string[]{ COMPONENT_SEPARATOR };
+	//private static string[] NEWLINE_SPLIT = new string[] { Environment.NewLine };
 
 	//private static string CURRENT_SAVE_KEY = "_CurrentCreatureSave";
 	//private static string CREATURE_NAMES_KEY = "_CreatureNames";
@@ -87,6 +116,8 @@ public class EvolutionSaver {
 	//public static string WriteSaveFile(string creatureName, Evolution.Task task, int timePerGen, int generationNumber, string creatureSaveData, List<ChromosomeInfo> bestChromosomes, List<string> currentChromosomes) {
 	public static string WriteSaveFile(string creatureName, EvolutionSettings settings, NeuralNetworkSettings networkSettings, int generationNumber, string creatureSaveData, List<ChromosomeStats> bestChromosomes, List<string> currentChromosomes) {
 
+		var splitOptions = new SplitOptions();
+
 		var date = System.DateTime.Now.ToString("yyyy-MM-dd");
 		//var taskName = Evolution.TaskToString(task);
 
@@ -99,7 +130,7 @@ public class EvolutionSaver {
 
 		// Add the version number
 		stringBuilder.AppendLine(string.Format("v {0}", version.ToString()));
-		stringBuilder.Append(COMPONENT_SEPARATOR);
+		stringBuilder.Append(splitOptions.COMPONENT_SEPARATOR);
 
 		// Add the time per generation
 		//stringBuilder.AppendLine(settings.simulationTime.ToString());
@@ -107,30 +138,37 @@ public class EvolutionSaver {
 
 		// Add the encoded evolution settings
 		stringBuilder.AppendLine(settings.Encode());
-		stringBuilder.Append(COMPONENT_SEPARATOR);
+		stringBuilder.Append(splitOptions.COMPONENT_SEPARATOR);
 
 		// Add the encoded neural network settings
 		stringBuilder.AppendLine(networkSettings.Encode());
-		stringBuilder.Append(COMPONENT_SEPARATOR);
+		stringBuilder.Append(splitOptions.COMPONENT_SEPARATOR);
 
 		// Add the creature save data 
 		stringBuilder.AppendLine(creatureSaveData);
-		stringBuilder.Append(COMPONENT_SEPARATOR);
+		stringBuilder.Append(splitOptions.COMPONENT_SEPARATOR);
 
 		// Add the list of best chromosomes
 		foreach (var chromosome in bestChromosomes) {
 			stringBuilder.AppendLine(chromosome.ToString());
 		}
-		stringBuilder.Append(COMPONENT_SEPARATOR);
+		stringBuilder.Append(splitOptions.COMPONENT_SEPARATOR);
 
 		// Add the list of current chromosomes
 		foreach (var chromosome in currentChromosomes) {
 			stringBuilder.AppendLine(chromosome);
 		}
-		stringBuilder.Append(COMPONENT_SEPARATOR);
+		stringBuilder.Append(splitOptions.COMPONENT_SEPARATOR);
 
 		var path = RESOURCE_PATH; //Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
 		path = Path.Combine(path, filename);
+
+		int counter = 2;
+		while (System.IO.File.Exists(path)) {
+
+			path = path.Replace(".txt", string.Format(" ({0}).txt", counter));
+			counter++;
+		}
 
 		CreateSaveFolder();
 		File.WriteAllText(path, stringBuilder.ToString());
@@ -152,7 +190,17 @@ public class EvolutionSaver {
 		var contents = reader.ReadToEnd();
 		reader.Close();
 
-		var components = contents.Split(SPLIT_ARRAY, System.StringSplitOptions.None);
+		var splitOptions = new SplitOptions();
+
+		// Determine the line endings
+		if (contents.Contains("\r\n")) {
+			// Windows style endings
+			splitOptions = new SplitOptions("\r\n");
+		} else {
+			splitOptions = new SplitOptions("\n");
+		}
+			
+		var components = contents.Split(splitOptions.SPLIT_ARRAY, System.StringSplitOptions.None);
 
 		// extract the save data from the file contents.
 		// determine the version of the save file.
@@ -164,7 +212,7 @@ public class EvolutionSaver {
 
 			if (version == 2) {
 
-				LoadSimulationFromSaveFileV2(filename, contents, creatureBuilder, evolution);
+				LoadSimulationFromSaveFileV2(filename, contents, splitOptions, creatureBuilder, evolution);
 
 			} else {
 				throw new System.Exception("Unknown Save file format!");
@@ -172,7 +220,7 @@ public class EvolutionSaver {
 			
 		} else {
 			// V1
-			LoadSimulationFromSaveFileV1(filename, contents, creatureBuilder, evolution);
+			LoadSimulationFromSaveFileV1(filename, contents, splitOptions, creatureBuilder, evolution);
 		}
 	}
 
@@ -181,11 +229,11 @@ public class EvolutionSaver {
 	/// </summary>
 	/// <param name="filename">The Filename has to end on .txt .</param>
 	/// <param name="content">The Content of the save file.</param>
-	private static void LoadSimulationFromSaveFileV1(string filename, string content, CreatureBuilder creatureBuilder, Evolution evolution) { 
+	private static void LoadSimulationFromSaveFileV1(string filename, string content, SplitOptions splitOptions, CreatureBuilder creatureBuilder, Evolution evolution) { 
 
 		var creatureName = filename.Split('-')[0].Replace(" ", "");
 
-		var components = content.Split(SPLIT_ARRAY, System.StringSplitOptions.None);
+		var components = content.Split(splitOptions.SPLIT_ARRAY, System.StringSplitOptions.None);
 
 		// extract the save data from the file contents.
 		var taskType = EvolutionTaskUtil.TaskForNumber(int.Parse(components[0].Replace(Environment.NewLine, "")));
@@ -195,7 +243,7 @@ public class EvolutionSaver {
 		var creatureData = components[2];
 		CreatureSaver.LoadCreatureFromContents(creatureData, creatureBuilder);
 
-		var bestChromosomesData = new List<string>(components[3].Split(NEWLINE_SPLIT, StringSplitOptions.None));
+		var bestChromosomesData = new List<string>(components[3].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None));
 		var bestChromosomes = new List<ChromosomeStats>();
 
 		foreach (var chromosomeData in bestChromosomesData) {
@@ -210,7 +258,7 @@ public class EvolutionSaver {
 			}
 		}
 
-		var chromosomeComponents = components[4].Split(NEWLINE_SPLIT, StringSplitOptions.None);
+		var chromosomeComponents = components[4].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None);
 		var currentChromosomes = new List<string>();
 
 		foreach (var chromosome in chromosomeComponents) {
@@ -243,11 +291,11 @@ public class EvolutionSaver {
 	/// </summary>
 	/// <param name="filename">The Filename has to end on .txt .</param>
 	/// <param name="content">The Content of the save file.</param>
-	private static void LoadSimulationFromSaveFileV2(string filename, string content, CreatureBuilder creatureBuilder, Evolution evolution) {
+	private static void LoadSimulationFromSaveFileV2(string filename, string content, SplitOptions splitOptions, CreatureBuilder creatureBuilder, Evolution evolution) {
 
 		var creatureName = filename.Split('-')[0].Replace(" ", "");
 
-		var components = content.Split(SPLIT_ARRAY, System.StringSplitOptions.None);
+		var components = content.Split(splitOptions.SPLIT_ARRAY, System.StringSplitOptions.None);
 
 		var evolutionSettings = EvolutionSettings.Decode(components[1]);
 		var networkSettings = NeuralNetworkSettings.Decode(components[2]);
@@ -255,7 +303,7 @@ public class EvolutionSaver {
 		var creatureData = components[3];
 		CreatureSaver.LoadCreatureFromContents(creatureData, creatureBuilder);
 
-		var bestChromosomesData = new List<string>(components[4].Split(NEWLINE_SPLIT, StringSplitOptions.None));
+		var bestChromosomesData = new List<string>(components[4].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None));
 		var bestChromosomes = new List<ChromosomeStats>();
 
 		foreach (var chromosomeData in bestChromosomesData) {
@@ -265,7 +313,7 @@ public class EvolutionSaver {
 			}
 		}
 
-		var chromosomeComponents = components[5].Split(NEWLINE_SPLIT, StringSplitOptions.None);
+		var chromosomeComponents = components[5].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None);
 		var currentChromosomes = new List<string>();
 
 		foreach (var chromosome in chromosomeComponents) {
@@ -320,6 +368,29 @@ public class EvolutionSaver {
 
 	private static void CreateSaveFolder() {
 		Directory.CreateDirectory(RESOURCE_PATH);
+		CopyDefaultSimulations();
+	}
+
+	/// <summary>
+	/// Copies the default simulation files from the resources folder into the savefile directory
+	/// </summary>
+	private static void CopyDefaultSimulations() {
+
+		var names = new [] {
+			"FROGGER - RUNNING - Default - Gen(70)"	
+		};
+
+		foreach (var name in names) {
+
+			var savePath = Path.Combine(RESOURCE_PATH, name + ".txt");
+
+			if (!System.IO.File.Exists(savePath)) {
+				var loadPath = Path.Combine("DefaultSaves", name);
+				var resFile = Resources.Load(loadPath) as TextAsset;
+
+				File.WriteAllText(savePath, resFile.text);
+			}
+		}
 	}
 
 	/// <summary>
