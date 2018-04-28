@@ -1,0 +1,470 @@
+<voffset=-0.5em><b><size=40>Эволюция</size></b></voffset>               <size=70><sprite index=4></size>
+
+
+Этот симулятор эволюции позволяет использовать набор базовых компонентов и нейронную сеть для создания существ, которые, как мы надеемся, смогут выполнять различные задачи, такие как бег, прыжки, прыжки через препятствия и подъем на крутой склон.
+
+
+<b><size=20>Существа</size></b>
+
+Предлагаемые Существа имеют в себе три составляющие- кости, мышцы и суставы, о функциях которых мы расскажем ниже.
+
+<b><size=20>Суставы</size></b>         <size=30><sprite index=0></size>
+
+Суставы являются связывающим звеном между костями. Без них мы не сможем подсоединить друг к другу кости. Суставы позволяют соединенным костям двигаться вокруг центра сустава. 
+Чтобы выбрать сустав, кликните на кнопку «Joint» (сустав) на экране или нажмите на букву J на клавиатуре и поместите на желаемую позицию. Опция помещения суставов выбрана по умолчанию, тк создание любого существа начинается с минимум двух суставов. 
+
+<b><size=20>Кости</size></b>                     <size=20><sprite index=1></size>
+
+С помощью костей создается скелет существа. Вы можете поместить кости только между двумя суставами. Кости не сталкиваются друг с другом. Это означает, что они не будут препятствовать никаким образом движению существа. 
+
+Чтобы выбрать кость, кликните на кнопку «Bone» на экране или нажмите на кнопку B на клавиатуре. После этого кликните на первый сустав и не отжимая кнопку мыши переведите курсор на второй сустав. 
+
+<b><size=20>Мышцы</size></b>                    <size=50><sprite index=2></size>
+
+ Мышцы позволяют существам самостоятельно перемещать свои кости. Они - единственные части тела, которых может контролировать мозг существа. Мышцы всегда соединяются в центре двух костей, поэтому вы не можете разместить мышцы, пока хотя бы две кости уже не размещены на сцене создания существа.
+
+Чтобы выбрать мышцу, кликните на кнопку «Muscle» на экране или нажмите на кнопку М на клавиатуре.После этого кликните на первую кость и не отжимая кнопку мыши переведите курсор на вторую кость. Мышцы автоматически соединятся в центре костей.
+
+В отличие от реальных мышц, эти мышцы существ могут одновременно и растягиваться и сокращаться (вы можете подумать о них как об упрощенных парах мышц, действующих в противоположных направлениях). Физически мышцы имеют свойство пружины. Это означает, что они всегда стремятся вернуться в исходное положение.
+
+Существо может растягивать и сокращать свои мышцы непрерывно в зависимости от силы, которую он использует во время движения. Без мышц существо не сможет вообще двигаться и, следовательно, выполнять какую-либо поставленную задачу.
+Нужно также иметь в виду, что мышцы и кости имеют некоторый вес (независимо от собственного веса костей). Таким образом, чем больше костей у существа, тем больше мышц ему нужно, чтобы двигать их, иначе у мышц может не хватить сил заставить кости двигаться. Также запомните, что две кости соединяются только с помощью одной мышци. 
+<b><size=25>Мозг</size></b>                         <size=70><sprite index=3></size>
+
+Здесь мы  расскажем о мозге существа, и какие функции он выполняет.
+
+Мозг не является частью тела, как кости, суставы и мышцы. Как только вы нажмете на кнопку “Evolve” (эволюционировать), мозг сам автоматически добавится к существу. 
+
+Каждое существо нуждается в мозге, который будет управлять мышцами и приводить к эволюции существа. Мозг- это нейронная сеть, которая получает вводные данные и выдает выходные данные. 
+
+Вводные данные представляют собой следующее:
+
+-Расстояние существа до земли
+-Текущая скорость (горизонтальные и вертикальные составляющие)
+-Скорость вращения
+-Число точек соприкосновения с землей
+-Вращение существа (средний показатель вращения всех костей существа)
+
+В зависимости от специфики поставленной задачи, количество вводных данных может увеличиться. Например, чтобы существо прыгнуло через препятствие, нужно добавить еще один пункт- расстояние между существом и препятствием. 
+
+Каждая выходная данная соответсвует одной мышце. Она представляет собой число с плавающей запятой между -1 и 1 и определяет, насколько сильно мышца должна растягиваться/сокращаться. Таким образом, существо с двумя мышцами будет иметь мозг с двумя выходными данными, а с десятью мышцами- мозг с десятью выходными данными. 
+
+По существу, мозг определяет, как существо интерпретирует вводные данные- наподобие ощущений- и действует соответствующе, растягивая и сокращая на выбранную величину определенные мышцы. 
+
+Мозги могут быть представлены в виде двоичного кода (хромосомы), который используется в алгоритме эволюции и позволяет создать из имеющегося существа новое. 
+
+<b><size=24>Эволюция</size></b>
+
+После того как вы закончите создание существа, вы можете нажать на кнопку «Evolve» (эволюционировать) или на букву E на клавиатуре, чтобы ваш созданный персонаж перешел на пространство эволюции. 
+Эволюционирование работает на основе генетического алгоритма. Ниже я объясню базовую идею данного алгоритма:
+
+Генетический алгоритм состоит из следующих шагов:
+
+1.Начать работу с группой существ со случайным набором мозгов. Количество существ может быть задано однажды до эволюции во время создания персонажей. Их число должно быть четным. 
+2.Позволить существам пытаться выполнить поставленную задачу в рамках заданного времени. Время также может быть задано однажды во время создания существа.
+3.Оценить, насколько хорошо существа справились с поставленной задачей. По-другому, поставить фитнес-оценку от 0 до 1. 
+4.Создать новое поколение существ. Как это происходит: 
+
+Отбираются случайным образом два существа из группы. 
+Берутся их хромосомы, которые являются уникальным идентификатором мозгов и, следовательно, определяют поведение.  
+Делятся на случайнее число (общее для обеих хромосом).
+Соединяются хромосомы воедино, используя только одну часть из каждого из «родителей».
+
+Теперь у нас есть две новые хромосомы, которые могут стать снова двумя мозгами. Эти шаги повторяются до тех пор, пока не будет создано то же количество новых существ, как в предыдущем поколении. Важным нюансом является то, что существа с высокой фитнес-оценкой имеют больший шанс быть отобранным для дальнейшего эволюционирования. Это означает, что чем эффективнее существо выполнит поставленную задачу, тем у него больше шансов передать свои гены новому поколению. 
+
+5.Следующий этап- это мутация. Существует наименьшая вероятность, что у новой хромосомы некоторые закодированные биты перепутаются, таким образом, передавая существам новые виды поведенческой деятельности. 
+6. В конце концов мы «убиваем» старое поколение, заменяя его новым и переходим к шагу 2. 
+
+Фитнес-оценка существ зависит от поставленной задачи. 
+
+Оценка в беге зависит от того, насколько далеко вправо в течение поставленного времени существо смогло пробежать. 
+
+Оценка в прыжке рассчитывается из максимальной высоты прыжка существа. 
+
+Оценка в прыжке через препятствия состоит из высоты прыжка и количества суставов, которые не дотронулись до препятствия. 
+
+В восхождении, существо, которое поднялось выше всего, получает высшую оценку.
+
+<b><size=20>Общие правила</size></b>
+
+Вы можете удалить части тела, кликнув на «Delete» или нажав на клавиатуре D и выбрав (кликнув) на ту часть тела, которую вы хотите удалить. Данное действие также удалит все соединенные с ней другие части тела. Например, если вы удалите кость, к которой присоединена мышца, данная мышца также будет удалена. Это и касается суставов, если вы удалите сустав, то удалятся все соединенные через него кости плюс мышцы. 
+
+После того, как вы создадите свое существо и будете удовлетворены результатом, вы сможете сохранить свое создание, нажав на кнопку в левом верхнем углу экрана (не доступно в версии WebGL). Если вы сохраните свое существо под уже имеющимся именем раннего существа, то оно сохранится на место раннего созданного без предупреждение.
+
+Вы можете загрузить свои сохраненные существа через выпадающий список вверху страницы. При выборе «Creature» (существо) из данного списка, все созданное на рабочей странице будет удалено. Данная функция очень полезна в том случае, если вы хотите начать все заново с нуля, и, таким образом, вам не нужно будет по отдельности удалять каждую часть существа. 
+
+На данный момент моей работы над этим проектом, можно выбрать несколько уже созданных раннее существ: Хайлер, Спайдер,Фроггер и Спринг. 
+
+Хайлер- это простое существо с маленьким телом, но длинными руками, с помощью которого он может перекинуть свое тело вперед. Так как это существо самое базовое из всех, оно может иметь очень хорошие успехи в беге. Но несмотря на это, у него есть физические ограничения, которые не позволят ему стать лучшим в беге.
+
+Спайдер с четырьмя ногами и 8 мышцами является более сложно структурированным существом. Поэтому необходимо больше времени, чтобы он научился более или менее ходить в нормальном темпе.Но когда это произойдет, наблюдать за этим процессом будет очень интересно. В общем, процесс эволюции у данного вида гораздо увлекательнее, чем у Хайлера. 
+
+Фроггер является примером базовой костной структуры животного, который в свою очередь как ни странно доказывает свою эффективность. Результаты обычно последовательные и по виду близкие к натуральным.
+
+Спринг- в переводе с английского «пружина»- это существо, похожее на пружинку, которое может добиться отличных успехов в прыжках. 
+
+В будущем могут быть добавлены еще больше существ, доступные по умолчанию.
+
+<b><size=18>Что позволяет существам выполнять то или иное движение?</size></b>
+
+Существо состоит из двух частей.Первое - это физическая структура, тело. Это то, что вы контролируете, тк вы сами ее и создаете. Тело остается неизменным для всех существ в течение всей эволюции. Возможно написать другую версию алгоритма, чтобы тело также могло эволюционировать и стать более «оптимальным», но в данной программе такое не предусмотрено. 
+Это означает, что вы должны с самого начала создать такое тело, которое может выполнить поставленную задачу. Например, если вы не добавили ни одной мышцы (или недостаточно мышц), тогда сколько бы существо не эволюционировало, оно не сможет двигаться. 
+
+Вторая составляющая существа - это мозг/поведение, которая выявляется из эволюции.Вы не можете каким-либо образом изменить данную составляющую. Здесь вы просто располагаетесь по-удобнее, расслабляетесь и наблюдаете за своим существом, который пробует разные стратегии движения и радуетесь, когда у него получается все лучше и лучше достичь цели. 
+Последнее, что хотелось бы добавить, это то, что данная программа не является игрой.Это симулятор. Здесь нет никакой цели. Если ваше существо получит 100% фитнесс-оценку (что невозможно даже с точки зрения физических данных), то единственное, что вы получите (мы надеемся), это радость и чувство азарта. 
+
+И вот настало ваше время пойти и использовать весь свой креатив в создании своих существ, видеть их попытки, поражения, успехи и победы!
+
+(переводчик: марджан Дмитриевна A.)
+
+
+<voffset=-0.5em><b><size=40>Evolution</size></b></voffset>               <size=70><sprite index=4></size>
+
+
+Using a set of basic components and a neural network this evolution simulator enables you to create creatures that will hopefully evolve into being able to accomplish tasks such as running, jumping, jumping over an obstacle and climbing a steep hill.
+
+
+<b><size=20>The Creatures</size></b>
+
+The creatures are made up of three basic body parts (joints, bones & muscles) whose functions are explained below:
+
+<b><size=20>Joints:</size></b>         <size=30><sprite index=0></size>
+
+Joints are connectors between bones. Without joints you can’t place any bones in the creature building scene. Joints enable the connected bones to rotate freely around the center of the joint. 
+
+In order to place a joint click on the ”Joint“ Button or alternatively press J on your keyboard and click where you want to place the joint. The joint option is selected by default since you have to start every creature with at least two joints.
+
+<b><size=20>Bones:</size></b>                     <size=20><sprite index=1></size>
+
+Bones make up the skeleton of your creatures. You can only place bones between two existing joints. Bones do not collide with each other, which means that they don’t restrict the movement of your creature in any way.
+
+In order to place a bone you have to select the “Bone“ button or press B on your keyboard. Click on the first joint and then hold and drag your mouse to the second joint.
+
+<b><size=20>Muscles:</size></b>                    <size=50><sprite index=2></size>
+
+Muscles enable the creatures to move their bones autonomously. They are the only body parts that the brain of a creature can control. Muscles are always connected to the center points of two bones, so you can’t place any muscles if you haven’t already placed at least two bones in the creature building scene. 
+
+In order to place a muscle you have to select the ”Muscle“ button or press M on your keyboard. Then click on the first bone, hold down the mouse and move to the second bone. The muscle will automatically connect to the center of the bones. 
+
+Unlike real muscles these creature muscles can both expand and contract (You can think of them as simplified muscle pairs that go in opposite directions). Physically the muscles are spring-like, which means that they will always tend to go back into their starting position.
+
+A creature can expand and contract its muscles continuously by applying a different amount of force to them. Without any muscles a creature is not able to move at all and will therefore not be able to accomplish any of the tasks. Another thing to keep in mind while building your creatures is that both the joints and the bones have some weight to them (which is independent of the length of the bones). Therefore, the more bones and joints your creature has the more muscles you need to add to it, otherwise the muscles might not have enough strength to move the skeleton around. Keep in mind that you also can’t connect more than one muscle between the same two bones. 
+<b><size=25>The Brain</size></b>                         <size=70><sprite index=3></size>
+
+
+This section explains what the brain does and the basic principles of how it works.
+
+The brain is not a body part like joints, bones or muscles. You don’t need to worry about adding or setting up a brain for your creatures, this is all done automatically when you hit the “Evolve“ button. 
+
+Every creature needs a brain, which controls all of the muscles and allows the creatures to evolve at all. The brain is a neural network which takes a set of <b>inputs</b> and converts them to a set of <b>outputs</b>. 
+
+The inputs include the following information:
+ - the distance of the creature from the ground
+ - the current velocity (horizontal and vertical component)
+ - the rotational velocity
+ - the number of points currently touching the ground
+ - the creature’s rotation (= the average of all bone rotations)
+
+Depending on the specific task there can be more inputs. The obstacle jumping task for example requires another input for the distance between the creature and the obstacle.
+
+Each output corresponds to exactly one muscle. The output is a floating point number between -1 and 1 and determines how far the muscle should expand/contract. Thus, a creature with just two muscles will have a brain with two outputs and a creature with ten muscles will have a brain that produces ten outputs. 
+
+The brain essentially defines how the creature will interpret the inputs - which you can think of as senses - and act accordingly, meaning which muscles to contract or expand and determine the degree of contraction / expansion.
+
+The brains can be encoded into binary strings (chromosomes) which are used in the evolutionary algorithm in order to be able to create new creatures from existing ones.
+
+
+<b><size=24>Evolution</size></b>
+
+When you have finished building your creature you can click on the “Evolve“ button (or alternatively hit E on your keyboard) which will take the creature to the evolution scene. 
+
+The evolution takes place using a genetic algorithm. In the following section I’m going to outline the basic idea behind such an algorithm:
+
+The genetic algorithm executes the following steps:
+
+1. Start out with a set of creatures with completely random brains. (The size of this set can be adjusted once before starting the evolution in the creature building scene. The number has to be even.)
+
+2. Let the creatures try the selected task for a set amount of time. (This time can also be adjusted once before starting the evolution in the creature building scene)
+
+3. Evaluate how good each of the creatures was at completing the task. This is also called assigning a fitness score (between 0 and 1).
+
+4. Create a new generation of creatures. This is done by randomly picking two creatures from the set, taking their chromosomes (which uniquely identify their brains and therefore their behavior), split them at a random index (the same for both chromosomes) and put them back together but this time using the one part from each of the two “parent“ creatures. Now we have two new chromosomes that can be turned into two brains again. We repeat this process until we reach the same number of new creatures as in the previous generation. An important aspect of this step is that creatures with a higher fitness score also have a higher chance of getting picked, so the creatures that are better at completing the tasks have a higher change of passing their genes to the next generation.
+
+5. Next comes the mutation. For every new chromosome there is a small chance that some of the encoded bits get flipped, thus introducing random behavior into some of the creatures.
+
+6. Finally we “kill“ the old generation, replace them with the new creatures and go back to step 2.
+
+
+The fitness score of the creatures is determined based on the task. 
+
+For the running task the fitness is based on how far a creature has made it towards the right in the amount of time that it had.
+For the jumping task the fitness is calculated from the maximum jumping height of the creature. 
+For the obstacle jumping task both the maximum jumping height and the number of joints that did not touch the obstacle are of importance.
+For the climbing task the creature that made it the highest gets the highest fitness score. 
+
+
+
+<b><size=20>General Tips</size></b>
+
+You can delete individual body part by clicking on the “Delete“ button (or pressing D on the keyboard) and clicking on the part that you want to delete. This will also delete any directly attached objects. So if you delete a bone that has a muscle attached, then that muscle will be deleted as well. Similarly, if you delete a joint, this will delete all of the directly attached bones, which in turn also delete the attached muscles. 
+
+Once you’re happy with a creature that you’ve built you can save it using the save button in the top left corner of the creature building scene (not available on the WebGL build). If you save a creature with the same name as an existing save then that save will be overwritten (without any warning) by the new one.
+
+You can load your saved creatures using the dropdown at the top. Choosing ”Creature“ from this list will delete whatever is currently assembled in the building scene. This is especially helpful if you want to start from scratch without having to delete all of the joints independently. 
+
+There are a couple of creatures that are available “out of the box“. As of the time of me writing this we have the Hailer, the Spider and the Spring. 
+
+The hailer is a simple creature with a small “body“ and a long arm that it can use to throw itself forwards. Since it is so basic it will be able to do a fairly good job at the running task relatively quickly. However, it also has some physical limitations, which means that it won’t ever be the absolute best at running. 
+
+The spider - with its four legs and eight muscles - is a much more complex creature. This is why it takes a lot longer for this one to evolve into being able to walk at a halfway decent pace, but when it does it is a lot more exciting to watch. In fact the whole evolution process is more interesting than that of the hailer.
+
+The spring is - as the name says - essentially just a spring shaped creature which can get relatively good at the jumping tasks.
+
+More default creatures are probably going to be added in the future.
+
+
+<b><size=18>What makes a creature able to perform a specific task?</size></b>
+
+There are essentially two parts to each creature. One is its physical structure i.e. its body. This is something that you control, since you are the one building the creature. The body stays the same for all of the creatures during the whole course of evolution. It is possible to write a variation of this algorithm that also evolves the body of the creature into an “optimal“ shape, but that doesn’t happen here. 
+
+This means that you need to make sure that your creature is physically able to accomplish the task in some form in the first place. If you for example don’t add any (or not enough) muscles to your creature then it will never be able to move, no matter how long you let it evolve.
+
+The second aspect is the brain / behavior which is driven by evolution. You don’t have a say in this part. This is where you sit back, relax and watch your creature try out different strategies and get excited when it gets better and better over time. 
+
+
+A last quick thing to note is that this is a simulation and not a game. There are no objectives. If a creature of yours reaches 100% fitness - which shouldn’t even be physically possible at all - you don’t win anything except for (hopefully) some excitement and joy.
+
+
+Now it’s your turn to go out and be creative with your creatures and watch them try, fail, improve and succeed!
+
+<voffset=-0.5em><b><size=40>Evolution</size></b></voffset>               <size=70><sprite index=4></size>
+
+
+Dieser Evolutionssimulator ermöglicht es, mithilfe einer Reihe von grundlegenden Komponenten und einem neuronalen Netzwerk Kreaturen zu erschaffen, die hoffentlich dazu in der Lage sind, verschiedene Aufgaben wie Laufen, Springen, Überspringen eines Hindernisses und Treppensteigen zu bewältigen.
+
+<b><size=20>Die Kreaturen</size></b>
+
+Die Kreaturen bestehen aus drei grundlegenden Körperteilen (Gelenke, Knochen und Muskeln), deren Funktionen im Folgenden erklärt werden:
+
+<b><size=20>Gelenke:</size></b>         <size=30><sprite index=0></size>
+
+Gelenke sind Verbindungen zwischen Knochen. Ohne Gelenke kannst du keine Knochen in die Kreaturdesign-Szene legen. Gelenke ermöglichen es den verbundenen Knochen, sich frei um die Mitte des Gelenks zu drehen.
+
+Um ein Gelenk zu platzieren, klicke auf den "Joint" Knopf oder drücke J auf der Tastatur und klicke dort, wo du das Gelenk platzieren möchtest. Die Gelenkoption ist standardmäßig ausgewählt, da jedes Kreaturdesign mit mindestens zwei Gelenken begonnen werden muss.
+
+<b><size=20>Knochen:</size></b>                     <size=20><sprite index=1></size>
+
+Knochen bilden das Skelett deiner Kreaturen. Du kannst Knochen nur zwischen zwei vorhandenen Gelenken platzieren. Knochen kollidieren nicht miteinander, was bedeutet, dass sie die Bewegung deiner Kreatur in keiner Weise einschränken.
+
+Um einen Knochen zu platzieren, musst du den Knopf “Bone” wählen oder B auf der Tastatur drücken. Klicke auf das erste Gelenk und halte und ziehe die Maus zum zweiten Gelenk.
+
+<b><size=20>Muskeln:</size></b>                    <size=50><sprite index=2></size>
+
+Muskeln ermöglichen es den Kreaturen, ihre Knochen autonom zu bewegen. Sie sind die einzigen Körperteile, die das Gehirn einer Kreatur kontrollieren kann. Muskeln sind immer mit den Mittelpunkten von zwei Knochen verbunden, sodass du keine Muskeln platzieren kannst, wenn nicht bereits mindestens zwei Knochen in der Kreaturdesign-Szene platziert sind.
+
+Um einen Muskel zu platzieren, klicke auf den "Muscle" Knopf oder drücke M auf der Tastatur. Klicke dann auf den ersten Knochen, halte die Maus gedrückt und bewege sie zum zweiten Knochen. Der Muskel verbindet sich automatisch mit der Mitte der Knochen.
+
+Anders als echte Muskeln können sich diese Kreaturmuskeln sowohl ausdehnen als auch zusammenziehen (Du kannst dir diese als vereinfachte Muskelpaare vorstellen, die in entgegengesetzte Richtungen wirken). Physikalisch sind die Muskeln federartig, was bedeutet, dass sie immer dazu tendieren, in ihre Ausgangsposition zurückzukehren.
+
+Eine Kreatur kann ihre Muskeln kontinuierlich ausdehnen und zusammenziehen, indem sie eine andere Menge an Kraft auf sie ausübt. Ohne Muskeln ist eine Kreatur nicht in der Lage sich zu bewegen und wird daher keine der Aufgaben erfüllen können. Eine andere Sache, die du beim Aufbau deiner Kreaturen beachten solltest, ist, dass sowohl die Gelenke als auch die Knochen ein bestimmtes Gewicht haben (was unabhängig von der Länge der Knochen ist). Je mehr Knochen und Gelenke deine Kreatur hat, desto mehr Muskeln musst du ihr hinzufügen, sonst haben die Muskeln möglicherweise nicht genug Kraft, um das Skelett zu bewegen. Denk daran, dass du nicht mehr als einen Muskel zwischen den gleichen zwei Knochen verbinden kannst.
+
+<b><size=23>Das Gehirn</size></b>                         <size=70><sprite index=3></size>
+
+Dieser Abschnitt erklärt, was das Gehirn macht und wie es funktioniert.
+
+Das Gehirn ist kein Körperteil wie Gelenke, Knochen oder Muskeln. Du musst dir keine Gedanken darüber machen, wie du deinen Kreaturen ein Gehirn hinzufügen oder einrichten kannst. Dies geschieht automatisch, wenn du auf den "Evolve" Knopf klickst.
+
+Jede Kreatur benötigt ein Gehirn, das alle Muskeln kontrolliert und es den Kreaturen ermöglicht, sich überhaupt zu entwickeln. Das Gehirn ist ein neuronales Netzwerk, das eine Menge von Eingaben erhält und sie in eine Menge von Ausgaben umwandelt.
+
+Die Eingaben umfassen die folgenden Informationen:
+ - die Entfernung der Kreatur vom Boden
+ - die aktuelle Geschwindigkeit (horizontale und vertikale Komponente)
+ - die Rotationsgeschwindigkeit
+ - die Anzahl der Punkte, die gerade den Boden berühren
+ - die Rotation der Kreatur (= der Durchschnitt aller Knochendrehungen)
+
+Abhängig von der spezifischen Aufgabe kann es mehr Eingaben geben. Die Hindernissprung-Aufgabe benötigt beispielsweise eine zusätzliche Eingabe für die Entfernung zwischen der Kreatur und dem Hindernis.
+
+Jede Ausgabe entspricht genau einem Muskel. Die Ausgabe ist eine Gleitkommazahl zwischen -1 und 1 und bestimmt, wie weit sich der Muskel ausdehnen / zusammenziehen soll. Somit hat eine Kreatur mit nur zwei Muskeln ein Gehirn mit zwei Ausgaben und eine Kreatur mit zehn Muskeln hat ein Gehirn, das zehn Ausgaben produziert.
+
+Das Gehirn definiert im Wesentlichen, wie die Kreatur die Eingaben interpretieren wird und entsprechend handelt, was bedeutet, welche Muskeln sich kontrahieren oder ausdehnen und den Grad der Kontraktion / Expansion.
+
+Die Gehirne können in binäre Strings (Chromosomen) kodiert werden, die im evolutionären Algorithmus verwendet werden, um neue Kreaturen aus bestehenden zu erstellen.
+
+
+<b><size=24>Evolution</size></b>
+
+Wenn du mit dem Bau deiner Kreatur fertig bist, kannst du auf den "Evolve" Knopf klicken (oder alternativ E auf der Tastatur drücken), was die Kreatur zur Evolutionsszene bringt.
+
+Die Evolution findet unter Verwendung eines genetischen Algorithmus statt. Im folgenden Abschnitt werde ich die Grundidee eines solchen Algorithmus skizzieren:
+
+Der genetische Algorithmus führt die folgenden Schritte aus:
+
+1. Beginne mit einer Reihe von Kreaturen mit völlig zufälligen Gehirnen. (Die Größe dieser Menge kann einmal vor Beginn der Evolution eingestellt werden.)
+
+2. Lasse die Kreaturen die ausgewählte Aufgabe für eine bestimmte Zeitspanne ausprobieren. (Diese Zeit kann auch einmal eingestellt werden, bevor die Evolution gestartet wird)
+
+3. Werte aus, wie gut die einzelnen Kreaturen die Aufgabe erfüllt haben. Dies wird auch als Fitness-Bewertung bezeichnet (zwischen 0 und 1).
+
+4. Erstelle eine neue Generation von Kreaturen. Dazu werden zufällig zwei Kreaturen aus der Menge ausgewählt, deren Chromosomen (die ihre Gehirne und somit ihr Verhalten eindeutig identifizieren), an einem zufälligen Index (für beide Chromosomen) aufgeteilt und dann wieder zusammengefügt, diesmal jedoch mit jeweils einem Teil von jedem der beiden "Eltern". Jetzt haben wir zwei neue Chromosomen, die wieder in zwei Gehirne verwandelt werden können. Wir wiederholen diesen Prozess, bis wir die gleiche Anzahl an neuen Kreaturen erreichen wie in der vorherigen Generation. Ein wichtiger Aspekt dieses Schritts ist, dass Kreaturen mit einem höheren Fitnesswert auch eine höhere Chance haben, zur Reproduktion ausgewählt zu werden, so dass die Kreaturen, die die Aufgaben besser erfüllen, eine höhere Wahrscheinlichkeit haben, ihre Gene auf die nächste Generation zu übertragen.
+
+5. Als nächstes kommt die Mutation. Für jedes neue Chromosom gibt es eine geringe Chance, dass einige der kodierten Bits umgedreht werden, wodurch zufälliges Verhalten in einige der Kreaturen eingeführt wird.
+
+6. Schließlich "töten" wir die alte Generation, ersetzen sie durch die neuen Kreaturen und gehen zurück zu Schritt 2.
+
+
+Der Fitnesswert der Kreaturen wird basierend auf der Aufgabe bestimmt.
+
+Für die Aufgabe Laufen (Running) basiert die Fitness darauf, wie weit eine Kreatur in der Zeit, die sie hatte, nach rechts gerückt ist.
+Für die Aufgabe Springen (Jumping) wird die Fitness aus der maximalen Sprunghöhe der Kreatur berechnet.
+Für die Aufgabe Hindernissprung (Obstacle Jump) sind sowohl die maximale Sprunghöhe als auch die Anzahl der Gelenke, die das Hindernis nicht berührt haben, von Bedeutung.
+Für die Kletteraufgabe (Climbing) erhält die Kreatur, die die höchste Stufe erreicht hat, den höchsten Fitnesswert.
+
+
+<b><size=20>Allgemeine Hinweise</size></b>
+
+Du kannst einzelne Körperteile löschen, indem du auf den Knopf "Löschen" klickst (oder auf der Tastatur D drückst) und den Teil auswählst, der gelöscht werden soll. Dadurch werden auch alle direkt angefügten Objekte gelöscht. Wenn du also einen Knochen löschst, der mit einem Muskel verbunden ist, wird dieser Muskel ebenfalls gelöscht. Wenn du ein Gelenk löschst, werden auch alle direkt verbundenen Knochen gelöscht, wodurch wiederum die verbundenen Muskeln gelöscht werden.
+
+Wenn du mit einer Kreatur, die du designed hast, zufrieden bist, kannst du sie mit der Schaltfläche "Speichern" in der oberen linken Ecke speichern (nicht im WebGL-Build verfügbar). Wenn du eine Kreatur mit dem gleichen Namen wie eine bereits gespeicherte Kreatur speicherst, wird das alte Design (ohne Warnung) überschrieben.
+
+Du kannst deine gespeicherten Kreaturen über das Drop-down-Menü (oben in der Mitte) laden. Wenn du in dieser Liste "Kreatur" auswählen, wird alles gelöscht, was bisher in die Kreaturdesign-Szene gelegt worden ist. Dies ist besonders hilfreich, wenn du von vorne anfangen möchtest, ohne alle Körperteile einzeln löschen zu müssen.
+
+Es gibt ein paar Kreaturdesigns, die von vornherein verfügbar sind. Zu der Zeit, als ich diesen Text schreibe, haben wir den Hailer, die Spinne, den Frogger und die Feder.
+
+Der Hailer ist eine einfache Kreatur mit einem kleinen "Körper" und einem langen Arm, mit dem er sich nach vorne werfen kann. Da er so einfach gebaut ist, wird er in der Lage sein, eine relativ gute Arbeit bei der Aufgabe “Rennen” zu erledigen. Er hat jedoch auch einige physische Einschränkungen, was bedeutet, dass er niemals das absolut beste Ergebnis beim Rennen erhalten wird.
+
+Die Spinne - mit ihren vier Beinen und acht Muskeln - ist eine viel komplexere Kreatur. Aus diesem Grund dauert es auch viel länger, bis sie sich in einem halbwegs vernünftigen Tempo bewegen kann, aber wenn es passiert, ist es umso aufregender zu sehen. Wenn es funktioniert, ist der Evolutionsprozess der Spinne um einiges interessanter als der des Hailers.
+
+Das Frogger-Design repräsentiert eine sehr tierähnliche Knochenstruktur, die überraschend effektiv ist. Dieses Design liefert normalerweise ziemlich konsistente und besonders natürlich aussehende Ergebnisse.
+
+Die Feder ist - wie der Name sagt - im Wesentlichen nur eine federförmige Kreatur, die bei den Sprungaufgaben relativ gut werden kann.
+
+In Zukunft werden wahrscheinlich mehr Standardkreaturen hinzugefügt.
+
+<b><size=18>Wann ist eine Kreatur in der Lage, eine bestimmte Aufgabe auszuführen?</size></b>
+
+Zu jeder Kreatur gehören im Wesentlichen zwei Teile. Einer ist seine physische Struktur, d.h. sein Körperdesign. Das ist etwas, das du kontrollierst, da du derjenige bist, der die Kreatur baut. Der Körper bleibt während des gesamten Evolutionsprozesses für alle Lebewesen gleich. Es ist möglich, eine Variation dieses Algorithmus zu schreiben, der auch den Körper der Kreatur in eine "optimale" Form bringt, aber das passiert hier nicht.
+
+Das bedeutet, dass du sicherstellen musst, dass deine Kreatur die Aufgabe in irgendeiner Form physisch erfüllen kann. Wenn du deiner Kreatur zum Beispiel keine (oder nicht genug) Muskeln hinzufügst, wird sie sich niemals bewegen können, egal wie lange du sie entwickeln lässt.
+
+Der zweite Aspekt ist das Gehirn / Verhalten, das von der Evolution angetrieben wird. Du hast in diesem Teil nichts zu sagen. Hier lehnst du dich zurück, entspannst dich und siehst deiner Kreatur zu, wie sie verschiedene Strategien ausprobiert und mit der Zeit immer besser wird.
+
+Eine letzte schnelle Sache zu beachten ist, dass dies eine Simulation und kein Spiel ist. Es gibt keine Ziele. Wenn eine deiner Kreaturen 100% Fitness erreicht - was eigentlich gar nicht möglich sein sollte - gewinnst du nichts anderes als (hoffentlich) etwas Aufregung und Freude.
+
+Jetzt bist du an der Reihe mit deinen Kreaturen kreativ zu sein und ihnen dabei zuzusehen, wie sie versuchen, scheitern, sich verbessern und Erfolg haben!
+
+
+<voffset=-0.5em><b><size=40>Evolução</size></b></voffset>               <size=70><sprite index=4></size>
+
+
+Usando um conjunto de componentes básicos e uma rede neural, este simulador de evolução permite que você crie criaturas que evoluirão e se tornarão capazes de realizar tarefas como correr, saltar, pular obstáculos e subir colinas íngremes. 
+
+
+<b><size=20>As Criaturas</size></b>
+
+As criaturas são compostas de três estruturas corporais básicas (articulações, ossos e músculos) cujas funções são explicadas abaixo:
+
+<b><size=20>Articulações:</size></b>         <size=30><sprite index=0></size>
+
+Articulações são conectores entre os ossos. Sem elas, você não conseguirá acrescentar ossos nas criaturas. Articulações permitem que os ossos conectados girem livremente ao redor do centro da articulação.
+
+Para colocar uma articulação, clique no botão "Joint" ou pressione J no teclado e clique onde deseja colocá-la. A opção “Joint” é selecionada por padrão, já que você deve iniciar todas as criaturas com pelo menos duas articulações.
+
+<b><size=20>Ossos:</size></b>                     <size=20><sprite index=1></size>
+
+Ossos compõem o esqueleto de suas criaturas. Você só pode colocar ossos entre duas juntas já existentes. Ossos não colidem uns com os outros, o que significa que eles não restringem o movimento da sua criatura de forma alguma.
+
+Para colocar um osso, você deve selecionar o botão “Bone” ou pressionar B no teclado. Clique na primeira articulação, segure e arraste o mouse para a segunda articulação.
+
+<b><size=20>Músculos:</size></b>                    <size=50><sprite index=2></size>
+
+Os músculos permitem que as criaturas movam seus ossos de forma autônoma. Eles são as únicas partes do corpo que o cérebro de uma criatura pode controlar. Os músculos estão sempre conectados aos pontos centrais de dois ossos, então você não pode colocar nenhum músculo se você ainda não colocou pelo menos dois ossos na tela de criação da criatura.
+
+Para colocar um músculo, você deve selecionar o botão "Muscle" ou pressionar M no seu teclado. Em seguida, clique no primeiro osso, segure e arraste o mouse para o segundo osso. O músculo se conectará automaticamente ao centro dos ossos.
+
+Diferentes dos músculos reais, os músculos de criatura podem se expandir e contrair (você pode pensar neles como pares de músculos simplificados que vão em direções opostas). Fisicamente, os músculos são semelhantes a uma mola, o que significa que eles sempre tenderão a voltar à sua posição inicial.
+
+Uma criatura pode expandir e contrair seus músculos continuamente aplicando uma quantidade diferente de força a eles. Sem nenhum músculo, uma criatura não é capaz de se mover e, portanto, não será capaz de realizar nenhuma das tarefas. Outra coisa a ter em mente ao construir suas criaturas é que tanto as articulações quanto os ossos têm algum peso (que é independente do comprimento dos ossos). Portanto, quanto mais ossos e articulações sua criatura tiver, mais músculos você precisará adicionar; caso contrário, os músculos podem não ter força suficiente para movimentar o esqueleto. Lembre-se de que você também não pode conectar mais de um músculo entre os mesmos dois ossos.
+
+<b><size=23>O Cérebro</size></b>                         <size=70><sprite index=3></size>
+
+Esta seção explica o que o cérebro faz e os princípios básicos de como ele funciona.
+
+O cérebro não é uma parte do corpo como articulações, ossos ou músculos. Você não precisa se preocupar em adicionar ou configurar um cérebro para suas criaturas. Isso é feito automaticamente quando você clica no botão "Evolve".
+
+Toda criatura precisa de um cérebro, que controla todos os músculos e permite que as criaturas evoluam. O cérebro é uma rede neural que recebe um conjunto de entradas e as converte em um conjunto de saídas.
+
+As entradas incluem as seguintes informações:
+ - a distância da criatura do solo;
+ - a velocidade atual (componente horizontal e vertical);
+ - a velocidade rotacional;
+ - o número de pontos que tocam o solo;
+ - a rotação da criatura (= a média de todas as rotações ósseas).
+
+Dependendo da tarefa específica, podem haver mais entradas. A tarefa de saltar obstáculos, por exemplo, requer outra entrada para a distância entre a criatura e o obstáculo.
+
+Cada saída corresponde a exatamente um músculo. A saída é um número de ponto flutuante entre -1 e 1 e determina o quanto o músculo deve se expandir/contrair. Assim, uma criatura com apenas dois músculos terá um cérebro com duas saídas e uma criatura com dez músculos terá um cérebro que produz dez saídas.
+
+O cérebro essencialmente define como a criatura irá interpretar as entradas — que você pode pensar como sentidos — e como irá agir de acordo com elas, ou seja, definir quais músculos contrair ou expandir e determinar o grau de contração/expansão.
+
+Os cérebros podem ser codificados em cadeias binárias (cromossomos), que são usadas no algoritmo evolucionário para poder criar novas criaturas a partir das existentes.
+
+
+<b><size=24>Evolução</size></b>
+
+Quando terminar de construir sua criatura, você pode clicar no botão "Evolve" (ou pressionar E no seu teclado), que levará a criatura para a cena de evolução.
+
+A evolução ocorre usando um algoritmo genético. Na próxima seção, vou descrever a ideia básica por trás desse algoritmo.
+
+O algoritmo genético executa as seguintes etapas:
+
+1. Comece com um conjunto de criaturas com cérebros completamente aleatórios. (O tamanho desse conjunto pode ser ajustado uma vez antes de iniciar a evolução na tela de criação da criatura. O número deve ser par.)
+
+2. Deixe as criaturas tentarem realizar a tarefa selecionada por um determinado tempo. (Esse tempo também pode ser ajustado uma vez antes de iniciar a evolução na tela de criação de criatura.)
+
+3. Avalie quão bem cada uma das criaturas se saiu ao tentar completar a tarefa. Isso também é chamado de atribuir uma pontuação de aptidão (entre 0 e 1).
+
+4. Crie uma nova geração de criaturas. Isso é feito escolhendo aleatoriamente duas criaturas do conjunto, pegando seus cromossomos (que identificam seus cérebros e, portanto, seus comportamentos), dividindo-os em um índice aleatório (o mesmo para ambos os cromossomos) e os repondo, mas desta vez usando o uma parte de cada uma das duas criaturas "pais". Agora temos dois novos cromossomos que podem ser transformados em dois cérebros novamente. Repetimos esse processo até alcançarmos o mesmo número de novas criaturas que na geração anterior. Um aspecto importante dessa etapa é que criaturas com maior pontuação de aptidão também têm uma chance maior de serem escolhidas. Então, as criaturas que são melhores em completar as tarefas têm uma chance maior de passar seus genes para a próxima geração.
+
+5. Em seguida vem a mutação. Para cada novo cromossomo, há uma pequena chance de que alguns dos bits codificados sejam invertidos, introduzindo assim um comportamento aleatório em algumas das criaturas.
+
+6. Finalmente, “matamos” a velha geração; substitua-a pelas novas criaturas e volte ao passo 2.
+
+
+A pontuação de aptidão das criaturas é determinada com base na tarefa.
+
+Para a tarefa de corrida, a aptidão é baseada em quão longe uma criatura chegou à direita na quantidade de tempo que tinha.
+Para a tarefa de salto, a aptidão é calculada a partir da altura máxima de salto da criatura.
+Para a tarefa de saltar obstáculos, tanto a altura máxima de salto quanto o número de articulações que não tocaram no obstáculo são importantes.
+Para a tarefa de escalada, a criatura que chegou mais alto recebe a maior pontuação de aptidão.
+
+
+<b><size=20>Dicas gerais</size></b>
+
+Você pode excluir partes individuais do corpo clicando no botão "Delete" (ou pressionando D no teclado) e clicando na parte que deseja excluir. Isso também excluirá todos os objetos conectados diretamente. Então, se você excluir um osso que tenha um músculo ligado, esse músculo também será excluído. Da mesma forma, se você excluir uma junta, isso excluirá todos os ossos conectados diretamente, o que, por sua vez, também excluirá os músculos anexados.
+
+Quando estiver satisfeito com uma criatura que criou, você poderá salvá-la usando o botão “Save” no canto superior esquerdo da tela de criação de criatura (não disponível na versão WebGL). Se você salvar uma criatura com o mesmo nome de um salvamento existente, esse salvamento será sobrescrito (sem nenhum aviso) pelo novo.
+
+Você pode carregar suas criaturas salvas usando a lista no dropdown no topo da tela. Escolher “Creature” dessa lista irá apagar o que estiver atualmente montado na tela de criação. Isso é especialmente útil se você quiser começar do zero sem ter de excluir todas as juntas individualmente.
+
+Há algumas criaturas que já vêm disponíveis. No momento em que escrevo isto, temos o Hailer, a Spider e a Spring.
+
+O Hailer é uma criatura simples com um pequeno "corpo" e um braço longo, que pode usar para se lançar para a frente. Como é tão básico, será capaz de executar um trabalho razoavelmente bom na tarefa de correr de forma relativamente rápida. No entanto, ele também tem algumas limitações físicas, o que significa que ele nunca será o melhor em correr.
+
+A Spider — com suas quatro patas e oito músculos — é uma criatura muito mais complexa. É por isso que leva muito mais tempo para que evolua e seja de andar em um ritmo decente, mas quando isso acontece, é muito mais emocionante de assistir. De fato, todo o processo de evolução é mais interessante que o do Hailer.
+
+A Spring é — como o nome sugere — essencialmente apenas uma criatura em forma de mola que pode ficar relativamente boa nas tarefas de salto.
+
+Mais criaturas padrão provavelmente serão adicionadas no futuro.
+
+<b><size=18>O que faz uma criatura capaz de realizar uma tarefa específica?</size></b>
+
+Existem essencialmente duas partes para cada criatura. Uma é sua estrutura física, ou seja, seu corpo. Isso é algo que você controla, já que você é quem está construindo a criatura. O corpo permanece o mesmo para todas as criaturas durante todo o curso da evolução. É possível escrever uma variação desse algoritmo que também evolui o corpo da criatura para uma forma "ideal", mas isso não acontece aqui.
+
+Isso significa que você precisa ter certeza de que sua criatura é, em primeiro lugar, fisicamente capaz de realizar a tarefa de alguma forma. Se, por exemplo, você não adicionar músculos (ou adicionar músculos insuficientes) à sua criatura, ela nunca poderá se mover, não importa quanto tempo você a deixe evoluir.
+
+O segundo aspecto é o cérebro/comportamento, que é impulsionado pela evolução. Você não tem controle sobre essa parte. É o momento em que você se senta, relaxa e observa sua criatura experimentar diferentes estratégias e fica animado quando ela fica melhor e melhor com o tempo.
+
+Uma última coisa rápida a notar é que isso é uma simulação e não um jogo. Não há objetivos. Se uma criatura sua atingir 100% de aptidão física — o que nem deveria ser fisicamente possível —, você não ganhará nada, exceto (espero) alguma emoção e alegria.
+
+Agora é sua vez de sair e ser criativo com suas criaturas e vê-las tentar, falhar, melhorar e ter sucesso!
