@@ -18,6 +18,14 @@ public class BuildManager {
 		BuildWebGL();
 	}
 
+	[MenuItem("BuildTools/Build All Except WebGL")]
+	public static void BuildAllExceptWebGL() {
+
+		BuildMacOS();
+		BuildWindows();
+		BuildLinux();
+	}
+
 	[MenuItem("BuildTools/Build Windows")]
 	public static void BuildWindows() {
 
