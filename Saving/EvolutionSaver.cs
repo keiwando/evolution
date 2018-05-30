@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
@@ -166,7 +167,13 @@ public class EvolutionSaver {
 		int counter = 2;
 		while (System.IO.File.Exists(path)) {
 
-			path = path.Replace(".txt", string.Format(" ({0}).txt", counter));
+			//var pattern = new Regex(@"( \d+)?.txt");
+			var pattern = @"( \d+)?.txt";
+
+			filename = Regex.Replace(filename, pattern, string.Format(" {0}.txt", counter));
+			path = Path.Combine(RESOURCE_PATH, filename);
+			//path = path.Replace(".txt", string.Format(" ({0}).txt", counter));
+			//filename = filename.Replace(".txt", string.Format(" ({0}).txt", counter));
 			counter++;
 		}
 
