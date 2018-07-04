@@ -89,7 +89,6 @@ public class CreatureBuilder : MonoBehaviour {
 	private Vector3 lastTouchPos = Vector3.zero;
 	private bool firstMovementTouch = true;
 
-	// Use this for initialization
 	void Start () {
 
 		CreatureSaver.SetupPlayerPrefs();
@@ -114,10 +113,33 @@ public class CreatureBuilder : MonoBehaviour {
 
 
 		//CreatureSaver.Test();
+		//StartCoroutine(SBPerformanceTest());
 
 	}
-	
-	// Update is called once per frame
+
+	private IEnumerator SBPerformanceTest() {
+
+		yield return new WaitForSeconds(2f);
+
+		var builder = new System.Text.StringBuilder();
+
+		for (int i = 0; i < 100000; i++) {
+			builder.Append('0');
+		}
+
+		yield return new WaitForSeconds(1f);
+
+		var str = builder.ToString();
+
+		yield return new WaitForSeconds(1f);
+
+		builder = new System.Text.StringBuilder(str);
+
+		for (int i = 0; i < 100000; i++) {
+			builder[i] = '1';
+		}
+	}
+
 	void Update () {
 
 		HandleClicks();
