@@ -33,6 +33,11 @@ public class Muscle : BodyComponent {
 
 	private LineRenderer lineRenderer;
 
+	private Rigidbody rigidbody;
+	private Collider collider;
+
+	private Vector3[] linePoints = new Vector3[2];
+
 	/// <summary>
 	/// Specifies whether the muscle should contract and expand or not.
 	/// </summary>
@@ -78,6 +83,9 @@ public class Muscle : BodyComponent {
 
 	private float minLineWidth = 0.5f;
 	private float maxLineWidth = 1.5f;
+
+	private Vector3 resetPosition;
+	private Quaternion resetRotation;
 
 	public static Muscle Create() {
 		ID_COUNTER++;
@@ -136,28 +144,42 @@ public class Muscle : BodyComponent {
 
 		return muscle;
 	}
-
-	// Use this for initialization
+		
 	public override void Start () {
 		base.Start();
 
 		highlightingShader = Shader.Find("Standard");
+
+		resetPosition = transform.position;
+		resetRotation = transform.rotation;
 	}
-	
-	// Update is called once per frame
+
+	public void Reset() {
+		
+		transform.SetPositionAndRotation(resetPosition, resetRotation);	
+		currentForce = 0f;
+		living = false;
+	}
+
 	void Update () {
 
 		UpdateLinePoints();
 		UpdateContractionVisibility();
-	}
 
-	void FixedUpdate() {
-		
 		if (muscleAction == MuscleAction.CONTRACT) {
 			Contract();
 		} else {
 			Expand();	
 		}
+	}
+
+	void FixedUpdate() {
+		
+//		if (muscleAction == MuscleAction.CONTRACT) {
+//			Contract();
+//		} else {
+//			Expand();	
+//		}
 	}
 
 	/// <summary>
@@ -193,7 +215,7 @@ public class Muscle : BodyComponent {
 	public void SetContractionForce(float percent) {
 
 		currentForce = Mathf.Max(0.01f, Mathf.Min(MAX_MUSCLE_FORCE, percent * MAX_MUSCLE_FORCE));
-		Assert.IsFalse(float.IsNaN(currentForce), "Percent: " + percent);
+		//Assert.IsFalse(float.IsNaN(currentForce));
 	}
 
 	/** Contracts the muscle. */
@@ -243,18 +265,11 @@ public class Muscle : BodyComponent {
 		endingForce.Scale(scaleVector);
 		startingForce.Scale(scaleVector);
 
-		Assert.IsFalse(float.IsNaN(endingForce.x),"force: " + force);
-		Assert.IsFalse(float.IsNaN(startingForce.x),"force: " + force);
+		//Assert.IsFalse(float.IsNaN(endingForce.x));
+		//Assert.IsFalse(float.IsNaN(startingForce.x));
 
 		startingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(startingForce ,startingJoint.position);
 		endingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(endingForce, endingJoint.position);
-	}
-
-	/// <summary>
-	/// Tries to setup 
-	/// </summary>
-	private void TrySetupFromPrefab() {
-		
 	}
 
 	private void TestContraction () {
@@ -301,6 +316,7 @@ public class Muscle : BodyComponent {
 	private void AddColliderToLine() {
 
 		BoxCollider col = gameObject.AddComponent<BoxCollider> (); //new GameObject("Collider").
+		this.collider = col;
 
 		// Collider is added as child object of line
 		col.transform.parent = lineRenderer.transform;
@@ -324,12 +340,15 @@ public class Muscle : BodyComponent {
 
 		// Add a rigidbody
 		Rigidbody rBody = gameObject.AddComponent<Rigidbody>();
+		this.rigidbody = rBody;
 		rBody.isKinematic = true;
 	}
 
 	private void RemoveCollider() {
-		Destroy(GetComponent<Rigidbody>());
-		Destroy(GetComponent<BoxCollider>());
+		//Destroy(GetComponent<Rigidbody>());
+		//Destroy(GetComponent<BoxCollider>());
+		Destroy(this.rigidbody);
+		Destroy(this.collider);
 	}
 
 	private void UpdateContractionVisibility() {
@@ -383,8 +402,13 @@ public class Muscle : BodyComponent {
 
 	public void SetLinePoints3D(Vector3 startingP, Vector3 endingP) {
 
-		Assert.IsNotNull(lineRenderer);
-		lineRenderer.SetPositions(new Vector3[]{ startingP, endingP });
+		//Assert.IsNotNull(lineRenderer);
+		linePoints[0] = startingP;
+		linePoints[1] = endingP;
+
+		lineRenderer.SetPositions(linePoints);
+
+		//lineRenderer.SetPositions(new Vector3[]{ startingP, endingP });
 	}
 
 	public void UpdateLinePoints(){

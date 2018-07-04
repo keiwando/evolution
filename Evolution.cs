@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Text;
 using System.Linq;
 
 public class Evolution : MonoBehaviour {
@@ -316,9 +317,11 @@ public class Evolution : MonoBehaviour {
 	/// </summary>
 	private void SimulateGeneration() {
 
-		foreach (Creature creature in currentGeneration) {
-			creature.Alive = false;
-			creature.gameObject.SetActive(false);
+		if (settings.simulateInBatches) {
+			foreach (Creature creature in currentGeneration) {
+				creature.Alive = false;
+				creature.gameObject.SetActive(false);
+			}
 		}
 
 		foreach (Creature creature in currentCreatureBatch) {
@@ -386,8 +389,16 @@ public class Evolution : MonoBehaviour {
 		currentChromosomes = CreateNewChromosomesFromGeneration();
 		currentGenerationNumber++;
 
-		KillGeneration();
-		currentGeneration = CreateGeneration();
+		//KillGeneration();
+		//currentGeneration = CreateGeneration();
+
+//		if (currentGenerationNumber == 2) {
+//			currentGeneration = CreateGeneration();	
+//		} else {
+//			ResetCreatures();
+//		}
+		ResetCreatures();
+
 
 		var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
 		cameraFollow.toFollow = currentGeneration[0];
@@ -466,20 +477,31 @@ public class Evolution : MonoBehaviour {
 		int splitIndex = UnityEngine.Random.Range(1, chrom2.Length);
 		string[] result = new string[2];
 
-		result[0] = chrom1.Substring(0,splitIndex) + chrom2.Substring(splitIndex);
-		result[1] = chrom2.Substring(0,splitIndex) + chrom1.Substring(splitIndex);
+		var chrom1Builder = new StringBuilder(chrom1);
+		var chrom2Builder = new StringBuilder(chrom2);
 
-		Assert.AreEqual(result[0].Length, chrom1.Length);
-		Assert.AreEqual(result[1].Length, chrom2.Length);
+//		result[0] = chrom1.Substring(0,splitIndex) + chrom2.Substring(splitIndex);
+//		result[1] = chrom2.Substring(0,splitIndex) + chrom1.Substring(splitIndex);
 
-		result[0] = Mutate(result[0]);
-		result[1] = Mutate(result[1]);
+		var chrom2End = chrom2.Substring(splitIndex);
+		var chrom1End = chrom1.Substring(splitIndex);
+
+		chrom1Builder.Remove(splitIndex, chrom1Builder.Length - splitIndex);
+		chrom2Builder.Remove(splitIndex, chrom2Builder.Length - splitIndex);
+
+		chrom1Builder.Append(chrom2End);
+		chrom2Builder.Append(chrom1End);
+
+		Assert.AreEqual(chrom1Builder.Length, chrom1.Length);
+		Assert.AreEqual(chrom2Builder.Length, chrom2.Length);
+
+		result[0] = Mutate(chrom1Builder).ToString();
+		result[1] = Mutate(chrom2Builder).ToString();
 
 		return result;
 	}
 
-
-	private string Mutate(string chromosome) {
+	private StringBuilder Mutate(StringBuilder chromosome) {
 
 		bool shouldMutate = UnityEngine.Random.Range(0,100.0f) < (MUTATION_RATE * 100);
 
@@ -490,20 +512,55 @@ public class Evolution : MonoBehaviour {
 		// determine a mutation length
 		int length = Mathf.Min(Mathf.Max(0, chromosome.Length - index - 3), UnityEngine.Random.Range(2,15));
 
-		string toMutate = chromosome.Substring(index, length);
-		string mutatedPart = "";
+		//string toMutate = chromosome.Substring(index, length);
+		//string mutatedPart = "";
+		//var builder = new StringBuilder(chromosome);
 
-		for(int i = 0; i < toMutate.Length; i++) {
+		for(int i = 0; i < length; i++) {
 
-			char character = toMutate[i];
-			mutatedPart += character == '0' ? '1' : '0';
+			//char character = toMutate[i];
+			char character = chromosome[i];
+			//mutatedPart += character == '0' ? '1' : '0';
+			chromosome[i] = character == '0' ? '1' : '0';
 		}
 
-		string mutated = chromosome.Substring(0,index) + mutatedPart + chromosome.Substring(index + length);
+		//string mutated = chromosome.Substring(0,index) + mutatedPart + chromosome.Substring(index + length);
+		//string mutated = .ToString();
 
-		Assert.AreEqual(chromosome.Length, mutated.Length);
-		return mutated;
+		//Assert.AreEqual(chromosome.Length, mutated.Length);
+		//return mutated;
+		return chromosome;
 	}
+
+//	private string Mutate(string chromosome) {
+//
+//		bool shouldMutate = UnityEngine.Random.Range(0,100.0f) < (MUTATION_RATE * 100);
+//
+//		if (!shouldMutate) return chromosome;
+//
+//		// pick a mutation index.
+//		int index = UnityEngine.Random.Range(4,chromosome.Length - 1);
+//		// determine a mutation length
+//		int length = Mathf.Min(Mathf.Max(0, chromosome.Length - index - 3), UnityEngine.Random.Range(2,15));
+//
+//		//string toMutate = chromosome.Substring(index, length);
+//		//string mutatedPart = "";
+//		var builder = new System.Text.StringBuilder(chromosome);
+//
+//		for(int i = 0; i < length; i++) {
+//
+//			//char character = toMutate[i];
+//			char character = builder[i];
+//			//mutatedPart += character == '0' ? '1' : '0';
+//			builder[i] = character == '0' ? '1' : '0';
+//		}
+//
+//		//string mutated = chromosome.Substring(0,index) + mutatedPart + chromosome.Substring(index + length);
+//		string mutated = builder.ToString();
+//
+//		Assert.AreEqual(chromosome.Length, mutated.Length);
+//		return mutated;
+//	}
 
 	/// <summary>
 	/// Picks an index between 0 and POPULATION_SIZE. The first indices are more likely to be picked. The weights decrease towards to.
@@ -536,6 +593,17 @@ public class Evolution : MonoBehaviour {
 		randomPickingWeights = weights;
 	}
 
+	private void ResetCreatures() {
+
+		for (int i = 0; i < currentGeneration.Length; i++) {
+
+			var currentCreature = currentGeneration[i];
+			currentCreature.Reset();
+			//ApplyBrain(currentCreature, currentChromosomes[i]);
+			UpdateExistingBrain(currentCreature, currentChromosomes[i]);
+		}
+	}
+
 	/** Creates a generation of creatures with the current set of Chromosomes. */
 	private Creature[] CreateGeneration() {
 		
@@ -557,6 +625,7 @@ public class Evolution : MonoBehaviour {
 	}
 
 	private void KillGeneration() {
+		
 		foreach(Creature creature in currentGeneration) {
 			Destroy(creature.gameObject);
 		}
@@ -607,6 +676,15 @@ public class Evolution : MonoBehaviour {
 
 		brain.creature = creature;
 		creature.brain = brain;
+	}
+
+	public void UpdateExistingBrain(Creature creature, string chromosome) {
+
+		var brain = creature.GetComponent<Brain>();
+		brain.SimulationTime = settings.simulationTime;
+		brain.networkSettings = brainSettings;
+
+		brain.SetupNeuralNet(chromosome);
 	}
 
 	private void CalculateDropHeight() {

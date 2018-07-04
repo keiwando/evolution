@@ -43,6 +43,8 @@ abstract public class Brain : MonoBehaviour {
 	protected float[][] inputs; // a 1D array would be enough ( jagged needed for multiplication) 
 	protected float[][] outputs;
 
+	private float[][][] tempCalculationMatrices;
+
 	/// <summary>
 	/// The time that this creature has to simulate. Factors into the fitness calculation.
 	/// </summary>
@@ -51,15 +53,23 @@ abstract public class Brain : MonoBehaviour {
 	/** A value between 0 and 1 that determines how good the creature is at solving the task. 0 = bad. 1 = perfect. */
 	public float fitness;
 
-	private StringBuilder sBuilder;
+	private StringBuilder debugBuilder;
 
-	// Use this for initialization
-	void Start () {
-		
+	private StringBuilder builder;
+	private byte[] byteStore = new byte[8]; 
+
+	void Start() {
+		this.builder = new StringBuilder();
 	}
-	
-	// Update is called once per frame
-	virtual public void FixedUpdate () {
+
+	virtual public void Update() {
+
+		/*if (isActive) {
+			outputs = CalcOutputs();
+		}*/
+	}
+
+	virtual public void FixedUpdate() {
 		
 		if (isActive) {
 			
@@ -77,9 +87,13 @@ abstract public class Brain : MonoBehaviour {
 		UpdateInputs();
 		float[][] S = inputs;
 
-		foreach (float[][] weightMatrix in weightMatrices) {
+		for (int i = 0; i < weightMatrices.Length; i++) {
 
-			S = MatrixProduct(S, weightMatrix);
+			float[][] weightMatrix = weightMatrices[i];
+			float[][] resultMatrix = tempCalculationMatrices[i];
+
+			S = MatrixProduct(S, weightMatrix, resultMatrix);
+			//S = MatrixProduct(S, weightMatrix);
 			ApplySigmoid(S);
 		}
 
@@ -117,17 +131,34 @@ abstract public class Brain : MonoBehaviour {
 	public abstract void EvaluateFitness();
 
 	/** Turns the weight of the neural network to a string. */
+//	public string ToChromosomeString() {
+//
+//		string chromosome = "";
+//
+//		if (creature.muscles.Count == 0) return chromosome;
+//
+//		for(int i = 0; i < weightMatrices.Length; i++) {
+//			chromosome += MatrixToString(weightMatrices[i]);
+//		}
+//
+//		return chromosome;
+//	}
+
 	public string ToChromosomeString() {
 
-		string chromosome = "";
+		if (builder == null)
+			builder = new StringBuilder();
+		else 
+			builder.Length = 0;
 
-		if (creature.muscles.Count == 0) return chromosome;
+		if (creature.muscles.Count == 0) return "";
 
-		for(int i = 0; i < weightMatrices.Length; i++) {
-			chromosome += MatrixToString(weightMatrices[i]);
+		for (int i = 0; i < weightMatrices.Length; i++) {
+			
+			MatrixToString(weightMatrices[i], builder);
 		}
 
-		return chromosome;
+		return builder.ToString();
 	}
 
 	public void SetupWeightsFromChromosome(string chromosome) {
@@ -147,10 +178,13 @@ abstract public class Brain : MonoBehaviour {
 			int cols = layerSizes[i+1];
 			//print("rows: " + rows + " cols + " + cols);
 			//print("chromosome length: " + chromosome.Length);
-			string substr = chromosome.Substring(strIndex, rows * cols * 32);
-			strIndex += substr.Length;
+			int substrLength = rows * cols * 32;
+			//string substr = chromosome.Substring(strIndex, rows * cols * 32);
 
-			matrices[i] = MatrixFromString(rows, cols, substr); 
+			//matrices[i] = MatrixFromString(rows, cols, substr); 
+			matrices[i] = MatrixFromString(rows, cols, chromosome, strIndex); 
+
+			strIndex += substrLength;
 		}
 
 		return matrices;
@@ -159,8 +193,8 @@ abstract public class Brain : MonoBehaviour {
 	private string MatrixToString(float[][] matrix) {
 
 		string result = "";
-		for(int i = 0; i < matrix.Length; i++) {
-			for(int j = 0; j < matrix[0].Length; j++) {
+		for (int i = 0; i < matrix.Length; i++) {
+			for (int j = 0; j < matrix[0].Length; j++) {
 				// convert float into binary 32 bit string
 				result += StringFromFloat(matrix[i][j]);
 				//result += matrix[i][j].ToString();
@@ -170,14 +204,29 @@ abstract public class Brain : MonoBehaviour {
 		return result;
 	}
 
-	private float[][] MatrixFromString(int rows, int cols, string str) {
+	private void MatrixToString(float[][] matrix, StringBuilder builder) {
+	
+		for (int i = 0; i < matrix.Length; i++) {
+			for (int j = 0; j < matrix[0].Length; j++) {
+				// convert float into binary 32 bit string
+				//result += StringFromFloat(matrix[i][j]);
+				FloatToString(matrix[i][j], builder);
+				//result += matrix[i][j].ToString();
+			}
+		}
+	}
 
-		string[] parts = WholeChunks(str, 32);
+	private float[][] MatrixFromString(int rows, int cols, string str, int subStart) {
+
+		//string[] parts = WholeChunks(str, 32);
 		float[][] matrix = MatrixCreate(rows, cols);
 
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
-				matrix[i][j] = FloatFromBinaryString(parts[i * cols + j]);
+				//matrix[i][j] = FloatFromBinaryString(parts[i * cols + j]);
+				//matrix[i][j] = FloatFromBinaryString(parts[i * cols + j], 0, 32);
+				int substringStart = (i * cols + j) * 32 + subStart;
+				matrix[i][j] = FloatFromBinaryString(str, substringStart, 32);
 			}
 		}
 
@@ -185,16 +234,65 @@ abstract public class Brain : MonoBehaviour {
 	} 
 
 	/** Takes a string of 32 bit and converts it to a float. */
-	private float FloatFromBinaryString(string str) {
+//	private float FloatFromBinaryString(string str) {
+//
+//		int numOfBytes = str.Length / 8;
+//		byte[] bytes = new byte[numOfBytes];
+//		for(int i = 0; i < numOfBytes; ++i)
+//		{
+//			bytes[i] = Convert.ToByte(str.Substring(8 * i, 8), 2);
+//		}
+//
+//		return BitConverter.ToSingle(bytes, 0); //Convert.ToSingle(bytes);
+//	}
 
-		int numOfBytes = str.Length / 8;
+	private float FloatFromBinaryString(String str, int start, int length) {
+
+		int numOfBytes = length / 8;
 		byte[] bytes = new byte[numOfBytes];
-		for(int i = 0; i < numOfBytes; ++i)
-		{
-			bytes[i] = Convert.ToByte(str.Substring(8 * i, 8), 2);
+
+		int endIndex = start + length - 1;
+
+		for (int i = 0; i < numOfBytes; ++i) {
+
+			byte result = 0;
+
+			int byteEnd = endIndex - i * 8;
+			int byteStart = byteEnd - 7;
+
+			for (int c = byteEnd; c >= byteStart; c--) {
+
+				result += (str[c] == '0') ? (byte)0 : (byte)(Pow2OptByte(byteEnd - c));
+			}
+
+			bytes[i] = result;
 		}
 
-		return BitConverter.ToSingle(bytes, 0); //Convert.ToSingle(bytes);
+		return BitConverter.ToSingle(bytes, 0);
+	}
+
+	private byte Pow2OptByte(int exp) {
+	
+		switch (exp) {
+		case 0:
+			return 1;
+		case 1:
+			return 2;
+		case 2:
+			return 4;
+		case 3:
+			return 8;
+		case 4:
+			return 16;
+		case 5:
+			return 32;
+		case 6:
+			return 64;
+		case 7:
+			return 128;
+		default:
+			throw new Exception("Optimization not implemented for given exponent " + exp);
+		}
 	}
 
 	private string StringFromFloat(float number) {
@@ -205,6 +303,38 @@ abstract public class Brain : MonoBehaviour {
 		
 		return result;
 	}
+
+	private StringBuilder FloatToString(float number, StringBuilder builder) {
+
+		var bytes = BitConverter.GetBytes(number);
+
+		for (int i = 0; i < bytes.Length; i++) {
+			
+			ByteToString(bytes[i], builder);
+		}
+
+		return builder;
+	}
+
+	private StringBuilder ByteToString(byte b, StringBuilder builder) {
+
+		for (int i = 0; i < 8; i++)
+			byteStore[i] = 0;
+
+
+		int index = 7;
+		while (b != 0 && index >= 0) {
+			byteStore[index] = (byte)(b % 2);
+			b /= 2;
+			index--;
+		}
+
+		for (int i = 0; i < 8; i++) {
+			builder.Append(byteStore[i] == 1 ? '1' : '0');
+		}
+
+		return builder;
+	} 
 
 	static string[] WholeChunks(string str, int chunkSize) {
 
@@ -219,17 +349,19 @@ abstract public class Brain : MonoBehaviour {
 
 	protected void TestConversion() {
 		float number = RandomFloat();
-		string NumberAsString = StringFromFloat(number);
-		float result = FloatFromBinaryString(NumberAsString);
+		//string NumberAsString = StringFromFloat(number);
+		string NumberAsString = FloatToString(number, new StringBuilder()).ToString();
+
+		float result = FloatFromBinaryString(NumberAsString, 0, NumberAsString.Length);
 		print("Number: " + number + "  binary String: " + NumberAsString + "  Result: " + result);
 
 	}
 
 	protected void TestMatrixConversion() {
 
-		float[][] testMatrix = RandomMatrixCreate(10,13);
+		float[][] testMatrix = RandomMatrixCreate(10, 13);
 		string chromosome = MatrixToString(testMatrix);
-		float[][] chromosomeMatrix = MatrixFromString(10,13,chromosome);
+		float[][] chromosomeMatrix = MatrixFromString(10, 13, chromosome, 0);
 		var equal = MatricesEqual(testMatrix, chromosomeMatrix);
 		print("Conversion Test passed?: " + equal);
 	}
@@ -284,6 +416,15 @@ abstract public class Brain : MonoBehaviour {
 		// initialize input matrix
 		inputs = MatrixCreate(1, NUMBER_OF_INPUTS);
 
+		tempCalculationMatrices = new float[weightMatrices.Length][][];
+
+		for (int i = 0; i < weightMatrices.Length; i++) {
+
+			int cols = weightMatrices[i][0].Length;
+
+			tempCalculationMatrices[i] = MatrixCreate(1, cols);
+		}
+
 		isActive = true;
 	}
 
@@ -314,6 +455,7 @@ abstract public class Brain : MonoBehaviour {
 
 	// Matrix functions
 	public float[] MatrixProduct(float[][] matrixA, float[] vectorB) {
+		
 		int aRows = matrixA.Length; 
 		int aCols = matrixA[0].Length;
 		int bRows = vectorB.Length;
@@ -329,7 +471,27 @@ abstract public class Brain : MonoBehaviour {
 		return result;
 	}
 
-	public float[][] MatrixProduct(float[][] matrixA, float[][] matrixB) {
+//	public float[][] MatrixProduct(float[][] matrixA, float[][] matrixB) {
+//		int aRows = matrixA.Length; 
+//		int aCols = matrixA[0].Length;
+//		int bRows = matrixB.Length; 
+//		int bCols = matrixB[0].Length;
+//
+//		if (aCols!=bRows)
+//			throw new UnityException("Non-conformable matrices in MatrixProduct");
+//		
+//		float[][] result = MatrixCreate(aRows, bCols);
+//
+//		for (int i = 0; i < aRows; ++i) // each row of A
+//			for (int j = 0; j < bCols; ++j) // each col of B
+//				for (int k = 0; k < aCols; ++k)
+//					result[i][j] += matrixA[i][k] * matrixB[k][j];
+//		
+//		return result;
+//	}
+
+	public float[][] MatrixProduct(float[][] matrixA, float[][] matrixB, float[][] result) {
+		
 		int aRows = matrixA.Length; 
 		int aCols = matrixA[0].Length;
 		int bRows = matrixB.Length; 
@@ -337,14 +499,25 @@ abstract public class Brain : MonoBehaviour {
 
 		if (aCols!=bRows)
 			throw new UnityException("Non-conformable matrices in MatrixProduct");
-		
-		float[][] result = MatrixCreate(aRows, bCols);
 
-		for (int i = 0; i < aRows; ++i) // each row of A
-			for (int j = 0; j < bCols; ++j) // each col of B
+//		if (result.Length != aRows || result[0].Length != bCols) {
+//			print(string.Format("correct dims = {0} x {1} --- actual dims = {2} x {3}", aRows, bCols, result.Length, result[0].Length));
+//			return result;
+//		}
+
+		//float[][] result = MatrixCreate(aRows, bCols);
+
+		for (int i = 0; i < aRows; ++i) { // each row of A
+			for (int j = 0; j < bCols; ++j) { // each col of B
+
+				float sum = 0;
 				for (int k = 0; k < aCols; ++k)
-					result[i][j] += matrixA[i][k] * matrixB[k][j];
-		
+					sum += matrixA[i][k] * matrixB[k][j];
+
+				result[i][j] = sum;
+			}
+		} 
+
 		return result;
 	}
 
@@ -400,14 +573,14 @@ abstract public class Brain : MonoBehaviour {
 
 	protected virtual void DEBUG_PRINT_INPUTS() {
 
-		sBuilder = new StringBuilder();
+		debugBuilder = new StringBuilder();
 
-		sBuilder.AppendLine("Distance from ground: " + inputs[0][0]);
-		sBuilder.AppendLine("Horiz vel: " + inputs[0][1]);
-		sBuilder.AppendLine("Vert vel: " + inputs[0][2]);
-		sBuilder.AppendLine("rot vel: " + inputs[0][3]);
-		sBuilder.AppendLine("points touchnig gr: " + inputs[0][4]);
-		sBuilder.AppendLine("rotation: " + inputs[0][5] + "\n");
+		debugBuilder.AppendLine("Distance from ground: " + inputs[0][0]);
+		debugBuilder.AppendLine("Horiz vel: " + inputs[0][1]);
+		debugBuilder.AppendLine("Vert vel: " + inputs[0][2]);
+		debugBuilder.AppendLine("rot vel: " + inputs[0][3]);
+		debugBuilder.AppendLine("points touchnig gr: " + inputs[0][4]);
+		debugBuilder.AppendLine("rotation: " + inputs[0][5] + "\n");
 
 		//print(sBuilder.ToString());
 	}
@@ -417,9 +590,9 @@ abstract public class Brain : MonoBehaviour {
 		//var sBuilder = new StringBuilder();
 
 		for (int i = 0; i < creature.muscles.Count; i++) {
-			sBuilder.AppendLine("Muscle " + (i+1) + " : " + outputs[0][i]);
+			debugBuilder.AppendLine("Muscle " + (i+1) + " : " + outputs[0][i]);
 		}
 
-		print(sBuilder.ToString());
+		print(debugBuilder.ToString());
 	}
 }

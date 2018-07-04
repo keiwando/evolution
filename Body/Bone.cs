@@ -23,6 +23,9 @@ public class Bone : BodyComponent {
 
 	public MuscleJoint muscleJoint;
 
+	private Vector3 resetPosition;
+	private Quaternion resetRotation;
+
 	private static Bone InstantiateAtPoint(Vector3 point) {
 		return ((GameObject) Instantiate(Resources.Load(PATH), point, Quaternion.identity)).GetComponent<Bone>();
 	}
@@ -68,6 +71,12 @@ public class Bone : BodyComponent {
 	public override void Start () {
 		base.Start();
 
+		resetPosition = transform.position;
+		resetRotation = transform.rotation;
+	}
+
+	public void Reset() {
+		transform.SetPositionAndRotation(resetPosition, resetRotation);
 	}
 
 	/** Places the bone between the specified points. (Points flattened to 2D) */

@@ -2,6 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public struct BasicBrainInputs {
+
+	public float DistanceFromFloor { get; set; }
+	public Vector3 Velocity { get; set; }
+	public float AngularVelocity { get; set; }
+	public float PointsTouchingGroundCount { get; set; }
+	public float Rotation { get; set; }
+}
+
 public class Creature : MonoBehaviour {
 
 	public List<Joint> joints;
@@ -43,17 +52,19 @@ public class Creature : MonoBehaviour {
 
 	private float maxJumpingHeight;
 
+	private Vector3 currentLowest;
+
 	//public bool DEBUG = false;
 
-	// Use this for initialization
 	void Start () {
 		groundDistanceLayerMask = LayerMask.NameToLayer("Ground");
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
 
 		maxJumpingHeight = Mathf.Max(maxJumpingHeight, DistanceFromGround());
+
+		currentLowest = GetLowestPoint();
 	}
 
 	public void SetKinematic(bool enabled) {
@@ -102,12 +113,36 @@ public class Creature : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Calculates all of the basic brain inputs at once for performance reasons.
+	/// </summary>
+	/// <returns>The basic brain inputs.</returns>
+	public BasicBrainInputs CalculateBasicBrainInputs() {
+
+		var minJointY = joints[0].center.y;
+
+		var jointCount = joints.Count;
+		var boneCount = bones.Count;
+
+		var jointRadius = joints[0].GetComponent<Collider>().bounds.size.y / 2;
+
+		for (int i = 0; i < jointCount; i++) {
+			var joint = joints[i];
+			var jointPos = joint.transform.position;
+		}
+
+		for (int i = 0; i < boneCount; i++) {
+		
+		}
+	}
+
 	public float DistanceFromGround() {
 		RaycastHit hit;
 
 		if(Physics.Raycast(GetLowestPoint(), Vector3.down, out hit, groundDistanceLayerMask)) {
 			
-			if (hit.collider.gameObject.tag.ToUpper() == "GROUND") {
+			//if (hit.collider.gameObject.tag.ToUpper() == "GROUND") {
+			if (hit.collider.gameObject.CompareTag("Ground")) {
 				return hit.distance;
 			}
 		}
@@ -119,7 +154,9 @@ public class Creature : MonoBehaviour {
 
 		float min = joints[0].center.y;
 
-		foreach (Joint joint in joints) {
+		var jointsCount = joints.Count;
+		for (int i = 0; i < jointsCount; i++) {
+			var joint = joints[i];
 			float height =  joint.center.y - joint.GetComponent<Collider>().bounds.size.y / 2;
 			min = height < min ? height : min; 
 		}
@@ -133,17 +170,25 @@ public class Creature : MonoBehaviour {
 		if (joints.Count == 0) return Vector3.zero;
 
 		//calculate the average velocity of the joints.
-		Vector3 velocity = Vector3.zero;
+		//Vector3 velocity = Vector3.zero;
+		var velX = 0f;
+		var velY = 0f;
+		var velZ = 0f;
 
-		foreach (Joint joint in joints) {
-			velocity += joint.GetComponent<Rigidbody>().velocity;
+		int jointsCount = joints.Count;
+
+		for (int i = 0; i < jointsCount; i++) {
+			var jointVel = joints[i].Body.velocity;
+			velX += jointVel.x;
+			velY += jointVel.y;
+			velZ += jointVel.z;
 		}
 
-		velocity.x /= joints.Count;
-		velocity.y /= joints.Count;
-		velocity.z /= joints.Count;
+		velX /= jointsCount;
+		velY /= jointsCount;
+		velZ /= jointsCount;
 
-		return velocity;
+		return new Vector3(velX, velY, velZ);
 	}
 
 	public Vector3 GetAngularVelocity() {
@@ -153,8 +198,9 @@ public class Creature : MonoBehaviour {
 		//calculate the average velocity of the bones.
 		Vector3 velocity = Vector3.zero;
 
-		foreach (var bone in bones) {
-			velocity += bone.GetComponent<Rigidbody>().angularVelocity;
+		var boneCount = bones.Count;
+		for (int i = 0; i < boneCount; i++) {
+			velocity += bones[i].GetComponent<Rigidbody>().angularVelocity;
 		}
 
 		velocity.x /= bones.Count;
@@ -167,8 +213,9 @@ public class Creature : MonoBehaviour {
 	public float GetNumberOfPointsTouchingGround() {
 
 		int count = 0;
-		foreach (Joint joint in joints) {
-			count += joint.isCollidingWithGround ? 1 : 0 ;
+		var jointsCount = joints.Count;
+		for (int i = 0; i < jointsCount; i++) {
+			count += joints[i].isCollidingWithGround ? 1 : 0 ;
 		}
 			
 		return count;
@@ -185,9 +232,11 @@ public class Creature : MonoBehaviour {
 	}
 
 	public void AddObstacleCollidingJointsToSet(HashSet<Joint> collidedJoints) {
-		foreach (var joint in joints) {
-			if (joint.isCollidingWithObstacle) {
-				collidedJoints.Add(joint);
+
+		var jointsCount = joints.Count;
+		for (int i = 0; i < jointsCount; i++) {
+			if (joints[i].isCollidingWithObstacle) {
+				collidedJoints.Add(joints[i]);
 			}
 		}
 		//print(string.Format("Percentage of collided joints: {0}%", ((float)collidedJoints.Count/joints.Count) * 100f)); 
@@ -199,42 +248,48 @@ public class Creature : MonoBehaviour {
 
 		float rotation = 0;
 
-		foreach( Bone bone in bones) {
-			rotation += bone.transform.rotation.z;
+		var boneCount = bones.Count;
+		for (int i = 0; i < boneCount; i++) {
+			rotation += bones[i].transform.rotation.z;
 		}
 			
-		return rotation / bones.Count;
+		return rotation / boneCount;
 	}
 
 	public float GetXPosition() {
 
 		float total = 0;
 
-		foreach (Joint joint in joints) {
-			total += joint.transform.position.x;
+		var jointsCount = joints.Count;
+		for (int i = 0; i < jointsCount; i++) {
+			total += joints[i].transform.position.x;
 		}
 
-		return joints.Count == 0 ? 0 : total / joints.Count ;
+		return jointsCount == 0 ? 0 : total / jointsCount ;
 	}
 
 	public float GetYPosition() {
 
 		float total = 0;
 
-		foreach (Joint joint in joints) {
-			total += joint.transform.position.y;
+		var jointsCount = joints.Count;
+		for (int i = 0; i < jointsCount; i++) {
+			total += joints[i].transform.position.y;
 		}
 
-		return joints.Count == 0 ? 0 : total / joints.Count ;
+		return jointsCount == 0 ? 0 : total / jointsCount ;
 	}
 
 	public Vector3 GetLowestPoint() {
 
 		Vector3 min = joints[0].transform.position;
 
-		foreach (var joint in joints) {
-			if (min.y > joint.transform.position.y) {
-				min = joint.transform.position;
+		var jointsCount = joints.Count;
+		for (int i = 0; i < jointsCount; i++) {
+			var jointPos = joints[i].transform.position;
+
+			if (min.y > jointPos.y) {
+				min = jointPos;
 			}
 		}
 
@@ -245,9 +300,12 @@ public class Creature : MonoBehaviour {
 
 		Vector3 max = joints[0].transform.position;
 
-		foreach (var joint in joints) {
-			if (max.y < joint.transform.position.y) {
-				max = joint.transform.position;
+		var jointsCount = joints.Count;
+		for (int i = 0; i < jointsCount; i++) {
+			var jointPos = joints[i].transform.position;
+
+			if (max.y < jointPos.y) {
+				max = jointPos;
 			}
 		}
 
@@ -341,6 +399,18 @@ public class Creature : MonoBehaviour {
 		}
 
 		gameObject.layer = LayerMask.NameToLayer("BestCreatureCreature");
+	}
+
+	public void Reset() {
+
+		for (int i = 0; i < bones.Count; i++)
+			bones[i].Reset();
+
+		for (int i = 0; i < joints.Count; i++)
+			joints[i].Reset();
+
+		for (int i = 0; i < muscles.Count; i++)
+			muscles[i].Reset();
 	}
 
 	void OnDestroy() {

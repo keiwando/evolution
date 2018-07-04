@@ -17,6 +17,14 @@ public class Joint : BodyComponent {
 
 	private bool iterating;
 
+	private Vector3 resetPosition;
+	private Quaternion resetRotation;
+
+	public Rigidbody Body {
+		get { return body; }
+	}
+	private Rigidbody body;
+
 	public bool isCollidingWithGround { get; private set; }
 	public bool isCollidingWithObstacle { get; private set; }
 
@@ -51,7 +59,15 @@ public class Joint : BodyComponent {
 	public override void Start () {
 		base.Start();
 
+		resetPosition = transform.position;
+		resetRotation = transform.rotation;
+
+		body = GetComponent<Rigidbody>();
 		//joints 
+	}
+
+	public void Reset() {
+		transform.SetPositionAndRotation(resetPosition, resetRotation);
 	}
 
 	/// <summary>
@@ -65,25 +81,6 @@ public class Joint : BodyComponent {
 			connectedBone.RefreshBonePlacement();
 		}
 	}
-
-	/** Connects a Bone to the gameobject with a hinge joint. */
-	/*public void Connect(Bone bone) {
-
-		HingeJoint joint = gameObject.AddComponent<HingeJoint>();
-		joint.anchor = Vector3.zero;
-		joint.axis = new Vector3(0, 0, 1);
-		joint.autoConfigureConnectedAnchor = true;
-		joint.useSpring = true;
-		//var spring = joint.spring;
-		//spring.spring = 1000f;
-		//joint.spring = spring;
-		//joint.connectedAnchor = new Vector3(0, 1.14f, 0);
-		joint.enablePreprocessing = false;
-
-		joint.connectedBody = bone.gameObject.GetComponent<Rigidbody>();
-
-		joints.Add(bone, joint);
-	}*/
 
 	public void Connect(Bone bone) {
 
@@ -113,8 +110,10 @@ public class Joint : BodyComponent {
 		if (!iterating)
 			joints.Remove(bone);
 	}
-
-	/** Deletes the joint and all attached objects from the scene. */
+		
+	/// <summary>
+	/// Deletes the joint and all attached objects from the scene.
+	/// </summary>
 	public override void Delete() {
 		base.Delete();
 
@@ -138,8 +137,9 @@ public class Joint : BodyComponent {
 	}
 
 	public override void PrepareForEvolution () {
-		
-		GetComponent<Rigidbody>().isKinematic = false;
+
+		body = GetComponent<Rigidbody>();
+		body.isKinematic = false;
 	}
 
 	/// <summary>
@@ -155,18 +155,26 @@ public class Joint : BodyComponent {
 		
 	void OnTriggerEnter(Collider collider) {
 
-		switch(collider.gameObject.tag.ToUpper()) {
+		if (collider.CompareTag("Ground")) {
+			isCollidingWithGround = true;
+		} else if (collider.CompareTag("Obstacle")) {
+			isCollidingWithObstacle = true;
+		}
 
-		case "GROUND": isCollidingWithGround = true; break;
-		case "OBSTACLE": isCollidingWithObstacle = true; break;
 
-		default: return;
-		}	
+//		switch(collider.gameObject.tag.ToUpper()) {
+//
+//		case "GROUND": isCollidingWithGround = true; break;
+//		case "OBSTACLE": isCollidingWithObstacle = true; break;
+//
+//		default: return;
+//		}	
 	}
 
 	void OnTriggerExit(Collider collider) {
 
-		if (collider.tag.ToUpper() == "OBSTACLE") 
+		//if (collider.tag.ToUpper() == "OBSTACLE") 
+		if (collider.CompareTag("Obstacle")) 
 			isCollidingWithObstacle = false;
 		else
 			isCollidingWithGround = false;	
