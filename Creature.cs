@@ -5,7 +5,8 @@ using System.Collections.Generic;
 public struct BasicBrainInputs {
 
 	public float DistanceFromFloor { get; set; }
-	public Vector3 Velocity { get; set; }
+	public float VelocityX { get; set; }
+	public float VelocityY { get; set; }
 	public float AngularVelocity { get; set; }
 	public float PointsTouchingGroundCount { get; set; }
 	public float Rotation { get; set; }
@@ -119,21 +120,63 @@ public class Creature : MonoBehaviour {
 	/// <returns>The basic brain inputs.</returns>
 	public BasicBrainInputs CalculateBasicBrainInputs() {
 
-		var minJointY = joints[0].center.y;
+		var minJointY = joints[0].transform.position.y;
+		var maxJointY = joints[0].transform.position.y;
+		var velocityX = 0f;
+		var velocityY = 0f;
+		var angularVelZ = 0f;
+		var jointsCountTouchingGround = 0f;
+		var rotationZ = 0f;
 
 		var jointCount = joints.Count;
 		var boneCount = bones.Count;
 
-		var jointRadius = joints[0].GetComponent<Collider>().bounds.size.y / 2;
+		//var jointRadius = joints[0].GetComponent<Collider>().bounds.size.y / 2;
 
 		for (int i = 0; i < jointCount; i++) {
+			
 			var joint = joints[i];
 			var jointPos = joint.transform.position;
+
+			// Determine lowest and highest joints
+			if (jointPos.y > maxJointY)
+				maxJointY = jointPos.y;
+			else if (jointPos.y < minJointY)
+				minJointY = jointPos.y;
+
+			// Accumulate the velocity
+			velocityX += joint.Body.velocity.x;
+			velocityY += joint.Body.velocity.y;
+
+			// Check if the joint is touching the ground
+			jointsCountTouchingGround += joint.isCollidingWithGround ? 1f : 0f;
 		}
 
 		for (int i = 0; i < boneCount; i++) {
-		
+			var bone = bones[i];
+
+			angularVelZ += bone.Body.angularVelocity.z;
+			// Not actually the rotation value I originally wanted to have 
+			// but I have to keep this for the sake of not breaking existing
+			// creature behaviour
+			rotationZ += bone.transform.rotation.z;
 		}
+
+		var distFromFloor = minJointY;
+		velocityX /= jointCount;
+		velocityY /= jointCount;
+		angularVelZ /= boneCount;
+		rotationZ /= boneCount;
+
+
+		return new BasicBrainInputs() {
+			DistanceFromFloor = distFromFloor,
+			VelocityX = velocityX,
+			VelocityY = velocityY,
+			AngularVelocity = angularVelZ,
+			PointsTouchingGroundCount = jointsCountTouchingGround,
+			Rotation = rotationZ
+		};
 	}
 
 	public float DistanceFromGround() {

@@ -166,20 +166,20 @@ public class Muscle : BodyComponent {
 		UpdateLinePoints();
 		UpdateContractionVisibility();
 
-		if (muscleAction == MuscleAction.CONTRACT) {
-			Contract();
-		} else {
-			Expand();	
-		}
-	}
-
-	void FixedUpdate() {
-		
 //		if (muscleAction == MuscleAction.CONTRACT) {
 //			Contract();
 //		} else {
 //			Expand();	
 //		}
+	}
+
+	void FixedUpdate() {
+		
+		if (muscleAction == MuscleAction.CONTRACT) {
+			Contract();
+		} else {
+			Expand();	
+		}
 	}
 
 	/// <summary>

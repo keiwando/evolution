@@ -144,6 +144,7 @@ abstract public class Brain : MonoBehaviour {
 //		return chromosome;
 //	}
 
+	// Optimized
 	public string ToChromosomeString() {
 
 		if (builder == null)
@@ -165,9 +166,6 @@ abstract public class Brain : MonoBehaviour {
 		weightMatrices = WeightsFromChromosome(chromosome);
 	}
 
-	/**  
-	 * Takes a chromosome string that was generated from the @ApplyOutputToMuscle function.
-	*/
 	public float[][][] WeightsFromChromosome(string chromosome) {
 
 		float[][][] matrices = new float[NUMBER_OF_LAYERS - 1][][];
@@ -179,16 +177,42 @@ abstract public class Brain : MonoBehaviour {
 			//print("rows: " + rows + " cols + " + cols);
 			//print("chromosome length: " + chromosome.Length);
 			int substrLength = rows * cols * 32;
-			//string substr = chromosome.Substring(strIndex, rows * cols * 32);
+			string substr = chromosome.Substring(strIndex, substrLength);
 
-			//matrices[i] = MatrixFromString(rows, cols, substr); 
-			matrices[i] = MatrixFromString(rows, cols, chromosome, strIndex); 
+			matrices[i] = MatrixFromString(rows, cols, substr); 
+			//matrices[i] = MatrixFromString(rows, cols, chromosome, strIndex); 
 
 			strIndex += substrLength;
 		}
 
 		return matrices;
 	}
+
+	/// <summary>
+	/// Optimized!
+	/// Takes a chromosome string that was generated from the @ApplyOutputToMuscle function.
+	/// </summary>
+//	public float[][][] WeightsFromChromosome(string chromosome) {
+//
+//		float[][][] matrices = new float[NUMBER_OF_LAYERS - 1][][];
+//		int strIndex = 0;
+//		// split the cromosome into the required sizes and turn the substrings into weight matrices.
+//		for (int i = 0; i < NUMBER_OF_LAYERS - 1; i++) {
+//			int rows = layerSizes[i];
+//			int cols = layerSizes[i+1];
+//			//print("rows: " + rows + " cols + " + cols);
+//			//print("chromosome length: " + chromosome.Length);
+//			int substrLength = rows * cols * 32;
+//			//string substr = chromosome.Substring(strIndex, rows * cols * 32);
+//
+//			//matrices[i] = MatrixFromString(rows, cols, substr); 
+//			matrices[i] = MatrixFromString(rows, cols, chromosome, strIndex); 
+//
+//			strIndex += substrLength;
+//		}
+//
+//		return matrices;
+//	}
 
 	private string MatrixToString(float[][] matrix) {
 
@@ -216,60 +240,79 @@ abstract public class Brain : MonoBehaviour {
 		}
 	}
 
-	private float[][] MatrixFromString(int rows, int cols, string str, int subStart) {
+	private float[][] MatrixFromString(int rows, int cols, string str) {
 
-		//string[] parts = WholeChunks(str, 32);
+		string[] parts = WholeChunks(str, 32);
 		float[][] matrix = MatrixCreate(rows, cols);
 
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
-				//matrix[i][j] = FloatFromBinaryString(parts[i * cols + j]);
+				matrix[i][j] = FloatFromBinaryString(parts[i * cols + j]);
 				//matrix[i][j] = FloatFromBinaryString(parts[i * cols + j], 0, 32);
-				int substringStart = (i * cols + j) * 32 + subStart;
-				matrix[i][j] = FloatFromBinaryString(str, substringStart, 32);
+				//int substringStart = (i * cols + j) * 32 + subStart;
+				//matrix[i][j] = FloatFromBinaryString(str, substringStart, 32);
 			}
 		}
 
 		return matrix;
-	} 
+	}
 
-	/** Takes a string of 32 bit and converts it to a float. */
-//	private float FloatFromBinaryString(string str) {
+//	// Optimized
+//	private float[][] MatrixFromString(int rows, int cols, string str, int subStart) {
 //
-//		int numOfBytes = str.Length / 8;
-//		byte[] bytes = new byte[numOfBytes];
-//		for(int i = 0; i < numOfBytes; ++i)
-//		{
-//			bytes[i] = Convert.ToByte(str.Substring(8 * i, 8), 2);
+//		//string[] parts = WholeChunks(str, 32);
+//		float[][] matrix = MatrixCreate(rows, cols);
+//
+//		for (int i = 0; i < rows; i++) {
+//			for (int j = 0; j < cols; j++) {
+//				//matrix[i][j] = FloatFromBinaryString(parts[i * cols + j]);
+//				//matrix[i][j] = FloatFromBinaryString(parts[i * cols + j], 0, 32);
+//				int substringStart = (i * cols + j) * 32 + subStart;
+//				matrix[i][j] = FloatFromBinaryString(str, substringStart, 32);
+//			}
 //		}
 //
-//		return BitConverter.ToSingle(bytes, 0); //Convert.ToSingle(bytes);
-//	}
+//		return matrix;
+//	} 
 
-	private float FloatFromBinaryString(String str, int start, int length) {
+	/** Takes a string of 32 bit and converts it to a float. */
+	private float FloatFromBinaryString(string str) {
 
-		int numOfBytes = length / 8;
+		int numOfBytes = str.Length / 8;
 		byte[] bytes = new byte[numOfBytes];
-
-		int endIndex = start + length - 1;
-
-		for (int i = 0; i < numOfBytes; ++i) {
-
-			byte result = 0;
-
-			int byteEnd = endIndex - i * 8;
-			int byteStart = byteEnd - 7;
-
-			for (int c = byteEnd; c >= byteStart; c--) {
-
-				result += (str[c] == '0') ? (byte)0 : (byte)(Pow2OptByte(byteEnd - c));
-			}
-
-			bytes[i] = result;
+		for(int i = 0; i < numOfBytes; ++i)
+		{
+			bytes[i] = Convert.ToByte(str.Substring(8 * i, 8), 2);
 		}
 
-		return BitConverter.ToSingle(bytes, 0);
+		return BitConverter.ToSingle(bytes, 0); //Convert.ToSingle(bytes);
 	}
+
+	// Optimized
+//	private float FloatFromBinaryString(String str, int start, int length) {
+//
+//		int numOfBytes = length / 8;
+//		byte[] bytes = new byte[numOfBytes];
+//
+//		int endIndex = start + length - 1;
+//
+//		for (int i = 0; i < numOfBytes; ++i) {
+//
+//			byte result = 0;
+//
+//			int byteEnd = endIndex - i * 8;
+//			int byteStart = byteEnd - 7;
+//
+//			for (int c = byteEnd; c >= byteStart; c--) {
+//
+//				result += (str[c] == '0') ? (byte)0 : (byte)(Pow2OptByte(byteEnd - c));
+//			}
+//
+//			bytes[i] = result;
+//		}
+//
+//		return BitConverter.ToSingle(bytes, 0);
+//	}
 
 	private byte Pow2OptByte(int exp) {
 	
@@ -347,24 +390,26 @@ abstract public class Brain : MonoBehaviour {
 		return result;
 	}
 
-	protected void TestConversion() {
-		float number = RandomFloat();
-		//string NumberAsString = StringFromFloat(number);
-		string NumberAsString = FloatToString(number, new StringBuilder()).ToString();
-
-		float result = FloatFromBinaryString(NumberAsString, 0, NumberAsString.Length);
-		print("Number: " + number + "  binary String: " + NumberAsString + "  Result: " + result);
-
-	}
-
-	protected void TestMatrixConversion() {
-
-		float[][] testMatrix = RandomMatrixCreate(10, 13);
-		string chromosome = MatrixToString(testMatrix);
-		float[][] chromosomeMatrix = MatrixFromString(10, 13, chromosome, 0);
-		var equal = MatricesEqual(testMatrix, chromosomeMatrix);
-		print("Conversion Test passed?: " + equal);
-	}
+//	protected void TestConversion() {
+//		float number = RandomFloat();
+//		//string NumberAsString = StringFromFloat(number);
+//		string NumberAsString = FloatToString(number, new StringBuilder()).ToString();
+//
+//		//float result = FloatFromBinaryString(NumberAsString, 0, NumberAsString.Length);
+//		float result = FloatFromBinaryString(NumberAsString);
+//		print("Number: " + number + "  binary String: " + NumberAsString + "  Result: " + result);
+//
+//	}
+//
+//	protected void TestMatrixConversion() {
+//
+//		float[][] testMatrix = RandomMatrixCreate(10, 13);
+//		string chromosome = MatrixToString(testMatrix);
+//		float[][] chromosomeMatrix = MatrixFromString(10, 13, chromosome, 0);
+//		//float[][] chromosomeMatrix = MatrixFromString(10, 13, chromosome, 0);
+//		var equal = MatricesEqual(testMatrix, chromosomeMatrix);
+//		print("Conversion Test passed?: " + equal);
+//	}
 
 	private bool MatricesEqual(float[][] matrix1, float[][] matrix2) {
 
@@ -471,24 +516,24 @@ abstract public class Brain : MonoBehaviour {
 		return result;
 	}
 
-//	public float[][] MatrixProduct(float[][] matrixA, float[][] matrixB) {
-//		int aRows = matrixA.Length; 
-//		int aCols = matrixA[0].Length;
-//		int bRows = matrixB.Length; 
-//		int bCols = matrixB[0].Length;
-//
-//		if (aCols!=bRows)
-//			throw new UnityException("Non-conformable matrices in MatrixProduct");
-//		
-//		float[][] result = MatrixCreate(aRows, bCols);
-//
-//		for (int i = 0; i < aRows; ++i) // each row of A
-//			for (int j = 0; j < bCols; ++j) // each col of B
-//				for (int k = 0; k < aCols; ++k)
-//					result[i][j] += matrixA[i][k] * matrixB[k][j];
-//		
-//		return result;
-//	}
+	public float[][] MatrixProduct(float[][] matrixA, float[][] matrixB) {
+		int aRows = matrixA.Length; 
+		int aCols = matrixA[0].Length;
+		int bRows = matrixB.Length; 
+		int bCols = matrixB[0].Length;
+
+		if (aCols!=bRows)
+			throw new UnityException("Non-conformable matrices in MatrixProduct");
+		
+		float[][] result = MatrixCreate(aRows, bCols);
+
+		for (int i = 0; i < aRows; ++i) // each row of A
+			for (int j = 0; j < bCols; ++j) // each col of B
+				for (int k = 0; k < aCols; ++k)
+					result[i][j] += matrixA[i][k] * matrixB[k][j];
+		
+		return result;
+	}
 
 	public float[][] MatrixProduct(float[][] matrixA, float[][] matrixB, float[][] result) {
 		

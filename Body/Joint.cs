@@ -136,7 +136,7 @@ public class Joint : BodyComponent {
 		Destroy(gameObject);
 	}
 
-	public override void PrepareForEvolution () {
+	public override void PrepareForEvolution() {
 
 		body = GetComponent<Rigidbody>();
 		body.isKinematic = false;
@@ -147,7 +147,7 @@ public class Joint : BodyComponent {
 	/// Format: Own ID % pos.x % pos.y % pos.z
 	/// </summary>
 	/// <returns>The save string.</returns>
-	public override string GetSaveString () {
+	public override string GetSaveString() {
 		var pos = transform.position;
 		return string.Format("{0}%{1}%{2}%{3}", ID, pos.x, pos.y, pos.z);
 	}

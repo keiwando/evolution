@@ -26,6 +26,11 @@ public class Bone : BodyComponent {
 	private Vector3 resetPosition;
 	private Quaternion resetRotation;
 
+	public Rigidbody Body {
+		get { return body; }
+	}
+	private Rigidbody body;
+
 	private static Bone InstantiateAtPoint(Vector3 point) {
 		return ((GameObject) Instantiate(Resources.Load(PATH), point, Quaternion.identity)).GetComponent<Bone>();
 	}
@@ -73,6 +78,8 @@ public class Bone : BodyComponent {
 
 		resetPosition = transform.position;
 		resetRotation = transform.rotation;
+
+		body = GetComponent<Rigidbody>();
 	}
 
 	public void Reset() {
@@ -158,8 +165,10 @@ public class Bone : BodyComponent {
 	}
 
 	public override void PrepareForEvolution () {
-		
-		GetComponent<Rigidbody>().isKinematic = false;
+
+		body = GetComponent<Rigidbody>();
+
+		body.isKinematic = false;
 	}
 
 	public override string GetSaveString () {
