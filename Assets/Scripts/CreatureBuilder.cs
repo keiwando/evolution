@@ -248,7 +248,7 @@ public class CreatureBuilder : MonoBehaviour {
 
 					CreateMuscleFromJoint(joint);
 					//PlaceConnectionBetweenPoints(currentMuscle.gameObject, joint.position, mousePos, CONNECTION_WIDHT);
-					currentMuscle.SetLinePoints(joint.position, mousePos);
+					currentMuscle.SetLinePoints(joint.transform.position, mousePos);
 				}
 			} else if (selectedPart == BuildSelection.Delete) { // Delete selected object
 
@@ -313,7 +313,7 @@ public class CreatureBuilder : MonoBehaviour {
 						MuscleJoint joint = bone.muscleJoint;
 
 						if (!joint.Equals(currentMuscle.startingJoint)) {
-							endingPoint = joint.position;
+							endingPoint = joint.transform.position;
 							currentMuscle.endingJoint = joint;	
 						} else {
 							currentMuscle.endingJoint = null;
@@ -323,7 +323,7 @@ public class CreatureBuilder : MonoBehaviour {
 					}
 
 					//PlaceConnectionBetweenPoints(currentMuscle.gameObject, currentMuscle.startingPoint, endingPoint, CONNECTION_WIDHT);
-					currentMuscle.SetLinePoints(currentMuscle.startingPoint, endingPoint);
+					currentMuscle.SetLinePoints(currentMuscle.startingJoint.transform.position, endingPoint);
 				}
 			
 			} else if (selectedPart == BuildSelection.Move) {
@@ -566,7 +566,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/** Instantiates a muscle at the specified point. */
 	private void CreateMuscleFromJoint(MuscleJoint joint) {
 
-		Vector3 point = joint.position;
+		Vector3 point = joint.transform.position;
 		point.z = 0;
 
 		/*GameObject muscleEmpty = new GameObject();
@@ -577,7 +577,7 @@ public class CreatureBuilder : MonoBehaviour {
 		//currentMuscle = ((GameObject) Instantiate(musclePreset, point, Quaternion.identity)).GetComponent<Muscle>();
 		currentMuscle = Muscle.Create();
 		currentMuscle.startingJoint = joint;
-		currentMuscle.SetLinePoints(joint.position, joint.position);
+		currentMuscle.SetLinePoints(joint.transform.position, joint.transform.position);
 	}
 
 	/** Transforms the given gameObject between the specified points. (Points flattened to 2D). */

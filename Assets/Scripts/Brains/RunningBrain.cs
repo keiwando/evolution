@@ -33,7 +33,9 @@ public class RunningBrain : Brain {
 	public override void FixedUpdate ()
 	{
 		base.FixedUpdate();
-		averageSpeed = (averageSpeed + creature.GetVelocity().x) / 2; 
+		//averageSpeed = (averageSpeed + creature.GetVelocity().x) / 2;
+		var velX = inputs[0][1];
+		averageSpeed = (averageSpeed + velX) / 2; 
 	}
 
 	/*protected override void ApplyOutputToMuscle (float output, Muscle muscle)
@@ -61,33 +63,33 @@ public class RunningBrain : Brain {
 	*/
 	protected override void UpdateInputs () {
 
-//		var basicInputs = creature.CalculateBasicBrainInputs();
-//
-//		inputs[0][0] = basicInputs.DistanceFromFloor;
-//		// horizontal velocity
-//		inputs[0][1] = basicInputs.VelocityX;
-//		// vertical velocity
-//		inputs[0][2] = basicInputs.VelocityY;
-//		// rotational velocity
-//		inputs[0][3] = basicInputs.AngularVelocity;
-//		// number of points touching ground
-//		inputs[0][4] = basicInputs.PointsTouchingGroundCount;
-//		// creature rotation
-//		inputs[0][5] = basicInputs.Rotation;
+		var basicInputs = creature.CalculateBasicBrainInputs();
+
+		inputs[0][0] = basicInputs.DistanceFromFloor;
+		// horizontal velocity
+		inputs[0][1] = basicInputs.VelocityX;
+		// vertical velocity
+		inputs[0][2] = basicInputs.VelocityY;
+		// rotational velocity
+		inputs[0][3] = basicInputs.AngularVelocity;
+		// number of points touching ground
+		inputs[0][4] = basicInputs.PointsTouchingGroundCount;
+		// creature rotation
+		inputs[0][5] = basicInputs.Rotation;
 
 		// distance from ground
-		inputs[0][0] = creature.DistanceFromGround();
-		// horizontal velocity
-		Vector3 velocity = creature.GetVelocity();
-		inputs[0][1] = velocity.x;
-		// vertical velocity
-		inputs[0][2] = velocity.y;
-		// rotational velocity
-		inputs[0][3] = creature.GetAngularVelocity().z;
-		// number of points touching ground
-		inputs[0][4] = creature.GetNumberOfPointsTouchingGround();
-		// creature rotation
-		inputs[0][5] = creature.GetRotation();
+//		inputs[0][0] = creature.DistanceFromGround();
+//		// horizontal velocity
+//		Vector3 velocity = creature.GetVelocity();
+//		inputs[0][1] = velocity.x;
+//		// vertical velocity
+//		inputs[0][2] = velocity.y;
+//		// rotational velocity
+//		inputs[0][3] = creature.GetAngularVelocity().z;
+//		// number of points touching ground
+//		inputs[0][4] = creature.GetNumberOfPointsTouchingGround();
+//		// creature rotation
+//		inputs[0][5] = creature.GetRotation();
 	}
 
 	/// <summary>
