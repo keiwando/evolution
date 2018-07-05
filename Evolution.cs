@@ -317,11 +317,16 @@ public class Evolution : MonoBehaviour {
 	/// </summary>
 	private void SimulateGeneration() {
 
-		if (settings.simulateInBatches) {
-			foreach (Creature creature in currentGeneration) {
-				creature.Alive = false;
-				creature.gameObject.SetActive(false);
-			}
+//		if (settings.simulateInBatches) {
+//			foreach (Creature creature in currentGeneration) {
+//				creature.Alive = false;
+//				creature.gameObject.SetActive(false);
+//			}
+//		}
+
+		foreach (Creature creature in currentGeneration) {
+			creature.Alive = false;
+			creature.gameObject.SetActive(false);
 		}
 
 		foreach (Creature creature in currentCreatureBatch) {
@@ -389,15 +394,10 @@ public class Evolution : MonoBehaviour {
 		currentChromosomes = CreateNewChromosomesFromGeneration();
 		currentGenerationNumber++;
 
-		//KillGeneration();
-		//currentGeneration = CreateGeneration();
+		KillGeneration();
+		currentGeneration = CreateGeneration();
 
-//		if (currentGenerationNumber == 2) {
-//			currentGeneration = CreateGeneration();	
-//		} else {
-//			ResetCreatures();
-//		}
-		ResetCreatures();
+		//ResetCreatures(); // TODO: Currently changes behaviour
 
 
 		var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
@@ -470,6 +470,7 @@ public class Evolution : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Optimized
 	/// Takes two chromosome strings and returns an array of two new chromosome strings that are a combination of the parent strings.
 	/// </summary>
 	private string[] CombineChromosomes(string chrom1, string chrom2) {
@@ -500,6 +501,26 @@ public class Evolution : MonoBehaviour {
 
 		return result;
 	}
+
+//	private string[] CombineChromosomes(string chrom1, string chrom2) {
+//
+//		int splitIndex = UnityEngine.Random.Range(1, chrom2.Length);
+//		string[] result = new string[2];
+//
+//		//var chrom1Builder = new StringBuilder(chrom1);
+//		//var chrom2Builder = new StringBuilder(chrom2);
+//
+//		result[0] = chrom1.Substring(0,splitIndex) + chrom2.Substring(splitIndex);
+//		result[1] = chrom2.Substring(0,splitIndex) + chrom1.Substring(splitIndex);
+//
+//		Assert.AreEqual(result[0].Length, chrom1.Length);
+//		Assert.AreEqual(result[0].Length, chrom2.Length);
+//
+//		result[0] = Mutate(result[0]);
+//		result[1] = Mutate(result[1]);
+//
+//		return result;
+//	}
 
 	private StringBuilder Mutate(StringBuilder chromosome) {
 

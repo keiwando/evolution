@@ -164,6 +164,7 @@ abstract public class Brain : MonoBehaviour {
 
 	public void SetupWeightsFromChromosome(string chromosome) {
 		weightMatrices = WeightsFromChromosome(chromosome);
+		//weightMatrices = WeightsFromChromosomeOpt(chromosome);
 	}
 
 	public float[][][] WeightsFromChromosome(string chromosome) {
@@ -192,27 +193,27 @@ abstract public class Brain : MonoBehaviour {
 	/// Optimized!
 	/// Takes a chromosome string that was generated from the @ApplyOutputToMuscle function.
 	/// </summary>
-//	public float[][][] WeightsFromChromosome(string chromosome) {
-//
-//		float[][][] matrices = new float[NUMBER_OF_LAYERS - 1][][];
-//		int strIndex = 0;
-//		// split the cromosome into the required sizes and turn the substrings into weight matrices.
-//		for (int i = 0; i < NUMBER_OF_LAYERS - 1; i++) {
-//			int rows = layerSizes[i];
-//			int cols = layerSizes[i+1];
-//			//print("rows: " + rows + " cols + " + cols);
-//			//print("chromosome length: " + chromosome.Length);
-//			int substrLength = rows * cols * 32;
-//			//string substr = chromosome.Substring(strIndex, rows * cols * 32);
-//
-//			//matrices[i] = MatrixFromString(rows, cols, substr); 
-//			matrices[i] = MatrixFromString(rows, cols, chromosome, strIndex); 
-//
-//			strIndex += substrLength;
-//		}
-//
-//		return matrices;
-//	}
+	public float[][][] WeightsFromChromosomeOpt(string chromosome) {
+
+		float[][][] matrices = new float[NUMBER_OF_LAYERS - 1][][];
+		int strIndex = 0;
+		// split the cromosome into the required sizes and turn the substrings into weight matrices.
+		for (int i = 0; i < NUMBER_OF_LAYERS - 1; i++) {
+			int rows = layerSizes[i];
+			int cols = layerSizes[i+1];
+			//print("rows: " + rows + " cols + " + cols);
+			//print("chromosome length: " + chromosome.Length);
+			int substrLength = rows * cols * 32;
+			//string substr = chromosome.Substring(strIndex, rows * cols * 32);
+
+			//matrices[i] = MatrixFromString(rows, cols, substr); 
+			matrices[i] = MatrixFromString(rows, cols, chromosome, strIndex); 
+
+			strIndex += substrLength;
+		}
+
+		return matrices;
+	}
 
 	private string MatrixToString(float[][] matrix) {
 
@@ -257,23 +258,23 @@ abstract public class Brain : MonoBehaviour {
 		return matrix;
 	}
 
-//	// Optimized
-//	private float[][] MatrixFromString(int rows, int cols, string str, int subStart) {
-//
-//		//string[] parts = WholeChunks(str, 32);
-//		float[][] matrix = MatrixCreate(rows, cols);
-//
-//		for (int i = 0; i < rows; i++) {
-//			for (int j = 0; j < cols; j++) {
-//				//matrix[i][j] = FloatFromBinaryString(parts[i * cols + j]);
-//				//matrix[i][j] = FloatFromBinaryString(parts[i * cols + j], 0, 32);
-//				int substringStart = (i * cols + j) * 32 + subStart;
-//				matrix[i][j] = FloatFromBinaryString(str, substringStart, 32);
-//			}
-//		}
-//
-//		return matrix;
-//	} 
+	// Optimized
+	private float[][] MatrixFromString(int rows, int cols, string str, int subStart) {
+
+		//string[] parts = WholeChunks(str, 32);
+		float[][] matrix = MatrixCreate(rows, cols);
+
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				//matrix[i][j] = FloatFromBinaryString(parts[i * cols + j]);
+				//matrix[i][j] = FloatFromBinaryString(parts[i * cols + j], 0, 32);
+				int substringStart = (i * cols + j) * 32 + subStart;
+				matrix[i][j] = FloatFromBinaryStringOpt(str, substringStart, 32);
+			}
+		}
+
+		return matrix;
+	} 
 
 	/** Takes a string of 32 bit and converts it to a float. */
 	private float FloatFromBinaryString(string str) {
@@ -289,30 +290,30 @@ abstract public class Brain : MonoBehaviour {
 	}
 
 	// Optimized
-//	private float FloatFromBinaryString(String str, int start, int length) {
-//
-//		int numOfBytes = length / 8;
-//		byte[] bytes = new byte[numOfBytes];
-//
-//		int endIndex = start + length - 1;
-//
-//		for (int i = 0; i < numOfBytes; ++i) {
-//
-//			byte result = 0;
-//
-//			int byteEnd = endIndex - i * 8;
-//			int byteStart = byteEnd - 7;
-//
-//			for (int c = byteEnd; c >= byteStart; c--) {
-//
-//				result += (str[c] == '0') ? (byte)0 : (byte)(Pow2OptByte(byteEnd - c));
-//			}
-//
-//			bytes[i] = result;
-//		}
-//
-//		return BitConverter.ToSingle(bytes, 0);
-//	}
+	private float FloatFromBinaryStringOpt(String str, int start, int length) {
+
+		int numOfBytes = length / 8;
+		byte[] bytes = new byte[numOfBytes];
+
+		int endIndex = start + length - 1;
+
+		for (int i = 0; i < numOfBytes; ++i) {
+
+			byte result = 0;
+
+			int byteEnd = endIndex - i * 8;
+			int byteStart = byteEnd - 7;
+
+			for (int c = byteEnd; c >= byteStart; c--) {
+
+				result += (str[c] == '0') ? (byte)0 : (byte)(Pow2OptByte(byteEnd - c));
+			}
+
+			bytes[i] = result;
+		}
+
+		return BitConverter.ToSingle(bytes, 0);
+	}
 
 	private byte Pow2OptByte(int exp) {
 	
