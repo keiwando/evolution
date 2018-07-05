@@ -59,8 +59,22 @@ public class RunningBrain : Brain {
 	* - number of points touching ground
 	* - creature rotation
 	*/
-	protected override void UpdateInputs ()
-	{
+	protected override void UpdateInputs () {
+
+//		var basicInputs = creature.CalculateBasicBrainInputs();
+//
+//		inputs[0][0] = basicInputs.DistanceFromFloor;
+//		// horizontal velocity
+//		inputs[0][1] = basicInputs.VelocityX;
+//		// vertical velocity
+//		inputs[0][2] = basicInputs.VelocityY;
+//		// rotational velocity
+//		inputs[0][3] = basicInputs.AngularVelocity;
+//		// number of points touching ground
+//		inputs[0][4] = basicInputs.PointsTouchingGroundCount;
+//		// creature rotation
+//		inputs[0][5] = basicInputs.Rotation;
+
 		// distance from ground
 		inputs[0][0] = creature.DistanceFromGround();
 		// horizontal velocity
