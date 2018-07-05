@@ -17,17 +17,17 @@ public class Muscle : BodyComponent {
 	public MuscleJoint startingJoint;
 	public MuscleJoint endingJoint;
 
-	public Vector3 startingPoint {
-		get {
-			return startingJoint.position;
-		}
-	}
-
-	public Vector3 endingPoint {
-		get {
-			return endingJoint.position;
-		}	
-	}
+//	public Vector3 startingPoint {
+//		get {
+//			return startingJoint.position;
+//		}
+//	}
+//
+//	public Vector3 endingPoint {
+//		get {
+//			return endingJoint.position;
+//		}	
+//	}
 
 	private SpringJoint spring;
 
@@ -199,8 +199,8 @@ public class Muscle : BodyComponent {
 		spring.minDistance = 0;
 		spring.maxDistance = 0;
 		//spring.autoConfigureConnectedAnchor = true;
-		spring.anchor = startingJoint.position;
-		spring.connectedAnchor = endingJoint.position;
+		spring.anchor = startingJoint.transform.position;
+		spring.connectedAnchor = endingJoint.transform.position;
 		spring.connectedBody = endingJoint.GetComponent<Rigidbody>();
 
 		spring.enablePreprocessing = true;
@@ -229,6 +229,9 @@ public class Muscle : BodyComponent {
 
 	public void Contract(float force) {
 
+		var startingPoint = startingJoint.transform.position;
+		var endingPoint = endingJoint.transform.position;
+
 		// Apply a force on both connection joints.
 		Vector3 midPoint = (startingPoint + endingPoint) / 2;
 
@@ -249,6 +252,9 @@ public class Muscle : BodyComponent {
 
 	public void Expand(float force) {
 
+		var startingPoint = startingJoint.transform.position;
+		var endingPoint = endingJoint.transform.position;
+
 		// Apply a force on both connection joints.
 		Vector3 midPoint = (startingPoint + endingPoint) / 2;
 
@@ -268,8 +274,11 @@ public class Muscle : BodyComponent {
 		//Assert.IsFalse(float.IsNaN(endingForce.x));
 		//Assert.IsFalse(float.IsNaN(startingForce.x));
 
-		startingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(startingForce ,startingJoint.position);
-		endingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(endingForce, endingJoint.position);
+//		startingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(startingForce ,startingJoint.position);
+//		endingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(endingForce, endingJoint.position);
+
+		startingJoint.ConnectedBone.AddForceAtPosition(startingForce, startingJoint.transform.position);
+		endingJoint.ConnectedBone.AddForceAtPosition(endingForce, endingJoint.transform.position);
 	}
 
 	private void TestContraction () {
@@ -314,6 +323,9 @@ public class Muscle : BodyComponent {
 	}
 
 	private void AddColliderToLine() {
+
+		var startingPoint = startingJoint.transform.position;
+		var endingPoint = endingJoint.transform.position;
 
 		BoxCollider col = gameObject.AddComponent<BoxCollider> (); //new GameObject("Collider").
 		this.collider = col;
@@ -416,7 +428,7 @@ public class Muscle : BodyComponent {
 		if(startingJoint == null || endingJoint == null) return;
 
 		//SetLinePoints(startingPoint, endingPoint);
-		SetLinePoints3D(startingPoint, endingPoint);
+		SetLinePoints3D(startingJoint.transform.position, endingJoint.transform.position);
 	}
 
 	public override void PrepareForEvolution () {

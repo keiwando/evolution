@@ -53,7 +53,7 @@ public class Creature : MonoBehaviour {
 
 	private float maxJumpingHeight;
 
-	private Vector3 currentLowest;
+	//private Vector3 currentLowest;
 
 	//public bool DEBUG = false;
 
@@ -63,9 +63,10 @@ public class Creature : MonoBehaviour {
 
 	void Update () {
 
-		maxJumpingHeight = Mathf.Max(maxJumpingHeight, DistanceFromGround());
+		//maxJumpingHeight = Mathf.Max(maxJumpingHeight, DistanceFromGround());
+		maxJumpingHeight = Mathf.Max(maxJumpingHeight, DistanceFromFlatFloor());
 
-		currentLowest = GetLowestPoint();
+		//currentLowest = GetLowestPoint();
 	}
 
 	public void SetKinematic(bool enabled) {
@@ -200,7 +201,7 @@ public class Creature : MonoBehaviour {
 		var jointsCount = joints.Count;
 		for (int i = 0; i < jointsCount; i++) {
 			var joint = joints[i];
-			float height =  joint.center.y - joint.GetComponent<Collider>().bounds.size.y / 2;
+			float height = joint.center.y;// - joint.GetComponent<Collider>().bounds.size.y / 2;
 			min = height < min ? height : min; 
 		}
 
