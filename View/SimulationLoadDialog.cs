@@ -57,6 +57,14 @@ public class SimulationLoadDialog : MonoBehaviour {
 
 		filename += ".txt";
 
+		//EvolutionSaver.LoadSimulationFromSaveFile(filename, creatureBuilder, evolution);
+		StartCoroutine(LoadOnNextFrame(filename));
+	}
+
+	private IEnumerator LoadOnNextFrame(string filename) {
+
+		yield return new WaitForEndOfFrame();
+
 		EvolutionSaver.LoadSimulationFromSaveFile(filename, creatureBuilder, evolution);
 	}
 
@@ -73,7 +81,7 @@ public class SimulationLoadDialog : MonoBehaviour {
 		}
 
 		foreach (var name in filenames) {
-			saveFiles.Add(name.Replace(".txt",""));
+			saveFiles.Add(name.Replace(".txt", ""));
 		}
 
 		dropdown.ClearOptions();

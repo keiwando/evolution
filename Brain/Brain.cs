@@ -12,12 +12,12 @@ using System.Linq; // REMOVE WHEN NOT TESTING!
 */
 abstract public class Brain : MonoBehaviour {
 
-	public Muscle[] muscles; 
+	public Muscle[] muscles;
 
 	/** The Creature that this brain belongs to. */
 	public Creature creature;
 
-	public NeuralNetworkSettings networkSettings; 
+	public NeuralNetworkSettings networkSettings;
 
 	private bool isActive;
 
@@ -25,16 +25,16 @@ abstract public class Brain : MonoBehaviour {
 
 	protected int NUMBER_OF_LAYERS { get { return networkSettings.numberOfIntermediateLayers + 2; } }
 	abstract public int NUMBER_OF_INPUTS { get; }
-	protected int NUMBER_OF_OUTPUTS; 	// will be determined by the muscle size
+	protected int NUMBER_OF_OUTPUTS;    // will be determined by the muscle size
 
 	private float MINWEIGHT = -3.0f;
 	private float MAXWEIGHT = 3.0f;
 
 	protected int[] layerSizes;
 	//abstract protected int[] IntermediateLayerSizes { get; }
-	protected int[] IntermediateLayerSizes { 
+	protected int[] IntermediateLayerSizes {
 		get {
-			return networkSettings.nodesPerIntermediateLayer;		
+			return networkSettings.nodesPerIntermediateLayer;
 		}
 	}
 
@@ -55,11 +55,21 @@ abstract public class Brain : MonoBehaviour {
 
 	private StringBuilder debugBuilder;
 
-	private StringBuilder builder;
-	private byte[] byteStore = new byte[8]; 
+	private StringBuilder builder = new StringBuilder();
+	private byte[] byteStore = new byte[8];
 
-	void Start() {
-		this.builder = new StringBuilder();
+	private static string[] byte2StringCache;
+
+	private void Awake() {
+
+		//StringFromFloatTest();
+		//FloatFromBinaryStringTest();
+
+		if (Brain.byte2StringCache != null) return;
+
+		Brain.byte2StringCache = new string[256];
+		for (int i = 0; i < 256; i++)
+			Brain.byte2StringCache[i] = Convert.ToString(i, 2).PadLeft(8, '0');
 	}
 
 	virtual public void Update() {
@@ -70,12 +80,12 @@ abstract public class Brain : MonoBehaviour {
 	}
 
 	virtual public void FixedUpdate() {
-		
+
 		if (isActive) {
-			
+
 			outputs = CalcOutputs();
 			ApplyOutputs(outputs);
-		} 
+		}
 	}
 
 	/** 
@@ -107,7 +117,7 @@ abstract public class Brain : MonoBehaviour {
 	*/
 	private void ApplyOutputs(float[][] outputs) {
 
-		for(int i = 0; i < outputs[0].Length; i++) {
+		for (int i = 0; i < outputs[0].Length; i++) {
 			float output = float.IsNaN(outputs[0][i]) ? 0 : outputs[0][i];
 			ApplyOutputToMuscle(output, muscles[i]);
 		}
@@ -120,42 +130,42 @@ abstract public class Brain : MonoBehaviour {
 		// multiply by two to get a value between -1 and 1
 		float percent = 2 * output - 1f;
 
-		if (percent < 0) 
+		if (percent < 0)
 			muscle.muscleAction = Muscle.MuscleAction.CONTRACT;
 		else
 			muscle.muscleAction = Muscle.MuscleAction.EXPAND;
-		
+
 		muscle.SetContractionForce(Math.Abs(percent));
-	} 
+	}
 
 	public abstract void EvaluateFitness();
 
 	/** Turns the weight of the neural network to a string. */
-//	public string ToChromosomeString() {
-//
-//		string chromosome = "";
-//
-//		if (creature.muscles.Count == 0) return chromosome;
-//
-//		for(int i = 0; i < weightMatrices.Length; i++) {
-//			chromosome += MatrixToString(weightMatrices[i]);
-//		}
-//
-//		return chromosome;
-//	}
+	//	public string ToChromosomeString() {
+	//
+	//		string chromosome = "";
+	//
+	//		if (creature.muscles.Count == 0) return chromosome;
+	//
+	//		for(int i = 0; i < weightMatrices.Length; i++) {
+	//			chromosome += MatrixToString(weightMatrices[i]);
+	//		}
+	//
+	//		return chromosome;
+	//	}
 
 	// Optimized
 	public string ToChromosomeString() {
 
 		if (builder == null)
 			builder = new StringBuilder();
-		else 
+		else
 			builder.Length = 0;
 
 		if (creature.muscles.Count == 0) return "";
 
 		for (int i = 0; i < weightMatrices.Length; i++) {
-			
+
 			MatrixToString(weightMatrices[i], builder);
 		}
 
@@ -163,8 +173,19 @@ abstract public class Brain : MonoBehaviour {
 	}
 
 	public void SetupWeightsFromChromosome(string chromosome) {
-		weightMatrices = WeightsFromChromosome(chromosome);
-		//weightMatrices = WeightsFromChromosomeOpt(chromosome);
+		//weightMatrices = WeightsFromChromosome(chromosome);
+		weightMatrices = WeightsFromChromosomeOpt(chromosome);
+		//var optWeightMatrices = WeightsFromChromosomeOpt(chromosome);
+
+		//CompareWeightMatrices(weightMatrices, optWeightMatrices);
+	}
+
+	private void CompareWeightMatrices(float[][][] mat1, float[][][] mat2) {
+
+		for (int i = 0; i < mat1.Length; i++) {
+
+			print(string.Format("Matrices at index {0} equal? - {1}", i, MatricesEqual(mat1[i], mat2[i])));
+		}
 	}
 
 	public float[][][] WeightsFromChromosome(string chromosome) {
@@ -281,6 +302,7 @@ abstract public class Brain : MonoBehaviour {
 
 		int numOfBytes = str.Length / 8;
 		byte[] bytes = new byte[numOfBytes];
+
 		for(int i = 0; i < numOfBytes; ++i)
 		{
 			bytes[i] = Convert.ToByte(str.Substring(8 * i, 8), 2);
@@ -293,16 +315,16 @@ abstract public class Brain : MonoBehaviour {
 	private float FloatFromBinaryStringOpt(String str, int start, int length) {
 
 		int numOfBytes = length / 8;
-		byte[] bytes = new byte[numOfBytes];
 
-		int endIndex = start + length - 1;
+		//byte[] bytes = new byte[numOfBytes];
+		var bytes = byteStore;
 
 		for (int i = 0; i < numOfBytes; ++i) {
 
 			byte result = 0;
 
-			int byteEnd = endIndex - i * 8;
-			int byteStart = byteEnd - 7;
+			int byteStart = start + i * 8;
+			int byteEnd = byteStart + 7;
 
 			for (int c = byteEnd; c >= byteStart; c--) {
 
@@ -339,6 +361,38 @@ abstract public class Brain : MonoBehaviour {
 		}
 	}
 
+	private void FloatFromBinaryStringTest() {
+
+		int numberOfTests = 10;
+
+		for (int i = 0; i < numberOfTests; i++) {
+
+			float randFloat = UnityEngine.Random.Range(-5f, 5f);
+			string floatStr = StringFromFloat(randFloat);
+
+			float floatOld = FloatFromBinaryString(floatStr);
+			float floatOpt = FloatFromBinaryStringOpt(floatStr, 0, floatStr.Length);
+
+			print(string.Format("Equal? - {3}\nfloat = {0}, \nfloatOld =\t{1}, \nfloatOpt =\t{2}", randFloat, floatOld, floatOpt, floatOld.Equals(floatOpt)));
+		}
+	}
+
+	private void StringFromFloatTest() {
+
+		int numberOfTests = 10;
+
+		for (int i = 0; i < numberOfTests; i++) {
+
+			float randFloat = UnityEngine.Random.Range(-5f, 5f);
+
+			var strOld = StringFromFloat(randFloat);
+			var strOpt = FloatToString(randFloat, new StringBuilder()).ToString();
+
+			print("Equal? - " + (strOld.Equals(strOpt)));
+			print(string.Format("float = {0}, \nstrOld =\t{1}, \nstrOpt =\t{2}", randFloat, strOld, strOpt));
+		}
+	}
+
 	private string StringFromFloat(float number) {
 		string result = "";
 
@@ -360,22 +414,29 @@ abstract public class Brain : MonoBehaviour {
 		return builder;
 	}
 
+	//private StringBuilder ByteToString(byte b, StringBuilder builder) {
+
+	//	for (int i = 0; i < 8; i++)
+	//		byteStore[i] = 0;
+
+
+	//	int index = 7;
+	//	while (b != 0 && index >= 0) {
+	//		byteStore[index] = (byte)(b % 2);
+	//		b /= 2;
+	//		index--;
+	//	}
+
+	//	for (int i = 0; i < 8; i++) {
+	//		builder.Append(byteStore[i] == 1 ? '1' : '0');
+	//	}
+
+	//	return builder;
+	//} 
+
 	private StringBuilder ByteToString(byte b, StringBuilder builder) {
 
-		for (int i = 0; i < 8; i++)
-			byteStore[i] = 0;
-
-
-		int index = 7;
-		while (b != 0 && index >= 0) {
-			byteStore[index] = (byte)(b % 2);
-			b /= 2;
-			index--;
-		}
-
-		for (int i = 0; i < 8; i++) {
-			builder.Append(byteStore[i] == 1 ? '1' : '0');
-		}
+		builder.Append(Brain.byte2StringCache[b]);
 
 		return builder;
 	} 
@@ -422,7 +483,8 @@ abstract public class Brain : MonoBehaviour {
 		for ( int i = 0; i < rows; i++ ) {
 			for ( int j = 0; j < cols; j++ ) {
 				if (matrix1[i][j] != matrix2[i][j]) {
-					print("MAtrix1: " + matrix1[i][j] + " Matrix2: " + matrix2[i][j]);
+					print(string.Format("mat1[{0},{1}] = {2}, mat2[{0},{1}] = {3}", i, j, matrix1[i][j], matrix2[i][j]));
+					//print("MAtrix1: " + matrix1[i][j] + " Matrix2: " + matrix2[i][j]);
 					return false;	
 				}
 			}

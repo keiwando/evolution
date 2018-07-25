@@ -457,6 +457,12 @@ public class Creature : MonoBehaviour {
 			muscles[i].Reset();
 	}
 
+	public void RemoveMuscleColliders() {
+		for (int i = 0; i < muscles.Count; i++) {
+			muscles[i].RemoveCollider();
+		}
+	}
+
 	void OnDestroy() {
 		//print("Creature script destroyed");
 	}

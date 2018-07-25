@@ -100,6 +100,8 @@ public class Evolution : MonoBehaviour {
 	// Auto-Save
 	private AutoSaver autoSaver;
 
+	private Dictionary<int, string> chromosomeCache = new Dictionary<int, string>();
+
 	// Use this for initialization
 	void Start () {
 
@@ -225,6 +227,7 @@ public class Evolution : MonoBehaviour {
 		this.currentGenerationNumber = generationNum;
 		this.currentChromosomes = currentChromosomes.ToArray();
 
+		creature.RemoveMuscleColliders();
 		creature.Alive = false;
 		running = true;
 
@@ -271,6 +274,7 @@ public class Evolution : MonoBehaviour {
 		viewController = GameObject.Find("ViewController").GetComponent<ViewController>();
 		Assert.IsNotNull(viewController);
 
+		creature.RemoveMuscleColliders();
 		creature.Alive = false;
 		running = true;
 		SetupEvolution();
@@ -394,10 +398,10 @@ public class Evolution : MonoBehaviour {
 		currentChromosomes = CreateNewChromosomesFromGeneration();
 		currentGenerationNumber++;
 
-		KillGeneration();
-		currentGeneration = CreateGeneration();
+		//KillGeneration();
+		//currentGeneration = CreateGeneration();
 
-		//ResetCreatures(); // TODO: Currently changes behaviour
+		ResetCreatures();
 
 
 		var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
@@ -438,14 +442,29 @@ public class Evolution : MonoBehaviour {
 		string[] result = new string[settings.populationSize];
 		SetupRandomPickingWeights();
 
-		for(int i = 0; i < settings.populationSize; i += 2) {
+		chromosomeCache.Clear();
+
+		int start = 0;
+		if (settings.keepBestCreatures) {
+
+			// keep the two best creatures
+			//result[0] = currentGeneration[0].brain.ToChromosomeString();
+			//result[1] = currentGeneration[1].brain.ToChromosomeString();
+			result[0] = GetChromosomeWithCaching(0);
+			result[1] = GetChromosomeWithCaching(1);
+			start = 2;
+		}
+
+		for(int i = start; i < settings.populationSize; i += 2) {
 
 			// randomly pick two creatures and let them "mate"
 			int index1 = PickRandomWeightedIndex();
 			int index2 = PickRandomWeightedIndex();
 
-			string chrom1 = currentGeneration[index1].brain.ToChromosomeString();
-			string chrom2 = currentGeneration[index2].brain.ToChromosomeString();
+			//string chrom1 = currentGeneration[index1].brain.ToChromosomeString(); // TODO: Cache chromosomes
+			//string chrom2 = currentGeneration[index2].brain.ToChromosomeString();
+			string chrom1 = GetChromosomeWithCaching(index1);
+			string chrom2 = GetChromosomeWithCaching(index2);
 
 			string[] newChromosomes = CombineChromosomes(chrom1, chrom2);
 
@@ -458,15 +477,17 @@ public class Evolution : MonoBehaviour {
 			}
 		}
 
-		if (settings.keepBestCreatures) {
-			
-			// keep the two best creatures
-			result[0] = currentGeneration[0].brain.ToChromosomeString();
-			result[1] = currentGeneration[1].brain.ToChromosomeString();
-		}
-
 		return result;
 
+	}
+
+	private string GetChromosomeWithCaching(int currentGenIndex) {
+
+		if (chromosomeCache.ContainsKey(currentGenIndex)) {
+			return chromosomeCache[currentGenIndex];
+		}
+
+		return currentGeneration[currentGenIndex].brain.ToChromosomeString();
 	}
 
 	/// <summary>

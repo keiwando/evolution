@@ -23,7 +23,7 @@ abstract public class Hoverable: MonoBehaviour {
 	public bool hovering { get; private set; }
 
 	//private Shader defaultShader;
-	protected Shader highlightingShader;
+	//protected static Shader highlightingShader;
 
 	public Texture2D mouseHoverTexture;
 	private CursorMode cursorMode = CursorMode.Auto;
@@ -39,13 +39,20 @@ abstract public class Hoverable: MonoBehaviour {
 	private float defaultColliderRadius = 0.5f; 
 	private bool isEnlarged = false;
 
+	public virtual void Awake() {
+		//if (Hoverable.highlightingShader != null) return;
+
+		//Hoverable.highlightingShader = Shader.Find("Self-Illumin/Outlined Diffuse");
+	}
+
 	public virtual void Start() {
 
 		//defaultShader = Shader.Find("Standard");
-		highlightingShader = Shader.Find("Self-Illumin/Outlined Diffuse");
+		//highlightingShader = Shader.Find("Self-Illumin/Outlined Diffuse");
 
 		highlightEmissionColor = new Color(0.7132353f, 0.5433174f, 0.2884408f, 1f);
-		defaultEmissionColor = GetComponent<Renderer>().material.GetColor("_EmissionColor");
+		//defaultEmissionColor = GetComponent<Renderer>().material.GetColor("_EmissionColor");
+		defaultEmissionColor = new Color(0, 0, 0);
 
 
 

@@ -22,13 +22,17 @@ public class MuscleJoint : MonoBehaviour { //: Hoverable
 	}
 	private Rigidbody bone;
 
+	public Rigidbody Body { 
+		get { return body; }
+	}
+	private Rigidbody body;
+
 	private List<Muscle> connectedMuscles = new List<Muscle>();
 
-
-	// Use this for initialization
 	void Start () {
 		//fixedJoint = GetComponent<FixedJoint>();
 		bone = GetComponentInParent<Rigidbody>();
+		body = GetComponent<Rigidbody>();
 	}
 
 	public void Connect(Muscle muscle) {

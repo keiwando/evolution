@@ -68,6 +68,7 @@ public class Joint : BodyComponent {
 
 	public void Reset() {
 		transform.SetPositionAndRotation(resetPosition, resetRotation);
+		body.velocity = Vector3.zero;
 	}
 
 	/// <summary>
@@ -160,15 +161,6 @@ public class Joint : BodyComponent {
 		} else if (collider.CompareTag("Obstacle")) {
 			isCollidingWithObstacle = true;
 		}
-
-
-//		switch(collider.gameObject.tag.ToUpper()) {
-//
-//		case "GROUND": isCollidingWithGround = true; break;
-//		case "OBSTACLE": isCollidingWithObstacle = true; break;
-//
-//		default: return;
-//		}	
 	}
 
 	void OnTriggerExit(Collider collider) {

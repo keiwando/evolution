@@ -33,8 +33,8 @@ public class Muscle : BodyComponent {
 
 	private LineRenderer lineRenderer;
 
-	private Rigidbody rigidbody;
-	private Collider collider;
+	private Rigidbody _body;
+	private Collider _collider;
 
 	private Vector3[] linePoints = new Vector3[2];
 
@@ -148,7 +148,7 @@ public class Muscle : BodyComponent {
 	public override void Start () {
 		base.Start();
 
-		highlightingShader = Shader.Find("Standard");
+		//highlightingShader = Shader.Find("Standard");
 
 		resetPosition = transform.position;
 		resetRotation = transform.rotation;
@@ -201,7 +201,9 @@ public class Muscle : BodyComponent {
 		//spring.autoConfigureConnectedAnchor = true;
 		spring.anchor = startingJoint.transform.position;
 		spring.connectedAnchor = endingJoint.transform.position;
-		spring.connectedBody = endingJoint.GetComponent<Rigidbody>();
+
+		spring.connectedBody = endingJoint.GetComponent<Rigidbody>(); // Connect to muscle joint (Default)
+		//spring.connectedBody = endingJoint.GetComponentInParent<Rigidbody>(); // Connect directly to bone
 
 		spring.enablePreprocessing = true;
 		spring.enableCollision = false;
@@ -328,7 +330,7 @@ public class Muscle : BodyComponent {
 		var endingPoint = endingJoint.transform.position;
 
 		BoxCollider col = gameObject.AddComponent<BoxCollider> (); //new GameObject("Collider").
-		this.collider = col;
+		this._collider = col;
 
 		// Collider is added as child object of line
 		col.transform.parent = lineRenderer.transform;
@@ -352,15 +354,15 @@ public class Muscle : BodyComponent {
 
 		// Add a rigidbody
 		Rigidbody rBody = gameObject.AddComponent<Rigidbody>();
-		this.rigidbody = rBody;
+		this._body = rBody;
 		rBody.isKinematic = true;
 	}
 
-	private void RemoveCollider() {
-		//Destroy(GetComponent<Rigidbody>());
-		//Destroy(GetComponent<BoxCollider>());
-		Destroy(this.rigidbody);
-		Destroy(this.collider);
+	public void RemoveCollider() {
+		Destroy(GetComponent<Rigidbody>());
+		Destroy(GetComponent<BoxCollider>());
+		//Destroy(this._body);
+		//Destroy(this._collider);
 	}
 
 	private void UpdateContractionVisibility() {
@@ -433,7 +435,7 @@ public class Muscle : BodyComponent {
 
 	public override void PrepareForEvolution () {
 		
-		RemoveCollider();
+		//RemoveCollider();
 		living = true;
 	}
 

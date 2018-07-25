@@ -84,6 +84,8 @@ public class Bone : BodyComponent {
 
 	public void Reset() {
 		transform.SetPositionAndRotation(resetPosition, resetRotation);
+		body.velocity = Vector3.zero;
+		muscleJoint.Body.velocity = Vector3.zero;
 	}
 
 	/** Places the bone between the specified points. (Points flattened to 2D) */
