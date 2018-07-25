@@ -21,7 +21,7 @@ public class RunningBrain : Brain {
 
 	// Use this for initialization
 	void Start () {
-
+		
 		//TestMatrixConversion();
 
 		if(IntermediateLayerSizes.Length != NUMBER_OF_LAYERS - 2) {
