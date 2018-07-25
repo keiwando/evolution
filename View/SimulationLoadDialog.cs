@@ -16,27 +16,6 @@ public class SimulationLoadDialog : MonoBehaviour {
 
 	private const string NO_SAVE_FILES = "You haven't saved any simulations yet";
 
-	//private bool saveFilesExists = false;
-
-	// Use this for initialization
-	void Start () {
-		/*this.gameObject.SetActive(true);
-		this.gameObject.SetActive(false);
-		this.gameObject.SetActive(true);*/
-	}
-	
-	// Update is called once per frame
-	void Update () {
-
-		/*if (bugFixEmpty.activeSelf) {
-
-			if (saveFilesExist) {
-				//dropdown.Show();
-			} else {
-				dropdown.Hide();
-			}
-		}*/
-	}
 
 	public void PromptDialog() {
 		//this.gameObject.SetActive(true);
@@ -86,6 +65,10 @@ public class SimulationLoadDialog : MonoBehaviour {
 
 		dropdown.ClearOptions();
 		dropdown.AddOptions(saveFiles);
+
+		if (filenames.Count > 0) {
+			dropdown.Show();
+		}
 	}
 
 	public void PromptSavefileDelete() {

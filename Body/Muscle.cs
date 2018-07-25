@@ -213,6 +213,36 @@ public class Muscle : BodyComponent {
 		//spring.breakTorque = 5000;
 	}
 
+	// Try to connect the muscle directly to the bone instead of the muscleJoint
+	//public void ConnectToJoints() {
+
+	//	if (startingJoint == null || endingJoint == null) return;
+
+	//	startingJoint.Connect(this);
+	//	endingJoint.Connect(this);
+
+	//	// connect the musclejoints with a spring joint
+	//	//spring = startingJoint.gameObject.AddComponent<SpringJoint>();
+	//	spring = startingJoint.transform.parent.gameObject.AddComponent<SpringJoint>();
+	//	spring.spring = SPRING_STRENGTH;
+	//	spring.damper = 50;
+	//	spring.minDistance = 0;
+	//	spring.maxDistance = 0;
+	//	//spring.autoConfigureConnectedAnchor = true;
+	//	spring.anchor = startingJoint.transform.position;
+	//	spring.connectedAnchor = endingJoint.transform.position;
+
+	//	//spring.connectedBody = endingJoint.GetComponent<Rigidbody>(); // Connect to muscle joint (Default)
+	//	spring.connectedBody = endingJoint.GetComponentInParent<Rigidbody>(); // Connect directly to bone
+
+	//	spring.enablePreprocessing = true;
+	//	spring.enableCollision = false;
+
+	//	// break forces
+	//	//spring.breakForce = 5000;
+	//	//spring.breakTorque = 5000;
+	//}
+
 	/** Set the muscle contraction. O = no contraction/expansion, 1 = fully contracted. */
 	public void SetContractionForce(float percent) {
 
