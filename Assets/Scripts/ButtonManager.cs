@@ -42,7 +42,7 @@ public class ButtonManager : MonoBehaviour {
 
 
 	// Use this for initialization
-	void Start () {
+	void Start() {
 
 		buttonMap = new Dictionary<SelectableButton, CreatureBuilder.BuildSelection>();
 
@@ -64,11 +64,6 @@ public class ButtonManager : MonoBehaviour {
 		CAMERA_MAX_X = cameraPos.x + CAMERA_DX;
 		CAMERA_MIN_Y = cameraPos.y - CAMERA_DY;
 		CAMERA_MAX_Y = cameraPos.y + CAMERA_DY;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
 	}
 
 	public void Refresh() {

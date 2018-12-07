@@ -1,6 +1,6 @@
 ﻿<Properties StartupConfiguration="{6B6A62CD-8865-7A37-6813-2674E59EA488}|">
   <MonoDevelop.Ide.ItemProperties.Evolution PreferredExecutionTarget="Unity.Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/evolution-core/View/SimulationLoadDialog.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/ButtonManager.cs">
     <Files>
       <File FileName="Assets/Scripts/evolution-core/Body/Muscle.cs" Line="205" Column="101" />
       <File FileName="Assets/Scripts/Brains/RunningBrain.cs" Line="24" Column="3" />
@@ -10,7 +10,12 @@
       <File FileName="Assets/Scripts/evolution-core/Body/Joint.cs" Line="86" Column="2" />
       <File FileName="Assets/Scripts/evolution-core/Body/Bone.cs" Line="88" Column="1" />
       <File FileName="Assets/Scripts/evolution-core/Body/MuscleJoint.cs" Line="35" Column="3" />
-      <File FileName="Assets/Scripts/evolution-core/View/SimulationLoadDialog.cs" Line="61" Column="44" />
+      <File FileName="Assets/Scripts/evolution-core/View/SimulationLoadDialog.cs" Line="9" Column="39" />
+      <File FileName="Assets/Scripts/ButtonManager.cs" Line="66" Column="42" />
+      <File FileName="Assets/Scripts/evolution-core/View/AndroidBackButtonMenuController.cs" Line="26" Column="35" />
+      <File FileName="Assets/Scripts/evolution-core/View/AutoScroll.cs" Line="25" Column="26" />
+      <File FileName="Assets/Scripts/evolution-core/View/SaveDialog.cs" Line="16" Column="2" />
+      <File FileName="Assets/Scripts/CreatureBuilder.cs" Line="841" Column="36" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
