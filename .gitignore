@@ -30,3 +30,6 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+# macOS file system
+.DS_Store
