@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class SimulationLoadDialog : MonoBehaviour {
 
+	public bool IsShowing { 
+		get { return bugFixEmpty.activeSelf; }
+	}
+
 	[SerializeField] private CreatureBuilder creatureBuilder;
 	[SerializeField] private Evolution evolution;
 

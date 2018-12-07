@@ -15,6 +15,14 @@ public class SettingsMenu : MonoBehaviour {
 
 	private const float DEFAULT_GRID_SIZE = 2.0f;
 
+	public bool IsShowing { 
+		get { return contentContainer.gameObject.activeSelf; }
+	}
+
+	public AutoScroll.ScrollPos ScrollPos { 
+		get { return contentContainer.CurrentScrollPos; }
+	}
+
 	[SerializeField] private AutoScroll contentContainer;
 
 	// Grid stuff
@@ -125,6 +133,10 @@ public class SettingsMenu : MonoBehaviour {
 
 	public void Hide() {
 		contentContainer.gameObject.SetActive(false);
+	}
+
+	public void GoToTop() {
+		contentContainer.ScrollToTop();
 	}
 
 	public void GridToggled(bool val) {

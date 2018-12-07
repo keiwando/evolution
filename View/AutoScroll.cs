@@ -1,8 +1,13 @@
 ﻿using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class AutoScroll : MonoBehaviour {
+
+	public enum ScrollPos { 
+		Top, Bottom
+	}
 
 	public float topY;
 	public float bottomY;
@@ -12,6 +17,17 @@ public class AutoScroll : MonoBehaviour {
 	public float scrollTime = 0.7f;
 
 	public AnimationCurve curve;
+
+	public ScrollPos CurrentScrollPos { 
+		get {
+			var y = transform.localPosition.y;
+			if (Math.Abs(topY - y) < Math.Abs(bottomY - y)) {
+				return ScrollPos.Top;
+			} else {
+				return ScrollPos.Bottom;
+			}
+		}
+	}
 
 	private float height;
 

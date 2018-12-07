@@ -13,11 +13,6 @@ public class SaveDialog : MonoBehaviour {
 	void Start () {
 		ResetErrors();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
 	public void OnSaveClicked() {
 		ErrorMessage.enabled = false;
