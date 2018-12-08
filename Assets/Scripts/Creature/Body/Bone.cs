@@ -86,6 +86,8 @@ public class Bone : BodyComponent {
 		transform.SetPositionAndRotation(resetPosition, resetRotation);
 		body.velocity = Vector3.zero;
 		muscleJoint.Body.velocity = Vector3.zero;
+		muscleJoint.transform.localPosition = Vector3.zero;
+		muscleJoint.transform.localRotation = Quaternion.identity;
 	}
 
 	/** Places the bone between the specified points. (Points flattened to 2D) */
