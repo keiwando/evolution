@@ -51,8 +51,8 @@ abstract public class Hoverable: MonoBehaviour {
 		//highlightingShader = Shader.Find("Self-Illumin/Outlined Diffuse");
 
 		highlightEmissionColor = new Color(0.7132353f, 0.5433174f, 0.2884408f, 1f);
-		//defaultEmissionColor = GetComponent<Renderer>().material.GetColor("_EmissionColor");
-		defaultEmissionColor = new Color(0, 0, 0);
+		defaultEmissionColor = GetComponent<Renderer>().material.GetColor("_EmissionColor");
+		//defaultEmissionColor = new Color(0, 0, 0);
 
 
 
@@ -104,6 +104,8 @@ abstract public class Hoverable: MonoBehaviour {
 		//print("OnHoverExit");
 
 		hovering = false;
+
+		if (shouldHighlight)
 
 		GetComponent<Renderer>().material.SetColor("_EmissionColor", defaultEmissionColor);
 		Cursor.SetCursor(null, Vector2.zero, cursorMode);
