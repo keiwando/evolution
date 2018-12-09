@@ -4,6 +4,9 @@ using System.Collections;
 
 public class SelectableButton : MonoBehaviour {
 
+	public float SelectionOffsetX = 20;
+	public float ReferenceResolutionX = 1920;
+
 	private Vector3 defaultPosition;
 	private Vector3 selectedPosition;
 
@@ -31,8 +34,9 @@ public class SelectableButton : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		var offsetX = SelectionOffsetX * (float)Screen.width / ReferenceResolutionX;
 		defaultPosition = transform.position;
-		selectedPosition = new Vector3(defaultPosition.x + 20, defaultPosition.y, 0);
+		selectedPosition = new Vector3(defaultPosition.x + offsetX, defaultPosition.y, 0);
 	}
 	
 	// Update is called once per frame

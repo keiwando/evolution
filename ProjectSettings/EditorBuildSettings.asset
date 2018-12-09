@@ -8,12 +8,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CreatureBuildingScene.unity
     guid: 2d1a8ab43bad447d8a840c6fbd76c124
-  - enabled: 0
-    path: Assets/Scenes/TestingScene.unity
-    guid: 0f23005dc52ca49d28ee90305448e83a
-  - enabled: 0
-    path: Assets/Scenes/Old EvolutionScene.unity
-    guid: 528c7f47668b0491daaf1d9bfee0a66b
   - enabled: 1
     path: Assets/Scenes/EvolutionScene.unity
     guid: b0f1cc9c575f543b695a230e345d9cd0
