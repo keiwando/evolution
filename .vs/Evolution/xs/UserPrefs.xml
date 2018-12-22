@@ -1,27 +1,22 @@
-﻿<Properties StartupConfiguration="{6B6A62CD-8865-7A37-6813-2674E59EA488}|">
-  <MonoDevelop.Ide.ItemProperties.Evolution PreferredExecutionTarget="Unity.Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/ButtonManager.cs">
+﻿<Properties StartupConfiguration="{3D4C3948-95AB-35D4-8403-2BDCFF7854FF}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Saving/EvolutionSaver.cs">
     <Files>
-      <File FileName="Assets/Scripts/evolution-core/Body/Muscle.cs" Line="205" Column="101" />
-      <File FileName="Assets/Scripts/Brains/RunningBrain.cs" Line="24" Column="3" />
-      <File FileName="Assets/Scripts/evolution-core/Evolution.cs" Line="404" Column="20" />
-      <File FileName="Assets/Scripts/evolution-core/Creature.cs" Line="462" Column="32" />
-      <File FileName="Assets/Scripts/evolution-core/Brain/Brain.cs" Line="435" Column="6" />
-      <File FileName="Assets/Scripts/evolution-core/Body/Joint.cs" Line="86" Column="2" />
-      <File FileName="Assets/Scripts/evolution-core/Body/Bone.cs" Line="88" Column="1" />
-      <File FileName="Assets/Scripts/evolution-core/Body/MuscleJoint.cs" Line="35" Column="3" />
-      <File FileName="Assets/Scripts/evolution-core/View/SimulationLoadDialog.cs" Line="9" Column="39" />
-      <File FileName="Assets/Scripts/ButtonManager.cs" Line="66" Column="42" />
-      <File FileName="Assets/Scripts/evolution-core/View/AndroidBackButtonMenuController.cs" Line="26" Column="35" />
-      <File FileName="Assets/Scripts/evolution-core/View/AutoScroll.cs" Line="25" Column="26" />
-      <File FileName="Assets/Scripts/evolution-core/View/SaveDialog.cs" Line="16" Column="2" />
-      <File FileName="Assets/Scripts/CreatureBuilder.cs" Line="841" Column="36" />
+      <File FileName="Assets/Scripts/Controllers/SimulationFileManager.cs" Line="76" Column="43" />
+      <File FileName="Assets/Scripts/Controllers/CreatureFileManager.cs" Line="6" Column="2" />
+      <File FileName="Assets/Scripts/View/ListLayoutGroup.cs" Line="23" Column="19" />
+      <File FileName="Assets/Scripts/View/FileSelectionViewController.cs" Line="107" Column="31" NotebookId="1" />
+      <File FileName="Assets/Scripts/View/ButtonManager.cs" Line="42" Column="2" NotebookId="1" />
+      <File FileName="Assets/Scripts/View/ViewController.cs" Line="70" Column="8" NotebookId="1" />
+      <File FileName="Assets/Scripts/View/SimulationLoadDialog.cs" Line="47" Column="56" NotebookId="1" />
+      <File FileName="Assets/Scripts/Saving/EvolutionSaver.cs" Line="48" Column="14" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.Evolution PreferredExecutionTarget="Unity.Editor" />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />
 </Properties>

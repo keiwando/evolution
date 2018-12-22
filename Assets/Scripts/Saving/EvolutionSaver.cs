@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -357,20 +358,21 @@ public class EvolutionSaver {
 		var filesList = new List<FileInfo>(fileInfo);
 		filesList.Sort((f1,f2) => f2.CreationTime.CompareTo(f1.CreationTime)); // Sort descending
 
-		foreach (FileInfo file in filesList) {
+		//foreach (FileInfo file in filesList) {
 
-			if (file.Name.Contains(".txt")) {
+		//	if (file.Name.Contains(".txt")) {
 
-				names.Add(file.Name.Split('.')[0]);
-			}
-		} 
+		//		names.Add(file.Name.Split('.')[0]);
+		//	}
+		//} 
 
-		var filenames = new List<string>();
-		foreach (string name in names) {
-			filenames.Add(name);
-		}
+		//var filenames = new List<string>();
+		//foreach (string name in names) {
+		//	filenames.Add(name);
+		//}
 
-		return filenames;
+		//return filenames;
+		return filesList.Select(x => x.Name).ToList();
 	}
 
 	private static void CreateSaveFolder() {
@@ -410,6 +412,7 @@ public class EvolutionSaver {
 		path = Path.Combine(path, filename);
 
 		File.Delete(path);
+		Debug.Log(filename);
 	}
 
 	/// <summary>

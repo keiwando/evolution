@@ -64,10 +64,10 @@ public class ViewController : MonoBehaviour {
 			bcController.RefreshMuscleContractionVisibility();
 		});
 
-		timeScaleSlider.onValueChanged.AddListener(delegate(float arg0) {
-			evolution.TimeScale = arg0;
-			timeScaleLabel.text = arg0.ToString("0.0") + "X";
-		});
+		//timeScaleSlider.onValueChanged.AddListener(delegate(float arg0) {
+		//	evolution.TimeScale = arg0;
+		//	timeScaleLabel.text = arg0.ToString("0.0") + "X";
+		//});
 	}
 	
 	// Update is called once per frame

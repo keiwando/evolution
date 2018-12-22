@@ -40,8 +40,6 @@ public class ButtonManager : MonoBehaviour {
 	private Dictionary<SelectableButton, CreatureBuilder.BuildSelection> buttonMap;
 
 
-
-	// Use this for initialization
 	void Start() {
 
 		buttonMap = new Dictionary<SelectableButton, CreatureBuilder.BuildSelection>();

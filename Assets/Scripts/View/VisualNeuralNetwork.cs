@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UI.Extensions;
 using System.Linq;
 
 public class VisualNeuralNetwork : MonoBehaviour {
 
 	private const string NODE_PREFAB_NAME = "Prefabs/Node";
 	private const string NODE_CONNECTION_PREFAB_NAME = "Prefabs/Brain Node Connection";
-
-	//public LineRenderer lineRenderer;
-	public UILineRenderer lineRenderer;
-	public UILineRenderer strokeRenderer;
 
 	// As a multiple of the screen width 
 	public float maxNetworkWidth;
@@ -44,14 +39,11 @@ public class VisualNeuralNetwork : MonoBehaviour {
 	}
 
 	private float canvasWidth = 1.0f;
-	//private float canvasHeight = 1.0f;
 
 	private float leftEdge { get { return - canvasWidth *  maxNetworkWidth / 2; } }
 	private float rightEdge { get { return - leftEdge; } } 
 
 	private float lineOffsetX { get { return 1.4f * leftEdge; } }
-	//private float lineOffsetX = 0f;
-	//private float lineOffsetY = 365f;
 	private float lineOffsetY = 0f;
 	private float lineZ = -10;
 
@@ -85,74 +77,6 @@ public class VisualNeuralNetwork : MonoBehaviour {
 
 		SetupVisualNet();
 		//SetupVisualNetWithLineRenderer();
-	}
-
-	private void SetupVisualNetWithLineRenderer() {
-
-		var currentLayer = new List<Image>();
-		var nextLayer = new List<Image>();
-
-		var vertices = new List<Vector3>();
-
-		for (int i = 0; i < networkSettings.numberOfIntermediateLayers + 1; i++) {
-
-			currentLayer.Clear();
-			currentLayer.AddRange(nextLayer);
-			nextLayer.Clear();
-
-			if (i == 0) {
-				var input = InstantiateNode();
-				input.transform.localPosition = new Vector3(leftEdge, 0, transform.position.z);
-				currentLayer.Add(input);
-			} 
-
-			// Create the next layer nodes
-			if (i == networkSettings.numberOfIntermediateLayers) {
-				var output = InstantiateNode();
-				output.transform.localPosition = new Vector3(rightEdge, 0, transform.position.z);
-
-				nextLayer.Add(output);
-
-			} else {
-				// The next layer is an intermediate layer
-				var numOfNodesInLayer = networkSettings.nodesPerIntermediateLayer[i];
-				var top = -((numOfNodesInLayer - 1) * verticalNodeDistance * minifyingScale) / 2;
-				var xPos = GetXPosForIntermediateLayer(i);
-
-				for (int j = 0; j < numOfNodesInLayer; j++) {
-
-					var yPos = top + j * verticalNodeDistance * minifyingScale;
-
-					var node = InstantiateNode();
-					node.transform.localPosition = new Vector3(xPos, yPos, transform.position.z);
-
-					nextLayer.Add(node);
-				}
-			}
-
-			for (int c = 0; c < currentLayer.Count; c++) {
-				for (int n = 0; n < nextLayer.Count; n++) {
-					ToNodeAndBack(currentLayer[c], nextLayer[n], vertices);
-				}
-				ToNode(nextLayer[0], vertices);
-			}
-
-			visualNodes.AddRange(currentLayer);
-			currentLayer.Clear();
-		}
-			
-		//lineRenderer.positionCount = vertices.Count;
-		//lineRenderer.SetPositions(vertices.ToArray());
-
-		lineRenderer.Points = vertices.Select(p => new Vector2(p.x, p.y)).ToArray();
-		strokeRenderer.Points = lineRenderer.Points;
-
-		visualNodes.AddRange(nextLayer);
-
-		// Move all of the connection up in the hierarchy so that they are drawn first
-		foreach (var connection in nodeConnections) {
-			connection.transform.SetSiblingIndex(0);
-		}
 	}
 
 	private void SetupVisualNet() {
@@ -202,10 +126,6 @@ public class VisualNeuralNetwork : MonoBehaviour {
 			var rand = new System.Random();
 
 			float scaleY = Mathf.Min(Mathf.Max(1.0f, 1f/((float)outConnectionsPerNode / (float)nextLayer.Count)), 4f);
-			/*print("outConn = " + outConnectionsPerNode);
-			print("nextLC = " + nextLayer.Count);
-			print("1/(o/n) = " + 1.0f/(outConnectionsPerNode/nextLayer.Count));
-			print("scaleY = " + scaleY);*/
 
 			foreach (var node in currentLayer) {
 
