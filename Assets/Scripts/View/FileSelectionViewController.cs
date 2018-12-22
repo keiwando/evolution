@@ -1,0 +1,142 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using Keiwando.UI;
+
+public interface FileSelectionViewControllerDelegate {
+
+	string GetTitle(FileSelectionViewController controller);
+	int GetNumberOfItems(FileSelectionViewController controller);
+	string GetTitleForItemAtIndex(FileSelectionViewController controller,
+								  int index);
+	string GetEmptyMessage(FileSelectionViewController controller);
+	int GetIndexOfSelectedItem(FileSelectionViewController controller);
+
+	void ItemSelected(FileSelectionViewController controller, int index);
+	void DidEditTitleAtIndex(FileSelectionViewController controller, int index);
+
+	void LoadButtonClicked(FileSelectionViewController controller);
+	void ImportButtonClicked(FileSelectionViewController controller);
+	void ExportButtonClicked(FileSelectionViewController controller);
+	void DeleteButtonClicked(FileSelectionViewController controller);
+	void DidClose(FileSelectionViewController controller);
+}
+
+public class FileSelectionViewController : MonoBehaviour {
+
+    private FileSelectionViewControllerDelegate controllerDelegate;
+
+    [SerializeField]
+    private Text titleLabel;
+
+	[SerializeField]
+	private ListLayoutGroup itemList;
+
+	[SerializeField]
+	private SelectableListItemView itemTemplate;
+
+	private List<SelectableListItemView> items = new List<SelectableListItemView>();
+
+	[SerializeField]
+	private Text emptyMessageLabel;
+	[SerializeField]
+	private Text currentSelectionLabel;
+
+	[SerializeField]
+	private DeleteConfirmationDialog deleteConfirmation;
+
+    public void Show(FileSelectionViewControllerDelegate controllerDelegate) {
+        this.controllerDelegate = controllerDelegate;
+
+		gameObject.SetActive(true);
+		Refresh();
+    }
+
+	private void Refresh() { 
+		titleLabel.text = controllerDelegate.GetTitle(this);
+		RefreshItemList();
+		RefreshCurrentSelection();
+
+		if (items.Count == 0) {
+			emptyMessageLabel.text = controllerDelegate.GetEmptyMessage(this);
+		}
+		emptyMessageLabel.gameObject.SetActive(items.Count == 0);
+	}
+
+	private void RefreshItemList() {
+
+		var container = itemTemplate.transform.parent;
+		// Create all necessary item views first
+		int diff = controllerDelegate.GetNumberOfItems(this) - items.Count;
+
+		if (diff < 0) {
+			// Delete unneeded item views
+			items.RemoveRange(items.Count + diff - 1, -diff);
+		} else if (diff > 0) {
+			// Create necessary item views
+			itemTemplate.gameObject.SetActive(true);
+			for (int i = 0; i < diff; i++) {
+				var itemView = Instantiate(itemTemplate, container);
+				items.Add(itemView);
+			}
+			itemTemplate.gameObject.SetActive(false);
+		}
+
+		var containerRect = container.GetComponent<RectTransform>();
+		var size = containerRect.sizeDelta;
+		size = new Vector2(size.x, items.Count * (itemList.CellHeight + itemList.Spacing));
+		containerRect.sizeDelta = size;
+
+		// Update item views
+		int selectedIndex = controllerDelegate.GetIndexOfSelectedItem(this);
+		for (int i = 0; i < items.Count; i++) {
+
+			string title = controllerDelegate.GetTitleForItemAtIndex(this, i);
+			items[i].Refresh(title, selectedIndex == i);
+		}
+	}
+
+	private void RefreshCurrentSelection() {
+		int selectedIndex = controllerDelegate.GetIndexOfSelectedItem(this);
+		string title = controllerDelegate.GetTitleForItemAtIndex(this, selectedIndex);
+		currentSelectionLabel.text = title;
+	}
+
+    public void Close() {
+		controllerDelegate = null;
+		gameObject.SetActive(false);
+    }
+
+	public void EditButtonClicked() { 
+		// TODO: Open Edit dialog
+	}
+
+    public void LoadButtonClicked() {
+		controllerDelegate.LoadButtonClicked(this);
+    }
+
+    public void ImportButtonClicked() {
+		controllerDelegate.ImportButtonClicked(this);
+		Refresh();
+    }
+
+    public void ExportButtonClicked() {
+		controllerDelegate.ExportButtonClicked(this);
+    }
+
+    public void DeleteButtonClicked() {
+		
+		var filename = currentSelectionLabel.text;
+		deleteConfirmation.ConfirmDeletionFor(filename, delegate(string name) {
+
+			controllerDelegate.DeleteButtonClicked(this);
+			Refresh();
+		});
+    }
+
+    public void CancelButtonClicked() {
+		var d = controllerDelegate;
+        Close();
+		d.DidClose(this);
+    }
+}
