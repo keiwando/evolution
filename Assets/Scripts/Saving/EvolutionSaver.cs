@@ -162,16 +162,42 @@ public class EvolutionSaver {
 		}
 		stringBuilder.Append(splitOptions.COMPONENT_SEPARATOR);
 
+		//var path = RESOURCE_PATH; //Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
+		//path = Path.Combine(path, filename);
+
+		//int counter = 2;
+		//while (System.IO.File.Exists(path)) {
+
+		//	//var pattern = new Regex(@"( \d+)?.txt");
+		//	var pattern = @"( \d+)?.txt";
+
+		//	filename = Regex.Replace(filename, pattern, string.Format(" {0}.txt", counter));
+		//	path = Path.Combine(RESOURCE_PATH, filename);
+		//	//path = path.Replace(".txt", string.Format(" ({0}).txt", counter));
+		//	//filename = filename.Replace(".txt", string.Format(" ({0}).txt", counter));
+		//	counter++;
+		//}
+
+		//CreateSaveFolder();
+		//File.WriteAllText(path, stringBuilder.ToString());
+		SaveSimulationFile(filename, stringBuilder.ToString());
+
+		return filename;
+	}
+
+	public static void SaveSimulationFile(string filename, string contents) { 
+
 		var path = RESOURCE_PATH; //Path.Combine(RESOURCE_PATH, SAVE_FOLDER);
 		path = Path.Combine(path, filename);
+		var extension = Path.GetExtension(filename);
 
 		int counter = 2;
 		while (System.IO.File.Exists(path)) {
 
 			//var pattern = new Regex(@"( \d+)?.txt");
-			var pattern = @"( \d+)?.txt";
+			var pattern = String.Format(@"( \d+)?{0}", extension);
 
-			filename = Regex.Replace(filename, pattern, string.Format(" {0}.txt", counter));
+			filename = Regex.Replace(filename, pattern, string.Format(" {0}{1}", counter, extension));
 			path = Path.Combine(RESOURCE_PATH, filename);
 			//path = path.Replace(".txt", string.Format(" ({0}).txt", counter));
 			//filename = filename.Replace(".txt", string.Format(" ({0}).txt", counter));
@@ -179,9 +205,7 @@ public class EvolutionSaver {
 		}
 
 		CreateSaveFolder();
-		File.WriteAllText(path, stringBuilder.ToString());
-
-		return filename;
+		File.WriteAllText(path, contents);
 	}
 
 	public static void LoadSimulationFromSaveFile(string filename, CreatureBuilder creatureBuilder, Evolution evolution) {
@@ -358,20 +382,6 @@ public class EvolutionSaver {
 		var filesList = new List<FileInfo>(fileInfo);
 		filesList.Sort((f1,f2) => f2.CreationTime.CompareTo(f1.CreationTime)); // Sort descending
 
-		//foreach (FileInfo file in filesList) {
-
-		//	if (file.Name.Contains(".txt")) {
-
-		//		names.Add(file.Name.Split('.')[0]);
-		//	}
-		//} 
-
-		//var filenames = new List<string>();
-		//foreach (string name in names) {
-		//	filenames.Add(name);
-		//}
-
-		//return filenames;
 		return filesList.Select(x => x.Name).ToList();
 	}
 
@@ -413,6 +423,10 @@ public class EvolutionSaver {
 
 		File.Delete(path);
 		Debug.Log(filename);
+	}
+
+	public static string GetSavePathForFile(string filename) { 
+		return Path.Combine(RESOURCE_PATH, filename);
 	}
 
 	/// <summary>

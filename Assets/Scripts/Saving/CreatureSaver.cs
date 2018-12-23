@@ -26,6 +26,8 @@ public class CreatureSaver {
 	/// The name of the folder that holds the save file for the currently evolving creature.
 	/// </summary>
 	private const string CURRENT_SAVE_FOLDER = "CurrentCreatureSave";
+
+	private const string TEMP_FOLDER = "TempExports";
 	/// <summary>
 	/// The separator to use in the save file between the different body component types. 
 	/// </summary>
@@ -40,18 +42,10 @@ public class CreatureSaver {
 	private static string CURRENT_CREATURE_NAME_KEY = "_CurrentCreatureName";
 	private static string CREATURE_NAMES_KEY = "_CreatureNames";
 
+	private static string TEMP_DIR_PATH = Path.Combine(Application.persistentDataPath, TEMP_FOLDER);
+
 
 	//private static string RESOURCE_PATH = Path.Combine(Application.dataPath, "Resources");
-
-	// Use this for initialization
-	public CreatureSaver () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
 	// Loads the default creatures into the PlayerPrefs
 	public static void SetupPlayerPrefs() {
@@ -157,7 +151,7 @@ public class CreatureSaver {
 
 		var filename = name.ToUpper();// + ".txt";
 
-		PlayerPrefs.SetString(filename, content);
+		Save(filename, content);
 
 		var names = GetCreatureNamesFromPlayerPrefs();
 		if (!names.Contains(filename)) {
@@ -202,6 +196,15 @@ public class CreatureSaver {
 
 		LoadCreatureFromContents(contents, builder);
 	}
+
+	private static string LoadSaveData(string name) {
+		// TODO: Use actual files
+		return PlayerPrefs.GetString(name);
+	}
+
+	public static void Save(string name, string creatureData) {
+		PlayerPrefs.SetString(name, creatureData);
+	} 
 
 	private static void LoadCreatureWebGL(string name, CreatureBuilder builder) {
 
@@ -370,5 +373,22 @@ public class CreatureSaver {
 	private static void PrintCreatureData(string name) {
 		var data = PlayerPrefs.GetString(name.ToUpper(), "");
 		Debug.Log(name + " data: \n" + data);
+	}
+
+	/// <summary>
+	/// Prepares a creature design to be exported.
+	/// </summary>
+	/// <returns>The path to the file to be exported.</returns>
+	/// <param name="name">The name of the creature design save.</param>
+	public static string PrepareForExport(string name) {
+
+		Directory.Delete(TEMP_DIR_PATH, true);
+		Directory.CreateDirectory(TEMP_DIR_PATH);
+
+		var tempPath = Path.Combine(TEMP_DIR_PATH, String.Format("{0}.creat", name));
+		var contents = LoadSaveData(name);
+
+		File.WriteAllText(tempPath, contents);
+		return tempPath;
 	}
 }

@@ -12,7 +12,7 @@ public interface FileSelectionViewControllerDelegate {
 	string GetEmptyMessage(FileSelectionViewController controller);
 	int GetIndexOfSelectedItem(FileSelectionViewController controller);
 
-	void ItemSelected(FileSelectionViewController controller, int index);
+	void DidSelectItem(FileSelectionViewController controller, int index);
 	void DidEditTitleAtIndex(FileSelectionViewController controller, int index);
 
 	void LoadButtonClicked(FileSelectionViewController controller);
@@ -22,7 +22,7 @@ public interface FileSelectionViewControllerDelegate {
 	void DidClose(FileSelectionViewController controller);
 }
 
-public class FileSelectionViewController : MonoBehaviour {
+public class FileSelectionViewController : MonoBehaviour, SelectableListItemViewDelegate {
 
     private FileSelectionViewControllerDelegate controllerDelegate;
 
@@ -45,14 +45,16 @@ public class FileSelectionViewController : MonoBehaviour {
 	[SerializeField]
 	private DeleteConfirmationDialog deleteConfirmation;
 
-    public void Show(FileSelectionViewControllerDelegate controllerDelegate) {
-        this.controllerDelegate = controllerDelegate;
+    public void Show(FileSelectionViewControllerDelegate Delegate) {
+        this.controllerDelegate = Delegate;
 
 		gameObject.SetActive(true);
 		Refresh();
     }
 
-	private void Refresh() { 
+	public void Refresh() {
+		if (controllerDelegate == null) { return; }
+
 		titleLabel.text = controllerDelegate.GetTitle(this);
 		RefreshItemList();
 		RefreshCurrentSelection();
@@ -77,6 +79,7 @@ public class FileSelectionViewController : MonoBehaviour {
 			itemTemplate.gameObject.SetActive(true);
 			for (int i = 0; i < diff; i++) {
 				var itemView = Instantiate(itemTemplate, container);
+				itemView.Delegate = this;
 				items.Add(itemView);
 			}
 			itemTemplate.gameObject.SetActive(false);
@@ -139,4 +142,16 @@ public class FileSelectionViewController : MonoBehaviour {
         Close();
 		d.DidClose(this);
     }
+
+	// MARK: - SelectableListItemViewDelegate
+
+	public void DidSelect(SelectableListItemView itemView) {
+		if (controllerDelegate != null) {
+			var index = items.IndexOf(itemView);
+			if (index != -1) {
+				controllerDelegate.DidSelectItem(this, index);
+				Refresh();
+			}
+		}
+	}
 }

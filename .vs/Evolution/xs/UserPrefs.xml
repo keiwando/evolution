@@ -1,15 +1,42 @@
 ﻿<Properties StartupConfiguration="{3D4C3948-95AB-35D4-8403-2BDCFF7854FF}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Saving/EvolutionSaver.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Saving/CreatureSaver.cs">
     <Files>
-      <File FileName="Assets/Scripts/Controllers/SimulationFileManager.cs" Line="76" Column="43" />
-      <File FileName="Assets/Scripts/Controllers/CreatureFileManager.cs" Line="6" Column="2" />
+      <File FileName="Assets/Scripts/Controllers/SimulationFileManager.cs" Line="17" Column="2" />
       <File FileName="Assets/Scripts/View/ListLayoutGroup.cs" Line="23" Column="19" />
-      <File FileName="Assets/Scripts/View/FileSelectionViewController.cs" Line="107" Column="31" NotebookId="1" />
-      <File FileName="Assets/Scripts/View/ButtonManager.cs" Line="42" Column="2" NotebookId="1" />
+      <File FileName="Assets/Scripts/View/ButtonManager.cs" Line="73" Column="16" />
+      <File FileName="Assets/Scripts/Controllers/CreatureBuilder.cs" Line="880" Column="42" />
+      <File FileName="Assets/Scripts/Saving/CreatureSaver.cs" Line="44" Column="90" />
+      <File FileName="Assets/Scripts/View/FileSelectionViewController.cs" Line="56" Column="44" NotebookId="1" />
       <File FileName="Assets/Scripts/View/ViewController.cs" Line="70" Column="8" NotebookId="1" />
       <File FileName="Assets/Scripts/View/SimulationLoadDialog.cs" Line="47" Column="56" NotebookId="1" />
-      <File FileName="Assets/Scripts/Saving/EvolutionSaver.cs" Line="48" Column="14" NotebookId="1" />
+      <File FileName="Assets/Scripts/Saving/EvolutionSaver.cs" Line="428" Column="23" NotebookId="1" />
+      <File FileName="Assets/Scripts/View/SelectableListItemView.cs" Line="20" Column="2" NotebookId="1" />
+      <File FileName="Assets/Scripts/Controllers/CreatureFileManager.cs" Line="99" Column="27" NotebookId="1" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Evolution" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="Controllers" expanded="True" />
+                <Node name="Saving" expanded="True">
+                  <Node name="CreatureSaver.cs" selected="True" />
+                </Node>
+                <Node name="View" expanded="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State name="__root__">
+          <Node name="Evolution" expanded="True">
+            <Node name="Assembly-CSharp-Editor" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.ItemProperties.Evolution PreferredExecutionTarget="Unity.Editor" />

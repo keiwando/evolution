@@ -872,6 +872,14 @@ public class CreatureBuilder : MonoBehaviour {
 
 	}
 
+	public void LoadCreature(string name) {
+
+		DeleteCreature();
+		lastCreatureName = name;
+
+		CreatureSaver.LoadCreature(name, this);
+	}
+
 	public void LoadCreature(Dropdown dropDown) {
 
 		DeleteCreature();
