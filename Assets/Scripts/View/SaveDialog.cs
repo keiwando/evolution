@@ -2,21 +2,60 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+public interface SaveDialogDelegate {
+	void DidConfirmSave(SaveDialog dialog, string name);
+	bool CanEnterCharacter(SaveDialog dialog, int index, char c);
+	void DidChangeValue(SaveDialog dialog, string value);
+}
+
 public class SaveDialog : MonoBehaviour {
 
-	[SerializeField] private InputField InputField;
-	[SerializeField] private CreatureBuilder CreatureBuilder;
+	public static SaveDialog shared;
 
-	[SerializeField] private Text ErrorMessage;
+	public SaveDialogDelegate Delegate { get; set; }
 
-	// Use this for initialization
-	void Start () {
+	[SerializeField] private InputField inputField;
+
+	[SerializeField] private Text errorMessage;
+
+	void Awake() {
+		if (shared == null || shared == this) {
+			shared = this;
+		} else {
+			Destroy(this.gameObject);
+		}
+	}
+
+	public void Show() {
+		gameObject.SetActive(true);
 		ResetErrors();
+
+		inputField.onValidateInput += delegate (string input, int charIndex, char addedChar) {
+			if (Delegate == null || Delegate.CanEnterCharacter(this, charIndex, addedChar)) {
+				return addedChar;
+			} else {
+				return '\0';
+			}
+		};
+
+		inputField.onValueChanged.AddListener(delegate {
+			if (Delegate != null) {
+				Delegate.DidChangeValue(this, inputField.text);
+			}
+		});
+	}
+
+	public void Close() {
+		Delegate = null;
+		gameObject.SetActive(false);
 	}
 
 	public void OnSaveClicked() {
-		ErrorMessage.enabled = false;
-		CreatureBuilder.SaveCreature(InputField.text);
+		errorMessage.enabled = false;
+
+		if (Delegate != null) {
+			Delegate.DidConfirmSave(this, inputField.text);
+		}
 	}
 
 	public void OnCancelClicked() {
@@ -25,12 +64,12 @@ public class SaveDialog : MonoBehaviour {
 	}
 
 	public void ShowErrorMessage(string message) {
-		ErrorMessage.text = message;
-		ErrorMessage.enabled = true;
+		errorMessage.text = message;
+		errorMessage.enabled = true;
 	}
 
 	public void ResetErrors() {
-		ErrorMessage.enabled = false;
+		errorMessage.enabled = false;
 	}
 
 }

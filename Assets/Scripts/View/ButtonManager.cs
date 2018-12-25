@@ -33,8 +33,6 @@ public class ButtonManager : MonoBehaviour {
 
 	public CreatureBuilder creatureBuilder;
 
-	public Dropdown dropDown;
-
 	public Dropdown taskDropDown;
 
 	private Dictionary<SelectableButton, CreatureBuilder.BuildSelection> buttonMap;
@@ -64,70 +62,12 @@ public class ButtonManager : MonoBehaviour {
 		CAMERA_MAX_Y = cameraPos.y + CAMERA_DY;
 	}
 
-	public void Refresh() {
-		SetupDropDown();
-	}
-
-	/// <summary>
-	/// Sets up the dropdown list with the names of the creatures that can be loaded.
-	/// </summary>
-	public void SetupDropDown() {
-		dropDown.ClearOptions();
-
-		dropDown.AddOptions(CreateDropDownOptions());
-	}
-
-	/// <summary>
-	/// Sets the Dropdown to the given value (name).
-	/// </summary>
-	public void SetDropDownToValue(string name) {
-
-		var index = CreateDropDownOptions().IndexOf(name);
-		dropDown.value = index;
-	}
-
-	public static List<string> CreateDropDownOptions() {
-		var options = new List<string>();
-
-		options.Add("Creature");
-		options.AddRange(CreatureSaver.GetCreatureNames());
-
-		return options;
-	}
-
-	public void CreatureDropdownValueChanged(Int32 index) {
-
-		var options = CreateDropDownOptions();
-		var customCreatureSelected = options[index].ToUpper() != "CREATURE";
-
-		creatureDeleteButton.gameObject.SetActive(customCreatureSelected);
-	}
-
 	public void ShowCreatureDeleteButton() {
 		creatureDeleteButton.gameObject.SetActive(true);
 	}
 
 	public void HideCreatureDeleteButton() {
 		creatureDeleteButton.gameObject.SetActive(false);
-	}
-
-	public void DeleteCurrentCreatureSave() {
-
-		var selectedCreatureIndex = dropDown.value;
-		var options = CreateDropDownOptions();
-
-		var currentCreatureName = options[selectedCreatureIndex];
-
-		if (currentCreatureName.ToUpper() != "CREATURE") {
-			deleteConfirmation.ConfirmDeletionFor(currentCreatureName, delegate(string name) {
-			
-				CreatureSaver.DeleteCreatureSave(currentCreatureName);
-
-				creatureBuilder.DeleteCreature();
-				SetupDropDown();
-				dropDown.value = 0;
-			});
-		}
 	}
 
 	public void selectButton(SelectableButton button) {

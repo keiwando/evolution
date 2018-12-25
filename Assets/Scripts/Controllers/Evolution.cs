@@ -760,7 +760,7 @@ public class Evolution : MonoBehaviour {
 		var bestChromosomes = BCController.GetBestChromosomes();
 		var currentChromosomes = new List<string>(this.currentChromosomes);
 
-		return EvolutionSaver.WriteSaveFile(creatureName, settings, brainSettings, currentGenerationNumber, creatureSaveData, bestChromosomes, currentChromosomes);
+		return SimulationSerializer.WriteSaveFile(creatureName, settings, brainSettings, currentGenerationNumber, creatureSaveData, bestChromosomes, currentChromosomes);
 	}
 
 	public void SetAutoSaveEnabled(bool value) {

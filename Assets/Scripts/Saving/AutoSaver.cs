@@ -41,7 +41,7 @@ public class AutoSaver {
 
 		// Delete the last auto-saved file
 		if (lastSave != "" && lastSave.EndsWith(".txt")) {
-			EvolutionSaver.DeleteSaveFile(lastSave);
+			SimulationSerializer.DeleteSaveFile(lastSave);
 		}
 	}
 }

@@ -1,0 +1,5 @@
+bool DidMigrateCreatureSaves = false
+
+string CreatureNames (_CreatureNames)
+string CurrentCreatureName
+string CurrentCreatureDesign

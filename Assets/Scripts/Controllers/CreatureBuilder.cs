@@ -17,40 +17,34 @@ public class CreatureBuilder : MonoBehaviour {
 		Muscle
 	}
 
-	//[SerializeField] private bool gridEnabled = false;
+	[SerializeField]
+	private ButtonManager buttonManager;
+	[SerializeField]
+	private CreatureDesignControlsView creatureDesignControls;
+	[SerializeField]
+	private SettingsMenu settingsMenu;
 
-	public ButtonManager buttonManager;
+	[SerializeField]
+	private Texture2D mouseDeleteTexture;
 
-	public SettingsMenu settingsMenu;
+	[SerializeField]
+	private Evolution evolution;
 
-	/** The joint that can connect multiple Bones. */
-	public GameObject jointPreset;
-
-	/** 
-	 * The connection objects that represent the skeleton of the creature. 
-	 * Bodyconnections can only be placed between two existing joints.
-	*/
-	public GameObject bonePreset;
-
-	/** The material for the muscles. */
-	public Material muscleMaterial;
-
-	public Texture2D mouseDeleteTexture;
-
-	public Evolution evolution;
-
-	public SaveDialog saveDialog;
-
-	public Grid grid;
-
-	//private CreatureSaver creatureSaver;
+	[SerializeField]
+	private Grid grid;
 
 
-	/** The joints of the creature that have been placed in the scene. */
-	private List<Joint> joints;
-	/** The bones that have been placed in the scene. */
+	/// <summary>
+	/// The joints of the creature that have been placed in the scene.
+	/// </summary>
+	private List<Joint> joints;	
+	/// <summary>
+	/// The bones that have been placed in the scene.
+	/// </summary>
 	private List<Bone> bones;
-	/** The muscles that have been placed in the scene. */
+	/// <summary>
+	/// The muscles that have been placed in the scene.
+	/// </summary>
 	private List<Muscle> muscles;
 
 	private BuildSelection selectedPart;
@@ -62,28 +56,37 @@ public class CreatureBuilder : MonoBehaviour {
 		}
 	}
 
-	/** The Bone that is currently being placed. */
+	/// <summary> 
+	/// The Bone that is currently being placed. 
+	/// </summary>
 	private Bone currentBone;
 
-	/** The Muscle that is currently being placed. */
+	/// <summary>
+	/// The Muscle that is currently being placed.
+	/// </summary>
 	private Muscle currentMuscle;
 
-	/** The joint that is currently being moved. */
+	/// <summary>
+	/// The joint that is currently being moved.
+	/// </summary>
 	private Joint currentMovingJoint;
 
-	/// The minimum distance between two joints when they are placed (Can be moved closer together using "Move").
+	/// <summary>
+	/// The minimum distance between two joints when they are placed 
+	/// (Can be moved closer together using "Move").
+	/// </summary>
 	private float jointNonOverlapRadius = 0.6f;
-	public static float CONNECTION_WIDHT = 0.5f;
-	//private bool TESTING_ENABLED = true;
 
 	/// <summary>
-	/// Indicates whether it is the first time starting the program ( = no evolution has taken place yet)
+	/// The bone thickness.
+	/// </summary>
+	public static float CONNECTION_WIDTH = 0.5f;
+
+	/// <summary>
+	/// Indicates whether it is the first time starting the program 
+	/// ( = no evolution has taken place yet)
 	/// </summary>
 	private static bool firstTime = true;
-	/// <summary>
-	/// The name of the last created creature
-	/// </summary>
-	private static string lastCreatureName = "Creature";
 
 	// MARK: pinch to move the camera
 	private Vector3 lastTouchPos = Vector3.zero;
@@ -91,9 +94,6 @@ public class CreatureBuilder : MonoBehaviour {
 
 	void Start () {
 
-		CreatureSaver.SetupPlayerPrefs();
-
-		// initialize arrays
 		joints = new List<Joint>();
 		bones = new List<Bone>();
 		muscles = new List<Muscle>();
@@ -101,49 +101,19 @@ public class CreatureBuilder : MonoBehaviour {
 		// Joints are selected by default.
 		selectedPart = BuildSelection.Joint;
 
-		buttonManager.SetupDropDown();
-		//creatureSaver =  new CreatureSaver();
 		if (!firstTime) {
 			CreatureSaver.LoadCurrentCreature(this);
-			//print("Last creature name: " + lastCreatureName);
-			buttonManager.SetDropDownToValue(lastCreatureName);
+			RefreshCurrentCreatureName();
+		} else {
+			creatureDesignControls.SetUnnamed();
 		}
 
 		firstTime = false;
-
-
-		//CreatureSaver.Test();
-		//StartCoroutine(SBPerformanceTest());
-
-	}
-
-	private IEnumerator SBPerformanceTest() {
-
-		yield return new WaitForSeconds(2f);
-
-		var builder = new System.Text.StringBuilder();
-
-		for (int i = 0; i < 100000; i++) {
-			builder.Append('0');
-		}
-
-		yield return new WaitForSeconds(1f);
-
-		var str = builder.ToString();
-
-		yield return new WaitForSeconds(1f);
-
-		builder = new System.Text.StringBuilder(str);
-
-		for (int i = 0; i < 100000; i++) {
-			builder[i] = '1';
-		}
 	}
 
 	void Update () {
 
 		HandleClicks();
-
 		HandleKeyboardInput();
 	}
 
@@ -234,7 +204,7 @@ public class CreatureBuilder : MonoBehaviour {
 				if (joint != null) {
 
 					CreateBoneFromJoint(joint);
-					PlaceConnectionBetweenPoints(currentBone.gameObject, joint.center, ScreenToWorldPoint(Input.mousePosition), CONNECTION_WIDHT);
+					PlaceConnectionBetweenPoints(currentBone.gameObject, joint.center, ScreenToWorldPoint(Input.mousePosition), CONNECTION_WIDTH);
 				}
 
 			} else if (selectedPart == BuildSelection.Muscle) {	// Start placing MUSCLE
@@ -247,7 +217,7 @@ public class CreatureBuilder : MonoBehaviour {
 					MuscleJoint joint = bone.muscleJoint;
 
 					CreateMuscleFromJoint(joint);
-					//PlaceConnectionBetweenPoints(currentMuscle.gameObject, joint.position, mousePos, CONNECTION_WIDHT);
+					//PlaceConnectionBetweenPoints(currentMuscle.gameObject, joint.position, mousePos, CONNECTION_WIDTH);
 					currentMuscle.SetLinePoints(joint.transform.position, mousePos);
 				}
 			} else if (selectedPart == BuildSelection.Delete) { // Delete selected object
@@ -297,7 +267,7 @@ public class CreatureBuilder : MonoBehaviour {
 						currentBone.endingJoint = joint;
 					} 
 
-					PlaceConnectionBetweenPoints(currentBone.gameObject, currentBone.startingPoint, endingPoint, CONNECTION_WIDHT);	
+					PlaceConnectionBetweenPoints(currentBone.gameObject, currentBone.startingPoint, endingPoint, CONNECTION_WIDTH);	
 				}	
 
 			} else if (selectedPart == BuildSelection.Muscle) {
@@ -322,7 +292,7 @@ public class CreatureBuilder : MonoBehaviour {
 						currentMuscle.endingJoint = null;
 					}
 
-					//PlaceConnectionBetweenPoints(currentMuscle.gameObject, currentMuscle.startingPoint, endingPoint, CONNECTION_WIDHT);
+					//PlaceConnectionBetweenPoints(currentMuscle.gameObject, currentMuscle.startingPoint, endingPoint, CONNECTION_WIDTH);
 					currentMuscle.SetLinePoints(currentMuscle.startingJoint.transform.position, endingPoint);
 				}
 			
@@ -361,6 +331,8 @@ public class CreatureBuilder : MonoBehaviour {
 	/** Handles all possible keyboard controls / shortcuts. */
 	private void HandleKeyboardInput() {
 
+		// TODO: Replace with some kind of global input manager
+		var saveDialog = SaveDialog.shared;
 		if (saveDialog != null && saveDialog.gameObject.activeSelf) return;
 
 		if (Input.anyKeyDown) {
@@ -471,15 +443,6 @@ public class CreatureBuilder : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Resets the value of the creature dropdown to Creature and 
-	/// </summary>
-	private void ResetCurrentCreatureName() {
-
-		lastCreatureName = "Creature";
-		//buttonManager.SetDropDownToValue(lastCreatureName);
-	}
-
-	/// <summary>
 	/// Deletes the currently visible creature.
 	/// </summary>
 	public void DeleteCreature() {
@@ -506,7 +469,6 @@ public class CreatureBuilder : MonoBehaviour {
 	private void ResetHoverableColliders<T>(List<T> hoverables) where T: Hoverable {
 
 		foreach (Hoverable hov in hoverables) {
-
 			hov.ResetHitbox();
 		}
 	} 
@@ -558,8 +520,6 @@ public class CreatureBuilder : MonoBehaviour {
 
 		point.z = 0;
 
-		//GameObject joint = (GameObject) Instantiate(jointPreset, point, Quaternion.identity);
-		//joints.Add(joint.GetComponent<Joint>());
 		joints.Add(Joint.CreateAtPoint(point));
 	}
 
@@ -569,12 +529,6 @@ public class CreatureBuilder : MonoBehaviour {
 		Vector3 point = joint.transform.position;
 		point.z = 0;
 
-		/*GameObject muscleEmpty = new GameObject();
-		muscleEmpty.name = "Muscle";
-		currentMuscle = muscleEmpty.AddComponent<Muscle>();
-		currentMuscle.AddLineRenderer();
-		currentMuscle.SetMaterial(muscleMaterial);*/
-		//currentMuscle = ((GameObject) Instantiate(musclePreset, point, Quaternion.identity)).GetComponent<Muscle>();
 		currentMuscle = Muscle.Create();
 		currentMuscle.startingJoint = joint;
 		currentMuscle.SetLinePoints(joint.transform.position, joint.transform.position);
@@ -602,7 +556,7 @@ public class CreatureBuilder : MonoBehaviour {
 
 		Vector3 point = joint.center;
 		point.z = 0;
-		//currentBone = ((GameObject) Instantiate(bonePreset, point, Quaternion.identity)).GetComponent<Bone>();
+		
 		currentBone = Bone.CreateAtPoint(point);
 		currentBone.startingJoint = joint;
 	}
@@ -618,11 +572,9 @@ public class CreatureBuilder : MonoBehaviour {
 		Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
 		Vector3 position = start + (offset / 2.0f);
 
-
 		currentBone.transform.position = position;
 		currentBone.transform.up = offset;
 		currentBone.transform.localScale = scale;
-
 	}
 
 	/** 
@@ -677,6 +629,15 @@ public class CreatureBuilder : MonoBehaviour {
 		}
 
 		currentMuscle = null;
+	}
+
+	private void ResetCurrentCreatureName() {
+		creatureDesignControls.SetUnnamed();
+		Settings.CurrentCreatureName = "Unnamed";
+	}
+
+	private void RefreshCurrentCreatureName() {
+		creatureDesignControls.SetCurrentCreatureName(CreatureSaver.GetCurrentCreatureName());
 	}
 
 	public void SetBodyComponents(List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
@@ -735,13 +696,14 @@ public class CreatureBuilder : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Creates the creature and attached it to the evolution.
+	/// Creates the creature and attaches it to the evolution.
 	/// </summary>
 	public void AttachCreatureToEvolution(Evolution evolution) {
 
 		ResetHoverableColliders();
 
-		CreatureSaver.SaveCurrentCreature(lastCreatureName, joints, bones, muscles);
+		var name = CreatureSaver.GetCurrentCreatureName();
+		CreatureSaver.SaveCurrentCreature(name, joints, bones, muscles);
 
 		Creature creature = BuildCreature();
 		DontDestroyOnLoad(creature.gameObject);
@@ -752,33 +714,24 @@ public class CreatureBuilder : MonoBehaviour {
 	/** Generates a creature and starts the evolution simulation. */
 	public void Evolve() {
 
-		// don't attempt evolution if there is no creature
+		// Don't attempt evolution if there is no creature
 		if (joints.Count == 0) return;
 
 		ResetHoverableColliders();
 
-		CreatureSaver.SaveCurrentCreature(lastCreatureName, joints, bones, muscles);
+		var name = CreatureSaver.GetCurrentCreatureName();
+		CreatureSaver.SaveCurrentCreature(name, joints, bones, muscles);
 
 		Creature creature = BuildCreature();
 		DontDestroyOnLoad(creature.gameObject);
 
-		//SceneManager.LoadScene("EvolutionScene");
 		AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
 		//AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("TestEvolutionScene");
 		sceneLoading.allowSceneActivation = true;
 		DontDestroyOnLoad(evolution.gameObject);
 		evolution.creature = creature;
 
-		//evolution.PopulationSize = buttonManager.GetPopulationInput();
-		//evolution.SimulationTime = buttonManager.GetSimulationTime();
-
 		var settings = settingsMenu.GetEvolutionSettings();
-
-		//evolution.PopulationSize = settings.populationSize;
-		//evolution.SimulationTime = settings.simulationTime;
-
-		//Evolution.task = buttonManager.GetTask();
-		//Evolution.task = settings.task;
 
 		evolution.Settings = settings;
 		evolution.BrainSettings = settingsMenu.GetNeuralNetworkSettings();
@@ -787,14 +740,11 @@ public class CreatureBuilder : MonoBehaviour {
 
 		StartCoroutine(WaitForEvolutionSceneToLoad(sceneLoading));
 		DontDestroyOnLoad(this);
-		//evolution.StartEvolution();
-		//Time.timeScale = 5.0f;
 	}
 
 	IEnumerator WaitForEvolutionSceneToLoad(AsyncOperation loadingOperation) {
 
 		while(!loadingOperation.isDone){
-
 			//print(loadingOperation.progress);
 			yield return null;
 		}
@@ -825,22 +775,11 @@ public class CreatureBuilder : MonoBehaviour {
 	IEnumerator WaitForEvolutionSceneToLoadForLoad(AsyncOperation loadingOperation, Action completion) {
 
 		while(!loadingOperation.isDone){
-
-			//print(loadingOperation.progress);
 			yield return null;
 		}
 
 		Destroy(this.gameObject);
-		print("Continuing Evolution");
-
 		completion();
-
-	}
-
-
-	public void PromptCreatureSave() {
-		saveDialog.gameObject.SetActive(true);
-		saveDialog.ResetErrors();
 	}
 
 	/// <summary>
@@ -849,72 +788,19 @@ public class CreatureBuilder : MonoBehaviour {
 	/// <param name="name">Name.</param>
 	public void SaveCreature(string name) {
 
-		saveDialog.ResetErrors();
-
-		if (name == "") {
-			saveDialog.ShowErrorMessage("The Creature name is empty.");
-			return;
-		}
-
-		try {
-			CreatureSaver.WriteSaveFile(name, joints, bones, muscles);
-
-		} catch (IllegalFilenameException e) {
-			saveDialog.ShowErrorMessage("The name can't contain . (dots) or _ (underscores).");
-			print(e.Message);
-			return;
-		}
-
-		// The save was successful
-		saveDialog.gameObject.SetActive(false);
-
-		buttonManager.Refresh();
-
+		CreatureSaver.WriteSaveFile(name, joints, bones, muscles);
+		CreatureSaver.SaveCurrentCreatureName(name);
+		RefreshCurrentCreatureName();
 	}
 
 	public void LoadCreature(string name) {
 
 		DeleteCreature();
-		lastCreatureName = name;
+		CreatureSaver.SaveCurrentCreatureName(name);
+		RefreshCurrentCreatureName();
 
 		CreatureSaver.LoadCreature(name, this);
 	}
-
-	public void LoadCreature(Dropdown dropDown) {
-
-		DeleteCreature();
-
-		//var name = CreatureSaver.GetCreatureNames()[dropDown.value];
-		var name = ButtonManager.CreateDropDownOptions()[dropDown.value];
-		lastCreatureName = name;
-
-		// The first option in the Dropdown list is going to be an empty creature
-		if (dropDown.value == 0) {
-			return;
-		}
-
-		CreatureSaver.LoadCreature(name, this);
-	}
-
-	private void TestCreatureSave() {
-
-		var filename = "Testfile.txt";
-		var saveFolder = "CreatureSaves";
-		var path = Path.Combine(Application.dataPath, saveFolder);
-		path = Path.Combine(path, filename);
-
-		if (File.Exists(path)) {
-			var reader = new StreamReader(path);
-			var contents = reader.ReadToEnd();
-			reader.Close();
-
-			print("The file exists. Content: \n" + contents);
-		} else {
-			File.WriteAllText(path, "Example Text");
-			print("The file was created.");
-		}
-
-	} 
 
 	private void SetMobileNoSleep() {
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
@@ -923,6 +809,4 @@ public class CreatureBuilder : MonoBehaviour {
 	private void SetMobileDefaultSleep() {
 		Screen.sleepTimeout = SleepTimeout.SystemSetting;
 	}
-
-
 }

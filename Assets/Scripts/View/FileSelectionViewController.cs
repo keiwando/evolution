@@ -13,7 +13,10 @@ public interface FileSelectionViewControllerDelegate {
 	int GetIndexOfSelectedItem(FileSelectionViewController controller);
 
 	void DidSelectItem(FileSelectionViewController controller, int index);
-	void DidEditTitleAtIndex(FileSelectionViewController controller, int index);
+
+	bool IsCharacterValidForName(FileSelectionViewController controller, char c);
+	bool IsNameAvailable(FileSelectionViewController controller, string newName);
+	void DidEditTitleAtIndex(FileSelectionViewController controller, int index, string newName);
 
 	void LoadButtonClicked(FileSelectionViewController controller);
 	void ImportButtonClicked(FileSelectionViewController controller);
@@ -44,6 +47,8 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
 
 	[SerializeField]
 	private DeleteConfirmationDialog deleteConfirmation;
+	[SerializeField]
+	private RenameDialog renameDialog;
 
     public void Show(FileSelectionViewControllerDelegate Delegate) {
         this.controllerDelegate = Delegate;
@@ -153,5 +158,36 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
 				Refresh();
 			}
 		}
+	}
+
+	// MARK: - RenameDialogDelegate
+
+	public void DidConfirmRename(RenameDialog dialog, string newName) {
+		if (controllerDelegate != null) {
+			controllerDelegate.DidEditTitleAtIndex(this, 
+												   controllerDelegate.GetIndexOfSelectedItem(this), 
+												   newName);
+		}
+	}
+
+	public bool CanEnterCharacter(RenameDialog dialog, int index, char c) {
+		if (controllerDelegate != null) {
+			return controllerDelegate.IsCharacterValidForName(this, c);
+		}
+		return false;
+	}
+
+	public void DidChangeValue(RenameDialog dialog, string value) {
+		if (controllerDelegate != null) {
+			if (!controllerDelegate.IsNameAvailable(this, value)) {
+				dialog.ShowErrorMessage("This name is already used.");
+			} else {
+				dialog.ResetErrors();
+			}
+		}
+	}
+
+	public string GetOriginalName(RenameDialog dialog) {
+		return currentSelectionLabel.text;
 	}
 }

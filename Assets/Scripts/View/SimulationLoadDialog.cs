@@ -40,7 +40,7 @@ public class SimulationLoadDialog : MonoBehaviour {
 
 		filename += ".txt";
 
-		//EvolutionSaver.LoadSimulationFromSaveFile(filename, creatureBuilder, evolution);
+		//SimulationSerializer.LoadSimulationFromSaveFile(filename, creatureBuilder, evolution);
 		StartCoroutine(LoadOnNextFrame(filename));
 	}
 
@@ -48,12 +48,12 @@ public class SimulationLoadDialog : MonoBehaviour {
 
 		yield return new WaitForEndOfFrame();
 
-		EvolutionSaver.LoadSimulationFromSaveFile(filename, creatureBuilder, evolution);
+		SimulationSerializer.LoadSimulationFromSaveFile(filename, creatureBuilder, evolution);
 	}
 
 	private void SetupDropDown() {
 
-		var filenames = EvolutionSaver.GetEvolutionSaveFilenames();
+		var filenames = SimulationSerializer.GetEvolutionSaveFilenames();
 
 		var saveFiles = new List<string>();
 
@@ -86,7 +86,7 @@ public class SimulationLoadDialog : MonoBehaviour {
 		//deleteConfirmation.ConfirmDeletionFor(filename);
 		deleteConfirmation.ConfirmDeletionFor(filename, delegate(string name) {
 
-			EvolutionSaver.DeleteSaveFile(filename);
+			SimulationSerializer.DeleteSaveFile(filename);
 
 			SetupDropDown();
 			dropdown.value = 0;

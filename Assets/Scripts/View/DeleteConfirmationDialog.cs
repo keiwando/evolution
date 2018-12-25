@@ -20,7 +20,7 @@ public class DeleteConfirmationDialog : MonoBehaviour {
 
 	public void ConfirmedDeletion() {
 
-		//EvolutionSaver.DeleteSaveFile(filenameLabel.text);
+		//SimulationSerializer.DeleteSaveFile(filenameLabel.text);
 		deleteHandler(filenameLabel.text);
 
 		gameObject.SetActive(false);

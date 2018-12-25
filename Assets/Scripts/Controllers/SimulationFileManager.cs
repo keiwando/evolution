@@ -26,7 +26,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 				var extension = file.Extension.ToLower();
 				if (extension.Equals(".txt") || extension.Equals(".evol")) {
 					// TODO: Validate file contents
-					EvolutionSaver.SaveSimulationFile(file.Name, file.ToUTF8String());
+					SimulationSerializer.SaveSimulationFile(file.Name, file.ToUTF8String());
 				}
 			}
 		};
@@ -63,8 +63,22 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 		selectedIndex = index;
 	}
 
-	public void DidEditTitleAtIndex(FileSelectionViewController controller, int index) {
-		// TODO: Rename file & check if filename is available
+	public bool IsCharacterValidForName(FileSelectionViewController controller, char c) {
+		return !SimulationSerializer.INVALID_NAME_CHARACTERS.Contains(c);
+	}
+
+	public bool IsNameAvailable(FileSelectionViewController controller, string newName) {
+		//return !SimulationSerializer.Exists .CreatureExists(newName);
+		// TODO: Replace placeholder
+		return false;
+	}
+
+	public void DidEditTitleAtIndex(FileSelectionViewController controller, int index, string newName) {
+		
+		if (!IsNameAvailable(controller, newName)) return;
+
+		var currentName = filenames[index];
+		CreatureSaver.RenameCreatureDesign(currentName, newName);
 		RefreshCache();
 	}
 
@@ -78,7 +92,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 
 		yield return new WaitForEndOfFrame();
 
-		EvolutionSaver.LoadSimulationFromSaveFile(filename, creatureBuilder, evolution);
+		SimulationSerializer.LoadSimulationFromSaveFile(filename, creatureBuilder, evolution);
 	}
 
 	public void ImportButtonClicked(FileSelectionViewController controller) {
@@ -92,7 +106,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 		  delegate (bool filesWereOpened, OpenedFile[] files) { 
 			if (filesWereOpened) {
 				foreach (OpenedFile file in files) {
-					EvolutionSaver.SaveSimulationFile(file.Name, file.ToUTF8String());	
+					SimulationSerializer.SaveSimulationFile(file.Name, file.ToUTF8String());	
 					RefreshCache();
 					viewController.Refresh();
 				}
@@ -103,7 +117,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 	public void ExportButtonClicked(FileSelectionViewController controller) {
 
 		var filename = filenames[selectedIndex];
-		string path = EvolutionSaver.GetSavePathForFile(filename);
+		string path = SimulationSerializer.GetSavePathForFile(filename);
 
 		FileToSave file = new FileToSave(path, SupportedFileType.PlainText);
 
@@ -112,7 +126,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 
 	public void DeleteButtonClicked(FileSelectionViewController controller) {
 		var filename = filenames[selectedIndex];
-		EvolutionSaver.DeleteSaveFile(filename);
+		SimulationSerializer.DeleteSaveFile(filename);
 		selectedIndex = 0;
 		RefreshCache();
 	}
@@ -127,6 +141,6 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 	}
 
 	private void RefreshCache() {
-		filenames = EvolutionSaver.GetEvolutionSaveFilenames();
+		filenames = SimulationSerializer.GetEvolutionSaveFilenames();
 	}
 }
