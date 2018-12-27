@@ -45,6 +45,10 @@ public class RenameDialog : MonoBehaviour {
 				Delegate.DidChangeValue(this, inputField.text);
 			}
 		});
+
+		if (Delegate != null) {
+			inputField.text = Delegate.GetOriginalName(this);
+		}
 	}
 
 	public void Close() {
@@ -57,6 +61,7 @@ public class RenameDialog : MonoBehaviour {
 
 		if (Delegate != null) {
 			Delegate.DidConfirmRename(this, inputField.text);
+			Close();
 		}
 	}
 

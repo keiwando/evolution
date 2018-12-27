@@ -30,6 +30,7 @@ public class CreatureFileManager : MonoBehaviour,
 			foreach (var file in creatureDesigns) {
 				CreatureSaver.SaveCreatureDesign(file.Name, file.ToUTF8String());
 			}
+			viewController.Refresh();
 		};
 	}
 
@@ -143,7 +144,7 @@ public class CreatureFileManager : MonoBehaviour,
 			if (filesWereOpened) {
 			  	foreach (OpenedFile file in files) {
 
-					CreatureSaver.SaveCreatureDesign(file.Name.Replace(file.Extension, ""), file.ToUTF8String());
+					CreatureSaver.SaveCreatureDesign(file.Name, file.ToUTF8String());
 				  	RefreshCache();
 				  	viewController.Refresh();
 			 	}

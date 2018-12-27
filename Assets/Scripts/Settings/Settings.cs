@@ -3,6 +3,7 @@ using UnityEngine;
 public class Settings {
 
 	private const string DID_MIGRATE_CREATURE_SAVES_KEY = "DID_MIGRATE_CREATURE_SAVES_KEY";
+	private const string DID_MIGRATE_SIMULATION_SAVES_KEY = "DID_MIGRATE_SIMULATION_SAVES_KEY";
 	private const string CREATURE_NAMES_KEY = "_CreatureNames";
 	private const string CURRENT_CREATURE_NAME_KEY = "CURRENT_CREATURE_NAME_KEY";
 	private const string CURRENT_CREATURE_DESIGN_KEY = "CURRENT_CREATURE_DESIGN_KEY";
@@ -10,6 +11,11 @@ public class Settings {
 	public static bool DidMigrateCreatureSaves {
 		get { return GetBool(DID_MIGRATE_CREATURE_SAVES_KEY); }
 		set { SetBool(DID_MIGRATE_CREATURE_SAVES_KEY, value); }
+	}
+
+	public static bool DidMigrateSimulationSaves {
+		get { return GetBool(DID_MIGRATE_SIMULATION_SAVES_KEY); }
+		set { SetBool(DID_MIGRATE_SIMULATION_SAVES_KEY, value); }
 	}
 
 	public static string CreatureNames {
@@ -28,14 +34,15 @@ public class Settings {
 	}
 
 	static Settings() {
-		if (GetBool("ALREADY_INITIALIZED_9e36ea4d-85a0-46b2-a7de-bbfd96ffb0cb")) { return; }
+		if (GetBool("ALREADY_INITIALIZED_48e06565-66ee-46de-98dd-82843052f9b1")) { return; }
 		Initialize();
-		SetBool("ALREADY_INITIALIZED_9e36ea4d-85a0-46b2-a7de-bbfd96ffb0cb", true);
+		SetBool("ALREADY_INITIALIZED_48e06565-66ee-46de-98dd-82843052f9b1", true);
 		Save();
 	}
 
 	private static void Initialize() {
 		DidMigrateCreatureSaves = false;
+		DidMigrateSimulationSaves = false;
 	}
 
 	private static bool GetBool(string key) {

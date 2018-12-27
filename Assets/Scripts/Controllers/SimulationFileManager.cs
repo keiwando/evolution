@@ -15,8 +15,6 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 	[SerializeField]
 	private FileSelectionViewController viewController;
 
-	private static readonly Regex RENAME_REGEX = new Regex(".txt|.evol");
-
 	private int selectedIndex = 0;
 	private List<string> filenames;
 
@@ -24,11 +22,12 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 		NativeFileSOMobile.shared.FilesWereOpened += delegate (OpenedFile[] files) {
 			foreach (var file in files) { 
 				var extension = file.Extension.ToLower();
-				if (extension.Equals(".txt") || extension.Equals(".evol")) {
+				if (extension.Equals(".evol")) {
 					// TODO: Validate file contents
 					SimulationSerializer.SaveSimulationFile(file.Name, file.ToUTF8String());
 				}
 			}
+			viewController.Refresh();
 		};
 	}
 
@@ -53,7 +52,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 
 	public string GetTitleForItemAtIndex(FileSelectionViewController controller,
 										 int index) {
-		return RENAME_REGEX.Replace(filenames[index], "");
+		return filenames[index];
 	}
 	public int GetIndexOfSelectedItem(FileSelectionViewController controller) {
 		return selectedIndex;
@@ -68,9 +67,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 	}
 
 	public bool IsNameAvailable(FileSelectionViewController controller, string newName) {
-		//return !SimulationSerializer.Exists .CreatureExists(newName);
-		// TODO: Replace placeholder
-		return false;
+		return !SimulationSerializer.SimulationSaveExists(newName);
 	}
 
 	public void DidEditTitleAtIndex(FileSelectionViewController controller, int index, string newName) {
@@ -78,7 +75,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 		if (!IsNameAvailable(controller, newName)) return;
 
 		var currentName = filenames[index];
-		CreatureSaver.RenameCreatureDesign(currentName, newName);
+		SimulationSerializer.RenameSimulationSave(currentName, newName);
 		RefreshCache();
 	}
 
@@ -116,8 +113,8 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 
 	public void ExportButtonClicked(FileSelectionViewController controller) {
 
-		var filename = filenames[selectedIndex];
-		string path = SimulationSerializer.GetSavePathForFile(filename);
+		var name = filenames[selectedIndex];
+		string path = SimulationSerializer.PathToSimulationSave(name);
 
 		FileToSave file = new FileToSave(path, SupportedFileType.PlainText);
 

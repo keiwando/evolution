@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using Keiwando.UI;
+using Keiwando.NativeFileSO;
 
 public interface FileSelectionViewControllerDelegate {
 
@@ -25,7 +27,8 @@ public interface FileSelectionViewControllerDelegate {
 	void DidClose(FileSelectionViewController controller);
 }
 
-public class FileSelectionViewController : MonoBehaviour, SelectableListItemViewDelegate {
+public class FileSelectionViewController : MonoBehaviour, SelectableListItemViewDelegate,
+										   RenameDialogDelegate {
 
     private FileSelectionViewControllerDelegate controllerDelegate;
 
@@ -53,6 +56,7 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
     public void Show(FileSelectionViewControllerDelegate Delegate) {
         this.controllerDelegate = Delegate;
 
+		DeleteAllItemViews();
 		gameObject.SetActive(true);
 		Refresh();
     }
@@ -78,7 +82,11 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
 
 		if (diff < 0) {
 			// Delete unneeded item views
+			var toDelete = items.GetRange(items.Count + diff - 1, -diff);
 			items.RemoveRange(items.Count + diff - 1, -diff);
+			foreach (var item in toDelete) {
+				Destroy(item.gameObject);
+			}
 		} else if (diff > 0) {
 			// Create necessary item views
 			itemTemplate.gameObject.SetActive(true);
@@ -116,7 +124,8 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
     }
 
 	public void EditButtonClicked() { 
-		// TODO: Open Edit dialog
+		renameDialog.Delegate = this;
+		renameDialog.Show();
 	}
 
     public void LoadButtonClicked() {
@@ -148,6 +157,13 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
 		d.DidClose(this);
     }
 
+	private void DeleteAllItemViews() {
+		foreach (var itemView in items) {
+			Destroy(itemView.gameObject);
+		}
+		items.Clear();
+	}
+
 	// MARK: - SelectableListItemViewDelegate
 
 	public void DidSelect(SelectableListItemView itemView) {
@@ -168,6 +184,7 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
 												   controllerDelegate.GetIndexOfSelectedItem(this), 
 												   newName);
 		}
+		Refresh();
 	}
 
 	public bool CanEnterCharacter(RenameDialog dialog, int index, char c) {

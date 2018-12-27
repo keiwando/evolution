@@ -10,9 +10,7 @@ using UnityEngine;
 public class IllegalFilenameException: IOException {
 
 	public override string Message {
-		get {
-			return "The filename is not valid.\n" + base.Message;
-		}
+		get { return "The filename is not valid.\n" + base.Message; }
 	}
 }
 
@@ -22,6 +20,8 @@ public class IllegalFilenameException: IOException {
 public class CreatureSaver {
 
 	public static readonly char[] INVALID_NAME_CHARACTERS = new char[]{ '\\', '/', '.' };
+	private static readonly Regex INVALID_NAME_REGEX = 
+					new Regex(string.Format("[{0}]", new string(INVALID_NAME_CHARACTERS)));
 
 	/// <summary>
 	/// The name of the folder that holds the creature save files.
@@ -40,49 +40,12 @@ public class CreatureSaver {
 	
 	private static readonly Regex EXTENSION_PATTERN = new Regex(".creat");
 
-	private static string RESOURCE_PATH = Path.Combine(Application.persistentDataPath, SAVE_FOLDER);
+	private static readonly string RESOURCE_PATH = Path.Combine(Application.persistentDataPath, SAVE_FOLDER);
 
 	static CreatureSaver() {
 		MigrateToFiles();
-		WriteDefaultCreatureFiles();
+		CopyDefaultCreatures();
 		ResetCurrentCreature();
-	}
-
-	/// <summary>
-	/// Migrates all existing creature design saves from the PlayerPrefs (an awful
-	/// way of storing them) to use actual files.
-	/// </summary>
-	/// <remarks>The creature data remains in the PlayerPrefs in case of issues to enable
-	/// potential future recovery. The PlayerPrefs should not be used to store any
-	/// new creature designs!</remarks>
-	private static void MigrateToFiles() {
-
-		if (Settings.DidMigrateCreatureSaves) return;
-		if (IsWebGL()) return;
-		Debug.Log("Beginning creature save data migration.");
-
-		var creatureNames = GetCreatureNamesFromPlayerPrefs();
-		foreach (var creatureName in creatureNames) {
-			var saveData = PlayerPrefs.GetString(creatureName, "");
-			if (!string.IsNullOrEmpty(saveData)) {
-				SaveCreatureDesign(creatureName, saveData);
-			}
-		}
-
-		Settings.DidMigrateCreatureSaves = true;
-	}	
-
-	/// <summary>
-	/// Writes the default creature designs to save files.
-	/// </summary>
-	private static void WriteDefaultCreatureFiles() {
-		if (IsWebGL()) return;
-
-		foreach (var creature in DefaultCreatures.defaultCreatures) {
-			if (!CreatureExists(creature.Key)) {
-				SaveCreatureDesign(creature.Key, creature.Value);
-			}
-		}
 	}
 
 	/// <summary>
@@ -95,6 +58,8 @@ public class CreatureSaver {
 	/// be overwritten or not. If not, then an available name is chosen for the new save.</param>
 	public static void SaveCreatureDesign(string creatureName, string saveData, bool overwrite = false) { 
 
+		creatureName = EXTENSION_PATTERN.Replace(creatureName, "");
+
 		if (!overwrite) {
 			creatureName = GetAvailableCreatureName(creatureName);
 		}
@@ -104,6 +69,26 @@ public class CreatureSaver {
 		File.WriteAllText(path, saveData);
 	}
 
+	/// <summary>
+	/// Saves the joints, bones and muscles of a creature with a given name to a file (/Playerprefs)
+	/// The name cannot contain a dot (.)
+	/// </summary>
+	/// <exception cref="IllegalFilenameException"></exception>
+	public static void WriteSaveFile(string name, List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
+
+		if ( INVALID_NAME_REGEX.IsMatch(name) || string.IsNullOrEmpty(name) ) 
+			throw new IllegalFilenameException();
+
+		var content = CreateSaveInfoFromCreature(joints, bones, muscles);
+		name = EXTENSION_PATTERN.Replace(name, "");
+		SaveCreatureDesign(name, content);
+	}
+
+	/// <summary>
+	/// Returns the path to the save location for the creature design with the specified name.
+	/// Does not guarantee an existing file.
+	/// </summary>
+	/// <param name="name">The creature design name (without a file extension)</param>
 	public static string PathToCreatureDesign(string name) {
 		return Path.Combine(RESOURCE_PATH, string.Format("{0}.creat", name));
 	}
@@ -116,14 +101,8 @@ public class CreatureSaver {
 		var oldPath = PathToCreatureDesign(oldName);
 		var newPath = PathToCreatureDesign(newName);
 
-		File.Move(oldPath, newPath);
-	}
-
-	/// <summary>
-	/// Creates the save location for the creature saves if it doesn't exist already.
-	/// </summary>
-	private static void CreateSaveFolder() {
-		Directory.CreateDirectory(RESOURCE_PATH);
+		if (File.Exists(oldPath))
+			File.Move(oldPath, newPath);
 	}
 
 	/// <summary>
@@ -135,28 +114,12 @@ public class CreatureSaver {
 	}
 
 	/// <summary>
-	/// Returns a creature design name that is still available based on the 
-	/// specified suggested name.
-	/// </summary>
-	private static string GetAvailableCreatureName(string suggestedName) {
-
-		var existingNames = GetCreatureNames();
-		int counter = 2;
-		var finalName = suggestedName;
-		while (existingNames.Contains(finalName)) {
-			finalName = string.Format("{0} ({1})", suggestedName, counter);
-			counter++;
-		}
-		return finalName;
-	}
-
-	/// <summary>
 	/// Loads the names of all the creature save files into the 
 	/// creatureNames array.
 	/// </summary>
 	public static List<string> GetCreatureNames() {
 		
-		if (IsWebGL()) return GetCreatureNamesWebGL();
+		if (IsWebGL()) return GetDefaultCreatureNames();
 
 		CreateSaveFolder();
 
@@ -172,35 +135,13 @@ public class CreatureSaver {
 	}
 
 	/// <summary>
-	/// Returns the default creature names since creatures cannot be saved
-	/// in the WebGL version.
+	/// Deletes the saved creature design data for the specified name.
 	/// </summary>
-	/// <returns></returns>
-	private static List<string> GetCreatureNamesWebGL() {
+	public static void DeleteCreatureSave(string name) {
 
-		var names = DefaultCreatures.defaultCreatures.Keys.ToList();
-		names.Sort();
-		return names;
-	}
-
-	private static List<string> GetCreatureNamesFromPlayerPrefs() {
-
-		return new List<string>(Settings.CreatureNames.Split('\n'));
-	}
-
-	/// <summary>
-	/// Saves the joints, bones and muscles of a creature with a given name to a file (/Playerprefs)
-	/// The name cannot contain a dot (.)
-	/// Throws: IllegalFilenameException
-	/// </summary>
-	public static void WriteSaveFile(string name, List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
-
-		if ( name.Contains(".") || name.Contains("/") || string.IsNullOrEmpty(name) ) 
-			throw new IllegalFilenameException();
-
-		var content = CreateSaveInfoFromCreature(joints, bones, muscles);
-		name = EXTENSION_PATTERN.Replace(name, "");
-		SaveCreatureDesign(name, content);
+		var path = PathToCreatureDesign(name);
+		if (File.Exists(path))
+			File.Delete(path);
 	}
 
 	/// <summary>
@@ -209,34 +150,13 @@ public class CreatureSaver {
 	public static void LoadCreature(string name, CreatureBuilder builder) {
 
 		if (IsWebGL()) {
-			LoadCreatureWebGL(name, builder);
+			LoadDefaultCreature(name, builder);
 			return;
 		}
 
 		var contents = LoadSaveData(name);
 		if (string.IsNullOrEmpty(contents)) return;
 
-		LoadCreatureFromContents(contents, builder);
-	}
-
-	private static string LoadSaveData(string name) {
-		
-		var path = PathToCreatureDesign(name);
-		if (File.Exists(path)) {
-			return File.ReadAllText(path);
-		} else {
-			return "";
-		}
-	}
-
-	private static void LoadCreatureWebGL(string name, CreatureBuilder builder) {
-
-		if (!DefaultCreatures.defaultCreatures.ContainsKey(name)) {
-			Debug.Log("Creature not found!");
-			return;
-		}
-
-		var contents = DefaultCreatures.defaultCreatures[name];
 		LoadCreatureFromContents(contents, builder);
 	}
 
@@ -277,12 +197,11 @@ public class CreatureSaver {
 
 		builder.SetBodyComponents(joints, bones, muscles);
 	}
-		
-	public static void LoadCurrentCreature(CreatureBuilder builder) {
 
-		LoadCreatureFromContents(GetCurrentCreatureData(), builder);
-	}
-
+	/// <summary>
+	/// Encodes the specified creature components into the contents of
+	/// a creature design save file.
+	/// </summary>
 	public static string CreateSaveInfoFromCreature(List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
 
 		var content = new StringBuilder();
@@ -307,6 +226,11 @@ public class CreatureSaver {
 		return content.ToString();
 	}
 
+	public static void LoadCurrentCreature(CreatureBuilder builder) {
+
+		LoadCreatureFromContents(GetCurrentCreatureData(), builder);
+	}
+
 	public static void SaveCurrentCreature(string name, List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
 
 		var content = CreateSaveInfoFromCreature(joints, bones, muscles);
@@ -329,7 +253,7 @@ public class CreatureSaver {
 		return Settings.CurrentCreatureName;
 	}
 
-	private static void SaveCurrentCreatureDesign(string creatureData) {
+	public static void SaveCurrentCreatureDesign(string creatureData) {
 		Settings.CurrentCreatureDesign = creatureData;
 	}
 
@@ -341,14 +265,104 @@ public class CreatureSaver {
 		SaveCurrentCreature("Unnamed", "");
 	}
 
+	/// <summary>
+	/// Returns a creature design name that is still available based on the 
+	/// specified suggested name.
+	/// </summary>
+	private static string GetAvailableCreatureName(string suggestedName) {
+
+		var existingNames = GetCreatureNames();
+		int counter = 2;
+		var finalName = suggestedName;
+		while (existingNames.Contains(finalName)) {
+			finalName = string.Format("{0} ({1})", suggestedName, counter);
+			counter++;
+		}
+		return finalName;
+	}
+
 	private static bool IsWebGL() {
 		return Application.platform == RuntimePlatform.WebGLPlayer;
-	} 
+	}
 
-	public static void DeleteCreatureSave(string name) {
-
+	private static string LoadSaveData(string name) {
+		
 		var path = PathToCreatureDesign(name);
-		if (File.Exists(path))
-			File.Delete(path);
+		if (File.Exists(path)) {
+			return File.ReadAllText(path);
+		} else {
+			return "";
+		}
+	}
+
+	private static void LoadDefaultCreature(string name, CreatureBuilder builder) {
+
+		if (!DefaultCreatures.defaultCreatures.ContainsKey(name)) {
+			Debug.Log("Creature not found!");
+			return;
+		}
+
+		var contents = DefaultCreatures.defaultCreatures[name];
+		LoadCreatureFromContents(contents, builder);
+	}
+
+	/// <summary>
+	/// Creates the save location for the creature saves if it doesn't exist already.
+	/// </summary>
+	private static void CreateSaveFolder() {
+		Directory.CreateDirectory(RESOURCE_PATH);
+	}
+
+	/// <summary>
+	/// Writes the default creature designs to save files.
+	/// </summary>
+	private static void CopyDefaultCreatures() {
+		if (IsWebGL()) return;
+
+		foreach (var creature in DefaultCreatures.defaultCreatures) {
+			if (!CreatureExists(creature.Key)) {
+				SaveCreatureDesign(creature.Key, creature.Value);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Returns the default creature names since creatures cannot be saved
+	/// in the WebGL version.
+	/// </summary>
+	/// <returns></returns>
+	private static List<string> GetDefaultCreatureNames() {
+
+		var names = DefaultCreatures.defaultCreatures.Keys.ToList();
+		names.Sort();
+		return names;
+	}
+
+	/// <summary>
+	/// Migrates all existing creature design saves from the PlayerPrefs (an awful
+	/// way of storing them) to use actual files.
+	/// </summary>
+	/// <remarks>The creature data remains in the PlayerPrefs in case of issues to enable
+	/// potential future recovery. The PlayerPrefs should not be used to store any
+	/// new creature designs!</remarks>
+	private static void MigrateToFiles() {
+
+		if (Settings.DidMigrateCreatureSaves) return;
+		if (IsWebGL()) return;
+		Debug.Log("Beginning creature save data migration.");
+
+		var creatureNames = GetCreatureNamesFromPlayerPrefs();
+		foreach (var creatureName in creatureNames) {
+			var saveData = PlayerPrefs.GetString(creatureName, "");
+			if (!string.IsNullOrEmpty(saveData)) {
+				SaveCreatureDesign(creatureName, saveData);
+			}
+		}
+
+		Settings.DidMigrateCreatureSaves = true;
+	}
+
+	private static List<string> GetCreatureNamesFromPlayerPrefs() {
+		return new List<string>(Settings.CreatureNames.Split('\n'));
 	}
 }
