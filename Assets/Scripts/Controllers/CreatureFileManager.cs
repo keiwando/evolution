@@ -16,21 +16,28 @@ public class CreatureFileManager : MonoBehaviour,
 	private FileSelectionViewController viewController;
 	[SerializeField]
 	private SaveDialog saveDialog;
-	
+	[SerializeField]
+	private UIFade importIndicator;
 
 	private int selectedIndex = 0;
 	private List<string> creatureNames = new List<string>();
 
 	void Start() {
 		NativeFileSOMobile.shared.FilesWereOpened += delegate (OpenedFile[] files) {
-			var creatureDesigns = files.Where(delegate (OpenedFile file) {
+			var didImport = false;
+			foreach (var file in files) { 
 				var extension = file.Extension.ToLower();
-				return extension.Equals(".creat");
-			});
-			foreach (var file in creatureDesigns) {
-				CreatureSaver.SaveCreatureDesign(file.Name, file.ToUTF8String());
+				if (extension.Equals(".creat")) {
+					// TODO: Validate file contents
+					CreatureSaver.SaveCreatureDesign(file.Name, file.ToUTF8String());
+					didImport = true;
+				}
 			}
+			RefreshCache();
 			viewController.Refresh();
+			if (didImport) {
+				importIndicator.FadeInOut();
+			}
 		};
 	}
 
@@ -147,6 +154,7 @@ public class CreatureFileManager : MonoBehaviour,
 					CreatureSaver.SaveCreatureDesign(file.Name, file.ToUTF8String());
 				  	RefreshCache();
 				  	viewController.Refresh();
+					importIndicator.FadeInOut();
 			 	}
 			}
 	  	});

@@ -14,20 +14,28 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 
 	[SerializeField]
 	private FileSelectionViewController viewController;
+	[SerializeField]
+	private UIFade importIndicator;
 
 	private int selectedIndex = 0;
 	private List<string> filenames;
 
 	void Start() {
 		NativeFileSOMobile.shared.FilesWereOpened += delegate (OpenedFile[] files) {
+			var didImport = false;
 			foreach (var file in files) { 
 				var extension = file.Extension.ToLower();
 				if (extension.Equals(".evol")) {
 					// TODO: Validate file contents
 					SimulationSerializer.SaveSimulationFile(file.Name, file.ToUTF8String());
+					didImport = true;
 				}
 			}
+			RefreshCache();
 			viewController.Refresh();
+			if (didImport) {
+				importIndicator.FadeInOut();
+			}
 		};
 	}
 
@@ -106,6 +114,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 					SimulationSerializer.SaveSimulationFile(file.Name, file.ToUTF8String());	
 					RefreshCache();
 					viewController.Refresh();
+					importIndicator.FadeInOut();
 				}
 			}
 		});

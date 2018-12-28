@@ -252,7 +252,7 @@ public class CreatureBuilder : MonoBehaviour {
 				}
 			}
 
-		} else if (Input.GetMouseButton(0)) {
+		} else if (MouseHeld()) {
 			// Mouse click & hold
 			if (selectedPart == BuildSelection.Bone ) {
 
@@ -314,7 +314,7 @@ public class CreatureBuilder : MonoBehaviour {
 				}
 			} 
 
-		} else if ( Input.GetMouseButtonUp(0) ) {
+		} else if (MouseUp()) {
 
 			if (selectedPart == BuildSelection.Bone ) {
 				PlaceCurrentBone();	
@@ -326,6 +326,17 @@ public class CreatureBuilder : MonoBehaviour {
 				currentMovingJoint = null;
 			}
 		} 
+	}
+
+	private bool MouseUp() {
+		return Input.GetMouseButtonUp(0) || 
+			   (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended);
+	}
+
+	private bool MouseHeld() {
+		return Input.GetMouseButton(0) ||
+			   (Input.touchCount > 0 && (Input.GetTouch(0).phase == TouchPhase.Stationary 
+			   || Input.GetTouch(0).phase == TouchPhase.Moved));
 	}
 
 	/** Handles all possible keyboard controls / shortcuts. */
