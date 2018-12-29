@@ -350,22 +350,18 @@ public class CreatureBuilder : MonoBehaviour {
 			if (input.GetKeyDown(KeyCode.J)) {
 				SelectedPart = BuildSelection.Joint;
 			}
-
 			// B = place body connection
 			else if (input.GetKeyDown(KeyCode.B)) {
 				SelectedPart = BuildSelection.Bone;
 			}
-
 			// M = place muscle
 			else if (input.GetKeyDown(KeyCode.M)) {
 				SelectedPart = BuildSelection.Muscle;
 			}
-
 			// D = Delete component
 			else if (input.GetKeyDown(KeyCode.D)) {
 				SelectedPart = BuildSelection.Delete;
 			}
-
 			// E = Go to Evolution Scene
 			else if (input.GetKeyDown(KeyCode.E)) {
 				Evolve();
