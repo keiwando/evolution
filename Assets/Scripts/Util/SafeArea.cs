@@ -1,4 +1,4 @@
-//#define SAFE_AREA_DEBUG
+#define SAFE_AREA_DEBUG
 
 using UnityEngine;
 

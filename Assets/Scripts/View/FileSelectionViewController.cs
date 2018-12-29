@@ -124,8 +124,7 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
     }
 
 	public void EditButtonClicked() { 
-		renameDialog.Delegate = this;
-		renameDialog.Show();
+		renameDialog.Show(this);
 	}
 
     public void LoadButtonClicked() {

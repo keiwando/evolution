@@ -28,12 +28,14 @@ public class RenameDialog : MonoBehaviour {
 		}
 	}
 
-	public void Show() {
+	public void Show(RenameDialogDelegate Delegate) {
 		gameObject.SetActive(true);
+		this.Delegate = Delegate;
 		ResetErrors();
+		KeyInputManager.shared.Register();
 
 		inputField.onValidateInput += delegate (string input, int charIndex, char addedChar) {
-			if (Delegate == null || Delegate.CanEnterCharacter(this, charIndex, addedChar)) {
+			if (Delegate.CanEnterCharacter(this, charIndex, addedChar)) {
 				return addedChar;
 			} else {
 				return '\0';
@@ -41,33 +43,28 @@ public class RenameDialog : MonoBehaviour {
 		};
 
 		inputField.onValueChanged.AddListener(delegate {
-			if (Delegate != null) {
-				Delegate.DidChangeValue(this, inputField.text);
-			}
+			Delegate.DidChangeValue(this, inputField.text);
 		});
 
-		if (Delegate != null) {
-			inputField.text = Delegate.GetOriginalName(this);
-		}
+		inputField.text = Delegate.GetOriginalName(this);
 	}
 
 	public void Close() {
 		Delegate = null;
+		KeyInputManager.shared.Deregister();
 		gameObject.SetActive(false);
 	}
 
 	public void OnRenameClicked() {
 		errorMessage.enabled = false;
 
-		if (Delegate != null) {
-			Delegate.DidConfirmRename(this, inputField.text);
-			Close();
-		}
+		Delegate.DidConfirmRename(this, inputField.text);
+		Close();
 	}
 
 	public void OnCancelClicked() {
 		ResetErrors();
-		this.gameObject.SetActive(false);
+		Close();
 	}
 
 	public void ShowErrorMessage(string message) {

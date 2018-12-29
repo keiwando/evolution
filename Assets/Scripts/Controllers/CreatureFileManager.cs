@@ -47,8 +47,7 @@ public class CreatureFileManager : MonoBehaviour,
 	}
 
 	public void PromptCreatureSave() {
-		saveDialog.Delegate = this;
-		saveDialog.Show();
+		saveDialog.Show(this);
 	}
 
 	// MARK: - SaveDialogDelegate

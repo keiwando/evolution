@@ -26,12 +26,14 @@ public class SaveDialog : MonoBehaviour {
 		}
 	}
 
-	public void Show() {
+	public void Show(SaveDialogDelegate Delegate) {
 		gameObject.SetActive(true);
+		this.Delegate = Delegate;
 		ResetErrors();
+		KeyInputManager.shared.Register();
 
 		inputField.onValidateInput += delegate (string input, int charIndex, char addedChar) {
-			if (Delegate == null || Delegate.CanEnterCharacter(this, charIndex, addedChar)) {
+			if (Delegate.CanEnterCharacter(this, charIndex, addedChar)) {
 				return addedChar;
 			} else {
 				return '\0';
@@ -39,28 +41,26 @@ public class SaveDialog : MonoBehaviour {
 		};
 
 		inputField.onValueChanged.AddListener(delegate {
-			if (Delegate != null) {
-				Delegate.DidChangeValue(this, inputField.text);
-			}
+			
+			Delegate.DidChangeValue(this, inputField.text);
 		});
 	}
 
 	public void Close() {
 		Delegate = null;
+		KeyInputManager.shared.Deregister();
 		gameObject.SetActive(false);
 	}
 
 	public void OnSaveClicked() {
 		errorMessage.enabled = false;
 
-		if (Delegate != null) {
-			Delegate.DidConfirmSave(this, inputField.text);
-		}
+		Delegate.DidConfirmSave(this, inputField.text);
 	}
 
 	public void OnCancelClicked() {
 		ResetErrors();
-		this.gameObject.SetActive(false);
+		Close();
 	}
 
 	public void ShowErrorMessage(string message) {
@@ -71,5 +71,4 @@ public class SaveDialog : MonoBehaviour {
 	public void ResetErrors() {
 		errorMessage.enabled = false;
 	}
-
 }

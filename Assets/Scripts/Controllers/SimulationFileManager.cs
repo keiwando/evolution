@@ -103,7 +103,6 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 	public void ImportButtonClicked(FileSelectionViewController controller) {
 
 		SupportedFileType[] supportedFileTypes = {
-			SupportedFileType.PlainText,
 			CustomEvolutionFileType.evol
 		};
 

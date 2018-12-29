@@ -335,60 +335,41 @@ public class CreatureBuilder : MonoBehaviour {
 
 	private bool MouseHeld() {
 		return Input.GetMouseButton(0) ||
-			   (Input.touchCount > 0 && (Input.GetTouch(0).phase == TouchPhase.Stationary 
-			   || Input.GetTouch(0).phase == TouchPhase.Moved));
+			   (Input.touchCount > 0 && (Input.GetTouch(0).phase != TouchPhase.Ended 
+			   && Input.GetTouch(0).phase != TouchPhase.Ended));
 	}
 
 	/** Handles all possible keyboard controls / shortcuts. */
 	private void HandleKeyboardInput() {
 
-		// TODO: Replace with some kind of global input manager
-		var saveDialog = SaveDialog.shared;
-		if (saveDialog != null && saveDialog.gameObject.activeSelf) return;
+		var input = KeyInputManager.shared;
 
 		if (Input.anyKeyDown) {
 		
 			// J = place Joint
-			if (Input.GetKeyDown(KeyCode.J)) {
+			if (input.GetKeyDown(KeyCode.J)) {
 				SelectedPart = BuildSelection.Joint;
 			}
 
 			// B = place body connection
-			else if (Input.GetKeyDown(KeyCode.B)) {
+			else if (input.GetKeyDown(KeyCode.B)) {
 				SelectedPart = BuildSelection.Bone;
 			}
 
 			// M = place muscle
-			else if (Input.GetKeyDown(KeyCode.M)) {
+			else if (input.GetKeyDown(KeyCode.M)) {
 				SelectedPart = BuildSelection.Muscle;
 			}
 
 			// D = Delete component
-			else if (Input.GetKeyDown(KeyCode.D)) {
+			else if (input.GetKeyDown(KeyCode.D)) {
 				SelectedPart = BuildSelection.Delete;
 			}
 
-			// S = Save Creature
-			else if (Input.GetKeyDown(KeyCode.S) && Application.platform != RuntimePlatform.WebGLPlayer) {
-				//SaveCreature();
-				//PromptCreatureSave();
-			}
-
-			// L = Load Creature
-			else if (Input.GetKeyDown(KeyCode.L)) {
-				//LoadCreature();
-			}
-
 			// E = Go to Evolution Scene
-			else if (Input.GetKeyDown(KeyCode.E)) {
+			else if (input.GetKeyDown(KeyCode.E)) {
 				Evolve();
 			}
-
-			// P = Print the current creature's save string
-			else if (Input.GetKeyDown(KeyCode.P)) {
-				print(CreatureSaver.CreateSaveInfoFromCreature(joints, bones, muscles));
-			}
-
 
 			buttonManager.selectButton(selectedPart);
 		}
@@ -516,7 +497,6 @@ public class CreatureBuilder : MonoBehaviour {
 	private T GetHoveringObject<T>(List<T> objects) where T: MonoBehaviour {
 
 		foreach (T obj in objects) {
-			
 			if (obj.gameObject.GetComponent<Hoverable>().hovering) {
 				return obj;
 			}
@@ -524,7 +504,6 @@ public class CreatureBuilder : MonoBehaviour {
 
 		return null;
 	}
-
 
 	/** Placed a new joint object at the specified point. */
 	private void PlaceJoint(Vector3 point) {
