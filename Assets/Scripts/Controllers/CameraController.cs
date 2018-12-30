@@ -3,6 +3,11 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
 
+    public bool IsAdjustingCamera {
+        get { return isAdjustingCamera; }
+    }
+    private bool isAdjustingCamera = false;
+
     public bool ZoomEnabled { 
         get { return zoomEnabled; }
         set { zoomEnabled = value; } 
@@ -61,7 +66,7 @@ public class CameraController : MonoBehaviour {
                 var touch2 = Input.GetTouch(1);
                 
 				position = GetPinchCenter(touch1.position, touch2.position);
-                var touchDistance = (touch1.position - touch2.position).magnitude;
+                var touchDistance = (touch1.position - touch2.position).magnitude * 0.5f;
                 
                 if (touch1.phase != TouchPhase.Began && 
                     touch2.phase != TouchPhase.Began) {
@@ -93,6 +98,17 @@ public class CameraController : MonoBehaviour {
 			lastTouchPos = Vector3.zero;
 		}
 
+        #if UNITY_IOS || UNITY_ANDROID
+        if (isAdjustingCamera && Input.touchCount == 0) {
+            isAdjustingCamera = false;
+        }
+        #else 
+        if (Input.GetMouseButtonUp(2)) {
+            isAdjustingCamera = false;
+        }
+        #endif
+        
+
         if (ZoomEnabled && Input.mouseScrollDelta.y != 0) {
             ZoomCameraFromScroll(Input.mouseScrollDelta.y);
         }
@@ -102,6 +118,7 @@ public class CameraController : MonoBehaviour {
 
         if (!MovementEnabled) { return; }
 
+        isAdjustingCamera = true;
 		distance.z = 0;
 		var position = camera.transform.position + distance;
 		position = ClampPosition(position);
@@ -113,8 +130,10 @@ public class CameraController : MonoBehaviour {
 
         if (!ZoomEnabled) { return; }
 
+        isAdjustingCamera = true;
         var size = camera.orthographicSize;
-        camera.orthographicSize = Math.Max(minZoom, Math.Min(minZoom + zoomLength, size - delta));
+        camera.orthographicSize = Math.Max(minZoom, Math.Min(minZoom + zoomLength, 
+                                  size - delta));
 
         ClampPosition();
     }
@@ -123,8 +142,12 @@ public class CameraController : MonoBehaviour {
 
         if (!ZoomEnabled) { return; }
 
+        isAdjustingCamera = true;
         var size = camera.orthographicSize;
-        camera.orthographicSize = size * 0.5f * percent;
+        camera.orthographicSize = Math.Max(minZoom, Math.Min(minZoom + zoomLength, 
+                                  size / percent));
+
+        ClampPosition();
     }
 
     private void ClampPosition() {

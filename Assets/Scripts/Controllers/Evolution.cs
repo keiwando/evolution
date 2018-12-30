@@ -22,14 +22,22 @@ public class Evolution : MonoBehaviour {
 	}
 	private NeuralNetworkSettings brainSettings;
 
-	//public static Task task;
-
 	private static Dictionary<EvolutionTask, System.Type> brainMap;
 
 	public GameObject obstacle;
 
 	/** The creature to be evolved. Has no brain by default. */
-	public Creature creature;
+	public Creature creature {
+		get { return _creature; }
+		set { 
+			_creature = value;
+			// Update safe drop offset
+			// Ensures that the creature isn't spawned into the ground
+			var lowestY = _creature.GetLowestPoint().y;
+			safeHeightOffset = lowestY < 0 ? -lowestY + 1f : 0f;
+		}
+	}
+	private Creature _creature;
 
 
 	public float TimeScale {
@@ -88,6 +96,12 @@ public class Evolution : MonoBehaviour {
 	/// The height from the ground from which the creatures should be dropped on spawn.
 	/// </summary>
 	private Vector3 dropHeight;
+
+	/// <summary>
+	/// An offset added to the drop height in order to prevent creatures from being
+	/// spawned into the ground.
+	/// </summary>
+	private float safeHeightOffset;
 
 	/// <summary>
 	/// Whether the simulation is currently running or not. (Paused is still true)
@@ -321,13 +335,6 @@ public class Evolution : MonoBehaviour {
 	/// </summary>
 	private void SimulateGeneration() {
 
-//		if (settings.simulateInBatches) {
-//			foreach (Creature creature in currentGeneration) {
-//				creature.Alive = false;
-//				creature.gameObject.SetActive(false);
-//			}
-//		}
-
 		foreach (Creature creature in currentGeneration) {
 			creature.Alive = false;
 			creature.gameObject.SetActive(false);
@@ -398,9 +405,6 @@ public class Evolution : MonoBehaviour {
 		currentChromosomes = CreateNewChromosomesFromGeneration();
 		currentGenerationNumber++;
 
-		//KillGeneration();
-		//currentGeneration = CreateGeneration();
-
 		ResetCreatures();
 
 
@@ -448,8 +452,6 @@ public class Evolution : MonoBehaviour {
 		if (settings.keepBestCreatures) {
 
 			// keep the two best creatures
-			//result[0] = currentGeneration[0].brain.ToChromosomeString();
-			//result[1] = currentGeneration[1].brain.ToChromosomeString();
 			result[0] = GetChromosomeWithCaching(0);
 			result[1] = GetChromosomeWithCaching(1);
 			start = 2;
@@ -461,8 +463,6 @@ public class Evolution : MonoBehaviour {
 			int index1 = PickRandomWeightedIndex();
 			int index2 = PickRandomWeightedIndex();
 
-			//string chrom1 = currentGeneration[index1].brain.ToChromosomeString(); // TODO: Cache chromosomes
-			//string chrom2 = currentGeneration[index2].brain.ToChromosomeString();
 			string chrom1 = GetChromosomeWithCaching(index1);
 			string chrom2 = GetChromosomeWithCaching(index2);
 
@@ -502,9 +502,6 @@ public class Evolution : MonoBehaviour {
 		var chrom1Builder = new StringBuilder(chrom1);
 		var chrom2Builder = new StringBuilder(chrom2);
 
-//		result[0] = chrom1.Substring(0,splitIndex) + chrom2.Substring(splitIndex);
-//		result[1] = chrom2.Substring(0,splitIndex) + chrom1.Substring(splitIndex);
-
 		var chrom2End = chrom2.Substring(splitIndex);
 		var chrom1End = chrom1.Substring(splitIndex);
 
@@ -523,26 +520,6 @@ public class Evolution : MonoBehaviour {
 		return result;
 	}
 
-//	private string[] CombineChromosomes(string chrom1, string chrom2) {
-//
-//		int splitIndex = UnityEngine.Random.Range(1, chrom2.Length);
-//		string[] result = new string[2];
-//
-//		//var chrom1Builder = new StringBuilder(chrom1);
-//		//var chrom2Builder = new StringBuilder(chrom2);
-//
-//		result[0] = chrom1.Substring(0,splitIndex) + chrom2.Substring(splitIndex);
-//		result[1] = chrom2.Substring(0,splitIndex) + chrom1.Substring(splitIndex);
-//
-//		Assert.AreEqual(result[0].Length, chrom1.Length);
-//		Assert.AreEqual(result[0].Length, chrom2.Length);
-//
-//		result[0] = Mutate(result[0]);
-//		result[1] = Mutate(result[1]);
-//
-//		return result;
-//	}
-
 	private StringBuilder Mutate(StringBuilder chromosome) {
 
 		bool shouldMutate = UnityEngine.Random.Range(0,100.0f) < (MUTATION_RATE * 100);
@@ -554,55 +531,14 @@ public class Evolution : MonoBehaviour {
 		// determine a mutation length
 		int length = Mathf.Min(Mathf.Max(0, chromosome.Length - index - 3), UnityEngine.Random.Range(2,15));
 
-		//string toMutate = chromosome.Substring(index, length);
-		//string mutatedPart = "";
-		//var builder = new StringBuilder(chromosome);
-
 		for(int i = 0; i < length; i++) {
 
-			//char character = toMutate[i];
 			char character = chromosome[i];
-			//mutatedPart += character == '0' ? '1' : '0';
 			chromosome[i] = character == '0' ? '1' : '0';
 		}
 
-		//string mutated = chromosome.Substring(0,index) + mutatedPart + chromosome.Substring(index + length);
-		//string mutated = .ToString();
-
-		//Assert.AreEqual(chromosome.Length, mutated.Length);
-		//return mutated;
 		return chromosome;
 	}
-
-//	private string Mutate(string chromosome) {
-//
-//		bool shouldMutate = UnityEngine.Random.Range(0,100.0f) < (MUTATION_RATE * 100);
-//
-//		if (!shouldMutate) return chromosome;
-//
-//		// pick a mutation index.
-//		int index = UnityEngine.Random.Range(4,chromosome.Length - 1);
-//		// determine a mutation length
-//		int length = Mathf.Min(Mathf.Max(0, chromosome.Length - index - 3), UnityEngine.Random.Range(2,15));
-//
-//		//string toMutate = chromosome.Substring(index, length);
-//		//string mutatedPart = "";
-//		var builder = new System.Text.StringBuilder(chromosome);
-//
-//		for(int i = 0; i < length; i++) {
-//
-//			//char character = toMutate[i];
-//			char character = builder[i];
-//			//mutatedPart += character == '0' ? '1' : '0';
-//			builder[i] = character == '0' ? '1' : '0';
-//		}
-//
-//		//string mutated = chromosome.Substring(0,index) + mutatedPart + chromosome.Substring(index + length);
-//		string mutated = builder.ToString();
-//
-//		Assert.AreEqual(chromosome.Length, mutated.Length);
-//		return mutated;
-//	}
 
 	/// <summary>
 	/// Picks an index between 0 and POPULATION_SIZE. The first indices are more likely to be picked. The weights decrease towards to.
@@ -685,9 +621,12 @@ public class Evolution : MonoBehaviour {
 		return creatures;
 	}
 
-	public Creature CreateCreature(){
+	public Creature CreateCreature() {
 
-		Creature creat = (Creature) ((GameObject) Instantiate(creature.gameObject, dropHeight, Quaternion.identity)).GetComponent<Creature>();
+		var dropPos = dropHeight;
+		dropPos.y += safeHeightOffset;
+
+		Creature creat = (Creature) ((GameObject) Instantiate(creature.gameObject, dropPos, Quaternion.identity)).GetComponent<Creature>();
 		creat.RefreshLineRenderers();
 		creat.Obstacle = obstacle;
 
