@@ -31,6 +31,7 @@ public class CameraController : MonoBehaviour {
 
     private Vector3 lastTouchPos = Vector3.zero;
 	private bool firstMovementTouch = true;
+    private float lastPinchDist = 0f;
 
     private float initialZoom;
 
@@ -56,7 +57,20 @@ public class CameraController : MonoBehaviour {
 			var position = Input.mousePosition;
 
 			if (Input.touchCount == 2) {
-				position = GetPinchCenter(Input.touches[0].position, Input.touches[1].position);
+                var touch1 = Input.GetTouch(0);
+                var touch2 = Input.GetTouch(1);
+                
+				position = GetPinchCenter(touch1.position, touch2.position);
+                var touchDistance = (touch1.position - touch2.position).magnitude;
+                
+                if (touch1.phase != TouchPhase.Began && 
+                    touch2.phase != TouchPhase.Began) {
+
+                    var zoom = touchDistance / lastPinchDist;
+                    ZoomCameraFromPinch(zoom);
+                }
+
+                lastPinchDist = touchDistance;
 			}
 
 			var distance = lastTouchPos - position;
@@ -80,7 +94,7 @@ public class CameraController : MonoBehaviour {
 		}
 
         if (ZoomEnabled && Input.mouseScrollDelta.y != 0) {
-            ZoomCamera(Input.mouseScrollDelta.y);
+            ZoomCameraFromScroll(Input.mouseScrollDelta.y);
         }
     }
 
@@ -95,7 +109,7 @@ public class CameraController : MonoBehaviour {
 		camera.transform.position = position;
 	}
 
-    private void ZoomCamera(float delta) {
+    private void ZoomCameraFromScroll(float delta) {
 
         if (!ZoomEnabled) { return; }
 
@@ -105,12 +119,20 @@ public class CameraController : MonoBehaviour {
         ClampPosition();
     }
 
+    private void ZoomCameraFromPinch(float percent) {
+
+        if (!ZoomEnabled) { return; }
+
+        var size = camera.orthographicSize;
+        camera.orthographicSize = size * 0.5f * percent;
+    }
+
     private void ClampPosition() {
         camera.transform.position = ClampPosition(camera.transform.position);
     }
 
     private Vector3 ClampPosition(Vector3 pos) {
-        //var currentZoomMult = 0.5f * camera.orthographicSize / initialZoom;
+
         var halfHeight = camera.orthographicSize;
         var halfWidth = camera.aspect * halfHeight;
 

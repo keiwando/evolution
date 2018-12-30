@@ -6,16 +6,22 @@ public class AndroidBackButtonMenuController : MonoBehaviour {
 	[SerializeField]
 	private SaveDialog saveDialog;
 	[SerializeField]
-	private SimulationLoadDialog loadDialog;
-	[SerializeField]
 	private SettingsMenu settingsMenu;
+	[SerializeField]
+	private RenameDialog renameDialog;
+	[SerializeField]
+	private FileSelectionViewController fileSelectionView;
+	[SerializeField]
+	private HelpScreen helpScreen;
 
 #if PLATFORM_ANDROID
 	void Update() {
 
 		if (Input.GetKeyDown(KeyCode.Escape)) {
-
-			if (settingsMenu.IsShowing) {
+			
+			if (helpScreen.gameObject.activeSelf) {
+				helpScreen.BackButtonClicked();
+			} else if (settingsMenu.IsShowing) {
 				if (settingsMenu.ScrollPos == AutoScroll.ScrollPos.Top) {
 					settingsMenu.Hide();
 				} else {
@@ -23,8 +29,10 @@ public class AndroidBackButtonMenuController : MonoBehaviour {
 				}
 			} else if (saveDialog.gameObject.activeSelf) {
 				saveDialog.OnCancelClicked();
-			} else if (loadDialog.IsShowing) {
-				loadDialog.OnCancelClicked();
+			} else if (renameDialog.gameObject.activeSelf) {
+				renameDialog.Close();
+			} else if (fileSelectionView.gameObject.activeSelf) {
+				fileSelectionView.Close();
 			} else {
 				Application.Quit();
 			}

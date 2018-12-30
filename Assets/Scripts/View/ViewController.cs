@@ -42,7 +42,6 @@ public class ViewController : MonoBehaviour {
 
 	public bool shouldAutoplay { get { return autoplayToggle.isOn; } }
 
-	// Use this for initialization
 	void Start () {
 
 		evolution = GameObject.Find("Evolution").GetComponent<Evolution>();
@@ -70,9 +69,10 @@ public class ViewController : MonoBehaviour {
 		//});
 	}
 	
-	// Update is called once per frame
 	void Update () {
-		
+		if (Input.GetKeyDown(KeyCode.Escape)) {
+			GoBackToCreatureBuilding();
+		}
 	}
 
 	public void UpdateGeneration(int generation) {
