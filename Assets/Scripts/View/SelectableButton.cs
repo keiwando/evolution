@@ -32,23 +32,15 @@ public class SelectableButton : MonoBehaviour {
 
 	private IEnumerator routine;
 
-	// Use this for initialization
 	void Start () {
 		var offsetX = SelectionOffsetX * (float)Screen.width / ReferenceResolutionX;
 		defaultPosition = transform.position;
 		selectedPosition = new Vector3(defaultPosition.x + offsetX, defaultPosition.y, 0);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
 	public void OnClick() {
-		//print("Click");
-		manager.selectButton(this);
+		manager.SelectButton(this);
 	}
-
 
 	IEnumerator SmoothMove(Vector3 target, float delta)
 	{

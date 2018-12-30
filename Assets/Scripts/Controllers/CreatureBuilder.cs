@@ -88,10 +88,6 @@ public class CreatureBuilder : MonoBehaviour {
 	/// </summary>
 	private static bool firstTime = true;
 
-	// MARK: pinch to move the camera
-	private Vector3 lastTouchPos = Vector3.zero;
-	private bool firstMovementTouch = true;
-
 	void Start () {
 
 		joints = new List<Joint>();
@@ -100,6 +96,7 @@ public class CreatureBuilder : MonoBehaviour {
 
 		// Joints are selected by default.
 		selectedPart = BuildSelection.Joint;
+		buttonManager.SelectButton(selectedPart);
 
 		if (!firstTime) {
 			CreatureSaver.LoadCurrentCreature(this);
@@ -133,42 +130,6 @@ public class CreatureBuilder : MonoBehaviour {
 	/// currently selected body part.
 	/// </summary>
 	private void HandleClicks() {
-
-		// Middle click or two touches to move the camera
-		if ( (Input.GetMouseButton(2) && Input.touchCount == 0) || Input.touchCount == 2) {
-
-			//if (EventSystem.current.IsPointerOverGameObject() || isPointerOverUIObject()) return;
-
-			var position = Input.mousePosition;
-
-			if (Input.touchCount == 2) {
-
-				position = GetPinchCenter(Input.touches[0].position, Input.touches[1].position);
-			}
-
-			//position = ScreenToWorldPoint(position);
-
-
-			var distance = lastTouchPos - position;
-			lastTouchPos = position;
-
-			if (firstMovementTouch) { 
-				firstMovementTouch = false;
-				return; 
-			}
-
-			firstMovementTouch = false;
-
-			// move the camera by the distance
-			distance = ScreenToWorldDistance(distance);
-			buttonManager.MoveCamera(distance);
-
-			return;
-		} else {
-			
-			firstMovementTouch = true;
-			lastTouchPos = Vector3.zero;
-		}
 
 		if ( Input.GetMouseButtonDown(0) ) { 	// user clicked
 
@@ -367,15 +328,8 @@ public class CreatureBuilder : MonoBehaviour {
 				Evolve();
 			}
 
-			buttonManager.selectButton(selectedPart);
+			buttonManager.SelectButton(selectedPart);
 		}
-	}
-
-	private Vector3 GetPinchCenter(Vector2 touch1, Vector2 touch2) {
-
-		var center2D = 0.5f * (touch1 + touch2);
-
-		return new Vector3(center2D.x, center2D.y);
 	}
 
 	/**
@@ -434,6 +388,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/// Deletes the currently visible creature.
 	/// </summary>
 	public void DeleteCreature() {
+
 		foreach(var joint in joints) {
 			joint.Delete();
 		}
@@ -481,7 +436,6 @@ public class CreatureBuilder : MonoBehaviour {
 	private void SetShouldHighlight<T>(List<T> hoverables, bool shouldHighlight) where T: Hoverable {
 
 		foreach (var obj in hoverables) {
-
 			obj.shouldHighlight = shouldHighlight;
 		}
 	} 
@@ -530,7 +484,6 @@ public class CreatureBuilder : MonoBehaviour {
 		Vector3 offset = end - start;
 		Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
 		Vector3 position = start + (offset / 2.0f);
-
 
 		connection.transform.position = position;
 		connection.transform.up = offset;
@@ -634,14 +587,6 @@ public class CreatureBuilder : MonoBehaviour {
 
 	private Vector3 ScreenToWorldPoint(Vector3 point) {
 		return Camera.main.ScreenToWorldPoint(point);
-	}
-
-	private Vector3 ScreenToWorldDistance(Vector3 distance) {
-
-		var p1 = ScreenToWorldPoint(new Vector3(0,0,0));
-		var p2 = ScreenToWorldPoint(distance);
-
-		return p2 - p1;
 	}
 
 	/** Returns the gameobject that consists of the bodyparts that have been placed in the scene */

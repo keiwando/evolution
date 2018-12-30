@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour {
 
-	private const float gridAreaSize = 70f; 
+	private const float gridAreaSize = 75f; 
 
 	public float Size {
 		get { return gridSize; }
@@ -12,22 +12,30 @@ public class Grid : MonoBehaviour {
 	}
 	private float gridSize = 2f;
 
-	private float left { get {return -gridAreaSize / 2;} }
-	private float right { get {return gridAreaSize / 2;} }
-	private float top { get {return gridAreaSize * (2f / 3);} }
-	private float bottom { get {return -gridAreaSize * (1f / 3);} }
+	private float left { 
+		get { 
+			var num = Mathf.Ceil(0.5f * gridAreaSize / gridSize);
+			return transform.position.x - num * gridSize; 
+		} 
+	}
+	private float right { 
+		get { return transform.position.x + gridAreaSize / 2; } 
+	}
+	private float top { 
+		get { 
+			var num = Mathf.Ceil(0.5f * gridAreaSize / gridSize);
+			return transform.position.y + num * gridSize; 
+		} 
+	}
+	private float bottom { 
+		get { return transform.position.y - gridAreaSize / 2; } 
+	}
 
 	private LineRenderer lineRenderer;
 
-	// Use this for initialization
 	void Start () {
 
-		//if (PlayerPrefs.GetInt(SettingsMenu.GRID_ENABLED_KEY, 0) == 1) {
-
 		SetupGrid();	
-		//} else {
-		//	gameObject.SetActive(false);
-		//}
 	}
 
 	public void VisualRefresh() {
@@ -44,14 +52,6 @@ public class Grid : MonoBehaviour {
 
 	private float ClosestHorizontalLine(float y) {
 
-		// top - k * gridSize > x > top - (k+1) * gridSize
-
-		/*var k = Mathf.Floor((y - bottom) / gridSize);
-		var bottomY = k * gridSize + bottom;
-		var topY = bottomY + gridSize;
-
-		return y - bottomY > topY - y ? topY : bottomY;*/
-
 		var k = Mathf.Floor((top - y) / gridSize);
 		var topY = top - k * gridSize;
 		var bottomY = topY - gridSize;
@@ -60,8 +60,6 @@ public class Grid : MonoBehaviour {
 	} 
 
 	private float ClosestVerticalLine(float x) {
-
-		// k * gridSize + left < x < (k+1) * gridSize + left
 
 		var k = Mathf.Floor((x - left) / gridSize);
 		var leftX = k * gridSize + left;

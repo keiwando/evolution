@@ -34,7 +34,7 @@ public class RaycastHover : MonoBehaviour {
 			ExitAll();
 		}
 
-		#if UNITY_IOS || UNITY_ANDROID && !UNITY_EDITOR
+		#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
 		if (hoverColliders.Count > 0 && Input.touchCount == 0) {
 			ExitAll();	
 		}
