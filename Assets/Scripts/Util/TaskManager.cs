@@ -13,6 +13,8 @@ public class TaskManager : MonoBehaviour {
 
 	public CameraFollowScript[] cameras;
 
+	public CameraController[] cameraControllers;
+
 	private Evolution evolution;
 
 	// Use this for initialization
@@ -21,11 +23,6 @@ public class TaskManager : MonoBehaviour {
 		evolution = GameObject.FindGameObjectWithTag("Evolution").GetComponent<Evolution>();
 
 		SetupTask();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
 	}
 
 	private void SetupTask() {
@@ -74,9 +71,15 @@ public class TaskManager : MonoBehaviour {
 		}
 	}
 
-	private void LockCamerasDiagonal(bool value) {
+	private void LockCamerasDiagonal(bool lockedDiagonally) {
 		foreach (var camera in cameras) {
-			camera.DiagonalLock = value;
+			camera.DiagonalLock = lockedDiagonally;
+		}
+		foreach (var cameraController in cameraControllers) {
+			var anchor = cameraController.ZoomAnchor;
+			anchor.y = lockedDiagonally ? 0.5f : 0f;
+			cameraController.ZoomAnchor = anchor;
+			cameraController.MovementBoundsEnabled = lockedDiagonally ? false : true;
 		}
 	}
 }

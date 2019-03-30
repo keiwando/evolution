@@ -1305,6 +1305,9 @@ MonoBehaviour:
   cameras:
   - {fileID: 956411641}
   - {fileID: 1661777020}
+  cameraControllers:
+  - {fileID: 2146407303}
+  - {fileID: 1229900717}
 --- !u!4 &270845672
 Transform:
   m_ObjectHideFlags: 0
@@ -3045,11 +3048,9 @@ GameObject:
   m_Component:
   - component: {fileID: 956411640}
   - component: {fileID: 956411639}
-  - component: {fileID: 956411638}
   - component: {fileID: 956411637}
   - component: {fileID: 956411636}
   - component: {fileID: 956411641}
-  - component: {fileID: 956411642}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3065,13 +3066,6 @@ AudioListener:
   m_GameObject: {fileID: 956411635}
   m_Enabled: 1
 --- !u!124 &956411637
-Behaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 956411635}
-  m_Enabled: 1
---- !u!92 &956411638
 Behaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3146,35 +3140,6 @@ MonoBehaviour:
   toFollow: {fileID: 0}
   currentlyWatchingIndex: 0
   DiagonalLock: 0
---- !u!114 &956411642
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 956411635}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd70d448b18cfbc46af26466f752332c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  visualizeFocus: 0
-  focalLength: 0.58
-  focalSize: 1.73
-  aperture: 0.85
-  focalTransform: {fileID: 0}
-  maxBlurSize: 4
-  highResolution: 0
-  blurType: 0
-  blurSampleCount: 2
-  nearBlur: 0
-  foregroundOverlap: 1
-  dofHdrShader: {fileID: 4800000, guid: acd613035ff3e455e8abf23fdc8c8c24, type: 3}
-  dx11BokehShader: {fileID: 4800000, guid: d8e82664aa8686642a424c88ab10164a, type: 3}
-  dx11BokehThreshold: 0.5
-  dx11SpawnHeuristic: 0.0875
-  dx11BokehTexture: {fileID: 2800000, guid: a4cdca73d61814d33ac1587f6c163bca, type: 3}
-  dx11BokehScale: 1.2
-  dx11BokehIntensity: 2.5
 --- !u!1 &974457826
 GameObject:
   m_ObjectHideFlags: 0
@@ -4625,6 +4590,57 @@ MonoBehaviour:
   timeScaleSlider: {fileID: 0}
   timeScaleLabel: {fileID: 0}
   bcController: {fileID: 935511740}
+--- !u!1 &1229900715
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1229900716}
+  - component: {fileID: 1229900717}
+  m_Layer: 0
+  m_Name: Best Creatures Camera Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1229900716
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1229900715}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1507750166}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1229900717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1229900715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b163843c624a452499952bfa07f5c07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  zoomEnabled: 1
+  lockedHorizontalMovement: 1
+  lockedVerticalMovement: 1
+  camera: {fileID: 1661777024}
+  bottomMovementPadding: 0
+  topMovementPadding: -1
+  leftMovementPadding: -1
+  rightMovementPadding: -1
+  zoomInLength: 0
+  zoomOutLength: 15
+  zoomAnchor: {x: 0.5, y: 0}
 --- !u!1 &1238984511
 GameObject:
   m_ObjectHideFlags: 0
@@ -5499,6 +5515,8 @@ Transform:
   m_Children:
   - {fileID: 956411640}
   - {fileID: 1661777019}
+  - {fileID: 2146407302}
+  - {fileID: 1229900716}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6239,7 +6257,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1661777019}
   - component: {fileID: 1661777024}
-  - component: {fileID: 1661777023}
   - component: {fileID: 1661777022}
   - component: {fileID: 1661777020}
   m_Layer: 0
@@ -6278,13 +6295,6 @@ MonoBehaviour:
   currentlyWatchingIndex: 0
   DiagonalLock: 0
 --- !u!124 &1661777022
-Behaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1661777018}
-  m_Enabled: 1
---- !u!92 &1661777023
 Behaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -7066,3 +7076,54 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2133433571}
   m_CullTransparentMesh: 0
+--- !u!1 &2146407301
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2146407302}
+  - component: {fileID: 2146407303}
+  m_Layer: 0
+  m_Name: Main Camera Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2146407302
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2146407301}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1507750166}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2146407303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2146407301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b163843c624a452499952bfa07f5c07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  zoomEnabled: 1
+  lockedHorizontalMovement: 1
+  lockedVerticalMovement: 1
+  camera: {fileID: 956411639}
+  bottomMovementPadding: 0
+  topMovementPadding: -1
+  leftMovementPadding: -1
+  rightMovementPadding: -1
+  zoomInLength: 0
+  zoomOutLength: 15
+  zoomAnchor: {x: 0.5, y: 0}

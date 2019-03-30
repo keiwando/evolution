@@ -3,57 +3,117 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
 
+    /// <summary>
+    /// Specifies whether the camera is currently being zoomed or moved.
+    /// </summary>
     public bool IsAdjustingCamera {
         get { return isAdjustingCamera; }
     }
     private bool isAdjustingCamera = false;
 
-    public bool ZoomEnabled { 
-        get { return zoomEnabled; }
-        set { zoomEnabled = value; } 
-    }
     [SerializeField]
     private bool zoomEnabled = true;
 
-    public bool MovementEnabled {
-        get { return movementEnabled; }
-        set { movementEnabled = value; }
+    private bool movementEnabled {
+        get { return !lockedHorizontalMovement && !lockedVerticalMovement; }
     }
-    [SerializeField]
-    private bool movementEnabled = true;
 
+    [SerializeField]
+    private bool lockedHorizontalMovement = false;
+    
+    [SerializeField]
+    private bool lockedVerticalMovement = false;
+
+    /// <summary>
+    /// The camera to be controlled
+    /// </summary>
     [SerializeField]
     new private Camera camera;
 
     [SerializeField]
-    private Vector2 movementBoundsSize;
-
+    private float bottomMovementPadding = -1f;
     [SerializeField]
-    private float zoomLength = 20;
+    private float topMovementPadding = -1f;
+    [SerializeField]
+    private float leftMovementPadding = -1f;
+    [SerializeField]
+    private float rightMovementPadding = -1f;
+
+    /// <summary>
+    /// The amount by which the camera can be zoomed in.
+    /// </summary>
+    [SerializeField]
+    private float zoomInLength = 10;
+
+    /// <summary>
+    /// The amount by which the camera can be zoomed out
+    /// </summary>
+    [SerializeField]
+    private float zoomOutLength = 10;
+
+    /// <summary>
+    /// The difference between the lowest and highest zoom level (orthographicSize).
+    /// </summary>
+    private float zoomLength {
+        get { return zoomInLength + zoomOutLength; }
+    }
+
+    /// <summary>
+    /// The minimum allowed value of the camera's orthographic size
+    /// </summary>
 	private float minZoom;
 
+    /// <summary>
+    /// The anchor around which zooming is performed relative to the camera bounds
+    /// </summary>
+    public Vector2 ZoomAnchor {
+        get { return zoomAnchor; }
+        set { zoomAnchor = value; }
+    }
+    [SerializeField]
+    private Vector2 zoomAnchor = new Vector2(0.5f, 0.5f);
+
+    /// <summary>
+    /// Specifies whether the camera movement will be limited by the movementBounds rect.
+    /// </summary>
+    public bool MovementBoundsEnabled = true;
+    
+    /// <summary>
+    /// The bounds in world coordinates, inside of which the camera can be moved around.
+    /// </summary>
+    /// <remarks>
+    /// The visible bounds of the camera cannot be moved outside of these movementBounds.
+    /// </remarks>
     private Rect movementBounds = new Rect();
+
+    // MARK: - Gestures
 
     private Vector3 lastTouchPos = Vector3.zero;
 	private bool firstMovementTouch = true;
     private float lastPinchDist = 0f;
 
-    private float initialZoom;
 
     void Start() {
 
         var cameraPos = camera.transform.position;
-        var dX = movementBoundsSize.x;
-        var dY = movementBoundsSize.y;
-        movementBounds.min = new Vector2(cameraPos.x - dX * 0.5f, cameraPos.y - dY * 0.5f);
-        movementBounds.max = new Vector2(cameraPos.x + dX * 0.5f, cameraPos.y + dY * 0.5f);
+        var size = GetOrthographicSize();
+        var halfWidth = size.x * 0.5f;
+        var halfHeight = size.y * 0.5f;
 
-        initialZoom = camera.orthographicSize;
-		minZoom = initialZoom - zoomLength / 2;
+        float minX = leftMovementPadding >= 0 ? cameraPos.x - halfWidth - leftMovementPadding : float.MinValue;
+        float maxX = rightMovementPadding >= 0 ? cameraPos.x + halfWidth + rightMovementPadding : float.MaxValue;
+        float minY = bottomMovementPadding >= 0 ? cameraPos.y - halfHeight - bottomMovementPadding : float.MinValue;
+        float maxY = topMovementPadding >= 0 ? cameraPos.y + halfHeight + topMovementPadding : float.MaxValue;
+        movementBounds.min = new Vector2(minX, minY);
+        movementBounds.max = new Vector2(maxX, maxY);
+
+        var initialZoom = camera.orthographicSize;
+		minZoom = initialZoom - zoomInLength;
     }
 
     void Update() {
-        if (!ZoomEnabled && !MovementEnabled) { return; }
+
+        if (!zoomEnabled && !movementEnabled) { return; }
 
         // Middle click or two touches to move the camera
 		if ((Input.GetMouseButton(2) && Input.touchCount == 0) 
@@ -89,7 +149,7 @@ public class CameraController : MonoBehaviour {
 
 			// move the camera by the distance
 			distance = ScreenToWorldDistance(distance);
-            if (MovementEnabled) {
+            if (movementEnabled) {
                 MoveCamera(distance);
             }
 
@@ -108,44 +168,63 @@ public class CameraController : MonoBehaviour {
         }
         #endif
         
-
-        if (ZoomEnabled && Input.mouseScrollDelta.y != 0) {
+        if (zoomEnabled && Input.mouseScrollDelta.y != 0) {
             ZoomCameraFromScroll(Input.mouseScrollDelta.y);
         }
     }
 
     private void MoveCamera(Vector3 distance) {
 
-        if (!MovementEnabled) { return; }
+        if (!movementEnabled) { return; }
 
         isAdjustingCamera = true;
 		distance.z = 0;
 		var position = camera.transform.position + distance;
 		position = ClampPosition(position);
 
+        var oldPos = camera.transform.position;
+        if (lockedHorizontalMovement) {
+            position.x = oldPos.x;
+        }
+        if (lockedVerticalMovement) {
+            position.y = oldPos.y;
+        }
+
 		camera.transform.position = position;
 	}
 
     private void ZoomCameraFromScroll(float delta) {
 
-        if (!ZoomEnabled) { return; }
-
-        isAdjustingCamera = true;
-        var size = camera.orthographicSize;
-        camera.orthographicSize = Math.Max(minZoom, Math.Min(minZoom + zoomLength, 
-                                  size - delta));
-
-        ClampPosition();
+        SetZoom(camera.orthographicSize - delta);
     }
 
     private void ZoomCameraFromPinch(float percent) {
 
-        if (!ZoomEnabled) { return; }
+        SetZoom(camera.orthographicSize / Math.Max(0.0000001f, percent));
+    }
+
+    private void SetZoom(float newZoom) {
+        
+        if (!zoomEnabled) { return; } 
+
+        var visibleSize = GetOrthographicSize();
 
         isAdjustingCamera = true;
         var size = camera.orthographicSize;
-        camera.orthographicSize = Math.Max(minZoom, Math.Min(minZoom + zoomLength, 
-                                  size / percent));
+        var newSize = Math.Max(minZoom, Math.Min(minZoom + zoomLength, newZoom));
+        camera.orthographicSize = newSize;
+
+        var dSize = newSize / size;
+        var dPercent = dSize - 1f;
+        
+        // Readjust the center position based on the zoom anchor
+        var anchorAdjustX = (zoomAnchor.x - 0.5f) * visibleSize.x;
+        var anchorAdjustY = (zoomAnchor.y - 0.5f) * visibleSize.y;
+
+        var pos = camera.transform.position;
+        pos.x += anchorAdjustX;
+        pos.y += anchorAdjustY;
+        camera.transform.position = pos;
 
         ClampPosition();
     }
@@ -155,6 +234,8 @@ public class CameraController : MonoBehaviour {
     }
 
     private Vector3 ClampPosition(Vector3 pos) {
+
+        if (!MovementBoundsEnabled) return pos;
 
         var halfHeight = camera.orthographicSize;
         var halfWidth = camera.aspect * halfHeight;
@@ -169,6 +250,13 @@ public class CameraController : MonoBehaviour {
 
         return pos;
     }
+
+    private Vector2 GetOrthographicSize() {
+
+        var halfHeight = camera.orthographicSize;
+        var halfWidth = camera.aspect * halfHeight;
+        return new Vector2(halfWidth * 2, halfHeight * 2);
+    } 
 
     private Vector3 GetPinchCenter(Vector2 touch1, Vector2 touch2) {
 

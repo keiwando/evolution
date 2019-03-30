@@ -3748,7 +3748,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 0.191}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -16043,10 +16043,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   zoomEnabled: 1
-  movementEnabled: 1
+  lockedHorizontalMovement: 0
+  lockedVerticalMovement: 0
   camera: {fileID: 1798671385}
-  movementBoundsSize: {x: 70, y: 45}
-  zoomLength: 10
+  bottomMovementPadding: 10
+  topMovementPadding: 10
+  leftMovementPadding: 18
+  rightMovementPadding: 18
+  zoomInLength: 4
+  zoomOutLength: 10
+  zoomAnchor: {x: 0.5, y: 0.5}
+  MovementBoundsEnabled: 1
 --- !u!1 &1414698095
 GameObject:
   m_ObjectHideFlags: 0
