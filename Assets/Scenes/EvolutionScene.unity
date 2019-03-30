@@ -4633,7 +4633,7 @@ MonoBehaviour:
   lockedHorizontalMovement: 1
   lockedVerticalMovement: 1
   camera: {fileID: 1661777024}
-  bottomMovementPadding: 0
+  bottomMovementPadding: 3.3
   topMovementPadding: -1
   leftMovementPadding: -1
   rightMovementPadding: -1
@@ -4641,6 +4641,7 @@ MonoBehaviour:
   zoomOutLength: 15
   zoomAnchor: {x: 0.5, y: 0}
   MovementBoundsEnabled: 1
+  bottomBoundRelativeToZoom: 1
 --- !u!1 &1238984511
 GameObject:
   m_ObjectHideFlags: 0
@@ -7121,7 +7122,7 @@ MonoBehaviour:
   lockedHorizontalMovement: 1
   lockedVerticalMovement: 1
   camera: {fileID: 956411639}
-  bottomMovementPadding: 0
+  bottomMovementPadding: 3.3
   topMovementPadding: -1
   leftMovementPadding: -1
   rightMovementPadding: -1
@@ -7129,3 +7130,4 @@ MonoBehaviour:
   zoomOutLength: 15
   zoomAnchor: {x: 0.5, y: 0}
   MovementBoundsEnabled: 1
+  bottomBoundRelativeToZoom: 1

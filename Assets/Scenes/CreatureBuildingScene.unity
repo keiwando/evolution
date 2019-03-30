@@ -16054,6 +16054,7 @@ MonoBehaviour:
   zoomOutLength: 10
   zoomAnchor: {x: 0.5, y: 0.5}
   MovementBoundsEnabled: 1
+  bottomBoundRelativeToZoom: 0
 --- !u!1 &1414698095
 GameObject:
   m_ObjectHideFlags: 0

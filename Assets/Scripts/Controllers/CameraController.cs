@@ -77,7 +77,15 @@ public class CameraController : MonoBehaviour {
     /// Specifies whether the camera movement will be limited by the movementBounds rect.
     /// </summary>
     public bool MovementBoundsEnabled = true;
-    
+
+    /// <summary>
+    /// If this property if set to true, then the bottom movement bound
+    /// will move depending on the current zoom level. It reaches its
+    /// specified value when the camera is fully zoomed out.
+    /// </summary>
+    [SerializeField]
+    private bool bottomBoundRelativeToZoom = false;
+
     /// <summary>
     /// The bounds in world coordinates, inside of which the camera can be moved around.
     /// </summary>
@@ -240,9 +248,18 @@ public class CameraController : MonoBehaviour {
         var halfHeight = camera.orthographicSize;
         var halfWidth = camera.aspect * halfHeight;
 
+        var boundsMinY = movementBounds.min.y;
+        if (bottomBoundRelativeToZoom) {
+            var zoom = camera.orthographicSize;
+            var zoomOutLength = Math.Max(this.zoomOutLength, 0.0000001f);
+            var initialZoom = minZoom + zoomOutLength;
+            var zoomOutPercent = 1 - Math.Min(Math.Max((initialZoom - zoom) / zoomOutLength, 0), 1);
+            boundsMinY += bottomMovementPadding * (1 - zoomOutPercent);
+        }
+
         var minX = movementBounds.min.x + halfWidth;
         var maxX = movementBounds.max.x - halfWidth;
-        var minY = movementBounds.min.y + halfHeight;
+        var minY = boundsMinY + halfHeight;
         var maxY = movementBounds.max.y - halfHeight;
 
         pos.x = Mathf.Clamp(pos.x, minX, maxX); 

@@ -77,7 +77,7 @@ public class TaskManager : MonoBehaviour {
 		}
 		foreach (var cameraController in cameraControllers) {
 			var anchor = cameraController.ZoomAnchor;
-			anchor.y = lockedDiagonally ? 0.5f : 0f;
+			anchor.y = lockedDiagonally ? 0.5f : 0.0f;
 			cameraController.ZoomAnchor = anchor;
 			cameraController.MovementBoundsEnabled = lockedDiagonally ? false : true;
 		}
