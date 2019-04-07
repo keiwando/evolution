@@ -1,6 +1,8 @@
 bool DidMigrateCreatureSaves = false
 bool DidMigrateSimulationSaves = false
 
+int EditorMode = 0
+
 string CreatureNames (_CreatureNames)
 string CurrentCreatureName
 string CurrentCreatureDesign

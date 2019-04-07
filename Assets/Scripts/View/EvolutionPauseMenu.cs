@@ -102,9 +102,9 @@ public class EvolutionPauseMenu : MonoBehaviour {
 		var time = Mathf.Clamp(Int32.Parse(simulationTimeInput.text), 1, 100000);
 		simulationTimeInput.text = time.ToString();
 
-		/*var settings = LoadEvolutionSettings();
+		/*var settings = LoadSimulationSettings();
 		settings.simulationTime = time;
-		SaveEvolutionSettings(settings);*/
+		SaveSimulationSettings(settings);*/
 		evolution.Settings.simulationTime = time;
 	}
 
@@ -113,9 +113,9 @@ public class EvolutionPauseMenu : MonoBehaviour {
 		var rate = Mathf.Clamp(int.Parse(mutationRateInput.text), 1, 100);
 		mutationRateInput.text = rate.ToString();
 
-		/*var settings = LoadEvolutionSettings();
+		/*var settings = LoadSimulationSettings();
 		settings.mutationRate = rate;
-		SaveEvolutionSettings(settings);*/
+		SaveSimulationSettings(settings);*/
 
 		evolution.Settings.mutationRate = rate;
 	}
@@ -125,9 +125,9 @@ public class EvolutionPauseMenu : MonoBehaviour {
 		var batchSize = ClampBatchSize(Int32.Parse(batchSizeInput.text));
 		batchSizeInput.text = batchSize.ToString();
 
-		/*var settings = LoadEvolutionSettings();
+		/*var settings = LoadSimulationSettings();
 		settings.batchSize = batchSize;
-		SaveEvolutionSettings(settings);*/
+		SaveSimulationSettings(settings);*/
 
 		evolution.Settings.batchSize = batchSize;
 	}
@@ -145,9 +145,9 @@ public class EvolutionPauseMenu : MonoBehaviour {
 		//PlayerPrefs.SetInt(BATCH_SIMULATION_ENABLED_KEY, val ? 1 : 0);
 		batchSizeInput.gameObject.SetActive(val);
 
-		/*var settings = LoadEvolutionSettings();
+		/*var settings = LoadSimulationSettings();
 		settings.simulateInBatches = val;
-		SaveEvolutionSettings(settings);*/
+		SaveSimulationSettings(settings);*/
 
 		evolution.Settings.simulateInBatches = val;
 	}

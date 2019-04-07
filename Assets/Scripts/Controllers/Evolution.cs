@@ -10,11 +10,11 @@ using System.Linq;
 
 public class Evolution : MonoBehaviour {
 
-	public EvolutionSettings Settings {
+	public SimulationSettings Settings {
 		set { settings = value; }
 		get { return settings; }
 	}
-	private EvolutionSettings settings;
+	private SimulationSettings settings;
 
 	public NeuralNetworkSettings BrainSettings {
 		set { brainSettings = value; }
@@ -230,9 +230,9 @@ public class Evolution : MonoBehaviour {
 	/// <param name="bestChromosomes">The list of best chromosomes of the already simluated generations.</param>
 	/// <param name="currentChromosomes">A list of chromosomes of creatures of the last (current) generation.</param>
 	//public void ContinueEvolution(int generationNum, int timePerGen, List<ChromosomeInfo> bestChromosomes, List<string> currentChromosomes) {
-	public void ContinueEvolution(int generationNum, EvolutionSettings evolutionSettings, NeuralNetworkSettings networkSettings, List<ChromosomeStats> bestChromosomes, List<string> currentChromosomes) {
+	public void ContinueEvolution(int generationNum, SimulationSettings SimulationSettings, NeuralNetworkSettings networkSettings, List<ChromosomeStats> bestChromosomes, List<string> currentChromosomes) {
 
-		this.settings = evolutionSettings;
+		this.settings = SimulationSettings;
 		this.brainSettings = networkSettings;
 
 		viewController = GameObject.Find("ViewController").GetComponent<ViewController>();

@@ -779,7 +779,7 @@ public class CreatureBuilder : MonoBehaviour {
 		DontDestroyOnLoad(evolution.gameObject);
 		evolution.creature = creature;
 
-		var settings = settingsMenu.GetEvolutionSettings();
+		var settings = settingsMenu.GetSimulationSettings();
 
 		evolution.Settings = settings;
 		evolution.BrainSettings = settingsMenu.GetNeuralNetworkSettings();

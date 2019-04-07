@@ -71,7 +71,7 @@ public class SettingsMenu : MonoBehaviour {
 		gridToggle.isOn = gridEnabled;
 
 		// Evolution settings
-		var settings = LoadEvolutionSettings();
+		var settings = LoadSimulationSettings();
 
 		keepBestCreaturesToggle.isOn = settings.keepBestCreatures;
 
@@ -112,7 +112,7 @@ public class SettingsMenu : MonoBehaviour {
 
 	private void SetupTaskDropDown() {
 
-		var settings = LoadEvolutionSettings();
+		var settings = LoadSimulationSettings();
 		var taskString = settings.task.StringRepresentation().ToUpper();
 
 		var index = new List<string>(TASK_OPTIONS).IndexOf(taskString);
@@ -122,9 +122,9 @@ public class SettingsMenu : MonoBehaviour {
 
 	public void TaskChanged() {
 
-		var settings = LoadEvolutionSettings();
+		var settings = LoadSimulationSettings();
 		settings.task = EvolutionTaskUtil.TaskFromString(taskDropdown.captionText.text);
-		SaveEvolutionSettings(settings);
+		SaveSimulationSettings(settings);
 	}
 
 	public void Show() {
@@ -161,9 +161,9 @@ public class SettingsMenu : MonoBehaviour {
 
 	public void KeepBestCreaturesToggled(bool value) {
 
-		var settings = LoadEvolutionSettings();
+		var settings = LoadSimulationSettings();
 		settings.keepBestCreatures = value;
-		SaveEvolutionSettings(settings);
+		SaveSimulationSettings(settings);
 	}
 
 	private void PopulationSizeChanged() {
@@ -171,9 +171,9 @@ public class SettingsMenu : MonoBehaviour {
 		var num = Mathf.Clamp(Int32.Parse(populationSizeInput.text), 2, 10000000);
 		populationSizeInput.text = num.ToString();
 
-		var settings = LoadEvolutionSettings();
+		var settings = LoadSimulationSettings();
 		settings.populationSize = num;
-		SaveEvolutionSettings(settings);
+		SaveSimulationSettings(settings);
 	}
 
 	private void SimulationTimeChanged() {
@@ -181,9 +181,9 @@ public class SettingsMenu : MonoBehaviour {
 		var time = Mathf.Clamp(Int32.Parse(simulationTimeInput.text), 1, 100000);
 		simulationTimeInput.text = time.ToString();
 
-		var settings = LoadEvolutionSettings();
+		var settings = LoadSimulationSettings();
 		settings.simulationTime = time;
-		SaveEvolutionSettings(settings);
+		SaveSimulationSettings(settings);
 	}
 
 	private void MutationRateChanged() {
@@ -191,9 +191,9 @@ public class SettingsMenu : MonoBehaviour {
 		var rate = Mathf.Clamp(int.Parse(mutationRateInput.text), 1, 100);
 		mutationRateInput.text = rate.ToString();
 
-		var settings = LoadEvolutionSettings();
+		var settings = LoadSimulationSettings();
 		settings.mutationRate = rate;
-		SaveEvolutionSettings(settings);
+		SaveSimulationSettings(settings);
 	}
 
 	private void BatchSizeChanged() {
@@ -201,14 +201,14 @@ public class SettingsMenu : MonoBehaviour {
 		var batchSize = ClampBatchSize(Int32.Parse(batchSizeInput.text));
 		batchSizeInput.text = batchSize.ToString();
 
-		var settings = LoadEvolutionSettings();
+		var settings = LoadSimulationSettings();
 		settings.batchSize = batchSize;
-		SaveEvolutionSettings(settings);
+		SaveSimulationSettings(settings);
 	}
 
 	private int ClampBatchSize(int size) {
 
-		var settings = LoadEvolutionSettings();
+		var settings = LoadSimulationSettings();
 		var populationSize = settings.populationSize;
 
 		return Mathf.Clamp(size, 1, populationSize);
@@ -218,9 +218,9 @@ public class SettingsMenu : MonoBehaviour {
 
 		batchSizeInput.gameObject.SetActive(val);
 
-		var settings = LoadEvolutionSettings();
+		var settings = LoadSimulationSettings();
 		settings.simulateInBatches = val;
-		SaveEvolutionSettings(settings);
+		SaveSimulationSettings(settings);
 	}
 
 	/// <summary>
@@ -231,18 +231,18 @@ public class SettingsMenu : MonoBehaviour {
 		var taskString = taskDropdown.captionText.text.ToUpper();
 		var task = EvolutionTaskUtil.TaskFromString(taskString);
 		
-		var settings = LoadEvolutionSettings();
+		var settings = LoadSimulationSettings();
 		settings.task = task;
-		SaveEvolutionSettings(settings);
+		SaveSimulationSettings(settings);
 
 		return task;
 	}
 
-	public EvolutionSettings GetEvolutionSettings() {
-		return LoadEvolutionSettings();
+	public SimulationSettings GetSimulationSettings() {
+		return LoadSimulationSettings();
 	}
 
-	private void SaveEvolutionSettings(EvolutionSettings settings) {
+	private void SaveSimulationSettings(SimulationSettings settings) {
 		PlayerPrefs.SetString(EVOLUTION_SETTINGS_KEY, settings.Encode());
 	}
 
@@ -250,16 +250,16 @@ public class SettingsMenu : MonoBehaviour {
 	/// Loads the currently stored Evolution settings.
 	/// </summary>
 	/// <returns>The evolution settings.</returns>
-	private EvolutionSettings LoadEvolutionSettings() {
+	private SimulationSettings LoadSimulationSettings() {
 
 		var settingsString = PlayerPrefs.GetString(EVOLUTION_SETTINGS_KEY, "");
 
 		if (settingsString == "") {
 			// Default settings
-			return new EvolutionSettings();
+			return new SimulationSettings();
 		}
 
-		return EvolutionSettings.Decode(settingsString);
+		return SimulationSettings.Decode(settingsString);
 	}
 
 	public NeuralNetworkSettings GetNeuralNetworkSettings() {

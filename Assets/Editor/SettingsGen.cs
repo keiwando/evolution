@@ -111,7 +111,8 @@ public class SettingsGen {
 
 		// Decrease the potential of this initialization flag being used as a settings
 		// key
-		var uuid = System.Guid.NewGuid().ToString();
+		// Use a constant random string that doesn't get regenerated each time
+		var uuid = "e31cf645-7751-4a7b-ae0d-2ca38f6063b8"; //System.Guid.NewGuid().ToString();
 		var firstTimeKey = string.Format("ALREADY_INITIALIZED_{0}", uuid);
 		var builder = new StringBuilder();
 		builder.AppendFormat("\tstatic {0}() {{\n", OUTPUT_CLASS_NAME);
