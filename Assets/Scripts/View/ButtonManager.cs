@@ -33,6 +33,23 @@ public class ButtonManager : MonoBehaviour {
 		foreach (SelectableButton button in buttonMap.Keys) {
 			button.manager = this;
 		}
+
+		Refresh();
+	}
+
+	public void Refresh() {
+
+		var advancedMode = ((EditorMode)Settings.EditorMode) == EditorMode.Advanced;
+		selectButton.gameObject.SetActive(advancedMode);
+		deleteButton.gameObject.SetActive(!advancedMode);
+
+		foreach(KeyValuePair<SelectableButton, CreatureEditor.Tool> entry in buttonMap) {
+			if (entry.Value == editor.ActiveTool) {
+				entry.Key.Selected = true;
+			} else {
+				entry.Key.Selected = false;
+			}
+		}
 	}
 
 	public void SelectButton(SelectableButton button) {

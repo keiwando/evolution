@@ -1,11 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-enum EditorMode {
-    Basic = 0,
-    Advanced = 1
-}
-
 public class EditorViewController: MonoBehaviour {
 
     [SerializeField]
@@ -13,9 +8,10 @@ public class EditorViewController: MonoBehaviour {
 
     [SerializeField]
     private GameObject basicControls;
-
     [SerializeField]
     private GameObject advancedControls;
+    [SerializeField]
+    private ButtonManager buttonManager;
 
     private EditorMode editorMode {
         get { return (EditorMode)Settings.EditorMode; }
@@ -51,5 +47,6 @@ public class EditorViewController: MonoBehaviour {
 
         basicControls.SetActive(!advancedMode);
         advancedControls.SetActive(advancedMode);
+        buttonManager.Refresh();
     }
 }

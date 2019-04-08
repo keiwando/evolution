@@ -35,7 +35,7 @@ public class SimulationLoaderV2 {
 
 		var components = content.Split(splitOptions.SPLIT_ARRAY, System.StringSplitOptions.None);
 
-		var SimulationSettings = SimulationSettings.Decode(components[1]);
+		var simulationSettings = SimulationSettings.Decode(components[1]);
 		var networkSettings = NeuralNetworkSettings.Decode(components[2]);
 
 		var creatureData = components[3];
@@ -63,12 +63,12 @@ public class SimulationLoaderV2 {
 
 		var currentGeneration = bestChromosomes.Count + 1;
 
-		evolution.Settings = SimulationSettings;
+		evolution.Settings = simulationSettings;
 
 		creatureBuilder.ContinueEvolution(evolution, () => {
 
 			CreatureSaver.SaveCurrentCreatureName(creatureName);
-			evolution.ContinueEvolution(currentGeneration, SimulationSettings, networkSettings, bestChromosomes, currentChromosomes);
+			evolution.ContinueEvolution(currentGeneration, simulationSettings, networkSettings, bestChromosomes, currentChromosomes);
 		});
 	}
 }

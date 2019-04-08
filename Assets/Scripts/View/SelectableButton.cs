@@ -4,8 +4,8 @@ using System.Collections;
 
 public class SelectableButton : MonoBehaviour {
 
-	public float SelectionOffsetX = 20;
-	public float ReferenceResolutionX = 1920;
+	public Vector2 SelectionOffset = new Vector2(20, 0);
+	public Vector2 ReferenceResolution = new Vector2(1920, 1080);
 
 	private Vector3 defaultPosition;
 	private Vector3 selectedPosition;
@@ -33,9 +33,10 @@ public class SelectableButton : MonoBehaviour {
 	private IEnumerator routine;
 
 	void Start () {
-		var offsetX = SelectionOffsetX * (float)Screen.width / ReferenceResolutionX;
+		var offsetX = SelectionOffset.x * (float)Screen.width / ReferenceResolution.x;
+		var offsetY = SelectionOffset.y * (float)Screen.height / ReferenceResolution.y;
 		defaultPosition = transform.position;
-		selectedPosition = new Vector3(defaultPosition.x + offsetX, defaultPosition.y, 0);
+		selectedPosition = new Vector3(defaultPosition.x + offsetX, defaultPosition.y + offsetY, 0);
 	}
 
 	public void OnClick() {

@@ -1,5 +1,10 @@
 using UnityEngine;
 
+enum EditorMode {
+    Basic = 0,
+    Advanced = 1
+}
+
 public class CreatureEditor: MonoBehaviour {
 
     public enum Tool {
