@@ -6,3 +6,4 @@ int EditorMode = 0
 string CreatureNames (_CreatureNames)
 string CurrentCreatureName
 string CurrentCreatureDesign
+string SimulationSettings (EVOLUTION_SETTINGS)

@@ -9,18 +9,6 @@ using System;
 
 public class CreatureBuilder : MonoBehaviour {
 
-	public enum BuildSelection {
-		Delete,
-		Move,
-		Joint, 
-		Bone, 
-		Muscle
-	}
-
-	[SerializeField]
-	private ButtonManager buttonManager;
-	[SerializeField]
-	private CreatureDesignControlsView creatureDesignControls;
 	[SerializeField]
 	private SettingsMenu settingsMenu;
 	[SerializeField]

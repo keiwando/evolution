@@ -5740,7 +5740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4e4fa0d280594a3281ce04be5823b3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  editor: {fileID: 0}
+  editor: {fileID: 2044445779}
   jointButton: {fileID: 970668502}
   boneButton: {fileID: 6786821}
   muscleButton: {fileID: 1915064876}
@@ -23802,7 +23802,7 @@ GameObject:
   - component: {fileID: 2044445778}
   - component: {fileID: 2044445779}
   m_Layer: 5
-  m_Name: CreatureEditor
+  m_Name: Creature Editor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

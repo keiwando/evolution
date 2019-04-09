@@ -25,8 +25,9 @@ public class SelectableButton : MonoBehaviour {
 			} else {
 				routine = SmoothMove(defaultPosition, time);
 			}
-			this.StartCoroutine(routine);
-			//transform.position = selectedPosition;
+			if (this.gameObject.activeSelf) {
+				this.StartCoroutine(routine);
+			}
 		}
 	}
 

@@ -16,12 +16,40 @@ public class CreatureEditor: MonoBehaviour {
         Delete
     }
 
+    public Tool ActiveTool = Tool.Joint;
+
     [SerializeField]
     private CreatureBuilder creatureBuilder;
-
-    public Tool ActiveTool = Tool.Joint;
+    [SerializeField]
+    private EditorViewController viewController;
+    [SerializeField]
+    private 
 
     void Start() {
         
+    }
+
+    void Update() {
+
+    }
+
+    /// <summary>
+    /// Removes all currently placed body components from the scene
+    /// </summary>
+    public void Clear() {
+        
+    }
+
+    
+
+    /// <summary>
+    /// Prepares the simulation state and loads the simulation scene
+    /// </summary>
+    public void StartSimulation () {
+
+        // TODO: Implement
+        // Get creature design
+        // Get simulation settings
+        // Load simulation scene
     }
 }

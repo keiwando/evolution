@@ -4,14 +4,15 @@ using UnityEngine.UI;
 public class EditorViewController: MonoBehaviour {
 
     [SerializeField]
-    private Button editorModeToggle;
-
-    [SerializeField]
     private GameObject basicControls;
     [SerializeField]
     private GameObject advancedControls;
     [SerializeField]
+    private Button editorModeToggle;
+    [SerializeField]
     private ButtonManager buttonManager;
+    [SerializeField]
+    private CreatureDesignControlsView creatureDesignControlsView;
 
     private EditorMode editorMode {
         get { return (EditorMode)Settings.EditorMode; }
@@ -48,5 +49,6 @@ public class EditorViewController: MonoBehaviour {
         basicControls.SetActive(!advancedMode);
         advancedControls.SetActive(advancedMode);
         buttonManager.Refresh();
+        // TODO: Refresh Creature Design Controls View
     }
 }
