@@ -1,6 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+enum EditorMode {
+    Basic = 0,
+    Advanced = 1
+}
+
 public class EditorViewController: MonoBehaviour {
 
     [SerializeField]
@@ -22,6 +27,10 @@ public class EditorViewController: MonoBehaviour {
     void Start() {
         RefreshEditorViews();
         SetupActions();
+    }
+
+    public void Refresh() {
+        RefreshEditorViews();
     }
 
     private void SetupActions() {

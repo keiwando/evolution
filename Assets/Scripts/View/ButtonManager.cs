@@ -44,7 +44,7 @@ public class ButtonManager : MonoBehaviour {
 		deleteButton.gameObject.SetActive(!advancedMode);
 
 		foreach(KeyValuePair<SelectableButton, CreatureEditor.Tool> entry in buttonMap) {
-			if (entry.Value == editor.ActiveTool) {
+			if (entry.Value == editor.SelectedTool) {
 				entry.Key.Selected = true;
 			} else {
 				entry.Key.Selected = false;
@@ -62,7 +62,7 @@ public class ButtonManager : MonoBehaviour {
 			}
 			selectedButton = button;
 
-			editor.ActiveTool = buttonMap[button];
+			editor.SelectedTool = buttonMap[button];
 		}
 	}
 

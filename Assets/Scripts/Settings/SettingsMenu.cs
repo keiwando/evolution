@@ -239,7 +239,7 @@ public class SettingsMenu : MonoBehaviour {
 	}
 
 	public SimulationSettings GetSimulationSettings() {
-		return LoadSimulationSettings();
+		return EditorStateManager.LoadFromSerialization().SimulationSettings;
 	}
 
 	private void SaveSimulationSettings(SimulationSettings settings) {

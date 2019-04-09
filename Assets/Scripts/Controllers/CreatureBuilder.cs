@@ -7,22 +7,17 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
-public class CreatureBuilder : MonoBehaviour {
+public class CreatureBuilder {
 
-	[SerializeField]
-	private SettingsMenu settingsMenu;
-	[SerializeField]
-	private CameraController cameraController;
-
-	[SerializeField]
-	private Texture2D mouseDeleteTexture;
-
-	[SerializeField]
-	private Evolution evolution;
-
-	[SerializeField]
-	private Grid grid;
-
+	/// <summary>
+	/// The current creature design state created by this builder.
+	/// </summary>
+	/// <remarks>
+	/// This needs to be kept consistent with the body components that
+	/// have been placed in the scene.
+	/// </remarks>
+	/// // TODO: Figure out if this is needed
+	// private CreatureDesign design;
 
 	/// <summary>
 	/// The joints of the creature that have been placed in the scene.
@@ -36,15 +31,6 @@ public class CreatureBuilder : MonoBehaviour {
 	/// The muscles that have been placed in the scene.
 	/// </summary>
 	private List<Muscle> muscles;
-
-	private BuildSelection selectedPart;
-	public BuildSelection SelectedPart {
-		get { return selectedPart; }
-		set {
-			selectedPart = value;
-			UpdateHoverables();
-		}
-	}
 
 	/// <summary> 
 	/// The Bone that is currently being placed. 
@@ -72,157 +58,10 @@ public class CreatureBuilder : MonoBehaviour {
 	/// </summary>
 	public static float CONNECTION_WIDTH = 0.5f;
 
-	/// <summary>
-	/// Indicates whether it is the first time starting the program 
-	/// ( = no evolution has taken place yet)
-	/// </summary>
-	private static bool firstTime = true;
-
-	void Start () {
-
-		joints = new List<Joint>();
-		bones = new List<Bone>();
-		muscles = new List<Muscle>();
-
-		// Joints are selected by default.
-		selectedPart = BuildSelection.Joint;
-		buttonManager.SelectButton(selectedPart);
-
-		if (!firstTime) {
-			CreatureSaver.LoadCurrentCreature(this);
-			RefreshCurrentCreatureName();
-		} else {
-			creatureDesignControls.SetUnnamed();
-		}
-
-		firstTime = false;
+	public CreatureBuilder() {
+		// this.design = new CreatureDesign();
 	}
-
-	void Update () {
-
-		HandleClicks();
-		HandleKeyboardInput();
-	}
-
-	/// <summary>
-	/// Returns true of the mouse is positioned over a UI element.
-	/// </summary>
-	private bool IsPointerOverUIObject(){
-
-		PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
-		eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-
-		List<RaycastResult> results = new List<RaycastResult>();
-		EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
-
-		return results.Count > 0;
-	}
-
-	/// <summary>
-	/// Checks for click / touch events and handles them appropiately depending on the 
-	/// currently selected body part.
-	/// </summary>
-	private void HandleClicks() {
-
-		if (cameraController.IsAdjustingCamera) { return; }
-
-		if ( Input.GetMouseButtonDown(0) ) { 	// user clicked
-
-			if (EventSystem.current.IsPointerOverGameObject()) return;
-			if (IsPointerOverUIObject()) return;
-			if (cameraController.IsAdjustingCamera) return;
-			
-			switch (selectedPart) {
-			case BuildSelection.Bone: 
-				TryStartingBone(Input.mousePosition); break;
-			case BuildSelection.Muscle:
-				TryStartingMuscle(Input.mousePosition); break;
-			case BuildSelection.Move: 
-				TryStartComponentMove(); break;
-			case BuildSelection.Delete: 
-				DeleteHoveringBodyComponent(); break;
-			default: break;
-			}
-
-		} else if ( MouseHeld() ) {
-
-			switch (selectedPart) {
-			case BuildSelection.Bone: 
-				UpdateCurrentBoneEnd(); break;
-			case BuildSelection.Muscle:
-				UpdateCurrentMuscleEnd(); break;
-			case BuildSelection.Move: 
-				MoveCurrentComponent(); break;
-			case BuildSelection.Delete: 
-				break;
-			default: break;
-			}
-
-		} else if ( MouseUp() ) {
-
-			switch (selectedPart) {
-			case BuildSelection.Joint:
-				TryPlacingJoint(Input.mousePosition); break;
-			case BuildSelection.Bone:
-				PlaceCurrentBone(); break;
-			case BuildSelection.Muscle:
-				PlaceCurrentMuscle(); break;
-			case BuildSelection.Move:
-				MoveEnded(); break;
-			default: break;
-			}
-		} 
-	}
-
-	/// <summary>
-	/// Returns true if the mouse/touch input ended on this frame.
-	/// </summary>
-	private bool MouseUp() {
-		return Input.GetMouseButtonUp(0) || 
-			   (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended);
-	}
-
-	/// <summary>
-	/// Returns true if the mouse/touch input began on an earlier
-	/// frame and is still ongoing during this frame.
-	/// </summary>
-	private bool MouseHeld() {
-		return Input.GetMouseButton(0) ||
-			   (Input.touchCount > 0 && (Input.GetTouch(0).phase != TouchPhase.Ended 
-			   && Input.GetTouch(0).phase != TouchPhase.Ended));
-	}
-
-	/// <summary>
-	/// Handles all possible keyboard controls / shortcuts.
-	/// </summary>
-	private void HandleKeyboardInput() {
-
-		if (!Input.anyKeyDown) return;
-
-		var input = KeyInputManager.shared;
-		// J = place Joint
-		if (input.GetKeyDown(KeyCode.J)) {
-			SelectedPart = BuildSelection.Joint;
-		}
-		// B = place body connection
-		else if (input.GetKeyDown(KeyCode.B)) {
-			SelectedPart = BuildSelection.Bone;
-		}
-		// M = place muscle
-		else if (input.GetKeyDown(KeyCode.M)) {
-			SelectedPart = BuildSelection.Muscle;
-		}
-		// D = Delete component
-		else if (input.GetKeyDown(KeyCode.D)) {
-			SelectedPart = BuildSelection.Delete;
-		}
-		// E = Go to Evolution Scene
-		else if (input.GetKeyDown(KeyCode.E)) {
-			Evolve();
-		}
-
-		buttonManager.SelectButton(selectedPart);
-	}
+	
 
 	/// <summary>
 	/// Sets the shouldHighlight variable appropiately on every hoverable object
@@ -363,7 +202,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/// <summary>
 	/// Attempts to place a joint at the specified position.
 	/// </summary>
-	private void TryPlacingJoint(Vector3 mousePos) {
+	public void TryPlacingJoint(Vector3 mousePos) {
 
 		if (EventSystem.current.IsPointerOverGameObject()) return;
 		if (IsPointerOverUIObject()) return;
@@ -406,7 +245,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/// <summary>
 	/// Attempts to place a bone beginning at the current position.
 	/// </summary>
-	private void TryStartingBone(Vector3 startPos) {
+	public void TryStartingBone(Vector3 startPos) {
 		// find the selected joint
 		Joint joint = GetHoveringObject<Joint>(joints);
 
@@ -433,7 +272,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/// Updates the bone that is currently being placed to end at the 
 	/// current mouse/touch position.
 	/// </summary>
-	private void UpdateCurrentBoneEnd() {
+	public void UpdateCurrentBoneEnd() {
 
 		if (currentBone != null) {
 			// check if user is hovering over an ending joint which is not the same as the starting
@@ -475,7 +314,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/// Checks to see if the current bone is valid (attached to two joints) and if so 
 	/// adds it to the list of bones.
 	/// </summary>
-	private void PlaceCurrentBone() {
+	public void PlaceCurrentBone() {
 
 		if (currentBone == null) return;
 
@@ -498,7 +337,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/// <summary>
 	/// Attempts to place a muscle starting at the specified position.
 	/// </summary>
-	private void TryStartingMuscle(Vector3 startPos) {
+	public void TryStartingMuscle(Vector3 startPos) {
 
 		// find the selected bone
 		Bone bone = GetHoveringObject<Bone>(bones);
@@ -529,7 +368,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/// Updates the muscle that is currently being placed to end at the 
 	/// current mouse/touch position.
 	/// </summary>
-	private void UpdateCurrentMuscleEnd() {
+	public void UpdateCurrentMuscleEnd() {
 
 		if (currentMuscle != null) {
 			// Check if user is hovering over an ending joint which is not the same as the starting
@@ -561,7 +400,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/// Attempts to start moving the body component that is currently being
 	/// hovered over.
 	/// </summary>
-	private void TryStartComponentMove() {
+	public void TryStartComponentMove() {
 		// TODO: Add the option to move bones
 		// Make sure the user is hovering over a joint
 		Joint joint = GetHoveringObject<Joint>(joints);
@@ -576,7 +415,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/// <summary>
 	/// Moves the currently selected components to the mouse position.
 	/// </summary>
-	private void MoveCurrentComponent() {
+	public void MoveCurrentComponent() {
 
 		if (currentMovingJoint != null) {
 			// Move the joint to the mouse position.
@@ -596,7 +435,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/// <summary>
 	/// Resets all properties used while moving a body component.
 	/// </summary>
-	private void MoveEnded() {
+	public void MoveEnded() {
 		currentMovingJoint = null;
 	}
 
@@ -606,7 +445,7 @@ public class CreatureBuilder : MonoBehaviour {
 	/// Checks to see if the current muscle is valid (attached to two joints) and if so
 	/// adds it to the list of muscles.
 	/// </summary>
-	private void PlaceCurrentMuscle() {
+	public void PlaceCurrentMuscle() {
 			
 		if (currentMuscle == null) return;
 
