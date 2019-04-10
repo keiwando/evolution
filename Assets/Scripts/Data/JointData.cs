@@ -4,8 +4,14 @@ using UnityEngine;
 [Serializable]
 public struct JointData {
 
-    public int ID;
+    public readonly int id;
 
-    public Vector2 Position;
-    public float Weight;
+    public readonly Vector2 position;
+    public readonly float weight;
+
+    public JointData(int id, Vector2 position, float weight) {
+        this.id = id;
+        this.position = position;
+        this.weight = weight;
+    }
 }

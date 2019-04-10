@@ -7,13 +7,13 @@ public class Joint : BodyComponent {
 	private const string PATH = "Prefabs/Joint";
 
 	public Vector3 center { 
-		get {
-			return transform.position;
-		} 
+		get { return transform.position; } 
 	}
 
 	//private Dictionary<Bone, HingeJoint> joints = new Dictionary<Bone, HingeJoint>();
 	private Dictionary<Bone, UnityEngine.Joint> joints = new Dictionary<Bone, UnityEngine.Joint>();
+
+	public JointData JointData { get; set; }
 
 	private bool iterating;
 
@@ -55,7 +55,6 @@ public class Joint : BodyComponent {
 		return joint;
 	}
 
-	// Use this for initialization
 	public override void Start () {
 		base.Start();
 
@@ -63,7 +62,6 @@ public class Joint : BodyComponent {
 		resetRotation = transform.rotation;
 
 		body = GetComponent<Rigidbody>();
-		//joints 
 	}
 
 	public void Reset() {

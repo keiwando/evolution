@@ -10,18 +10,16 @@ public class Bone : BodyComponent {
 	public Joint endingJoint;
 
 	public Vector3 startingPoint {
-		get {
-			return startingJoint.center;
-		}
+		get { return startingJoint.center; }
 	}
 
 	public Vector3 endingPoint {
-		get {
-			return endingJoint.center;
-		}	
+		get { return endingJoint.center; }	
 	}
 
 	public MuscleJoint muscleJoint;
+
+	public BoneData BoneData { get; set; }
 
 	private Vector3 resetPosition;
 	private Quaternion resetRotation;

@@ -3,10 +3,18 @@ using System;
 [Serializable]
 public struct MuscleData {
 
-    public int ID;
-    public int StartBoneID;
-    public int EndBoneID;
+    public readonly int id;
+    public readonly int startBoneID;
+    public readonly int endBoneID;
 
-    public float Strength;
-    public bool CanExpand;
+    public readonly float strength;
+    public readonly bool canExpand;
+
+    public MuscleData(int id, int startBoneID, int endBoneID, float strength, bool canExpand) {
+        this.id = id;
+        this.startBoneID = startBoneID;
+        this.endBoneID = endBoneID;
+        this.strength = strength;
+        this.canExpand = canExpand;
+    }
 }

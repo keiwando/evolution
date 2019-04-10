@@ -12,22 +12,12 @@ public class Muscle : BodyComponent {
 		CONTRACT, EXPAND	
 	}
 
+	public MuscleData MuscleData { get; set; }
+
 	public MuscleAction muscleAction;
 
 	public MuscleJoint startingJoint;
 	public MuscleJoint endingJoint;
-
-//	public Vector3 startingPoint {
-//		get {
-//			return startingJoint.position;
-//		}
-//	}
-//
-//	public Vector3 endingPoint {
-//		get {
-//			return endingJoint.position;
-//		}	
-//	}
 
 	private SpringJoint spring;
 

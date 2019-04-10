@@ -3,9 +3,16 @@ using System;
 [Serializable]
 public struct BoneData {
 
-    public int ID;
-    public int StartJointID;
-    public int EndJointID;
+    public readonly int id;
+    public readonly int startJointID;
+    public readonly int endJointID;
     
-    public float Weight;
+    public readonly float weight;
+
+    public BoneData(int id, int startJointID, int endJointID, float weight) {
+        this.id = id;
+        this.startJointID = startJointID;
+        this.endJointID = endJointID;
+        this.weight = weight;
+    }
 }

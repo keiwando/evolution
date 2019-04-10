@@ -16,13 +16,11 @@ public class CreatureEditor: MonoBehaviour {
         get { return selectedTool; }
         set { 
             selectedTool = value; 
-            // TODO: Update Hoverables
+            UpdateHoverables();
         }
     }
     private Tool selectedTool = Tool.Joint;
 
-    [SerializeField]
-    private CreatureBuilder creatureBuilder;
     [SerializeField]
     private EditorViewController viewController;
     [SerializeField]
@@ -33,8 +31,10 @@ public class CreatureEditor: MonoBehaviour {
     [SerializeField]
 	private Texture2D mouseDeleteTexture;
 
+    private CreatureBuilder creatureBuilder;
+
     void Start() {
-        
+        creatureBuilder = new CreatureBuilder();
     }
 
     void Update() {
@@ -73,6 +73,14 @@ public class CreatureEditor: MonoBehaviour {
 
         if (cameraController.IsAdjustingCamera) return;
 
+        var clickWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        clickWorldPos.z = 0;
+
+        // Snap to grid for joints and movement
+        if (grid.gameObject.activeSelf && (selectedTool == Tool.Joint || selectedTool == Tool.Move)) {
+            clickWorldPos = grid.ClosestPointOnGrid(clickWorldPos);
+        }
+
         // TODO: Implement
         // TODO: Add select tool
         // Mouse Down
@@ -82,6 +90,7 @@ public class CreatureEditor: MonoBehaviour {
             if (InputUtils.IsPointerOverUIObject()) return;
             
             switch (selectedTool) {
+
             case Tool.Bone:
                 creatureBuilder.TryStartingBone(Input.mousePosition); break;
             case Tool.Muscle:
@@ -89,6 +98,7 @@ public class CreatureEditor: MonoBehaviour {
             case Tool.Move:
                 creatureBuilder.TryStartComponentMove(); break;
             default: break;
+            
             }
         }
         // Mouse Move
@@ -110,14 +120,21 @@ public class CreatureEditor: MonoBehaviour {
         else if (InputUtils.MouseUp()) {
 
             switch (selectedTool) {
+
             case Tool.Joint:
-                creatureBuilder.TryPlacingJoint(Input.mousePosition); break;
+                if (EventSystem.current.IsPointerOverGameObject()) return;
+                if (InputUtils.IsPointerOverUIObject()) return;
+                if (Input.touchCount > 1) return;
+                creatureBuilder.TryPlacingJoint(Input.mousePosition); 
+                break;
+
             case Tool.Bone: 
                 creatureBuilder.PlaceCurrentBone(); break;
             case Tool.Muscle:
                 creatureBuilder.PlaceCurrentMuscle(); break;
             case Tool.Move: 
                 creatureBuilder.MoveEnded(); break;
+
             default: break;
             }
         }
@@ -154,5 +171,33 @@ public class CreatureEditor: MonoBehaviour {
 		}
 
         viewController.Refresh();
+    }
+
+    // MARK: - Highlighting on Hover
+
+    /// <summary>
+	/// Sets the shouldHighlight variable appropiately on every hoverable object
+	/// depending on the currently selected part.  
+	/// </summary>
+    private void UpdateHoverables() {
+
+        creatureBuilder.SetMouseHoverTextures(null);
+
+        switch (selectedTool) {
+        case Tool.Joint: 
+            creatureBuilder.EnableHighlighting(false, false, false); break;
+        case Tool.Bone:
+            creatureBuilder.EnableHighlighting(true, false, false); break;
+        case Tool.Muscle:
+            creatureBuilder.EnableHighlighting(false, true, false); break;
+        case Tool.Move:
+            creatureBuilder.EnableHighlighting(true, true, false); break;
+        case Tool.Select:
+            creatureBuilder.EnableHighlighting(true, true, true); break;
+        case Tool.Delete:
+            creatureBuilder.SetMouseHoverTextures(mouseDeleteTexture);
+            creatureBuilder.EnableHighlighting(true, true, true);
+            break;
+        }
     }
 }

@@ -10,6 +10,12 @@ using System;
 public class CreatureBuilder {
 
 	/// <summary>
+	/// A counter used to assign a unique id to each body component created with this CreatureBuilder.
+	/// Needs to be incremented after each use. Can be reset if needed. Starts at 0.
+	/// </summary>
+	private int idCounter = 0;
+
+	/// <summary>
 	/// The current creature design state created by this builder.
 	/// </summary>
 	/// <remarks>
@@ -62,55 +68,58 @@ public class CreatureBuilder {
 		// this.design = new CreatureDesign();
 	}
 	
+	// /// <returns>The joints created by this builder.</returns>
+	// public List<Joint> GetJoints() {
+	// 	return new List<Joint>(joints);
+	// }
+
+	// /// <returns>The bones created by this builder.</returns>
+	// public List<Bone> GetBones() {
+	// 	return new List<Bone>(bones);
+	// }
+
+	// /// <returns>The muscles created by this builder.</returns>
+	// public List<Muscle> GetMuscles() {
+	// 	return new List<Muscle>(muscles);
+	// }
 
 	/// <summary>
-	/// Sets the shouldHighlight variable appropiately on every hoverable object
-	/// depending on the currently selected part.  
+	/// Enabled / Disables highlighting on hover for the specified body components
 	/// </summary>
-	private void UpdateHoverables() {
+	public void EnableHighlighting(bool joint, bool bone, bool muscle) {
 
-		SetMouseHoverTexture(null);
+		HoveringUtil.SetShouldHighlight(this.joints, joint);
+		HoveringUtil.SetShouldHighlight(this.bones, bone);
+		HoveringUtil.SetShouldHighlight(this.muscles, muscle);
+	}
 
-		if (selectedPart == BuildSelection.Joint ) {
-			// disable Highlights
-			DisableAllHoverables();
-		} else if (selectedPart == BuildSelection.Bone || selectedPart == BuildSelection.Move) {
-			// make the joints hoverable
-			SetShouldHighlight(joints, true);
-			SetShouldHighlight(bones, false);
-			SetShouldHighlight(muscles, false);
-		} else if (selectedPart == BuildSelection.Muscle ) {
-			// make the bones hoverables
-			SetShouldHighlight(joints, false);
-			SetShouldHighlight(bones, true);
-			SetShouldHighlight(muscles, false);
-		} else if (selectedPart == BuildSelection.Delete) {
-			// make everything highlightable
-			SetShouldHighlight(joints, true);
-			SetShouldHighlight(bones, true);
-			SetShouldHighlight(muscles, true);
+	/// <summary>
+	/// Resets the hoverable colliders on joints and bones.
+	/// </summary>
+	private void ResetHoverableColliders() {
 
-			SetMouseHoverTexture(mouseDeleteTexture);
-		}
+		HoveringUtil.ResetHoverableColliders(joints);
+		HoveringUtil.ResetHoverableColliders(bones);
 	}
 
 	/// <summary>
 	/// Removes the already destroyed object that are still left in the lists.
 	/// </summary>
-	private void UpdateDeletedObjects() {
+	private void RemoveDeletedObjects() {
 
-		bones = UpdateDeletedObjects<Bone>(bones);
-		joints = UpdateDeletedObjects<Joint>(joints);
-		muscles = UpdateDeletedObjects<Muscle>(muscles);
+		bones = RemoveDeletedObjects<Bone>(bones);
+		joints = RemoveDeletedObjects<Joint>(joints);
+		muscles = RemoveDeletedObjects<Muscle>(muscles);
 	}
 
 	/// <summary>
 	/// Removes the already destroyed object that are still left in the list.
+	/// This operation doesn't change the original list.
 	/// </summary>
 	/// <param name="objects">A list of BodyComponents</param>
 	/// <typeparam name="T">A BodyComponent subtype.</typeparam>
 	/// <returns>A list without the already destroyed objects of the input list.</returns>
-	private List<T> UpdateDeletedObjects<T>(List<T> objects) where T: BodyComponent {
+	private static List<T> RemoveDeletedObjects<T>(List<T> objects) where T: BodyComponent {
 
 		List<T> removed = new List<T>(objects);
 		foreach (T obj in objects) {
@@ -124,96 +133,23 @@ public class CreatureBuilder {
 	}
 
 	/// <summary>
-	/// Disables the highlighting capabilities of all hoverable 
-	/// body components.
+	/// Sets the specified mouse hover texture on all body components created 
+	/// by this builder.
 	/// </summary>
-	private void DisableAllHoverables() {
+	public void SetMouseHoverTextures(Texture2D texture) {
 
-		SetShouldHighlight(joints, false);
-		SetShouldHighlight(bones, false);
-		SetShouldHighlight(muscles, false);
+		HoveringUtil.SetMouseHoverTexture(joints, texture);
+		HoveringUtil.SetMouseHoverTexture(bones, texture);
+		HoveringUtil.SetMouseHoverTexture(muscles, texture);
 	}
-
-	/// <summary>
-	/// Resets the hoverable colliders on joints and bones.
-	/// </summary>
-	private void ResetHoverableColliders() {
-
-		ResetHoverableColliders(joints);
-		ResetHoverableColliders(bones);
-	}
-
-	/// <summary>
-	/// Resets the hoverable colliders on the list items. 
-	/// </summary>
-	private void ResetHoverableColliders<T>(List<T> hoverables) where T: Hoverable {
-
-		foreach (Hoverable hov in hoverables) {
-			hov.ResetHitbox();
-		}
-	} 
-
-	/// <summary>
-	/// Updates the body component texture for when a component is
-	/// being hovered over.
-	/// </summary>
-	private void SetMouseHoverTexture(Texture2D texture) {
-
-		foreach (Joint joint in joints) {
-			joint.mouseHoverTexture = texture;
-		}
-		foreach (Bone bone in bones) {
-			bone.mouseHoverTexture = texture;
-		}
-		foreach (Muscle muscle in muscles) {
-			muscle.mouseHoverTexture = texture;
-		}
-	}
-
-	/// <summary>
-	/// Sets the shouldHighlight property of a Hoverable script entry in the 
-	/// specified list to the boolean value specified by shouldHighlight.
-	/// </summary>
-	private void SetShouldHighlight<T>(List<T> hoverables, bool shouldHighlight) where T: Hoverable {
-
-		foreach (var obj in hoverables) {
-			obj.shouldHighlight = shouldHighlight;
-		}
-	} 
-
-	/// <summary>
-	/// Returns the Object that the mouse is currently hovering over or null 
-	/// if there is no such object in the given list. The list contains scripts
-	/// that are attached to gameobjects which have a HoverableScript attached.
-	/// </summary>
-	private T GetHoveringObject<T>(List<T> objects) where T: MonoBehaviour {
-
-		foreach (T obj in objects) {
-			if (obj.gameObject.GetComponent<Hoverable>().hovering) {
-				return obj;
-			}
-		}
-
-		return null;
-	}
+	
 
 	#region Joint Placement
 
 	/// <summary>
-	/// Attempts to place a joint at the specified position.
+	/// Attempts to place a joint at the specified world position.
 	/// </summary>
-	public void TryPlacingJoint(Vector3 mousePos) {
-
-		if (EventSystem.current.IsPointerOverGameObject()) return;
-		if (IsPointerOverUIObject()) return;
-		if (Input.touchCount > 1) return;
-
-		var pos = ScreenToWorldPoint(mousePos);
-		pos.z = 0;
-		// Grid logic
-		if (grid.gameObject.activeSelf) {
-			pos = grid.ClosestPointOnGrid(pos);
-		}
+	public void TryPlacingJoint(Vector3 pos) {
 
 		// Make sure the joint doesn't overlap another one
 		bool noOverlap = true;
@@ -233,10 +169,10 @@ public class CreatureBuilder {
 	/// <summary>
 	/// Places a new joint at the specified point.
 	/// </summary>
-	private void PlaceJoint(Vector3 point) {
-
-		point.z = 0;
-		joints.Add(Joint.CreateAtPoint(point));
+	private void PlaceJoint(Vector3 position) {
+		// TODO: Create JointData
+		var jointData = new JointData(idCounter++, position, 1f);
+		joints.Add(Joint.CreateAtPoint(position));
 	}
 
 	#endregion
@@ -528,13 +464,6 @@ public class CreatureBuilder {
 		this.joints = joints;
 		this.bones = bones;
 		this.muscles = muscles;
-	}
-
-	/// <summary>
-	/// Converts a specified point from screen to world coordinates.
-	/// </summary>
-	private Vector3 ScreenToWorldPoint(Vector3 point) {
-		return Camera.main.ScreenToWorldPoint(point);
 	}
 
 	/// <summary>
