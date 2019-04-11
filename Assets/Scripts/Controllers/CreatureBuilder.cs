@@ -13,6 +13,7 @@ public class CreatureBuilder {
 	/// A counter used to assign a unique id to each body component created with this CreatureBuilder.
 	/// Needs to be incremented after each use. Can be reset if needed. Starts at 0.
 	/// </summary>
+	/// TODO: Ensure that this counter is updated when a creature is created from a Creature Design
 	private int idCounter = 0;
 
 	/// <summary>
@@ -65,7 +66,7 @@ public class CreatureBuilder {
 	public static float CONNECTION_WIDTH = 0.5f;
 
 	public CreatureBuilder() {
-		// this.design = new CreatureDesign();
+		
 	}
 	
 	// /// <returns>The joints created by this builder.</returns>
@@ -149,20 +150,20 @@ public class CreatureBuilder {
 	/// <summary>
 	/// Attempts to place a joint at the specified world position.
 	/// </summary>
-	public void TryPlacingJoint(Vector3 pos) {
+	public void TryPlacingJoint(Vector3 position) {
 
 		// Make sure the joint doesn't overlap another one
 		bool noOverlap = true;
 		foreach (var joint in joints) {
-			if ((joint.center - pos).magnitude < jointNonOverlapRadius) {
+			if ((joint.center - position).magnitude < jointNonOverlapRadius) {
 				noOverlap = false;
 				break;
 			}
 		}
 
 		if (noOverlap) {
-			PlaceJoint(pos);
-			ResetCurrentCreatureName();
+			PlaceJoint(position);
+			// Notify delegate about creature change
 		}
 	}
 
@@ -170,9 +171,9 @@ public class CreatureBuilder {
 	/// Places a new joint at the specified point.
 	/// </summary>
 	private void PlaceJoint(Vector3 position) {
-		// TODO: Create JointData
+
 		var jointData = new JointData(idCounter++, position, 1f);
-		joints.Add(Joint.CreateAtPoint(position));
+		joints.Add(Joint.CreateFromData(jointData));
 	}
 
 	#endregion
@@ -183,12 +184,12 @@ public class CreatureBuilder {
 	/// </summary>
 	public void TryStartingBone(Vector3 startPos) {
 		// find the selected joint
-		Joint joint = GetHoveringObject<Joint>(joints);
+		Joint joint = HoveringUtil.GetHoveringObject<Joint>(joints);
 
 		if (joint != null) {
 
 			CreateBoneFromJoint(joint);
-			PlaceConnectionBetweenPoints(currentBone.gameObject, joint.center, ScreenToWorldPoint(startPos), CONNECTION_WIDTH);
+			PlaceConnectionBetweenPoints(currentBone.gameObject, joint.center, startPos, CONNECTION_WIDTH);
 		}
 	}
 
@@ -196,11 +197,10 @@ public class CreatureBuilder {
 	/// Instantiates a bone at the specified point.
 	/// </summary>
 	private void CreateBoneFromJoint(Joint joint){
-
-		Vector3 point = joint.center;
-		point.z = 0;
 		
-		currentBone = Bone.CreateAtPoint(point);
+		// TODO: Keep Muscle joint weight in mind
+		var boneData = new BoneData(idCounter++, joint.JointData.id, joint.JointData.id, 2f);
+		currentBone = Bone.CreateAtPoint(joint.center, boneData);
 		currentBone.startingJoint = joint;
 	}
 
@@ -208,20 +208,23 @@ public class CreatureBuilder {
 	/// Updates the bone that is currently being placed to end at the 
 	/// current mouse/touch position.
 	/// </summary>
-	public void UpdateCurrentBoneEnd() {
+	public void UpdateCurrentBoneEnd(Vector3 position) {
 
 		if (currentBone != null) {
 			// check if user is hovering over an ending joint which is not the same as the starting
 			// joint of the currentBone
-			Joint joint = GetHoveringObject<Joint>(joints);
-			Vector3 endingPoint = ScreenToWorldPoint(Input.mousePosition);
+			Joint joint = HoveringUtil.GetHoveringObject<Joint>(joints);
+			var endPoint = position;
 
 			if (joint != null && !joint.Equals(currentBone.startingJoint)) {
-				endingPoint = joint.center;
+				endPoint = joint.center;
 				currentBone.endingJoint = joint;
+				var oldData = currentBone.BoneData;
+				var newData = new BoneData(oldData.id, oldData.startJointID, joint.JointData.id, oldData.weight);
+				currentBone.BoneData = newData;
 			} 
 
-			PlaceConnectionBetweenPoints(currentBone.gameObject, currentBone.startingPoint, endingPoint, CONNECTION_WIDTH);	
+			PlaceConnectionBetweenPoints(currentBone.gameObject, currentBone.startingPoint, endPoint, CONNECTION_WIDTH);	
 		}	
 	}
 
@@ -254,14 +257,16 @@ public class CreatureBuilder {
 
 		if (currentBone == null) return;
 
-		if (currentBone.endingJoint == null || GetHoveringObject<Joint>(joints) == null || currentBone.endingJoint.Equals(currentBone.startingJoint)) {
+		if (currentBone.endingJoint == null || 
+		    HoveringUtil.GetHoveringObject<Joint>(joints) == null || 
+			currentBone.endingJoint.Equals(currentBone.startingJoint)) {
 			// The connection has no connected ending -> Destroy
-			Destroy(currentBone.gameObject);
+			UnityEngine.Object.Destroy(currentBone.gameObject);
 		} else {
 			currentBone.ConnectToJoints();
 			bones.Add(currentBone);
 			// The creature was modified
-			ResetCurrentCreatureName(); 
+			// TODO: Notify delegate about creature change
 		}
 
 		currentBone = null;
@@ -276,49 +281,49 @@ public class CreatureBuilder {
 	public void TryStartingMuscle(Vector3 startPos) {
 
 		// find the selected bone
-		Bone bone = GetHoveringObject<Bone>(bones);
+		Bone bone = HoveringUtil.GetHoveringObject<Bone>(bones);
 
 		if (bone != null) {
-			Vector3 mousePos = ScreenToWorldPoint(Input.mousePosition);
-			MuscleJoint joint = bone.muscleJoint;
-
-			CreateMuscleFromJoint(joint);
-			currentMuscle.SetLinePoints(joint.transform.position, mousePos);
+			CreateMuscleFromBone(bone);
+			currentMuscle.SetLinePoints(bone.muscleJoint.transform.position, startPos);
 		}
 	}
 
 	/// <summary>
 	/// Instantiates a muscle at the specified point.
 	/// </summary>
-	private void CreateMuscleFromJoint(MuscleJoint joint) {
+	private void CreateMuscleFromBone(Bone bone) {
 
-		Vector3 point = joint.transform.position;
-		point.z = 0;
-
+		var muscleData = new MuscleData(idCounter++, bone.BoneData.id, bone.BoneData.id, Muscle.Defaults.MaxForce, true);
 		currentMuscle = Muscle.Create();
-		currentMuscle.startingJoint = joint;
-		currentMuscle.SetLinePoints(joint.transform.position, joint.transform.position);
+		var muscleJoint = bone.muscleJoint;
+		currentMuscle.startingJoint = muscleJoint;
+		currentMuscle.SetLinePoints(muscleJoint.transform.position, muscleJoint.transform.position);
 	}
 
 	/// <summary>
 	/// Updates the muscle that is currently being placed to end at the 
-	/// current mouse/touch position.
+	/// specified position
 	/// </summary>
-	public void UpdateCurrentMuscleEnd() {
+	public void UpdateCurrentMuscleEnd(Vector3 endPoint) {
 
 		if (currentMuscle != null) {
 			// Check if user is hovering over an ending joint which is not the same as the starting
 			// joint of the currentMuscle
-			Bone bone = GetHoveringObject<Bone>(bones);
-			Vector3 endingPoint = ScreenToWorldPoint(Input.mousePosition);
+			Bone bone = HoveringUtil.GetHoveringObject<Bone>(bones);
+			var endingPoint = endPoint;
 
-			if(bone != null) {
+			if (bone != null) {
 				
 				MuscleJoint joint = bone.muscleJoint;
 
 				if (!joint.Equals(currentMuscle.startingJoint)) {
 					endingPoint = joint.transform.position;
 					currentMuscle.endingJoint = joint;	
+					var oldData = currentMuscle.MuscleData;
+					var newData = new MuscleData(oldData.id, oldData.startBoneID, bone.BoneData.id, 
+												 oldData.strength, oldData.canExpand); 
+					currentMuscle.MuscleData = newData;
 				} else {
 					currentMuscle.endingJoint = null;
 				}
@@ -339,32 +344,25 @@ public class CreatureBuilder {
 	public void TryStartComponentMove() {
 		// TODO: Add the option to move bones
 		// Make sure the user is hovering over a joint
-		Joint joint = GetHoveringObject<Joint>(joints);
+		Joint joint = HoveringUtil.GetHoveringObject<Joint>(joints);
 
 		if (joint != null) {
 			currentMovingJoint = joint;
 			// The creature was modified
-			ResetCurrentCreatureName(); 
+			// TODO: Notify delegate about creature change
 		}
 	}
 
 	/// <summary>
-	/// Moves the currently selected components to the mouse position.
+	/// Moves the currently selected components to the specified position.
 	/// </summary>
-	public void MoveCurrentComponent() {
+	public void MoveCurrentComponent(Vector3 position) {
 
 		if (currentMovingJoint != null) {
 			// Move the joint to the mouse position.
-			var newPoint = ScreenToWorldPoint(Input.mousePosition);
-
-			if (grid.gameObject.activeSelf) {
-				newPoint = grid.ClosestPointOnGrid(newPoint);
-			}
-			newPoint.z = 0;
-
-			currentMovingJoint.MoveTo(newPoint);
+			currentMovingJoint.MoveTo(position);
 			// The creature was modified
-			ResetCurrentCreatureName(); 
+			// TODO: Notify delegate about creature change
 		}
 	}
 
@@ -385,15 +383,16 @@ public class CreatureBuilder {
 			
 		if (currentMuscle == null) return;
 
-		if (currentMuscle.endingJoint == null || GetHoveringObject<Bone>(bones) == null) {
+		if (currentMuscle.endingJoint == null || 
+		    HoveringUtil.GetHoveringObject<Bone>(bones) == null) {
 			// The connection has no connected ending -> Destroy
-			Destroy(currentMuscle.gameObject);
+			UnityEngine.Object.Destroy(currentMuscle.gameObject);
 		} else {
 
 			// Validate the muscle doesn't exist already
 			foreach (Muscle muscle in muscles) {
 				if (muscle.Equals(currentMuscle)) {
-					Destroy(currentMuscle.gameObject);
+					UnityEngine.Object.Destroy(currentMuscle.gameObject);
 					currentMuscle = null;
 					return;
 				}
@@ -403,7 +402,7 @@ public class CreatureBuilder {
 			currentMuscle.AddCollider();
 			muscles.Add(currentMuscle);
 			// The creature was modified
-			ResetCurrentCreatureName(); 
+			// TODO: Notify delegate about creature change
 		}
 
 		currentMuscle = null;
@@ -412,52 +411,40 @@ public class CreatureBuilder {
 	#endregion
 
 	/// <summary>
-	/// Deletes the currently visible creature.
+	/// Deletes all body components placed with this builder.
 	/// </summary>
-	public void DeleteCreature() {
+	public void DeleteAll() {
 
-		foreach(var joint in joints) {
+		// Deleting joints will recursively delete all connected 
+		// body parts as well
+		foreach (var joint in joints) {
 			joint.Delete();
 		}
 
-		UpdateDeletedObjects();
+		RemoveDeletedObjects();
+		idCounter = 0;
 	}
 
 	/// <summary>
 	/// Deletes the placed body components that are currently being
 	/// hovered over.
 	/// </summary>
-	private void DeleteHoveringBodyComponent() {
+	public void DeleteHoveringBodyComponent() {
 
-		BodyComponent joint = GetHoveringObject<Joint>(joints);
-		BodyComponent bone = GetHoveringObject<Bone>(bones);
-		BodyComponent muscle = GetHoveringObject<Muscle>(muscles);
+		BodyComponent joint = HoveringUtil.GetHoveringObject<Joint>(joints);
+		BodyComponent bone = HoveringUtil.GetHoveringObject<Bone>(bones);
+		BodyComponent muscle = HoveringUtil.GetHoveringObject<Muscle>(muscles);
 
 		BodyComponent toDelete = joint != null ? joint : ( bone != null ? bone : muscle ) ;
 
 		if (toDelete != null) {
 			toDelete.Delete();
-			UpdateDeletedObjects();
+			RemoveDeletedObjects();
 			// The creature was modified
-			ResetCurrentCreatureName(); 
+			// TODO: Notify a delegate object
 
 			Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
 		}
-	}
-
-	/// <summary>
-	/// Resets the current creature name to "Unnamed".
-	/// </summary>
-	private void ResetCurrentCreatureName() {
-		creatureDesignControls.SetUnnamed();
-		Settings.CurrentCreatureName = "Unnamed";
-	}
-
-	/// <summary>
-	/// Updates the view that displays the current creature name.
-	/// </summary>
-	private void RefreshCurrentCreatureName() {
-		creatureDesignControls.SetCurrentCreatureName(CreatureSaver.GetCurrentCreatureName());
 	}
 
 	public void SetBodyComponents(List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
@@ -469,7 +456,7 @@ public class CreatureBuilder {
 	/// <summary>
 	/// Creates a Creature object from the currently placed bodyparts.
 	/// </summary>
-	public Creature BuildCreature() {
+	public Creature Build() {
 
 		GameObject creatureObj = new GameObject();
 		creatureObj.name = "Creature";
@@ -491,123 +478,110 @@ public class CreatureBuilder {
 		creature.bones = bones;
 		creature.muscles = muscles;
 
-		DisableAllHoverables();
-
 		return creature;
 	} 
 
-	/// <summary>
-	/// Creates the creature and attaches it to the evolution.
-	/// </summary>
-	public void AttachCreatureToEvolution(Evolution evolution) {
+	// TODO: Migrate the code below
 
-		ResetHoverableColliders();
+	// /// <summary>
+	// /// Generates a creature from the currently places body components
+	// /// and starts the simulation.
+	// /// </summary>
+	// public void Evolve() {
 
-		var name = CreatureSaver.GetCurrentCreatureName();
-		CreatureSaver.SaveCurrentCreature(name, joints, bones, muscles);
+	// 	// Don't attempt evolution if there is no creature
+	// 	if (joints.Count == 0) return;
 
-		Creature creature = BuildCreature();
-		DontDestroyOnLoad(creature.gameObject);
+	// 	ResetHoverableColliders();
 
-		evolution.creature = creature;
-	}
+	// 	var name = CreatureSaver.GetCurrentCreatureName();
+	// 	CreatureSaver.SaveCurrentCreature(name, joints, bones, muscles);
 
-	/// <summary>
-	/// Generates a creature from the currently places body components
-	/// and starts the simulation.
-	/// </summary>
-	public void Evolve() {
+	// 	Creature creature = BuildCreature();
+	// 	DontDestroyOnLoad(creature.gameObject);
 
-		// Don't attempt evolution if there is no creature
-		if (joints.Count == 0) return;
+	// 	AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
+	// 	//AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("TestEvolutionScene");
+	// 	sceneLoading.allowSceneActivation = true;
+	// 	DontDestroyOnLoad(evolution.gameObject);
+	// 	evolution.creature = creature;
 
-		ResetHoverableColliders();
+	// 	var settings = settingsMenu.GetSimulationSettings();
 
-		var name = CreatureSaver.GetCurrentCreatureName();
-		CreatureSaver.SaveCurrentCreature(name, joints, bones, muscles);
+	// 	evolution.Settings = settings;
+	// 	evolution.BrainSettings = settingsMenu.GetNeuralNetworkSettings();
 
-		Creature creature = BuildCreature();
-		DontDestroyOnLoad(creature.gameObject);
+	// 	SetMobileNoSleep();
 
-		AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
-		//AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("TestEvolutionScene");
-		sceneLoading.allowSceneActivation = true;
-		DontDestroyOnLoad(evolution.gameObject);
-		evolution.creature = creature;
+	// 	StartCoroutine(WaitForEvolutionSceneToLoad(sceneLoading));
+	// 	DontDestroyOnLoad(this);
+	// }
 
-		var settings = settingsMenu.GetSimulationSettings();
+	// IEnumerator WaitForEvolutionSceneToLoad(AsyncOperation loadingOperation) {
 
-		evolution.Settings = settings;
-		evolution.BrainSettings = settingsMenu.GetNeuralNetworkSettings();
-
-		SetMobileNoSleep();
-
-		StartCoroutine(WaitForEvolutionSceneToLoad(sceneLoading));
-		DontDestroyOnLoad(this);
-	}
-
-	IEnumerator WaitForEvolutionSceneToLoad(AsyncOperation loadingOperation) {
-
-		while(!loadingOperation.isDone){
-			//print(loadingOperation.progress);
-			yield return null;
-		}
+	// 	while(!loadingOperation.isDone){
+	// 		//print(loadingOperation.progress);
+	// 		yield return null;
+	// 	}
 			
-		Destroy(this.gameObject);
-		print("Starting Evolution");
-		evolution.StartEvolution();
-	}
+	// 	Destroy(this.gameObject);
+	// 	print("Starting Evolution");
+	// 	evolution.StartEvolution();
+	// }
 
-	/// <summary>
-	/// Changes to the evolution scene for continuing a saved simulation.
-	/// </summary>
-	public void ContinueEvolution(Evolution evolution, Action completion) {
+	// /// <summary>
+	// /// Changes to the evolution scene for continuing a saved simulation.
+	// /// </summary>
+	// public void ContinueEvolution(Evolution evolution, Action completion) {
 
-		SetMobileNoSleep();
+	// 	SetMobileNoSleep();
 
-		AttachCreatureToEvolution(evolution);
+	// 	ResetHoverableColliders();
 
-		AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
-		//AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("TestEvolutionScene");
-		sceneLoading.allowSceneActivation = true;
-		DontDestroyOnLoad(evolution.gameObject);
+	// 	var name = CreatureSaver.GetCurrentCreatureName();
+	// 	CreatureSaver.SaveCurrentCreature(name, joints, bones, muscles);
 
-		StartCoroutine(WaitForEvolutionSceneToLoadForLoad(sceneLoading, completion));
-		DontDestroyOnLoad(this);
-	}
+	// 	AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
+	// 	//AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("TestEvolutionScene");
+	// 	sceneLoading.allowSceneActivation = true;
+	// 	DontDestroyOnLoad(evolution.gameObject);
 
-	IEnumerator WaitForEvolutionSceneToLoadForLoad(AsyncOperation loadingOperation, Action completion) {
+	// 	StartCoroutine(WaitForEvolutionSceneToLoadForLoad(sceneLoading, completion));
+	// 	DontDestroyOnLoad(this);
+	// }
 
-		while(!loadingOperation.isDone){
-			yield return null;
-		}
+	// IEnumerator WaitForEvolutionSceneToLoadForLoad(AsyncOperation loadingOperation, Action completion) {
 
-		Destroy(this.gameObject);
-		completion();
-	}
+	// 	while(!loadingOperation.isDone){
+	// 		yield return null;
+	// 	}
 
-	/// <summary>
-	/// Attempts to save the current creature. Shows an error screen if something went wrong.
-	/// </summary>
-	/// <param name="name">Name.</param>
-	public void SaveCreature(string name) {
+	// 	Destroy(this.gameObject);
+	// 	completion();
+	// }
 
-		CreatureSaver.WriteSaveFile(name, joints, bones, muscles);
-		CreatureSaver.SaveCurrentCreatureName(name);
-		RefreshCurrentCreatureName();
-	}
+	// /// <summary>
+	// /// Attempts to save the current creature. Shows an error screen if something went wrong.
+	// /// </summary>
+	// /// <param name="name">Name.</param>
+	// public void SaveCreature(string name) {
 
-	/// <summary>
-	/// Loads a previously saved creature design into the scene.
-	/// </summary>
-	public void LoadCreature(string name) {
+	// 	CreatureSaver.WriteSaveFile(name, joints, bones, muscles);
+	// 	CreatureSaver.SaveCurrentCreatureName(name);
+	// 	RefreshCurrentCreatureName();
+	// }
 
-		DeleteCreature();
-		CreatureSaver.SaveCurrentCreatureName(name);
-		RefreshCurrentCreatureName();
+	// /// <summary>
+	// /// Loads a previously saved creature design into the scene.
+	// /// </summary>
+	// public void LoadCreature(string name) {
 
-		CreatureSaver.LoadCreature(name, this);
-	}
+	// 	DeleteCreature();
+	// 	CreatureSaver.SaveCurrentCreatureName(name);
+	// 	RefreshCurrentCreatureName();
+
+	// 	CreatureSaver.LoadCreature(name, this);
+	// }
 
 	/// <summary>
 	/// Sets the screen to not go to sleep on mobile devices.

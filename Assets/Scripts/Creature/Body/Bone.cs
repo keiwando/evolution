@@ -29,30 +29,24 @@ public class Bone : BodyComponent {
 	}
 	private Rigidbody body;
 
-	private static Bone InstantiateAtPoint(Vector3 point) {
-		return ((GameObject) Instantiate(Resources.Load(PATH), point, Quaternion.identity)).GetComponent<Bone>();
-	}
-
-	public static Bone CreateAtPoint(Vector3 point) {
-		ID_COUNTER++;
-		var bone = Bone.InstantiateAtPoint(point);
-		bone.ID = ID_COUNTER;
-		bone.muscleJoint.ID = bone.ID;
+	public static Bone CreateAtPoint(Vector3 point, BoneData data) {
+		
+		var bone = ((GameObject) Instantiate(Resources.Load(PATH), point, Quaternion.identity)).GetComponent<Bone>();
+		bone.BoneData = data;
 		return bone;
 	}
 
 	public static Bone CreateFromString(string data, List<Joint> joints) {
-		//print(data);
+		
+		// Format: ID - startingJoint.ID - endingJoint.ID
 		var parts = data.Split('%');
 		var boneID = int.Parse(parts[0]);
 		var jointID1 = int.Parse(parts[1]);
 		var jointID2 = int.Parse(parts[2]);
 
-		// Format: ID - startingJoint.ID - endingJoint.ID
-		var bone = Bone.InstantiateAtPoint(Vector3.zero);
-		bone.ID = boneID;
+		var boneData = new BoneData(boneID, jointID1, jointID2, 1f);
+		var bone = Bone.CreateAtPoint(Vector3.zero, boneData);
 		bone.muscleJoint.ID = bone.ID;
-		ID_COUNTER = Mathf.Max(ID_COUNTER, bone.ID);
 
 		// attach to joints
 		foreach (var joint in joints) {

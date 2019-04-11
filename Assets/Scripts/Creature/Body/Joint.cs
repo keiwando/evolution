@@ -10,15 +10,7 @@ public class Joint : BodyComponent {
 		get { return transform.position; } 
 	}
 
-	//private Dictionary<Bone, HingeJoint> joints = new Dictionary<Bone, HingeJoint>();
-	private Dictionary<Bone, UnityEngine.Joint> joints = new Dictionary<Bone, UnityEngine.Joint>();
-
 	public JointData JointData { get; set; }
-
-	private bool iterating;
-
-	private Vector3 resetPosition;
-	private Quaternion resetRotation;
 
 	public Rigidbody Body {
 		get { return body; }
@@ -28,14 +20,16 @@ public class Joint : BodyComponent {
 	public bool isCollidingWithGround { get; private set; }
 	public bool isCollidingWithObstacle { get; private set; }
 
-	private static Joint InstantiateJoint(Vector3 point) {
-		return ((GameObject) Instantiate(Resources.Load(PATH), point, Quaternion.identity)).GetComponent<Joint>();
-	}
+	private Dictionary<Bone, UnityEngine.Joint> joints = new Dictionary<Bone, UnityEngine.Joint>();
 
-	public static Joint CreateAtPoint(Vector3 point) {
-		ID_COUNTER++;
-		var joint = Joint.InstantiateJoint(point);
-		joint.ID = ID_COUNTER;
+	private Vector3 resetPosition;
+	private Quaternion resetRotation;
+	private bool iterating;
+
+	public static Joint CreateFromData(JointData data) {
+		
+		var joint = ((GameObject) Instantiate(Resources.Load(PATH), data.position, Quaternion.identity)).GetComponent<Joint>();
+		joint.JointData = data;
 		return joint;
 	}
 
@@ -48,9 +42,10 @@ public class Joint : BodyComponent {
 		var y = float.Parse(parts[2]);
 		var z = float.Parse(parts[3]);
 
-		var joint = Joint.InstantiateJoint(new Vector3(x,y,z));
-		joint.ID = int.Parse(parts[0]);
-		ID_COUNTER = Mathf.Max(ID_COUNTER, joint.ID);
+		var id = int.Parse(parts[0]);
+
+		var jointData = new JointData(id, new Vector3(x,y,z), 1f);
+		var joint = CreateFromData(jointData);
 
 		return joint;
 	}
@@ -147,8 +142,9 @@ public class Joint : BodyComponent {
 	/// </summary>
 	/// <returns>The save string.</returns>
 	public override string GetSaveString() {
+		// TODO: Fix
 		var pos = transform.position;
-		return string.Format("{0}%{1}%{2}%{3}", ID, pos.x, pos.y, pos.z);
+		return string.Format("{0}%{1}%{2}%{3}", JointData.id, pos.x, pos.y, pos.z);
 	}
 
 		

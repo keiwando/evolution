@@ -5,6 +5,10 @@ using System.Collections.Generic;
 
 public class Muscle : BodyComponent {
 
+	public struct Defaults {
+		public static float MaxForce = 1500f;
+	}
+
 	private const string MATERIAL_PATH = "Materials/MuscleMaterial2";
 	private const string BLUE_MATERIAL_PATH = "Materials/MuscleMaterialBlue";
 

@@ -43,10 +43,10 @@ public class RaycastHover : MonoBehaviour {
 
 	private void ExitAll() {
 		foreach (var collider in hoverColliders) {
-				SendOnHoverExit(collider);
-			}
+			SendOnHoverExit(collider);
+		}
 
-			hoverColliders.Clear();
+		hoverColliders.Clear();
 	} 
 
 	private void SendOnHover(Collider collider) {

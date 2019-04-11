@@ -742,6 +742,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4115892834297736, guid: c378118c0f83e426783a5bfea790b9d6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -18066,7 +18070,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1467418367
 MonoBehaviour:
   m_ObjectHideFlags: 0

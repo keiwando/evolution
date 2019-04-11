@@ -92,9 +92,9 @@ public class CreatureEditor: MonoBehaviour {
             switch (selectedTool) {
 
             case Tool.Bone:
-                creatureBuilder.TryStartingBone(Input.mousePosition); break;
+                creatureBuilder.TryStartingBone(clickWorldPos); break;
             case Tool.Muscle:
-                creatureBuilder.TryStartingMuscle(Input.mousePosition); break;
+                creatureBuilder.TryStartingMuscle(clickWorldPos); break;
             case Tool.Move:
                 creatureBuilder.TryStartComponentMove(); break;
             default: break;
@@ -107,11 +107,11 @@ public class CreatureEditor: MonoBehaviour {
 
             switch (selectedTool) {
             case Tool.Bone:
-                creatureBuilder.UpdateCurrentBoneEnd(); break;
+                creatureBuilder.UpdateCurrentBoneEnd(clickWorldPos); break;
             case Tool.Muscle:
-                creatureBuilder.UpdateCurrentMuscleEnd(); break;
+                creatureBuilder.UpdateCurrentMuscleEnd(clickWorldPos); break;
             case Tool.Move:
-                creatureBuilder.MoveCurrentComponent(); break;
+                creatureBuilder.MoveCurrentComponent(clickWorldPos); break;
             default: break;
             }
         }
@@ -134,6 +134,8 @@ public class CreatureEditor: MonoBehaviour {
                 creatureBuilder.PlaceCurrentMuscle(); break;
             case Tool.Move: 
                 creatureBuilder.MoveEnded(); break;
+            case Tool.Delete:
+                creatureBuilder.DeleteHoveringBodyComponent(); break;
 
             default: break;
             }

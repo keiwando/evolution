@@ -66,14 +66,15 @@ public class ButtonManager : MonoBehaviour {
 		}
 	}
 
-	public void SelectButton(CreatureBuilder.BuildSelection part) {
+	public void SelectButton(CreatureEditor.Tool tool) {
 		
 		foreach ( SelectableButton button in buttonMap.Keys) {
 			
-			if (buttonMap[button].Equals(part)) {
+			if (buttonMap[button].Equals(tool)) {
 				SelectButton(button);
 				break;
 			}
 		}
 	}
 }
+

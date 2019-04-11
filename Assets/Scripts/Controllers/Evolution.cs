@@ -16,17 +16,14 @@ public class Evolution : MonoBehaviour {
 	}
 	private SimulationSettings settings;
 
-	public NeuralNetworkSettings BrainSettings {
-		set { brainSettings = value; }
-		get { return brainSettings; }
-	}
 	private NeuralNetworkSettings brainSettings;
-
-	private static Dictionary<EvolutionTask, System.Type> brainMap;
 
 	public GameObject obstacle;
 
-	/** The creature to be evolved. Has no brain by default. */
+	/// <summary>
+	/// The creature to be evolved. Has no brain by default.
+	/// </summary>
+	/// <value></value>
 	public Creature creature {
 		get { return _creature; }
 		set { 
@@ -45,11 +42,6 @@ public class Evolution : MonoBehaviour {
 		set {
 			Time.timeScale = value;
 		}
-	}
-
-	//private float MUTATION_RATE = 0.5f;
-	private float MUTATION_RATE {
-		get { return settings.mutationRate / 100f; }
 	}
 
 	private int currentGenerationNumber = 1;
@@ -116,14 +108,24 @@ public class Evolution : MonoBehaviour {
 
 	private Dictionary<int, string> chromosomeCache = new Dictionary<int, string>();
 
-	// Use this for initialization
+	
 	void Start () {
 
-		brainMap = new Dictionary<EvolutionTask, System.Type>();
-		brainMap.Add(EvolutionTask.RUNNING, typeof(RunningBrain));
-		brainMap.Add(EvolutionTask.OBSTACLE_JUMP, typeof(ObstacleJumpingBrain));
-		brainMap.Add(EvolutionTask.JUMPING, typeof(JumpingBrain));
-		brainMap.Add(EvolutionTask.CLIMBING, typeof(ClimbingBrain));
+		// Find the configuration
+		var configContainer = FindObjectOfType<SimulationConfigContainer>();
+		if (configContainer == null) {
+			print("No simulation config was found");
+			return;
+		}
+
+		var config = configContainer.SimulationConfig;
+		this.brainSettings = config.NeuralNetworkSettings;
+		this.settings = config.SimulationSettings;
+
+		var creatureBuilder = new CreatureBuilder();
+
+		// TODO: Create the creature
+		// TODO: Begin simulation
 	}
 	
 	// Update is called once per frame
@@ -522,7 +524,7 @@ public class Evolution : MonoBehaviour {
 
 	private StringBuilder Mutate(StringBuilder chromosome) {
 
-		bool shouldMutate = UnityEngine.Random.Range(0,100.0f) < (MUTATION_RATE * 100);
+		bool shouldMutate = UnityEngine.Random.Range(0,100.0f) < settings.mutationRate;
 
 		if (!shouldMutate) return chromosome;
 
@@ -646,9 +648,7 @@ public class Evolution : MonoBehaviour {
 
 	public void ApplyBrain(Creature creature, string chromosome) {
 
-		if (brainMap == null) throw new System.Exception("The brain map is not initialized");
-
-		Brain brain = (Brain) creature.gameObject.AddComponent(brainMap[settings.task]);
+		Brain brain = AddBrainComponent(settings.task, creature.gameObject);
 		brain.muscles = creature.muscles.ToArray();
 		brain.SimulationTime = settings.simulationTime;
 		brain.networkSettings = brainSettings;
@@ -666,6 +666,21 @@ public class Evolution : MonoBehaviour {
 		brain.networkSettings = brainSettings;
 
 		brain.SetupNeuralNet(chromosome);
+	}
+
+	private Brain AddBrainComponent(EvolutionTask task, GameObject gameObject) {
+		switch (task) {
+		case EvolutionTask.RUNNING:
+			return gameObject.AddComponent<RunningBrain>();
+		case EvolutionTask.JUMPING:
+			return gameObject.AddComponent<JumpingBrain>();
+		case EvolutionTask.OBSTACLE_JUMP:
+			return gameObject.AddComponent<ObstacleJumpingBrain>();
+		case EvolutionTask.CLIMBING:
+			return gameObject.AddComponent<ClimbingBrain>();
+		default:
+			throw new System.ArgumentException(string.Format("There is no brain type for the given task: {0}", task));
+		}
 	}
 
 	private void CalculateDropHeight() {
