@@ -3,10 +3,6 @@ using System.Collections;
 
 abstract public class BodyComponent: Hoverable {
 
-	protected static int ID_COUNTER = 0;
-
-	public int ID;
-
 	public bool deleted;
 
 	// Use this for initialization
@@ -32,8 +28,4 @@ abstract public class BodyComponent: Hoverable {
 	/// Generates a strings that holds all the information needed to save and rebuild this BodyComponent.
 	/// </summary>
 	abstract public string GetSaveString();
-
-	public static void ResetID() {
-		ID_COUNTER = 0;
-	}
 }

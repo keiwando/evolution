@@ -49,7 +49,14 @@ public class CreatureEditor: MonoBehaviour {
     public void Clear() {
         
     }
-
+    
+    /// <summary>
+    /// Saves the current creature design to a local file
+    /// </summary>
+    public void SaveCurrentDesign() {
+        var design = creatureBuilder.GetDesign();
+        // TODO: Save the design
+    }
     
 
     /// <summary>

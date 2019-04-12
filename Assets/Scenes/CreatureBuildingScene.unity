@@ -12380,7 +12380,7 @@ MonoBehaviour:
   settingsMenu: {fileID: 214116299}
   cameraController: {fileID: 1379794057}
   mouseDeleteTexture: {fileID: 2800000, guid: 1703e4f9f62c14e1a981c84899a4c68e, type: 3}
-  evolution: {fileID: 1467418367}
+  evolution: {fileID: 0}
   grid: {fileID: 1469868451}
 --- !u!4 &948789683
 Transform:
@@ -12394,7 +12394,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &955803756
 GameObject:
@@ -12427,7 +12427,7 @@ RectTransform:
   - {fileID: 1469868452}
   - {fileID: 1358011050}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -12672,7 +12672,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   creatureBuilder: {fileID: 948789682}
-  evolution: {fileID: 1467418367}
+  evolution: {fileID: 0}
   viewController: {fileID: 658012951}
   importIndicator: {fileID: 1648802585}
 --- !u!1 &994868499
@@ -18054,51 +18054,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1466878407}
   m_CullTransparentMesh: 0
---- !u!1 &1467418366
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1467418368}
-  - component: {fileID: 1467418367}
-  m_Layer: 0
-  m_Name: Evolution
-  m_TagString: Evolution
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1467418367
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1467418366}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e6e2092bd7ce4323bc62154612bbdc1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  obstacle: {fileID: 0}
-  currentGeneration: []
---- !u!4 &1467418368
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1467418366}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 30.76303, y: 3.1816602, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1469868450
 GameObject:
   m_ObjectHideFlags: 0
@@ -21395,7 +21350,7 @@ Transform:
   - {fileID: 1648802580}
   - {fileID: 773958453}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1754948855
 GameObject:
@@ -24770,7 +24725,7 @@ RectTransform:
   - {fileID: 1379794056}
   - {fileID: 2044445778}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

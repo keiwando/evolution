@@ -1,11 +1,13 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Collections;
+using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
+using System.Linq;
 using System.IO;
 using System;
+
 
 public class CreatureBuilder {
 
@@ -29,15 +31,15 @@ public class CreatureBuilder {
 	/// <summary>
 	/// The joints of the creature that have been placed in the scene.
 	/// </summary>
-	private List<Joint> joints;	
+	private List<Joint> joints = new List<Joint>();	
 	/// <summary>
 	/// The bones that have been placed in the scene.
 	/// </summary>
-	private List<Bone> bones;
+	private List<Bone> bones = new List<Bone>();
 	/// <summary>
 	/// The muscles that have been placed in the scene.
 	/// </summary>
-	private List<Muscle> muscles;
+	private List<Muscle> muscles = new List<Muscle>();
 
 	/// <summary> 
 	/// The Bone that is currently being placed. 
@@ -65,86 +67,24 @@ public class CreatureBuilder {
 	/// </summary>
 	public static float CONNECTION_WIDTH = 0.5f;
 
-	public CreatureBuilder() {
-		
-	}
-	
-	// /// <returns>The joints created by this builder.</returns>
-	// public List<Joint> GetJoints() {
-	// 	return new List<Joint>(joints);
-	// }
+	public CreatureBuilder() {}
 
-	// /// <returns>The bones created by this builder.</returns>
-	// public List<Bone> GetBones() {
-	// 	return new List<Bone>(bones);
-	// }
+	public CreatureBuilder(CreatureDesign design) {
 
-	// /// <returns>The muscles created by this builder.</returns>
-	// public List<Muscle> GetMuscles() {
-	// 	return new List<Muscle>(muscles);
-	// }
-
-	/// <summary>
-	/// Enabled / Disables highlighting on hover for the specified body components
-	/// </summary>
-	public void EnableHighlighting(bool joint, bool bone, bool muscle) {
-
-		HoveringUtil.SetShouldHighlight(this.joints, joint);
-		HoveringUtil.SetShouldHighlight(this.bones, bone);
-		HoveringUtil.SetShouldHighlight(this.muscles, muscle);
-	}
-
-	/// <summary>
-	/// Resets the hoverable colliders on joints and bones.
-	/// </summary>
-	private void ResetHoverableColliders() {
-
-		HoveringUtil.ResetHoverableColliders(joints);
-		HoveringUtil.ResetHoverableColliders(bones);
-	}
-
-	/// <summary>
-	/// Removes the already destroyed object that are still left in the lists.
-	/// </summary>
-	private void RemoveDeletedObjects() {
-
-		bones = RemoveDeletedObjects<Bone>(bones);
-		joints = RemoveDeletedObjects<Joint>(joints);
-		muscles = RemoveDeletedObjects<Muscle>(muscles);
-	}
-
-	/// <summary>
-	/// Removes the already destroyed object that are still left in the list.
-	/// This operation doesn't change the original list.
-	/// </summary>
-	/// <param name="objects">A list of BodyComponents</param>
-	/// <typeparam name="T">A BodyComponent subtype.</typeparam>
-	/// <returns>A list without the already destroyed objects of the input list.</returns>
-	private static List<T> RemoveDeletedObjects<T>(List<T> objects) where T: BodyComponent {
-
-		List<T> removed = new List<T>(objects);
-		foreach (T obj in objects) {
-			if (obj == null || obj.Equals(null) || obj.gameObject == null 
-				|| obj.gameObject.Equals(null) || obj.deleted) {
-	
-				removed.Remove(obj);
-			}
+		foreach (var jointData in design.Joints) {
+			this.joints.Add(Joint.CreateFromData(jointData));
 		}
-		return removed;
+
+		foreach (var boneData in design.Bones) {
+			CreateBoneFromData(boneData);	
+		}
+
+		foreach (var muscleData in design.Muscles) {
+			CreateMuscleFromData(muscleData);
+		}
 	}
 
-	/// <summary>
-	/// Sets the specified mouse hover texture on all body components created 
-	/// by this builder.
-	/// </summary>
-	public void SetMouseHoverTextures(Texture2D texture) {
-
-		HoveringUtil.SetMouseHoverTexture(joints, texture);
-		HoveringUtil.SetMouseHoverTexture(bones, texture);
-		HoveringUtil.SetMouseHoverTexture(muscles, texture);
-	}
 	
-
 	#region Joint Placement
 
 	/// <summary>
@@ -202,6 +142,25 @@ public class CreatureBuilder {
 		var boneData = new BoneData(idCounter++, joint.JointData.id, joint.JointData.id, 2f);
 		currentBone = Bone.CreateAtPoint(joint.center, boneData);
 		currentBone.startingJoint = joint;
+	}
+
+	private void CreateBoneFromData(BoneData data) {
+		// Find the connecting joints
+		var startingJoint = FindJointWithId(data.startJointID);
+		var endingJoint = FindJointWithId(data.endJointID);
+		if (startingJoint == null || endingJoint == null) {
+			Debug.Log(string.Format("The connecting joints for bone {0} were not found!", data.id));
+			return;
+		}
+		CreateBoneBetween(startingJoint, endingJoint, data);
+	}
+
+	private void CreateBoneBetween(Joint startingJoint, Joint endingJoint, BoneData data) {
+
+		var bone = Bone.CreateAtPoint(startingJoint.center, data);
+		PlaceConnectionBetweenPoints(bone.gameObject, startingJoint.center, endingJoint.center, CONNECTION_WIDTH);
+		bone.startingJoint = startingJoint;
+		bone.endingJoint = endingJoint;
 	}
 
 	/// <summary>
@@ -333,6 +292,33 @@ public class CreatureBuilder {
 
 			currentMuscle.SetLinePoints(currentMuscle.startingJoint.transform.position, endingPoint);
 		}
+	}
+
+	private void CreateMusclerFromData(MuscleData data) {
+		// Find the connecting joints
+		var startingBone = FindBoneWithId(data.startBoneID);
+		var endingBone = FindBoneWithId(data.endBoneID);
+		
+		if (startingBone == null || endingBone == null) {
+			Debug.Log(string.Format("The connecting joints for bone {0} were not found!", data.id));
+			return;
+		}
+		CreateMuscleBetween(startingBone, endingBone, data);
+	}
+
+	private void CreateMuscleBetween(Bone startingBone, Bone endingBone, MuscleData data) {
+
+		var muscle = Muscle.Create();
+		var startJoint = startingBone.muscleJoint;
+		var endJoint = endingBone.muscleJoint;
+
+		muscle.startingJoint = startJoint;
+		muscle.endingJoint = endJoint;
+
+		currentMuscle.SetLinePoints(startJoint.transform.position, endJoint.transform.position);
+		PlaceConnectionBetweenPoints(bone.gameObject, startingJoint.center, endingJoint.center, CONNECTION_WIDTH);
+		bone.startingJoint = startingJoint;
+		bone.endingJoint = endingJoint;
 	}
 
 	#region Move
@@ -479,7 +465,25 @@ public class CreatureBuilder {
 		creature.muscles = muscles;
 
 		return creature;
-	} 
+	}
+
+	/// <summary>
+	/// Returns a CreatureDesign representation of the currently placed
+	/// body parts 
+	/// </summary>
+	public CreatureDesign GetDesign() {
+		// TODO: Get name of this.design
+		var name = "Unnamed";
+		var jointData = this.joints.Select(j => j.JointData).ToList();
+		var boneData = this.bones.Select(b => b.BoneData).ToList();
+		var muscleData = this.muscles.Select(m => m.MuscleData).ToList();
+		return new CreatureDesign(name, jointData, boneData, muscleData);
+	}
+
+	public void Reset() {
+		DeleteAll();
+		idCounter = 0;
+	}
 
 	// TODO: Migrate the code below
 
@@ -583,17 +587,103 @@ public class CreatureBuilder {
 	// 	CreatureSaver.LoadCreature(name, this);
 	// }
 
+	// /// <summary>
+	// /// Sets the screen to not go to sleep on mobile devices.
+	// /// </summary>
+	// private void SetMobileNoSleep() {
+	// 	Screen.sleepTimeout = SleepTimeout.NeverSleep;
+	// }
+
+	// /// <summary>
+	// /// Resets the sleep timeout settings to the system settings.
+	// /// </summary>
+	// private void SetMobileDefaultSleep() {
+	// 	Screen.sleepTimeout = SleepTimeout.SystemSetting;
+	// }
+
+	#region Hover Configuration
+
 	/// <summary>
-	/// Sets the screen to not go to sleep on mobile devices.
+	/// Enabled / Disables highlighting on hover for the specified body components
 	/// </summary>
-	private void SetMobileNoSleep() {
-		Screen.sleepTimeout = SleepTimeout.NeverSleep;
+	public void EnableHighlighting(bool joint, bool bone, bool muscle) {
+
+		HoveringUtil.SetShouldHighlight(this.joints, joint);
+		HoveringUtil.SetShouldHighlight(this.bones, bone);
+		HoveringUtil.SetShouldHighlight(this.muscles, muscle);
 	}
 
 	/// <summary>
-	/// Resets the sleep timeout settings to the system settings.
+	/// Sets the specified mouse hover texture on all body components created 
+	/// by this builder.
 	/// </summary>
-	private void SetMobileDefaultSleep() {
-		Screen.sleepTimeout = SleepTimeout.SystemSetting;
+	public void SetMouseHoverTextures(Texture2D texture) {
+
+		HoveringUtil.SetMouseHoverTexture(joints, texture);
+		HoveringUtil.SetMouseHoverTexture(bones, texture);
+		HoveringUtil.SetMouseHoverTexture(muscles, texture);
 	}
+
+	/// <summary>
+	/// Resets the hoverable colliders on joints and bones.
+	/// </summary>
+	private void ResetHoverableColliders() {
+
+		HoveringUtil.ResetHoverableColliders(joints);
+		HoveringUtil.ResetHoverableColliders(bones);
+	}
+
+	#endregion
+
+	#region Utils
+
+	private Joint FindJointWithId(int id) {
+		foreach (var joint in joints) {
+			if (joint.JointData.id == id) {
+				return joint;
+			}
+		}
+		return null;
+	}
+
+	private Bone FindBoneWithId(int id) {
+		foreach (var bone in bones) {
+			if (bone.BoneData.id == id) {
+				return bone;
+			} 
+		}
+		return null;
+	}
+
+	/// <summary>
+	/// Removes the already destroyed object that are still left in the lists.
+	/// </summary>
+	private void RemoveDeletedObjects() {
+
+		bones = RemoveDeletedObjects<Bone>(bones);
+		joints = RemoveDeletedObjects<Joint>(joints);
+		muscles = RemoveDeletedObjects<Muscle>(muscles);
+	}
+
+	/// <summary>
+	/// Removes the already destroyed object that are still left in the list.
+	/// This operation doesn't change the original list.
+	/// </summary>
+	/// <param name="objects">A list of BodyComponents</param>
+	/// <typeparam name="T">A BodyComponent subtype.</typeparam>
+	/// <returns>A list without the already destroyed objects of the input list.</returns>
+	private static List<T> RemoveDeletedObjects<T>(List<T> objects) where T: BodyComponent {
+
+		List<T> removed = new List<T>(objects);
+		foreach (T obj in objects) {
+			if (obj == null || obj.Equals(null) || obj.gameObject == null 
+				|| obj.gameObject.Equals(null) || obj.deleted) {
+	
+				removed.Remove(obj);
+			}
+		}
+		return removed;
+	}
+	
+	#endregion
 }
