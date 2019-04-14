@@ -8,6 +8,7 @@ public class Settings {
 	private const string CREATURE_NAMES_KEY = "_CreatureNames";
 	private const string CURRENT_CREATURE_NAME_KEY = "CURRENT_CREATURE_NAME_KEY";
 	private const string CURRENT_CREATURE_DESIGN_KEY = "CURRENT_CREATURE_DESIGN_KEY";
+	private const string SIMULATION_SETTINGS_KEY = "EVOLUTION_SETTINGS";
 
 	public static bool DidMigrateCreatureSaves {
 		get { return GetBool(DID_MIGRATE_CREATURE_SAVES_KEY); }
@@ -39,10 +40,15 @@ public class Settings {
 		set { PlayerPrefs.SetString(CURRENT_CREATURE_DESIGN_KEY, value); Save(); }
 	}
 
+	public static string SimulationSettings {
+		get { return PlayerPrefs.GetString(SIMULATION_SETTINGS_KEY, ""); }
+		set { PlayerPrefs.SetString(SIMULATION_SETTINGS_KEY, value); Save(); }
+	}
+
 	static Settings() {
-		if (GetBool("ALREADY_INITIALIZED_6c22bbe1-3a90-4b52-a0e2-dfeadfe28412")) { return; }
+		if (GetBool("ALREADY_INITIALIZED_e31cf645-7751-4a7b-ae0d-2ca38f6063b8")) { return; }
 		Initialize();
-		SetBool("ALREADY_INITIALIZED_6c22bbe1-3a90-4b52-a0e2-dfeadfe28412", true);
+		SetBool("ALREADY_INITIALIZED_e31cf645-7751-4a7b-ae0d-2ca38f6063b8", true);
 		Save();
 	}
 

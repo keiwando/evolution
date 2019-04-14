@@ -184,7 +184,7 @@ public class SimulationSerializer {
 	/// evolution process.
 	/// </summary>
 	/// <param name="name">The name of the saved simulation without the file extension.</param>
-	public static void LoadSimulationFromSaveFile(string name, CreatureBuilder creatureBuilder, Evolution evolution) {
+	public static void LoadSimulationFromSaveFile(string name, CreatureEditor editor) {
 
 		var path = PathToSimulationSave(name);
 		var contents = File.ReadAllText(path);
@@ -200,14 +200,14 @@ public class SimulationSerializer {
 
 		if (components[0].ToUpper()[0] != 'V') {
 			// V1
-			SimulationLoaderV1.LoadSimulationFromSaveFile(name, contents, splitOptions, creatureBuilder, evolution);
+			SimulationLoaderV1.LoadSimulationFromSaveFile(name, contents, splitOptions, editor);
 			return;
 		}
 
 		var version = int.Parse(components[0].Split(' ')[1]);
 
 		switch (version) {
-			case 2: SimulationLoaderV2.LoadSimulationFromSaveFile(name, contents, splitOptions, creatureBuilder, evolution); break;
+			case 2: SimulationLoaderV2.LoadSimulationFromSaveFile(name, contents, splitOptions, editor); break;
 			default: throw new System.Exception("Unknown Save file format!");
 		}
 	}

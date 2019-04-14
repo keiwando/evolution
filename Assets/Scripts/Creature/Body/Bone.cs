@@ -38,22 +38,24 @@ public class Bone : BodyComponent {
 
 	public static Bone CreateFromString(string data, List<Joint> joints) {
 		
+		
 		// Format: ID - startingJoint.ID - endingJoint.ID
 		var parts = data.Split('%');
 		var boneID = int.Parse(parts[0]);
 		var jointID1 = int.Parse(parts[1]);
 		var jointID2 = int.Parse(parts[2]);
 
+		// Move this into creature builder
+
 		var boneData = new BoneData(boneID, jointID1, jointID2, 1f);
 		var bone = Bone.CreateAtPoint(Vector3.zero, boneData);
-		bone.muscleJoint.ID = bone.ID;
 
 		// attach to joints
 		foreach (var joint in joints) {
 
-			if (joint.ID == jointID1) {
+			if (joint.JointData.id == jointID1) {
 				bone.startingJoint = joint;	
-			} else if (joint.ID == jointID2) {
+			} else if (joint.JointData.id == jointID2) {
 				bone.endingJoint = joint;
 			}
 		}
@@ -163,9 +165,10 @@ public class Bone : BodyComponent {
 		body.isKinematic = false;
 	}
 
+	// TODO: Remove
 	public override string GetSaveString () {
 		
-		return string.Format("{0}%{1}%{2}", ID, startingJoint.ID, endingJoint.ID);
+		return string.Format("{0}%{1}%{2}", BoneData.id, BoneData.startJointID, BoneData.endJointID);
 	}
 
 }

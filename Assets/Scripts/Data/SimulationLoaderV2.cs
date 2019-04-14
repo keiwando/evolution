@@ -27,7 +27,7 @@ public class SimulationLoaderV2 {
 	/// </summary>
 	/// <param name="name">The name of the simulation save.</param>
 	/// <param name="content">The Content of the save file.</param>
-	public static void LoadSimulationFromSaveFile(string name, string content, SimulationSerializer.SplitOptions splitOptions, CreatureBuilder creatureBuilder, Evolution evolution) {
+	public static void LoadSimulationFromSaveFile(string name, string content, SimulationSerializer.SplitOptions splitOptions, CreatureEditor editor) {
 
 		var creatureName = name.Split('-')[0].Replace(" ", "");
 		if (string.IsNullOrEmpty(creatureName))
@@ -39,15 +39,19 @@ public class SimulationLoaderV2 {
 		var networkSettings = NeuralNetworkSettings.Decode(components[2]);
 
 		var creatureData = components[3];
-		CreatureSaver.LoadCreatureFromContents(creatureData, creatureBuilder);
+		// TODO: Replace this with actual design parsed from the save file
+		var creatureDesign = new CreatureDesign("Unnamed", new List<JointData>(), new List<BoneData>(), new List<MuscleData>());
+		// CreatureSaver.LoadCreatureFromContents(creatureData, creatureBuilder);
 
 		var bestChromosomesData = new List<string>(components[4].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None));
-		var bestChromosomes = new List<ChromosomeStats>();
+		var bestChromosomes = new List<ChromosomeData>();
 
 		foreach (var chromosomeData in bestChromosomesData) {
 
 			if (chromosomeData != "") {
-				bestChromosomes.Add(ChromosomeStats.FromString(chromosomeData));	
+				var stats = ChromosomeStats.FromString(chromosomeData);
+				var data = new ChromosomeData(stats.chromosome, stats.stats);
+				bestChromosomes.Add(data);	
 			}
 		}
 
@@ -63,12 +67,9 @@ public class SimulationLoaderV2 {
 
 		var currentGeneration = bestChromosomes.Count + 1;
 
-		evolution.Settings = simulationSettings;
+		var simulationData = new SimulationData(simulationSettings, networkSettings, creatureDesign, 
+												bestChromosomes, currentChromosomes.ToArray());
 
-		creatureBuilder.ContinueEvolution(evolution, () => {
-
-			CreatureSaver.SaveCurrentCreatureName(creatureName);
-			evolution.ContinueEvolution(currentGeneration, simulationSettings, networkSettings, bestChromosomes, currentChromosomes);
-		});
+		editor.StartSimulation(simulationData);
 	}
 }

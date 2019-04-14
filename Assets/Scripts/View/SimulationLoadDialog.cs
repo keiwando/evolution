@@ -9,14 +9,17 @@ public class SimulationLoadDialog : MonoBehaviour {
 		get { return bugFixEmpty.activeSelf; }
 	}
 
-	[SerializeField] private CreatureBuilder creatureBuilder;
-	[SerializeField] private Evolution evolution;
+	[SerializeField] 
+	private CreatureEditor editor;
 
-	[SerializeField] private Dropdown dropdown;
+	[SerializeField] 
+	private Dropdown dropdown;
 
-	[SerializeField] private GameObject bugFixEmpty;
+	[SerializeField] 
+	private GameObject bugFixEmpty;
 
-	[SerializeField] private DeleteConfirmationDialog deleteConfirmation;
+	[SerializeField] 
+	private DeleteConfirmationDialog deleteConfirmation;
 
 	private const string NO_SAVE_FILES = "You haven't saved any simulations yet";
 
@@ -48,7 +51,7 @@ public class SimulationLoadDialog : MonoBehaviour {
 
 		yield return new WaitForEndOfFrame();
 
-		SimulationSerializer.LoadSimulationFromSaveFile(filename, creatureBuilder, evolution);
+		SimulationSerializer.LoadSimulationFromSaveFile(filename, editor);
 	}
 
 	private void SetupDropDown() {

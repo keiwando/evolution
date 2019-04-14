@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EditorStateManager {
@@ -33,6 +34,6 @@ public class EditorStateManager {
 
     private static CreatureDesign LoadCreatureDesign() {
         // TODO: Load from PlayerPrefs
-        return new CreatureDesign();
+        return new CreatureDesign("Unnamed", new List<JointData>(), new List<BoneData>(), new List<MuscleData>());
     }
 }

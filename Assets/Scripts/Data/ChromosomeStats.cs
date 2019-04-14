@@ -3,7 +3,7 @@ using UnityEngine;
 
 public struct ChromosomeStats {
 
-	public string chromosome {get; private set; }
+	public string chromosome { get; private set; }
 	public CreatureStats stats { get; private set; }
 
 	public ChromosomeStats(string chromosome, CreatureStats stats) {

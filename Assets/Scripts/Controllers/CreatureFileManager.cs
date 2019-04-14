@@ -10,7 +10,7 @@ public class CreatureFileManager : MonoBehaviour,
 								   SaveDialogDelegate {
 
 	[SerializeField]
-	private CreatureBuilder creatureBuilder;
+	private CreatureEditor editor;
 
 	[SerializeField]
 	private FileSelectionViewController viewController;
@@ -60,7 +60,7 @@ public class CreatureFileManager : MonoBehaviour,
 		}
 
 		try {
-			creatureBuilder.SaveCreature(name);
+			editor.SaveCurrentDesign(name);
 		} catch (IllegalFilenameException e) {
 			dialog.ShowErrorMessage(string.Format("The creature name cannot contain: {0}", 
 			new string(CreatureSaver.INVALID_NAME_CHARACTERS)));
@@ -136,7 +136,8 @@ public class CreatureFileManager : MonoBehaviour,
 
 		yield return new WaitForEndOfFrame();
 
-		creatureBuilder.LoadCreature(name);
+		// TODO: Get CreatureDesign file
+		//editor.LoadDesign(design);
 	}
 
 	public void ImportButtonClicked(FileSelectionViewController controller) {

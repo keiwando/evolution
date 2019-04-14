@@ -254,7 +254,7 @@ public class CreatureBuilder {
 	private void CreateMuscleFromBone(Bone bone) {
 
 		var muscleData = new MuscleData(idCounter++, bone.BoneData.id, bone.BoneData.id, Muscle.Defaults.MaxForce, true);
-		currentMuscle = Muscle.Create();
+		currentMuscle = Muscle.CreateFromData(muscleData);
 		var muscleJoint = bone.muscleJoint;
 		currentMuscle.startingJoint = muscleJoint;
 		currentMuscle.SetLinePoints(muscleJoint.transform.position, muscleJoint.transform.position);
@@ -294,7 +294,7 @@ public class CreatureBuilder {
 		}
 	}
 
-	private void CreateMusclerFromData(MuscleData data) {
+	private void CreateMuscleFromData(MuscleData data) {
 		// Find the connecting joints
 		var startingBone = FindBoneWithId(data.startBoneID);
 		var endingBone = FindBoneWithId(data.endBoneID);
@@ -308,7 +308,7 @@ public class CreatureBuilder {
 
 	private void CreateMuscleBetween(Bone startingBone, Bone endingBone, MuscleData data) {
 
-		var muscle = Muscle.Create();
+		var muscle = Muscle.CreateFromData(data);
 		var startJoint = startingBone.muscleJoint;
 		var endJoint = endingBone.muscleJoint;
 
@@ -316,9 +316,6 @@ public class CreatureBuilder {
 		muscle.endingJoint = endJoint;
 
 		currentMuscle.SetLinePoints(startJoint.transform.position, endJoint.transform.position);
-		PlaceConnectionBetweenPoints(bone.gameObject, startingJoint.center, endingJoint.center, CONNECTION_WIDTH);
-		bone.startingJoint = startingJoint;
-		bone.endingJoint = endingJoint;
 	}
 
 	#region Move

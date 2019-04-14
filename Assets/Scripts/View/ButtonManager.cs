@@ -16,12 +16,10 @@ public class ButtonManager : MonoBehaviour {
 	[SerializeField] private SelectableButton selectButton;
 	[SerializeField] private SelectableButton deleteButton;
 
-	private Dictionary<SelectableButton, CreatureEditor.Tool> buttonMap;
-	private SelectableButton selectedButton;
+	private Dictionary<SelectableButton, CreatureEditor.Tool> buttonMap = 
+		new Dictionary<SelectableButton, CreatureEditor.Tool>();
 
 	void Start() {
-
-		buttonMap = new Dictionary<SelectableButton, CreatureEditor.Tool>();
 
 		buttonMap.Add(jointButton, CreatureEditor.Tool.Joint);
 		buttonMap.Add(boneButton, CreatureEditor.Tool.Bone);
@@ -43,7 +41,7 @@ public class ButtonManager : MonoBehaviour {
 		selectButton.gameObject.SetActive(advancedMode);
 		deleteButton.gameObject.SetActive(!advancedMode);
 
-		foreach(KeyValuePair<SelectableButton, CreatureEditor.Tool> entry in buttonMap) {
+		foreach (KeyValuePair<SelectableButton, CreatureEditor.Tool> entry in buttonMap) {
 			if (entry.Value == editor.SelectedTool) {
 				entry.Key.Selected = true;
 			} else {
@@ -54,27 +52,8 @@ public class ButtonManager : MonoBehaviour {
 
 	public void SelectButton(SelectableButton button) {
 
-		if (!button.Equals(selectedButton)) {
-			
-			button.Selected = true;
-			if (selectedButton != null) {
-				selectedButton.Selected = false;
-			}
-			selectedButton = button;
-
-			editor.SelectedTool = buttonMap[button];
-		}
-	}
-
-	public void SelectButton(CreatureEditor.Tool tool) {
-		
-		foreach ( SelectableButton button in buttonMap.Keys) {
-			
-			if (buttonMap[button].Equals(tool)) {
-				SelectButton(button);
-				break;
-			}
-		}
+		editor.SelectedTool = buttonMap[button];
+		Refresh();
 	}
 }
 

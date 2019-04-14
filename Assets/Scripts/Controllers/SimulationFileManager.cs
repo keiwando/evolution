@@ -8,9 +8,7 @@ using Keiwando.NativeFileSO;
 public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerDelegate {
 
 	[SerializeField]
-	private CreatureBuilder creatureBuilder;
-	[SerializeField]
-	private Evolution evolution;
+	private CreatureEditor editor;
 
 	[SerializeField]
 	private FileSelectionViewController viewController;
@@ -97,7 +95,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 
 		yield return new WaitForEndOfFrame();
 
-		SimulationSerializer.LoadSimulationFromSaveFile(filename, creatureBuilder, evolution);
+		SimulationSerializer.LoadSimulationFromSaveFile(filename, editor);
 	}
 
 	public void ImportButtonClicked(FileSelectionViewController controller) {

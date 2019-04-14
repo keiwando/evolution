@@ -81,8 +81,7 @@ public class Muscle : BodyComponent {
 	private Vector3 resetPosition;
 	private Quaternion resetRotation;
 
-	public static Muscle Create() {
-		ID_COUNTER++;
+	public static Muscle CreateFromData(MuscleData data) {
 
 		Material muscleMaterial = Resources.Load(MATERIAL_PATH) as Material;
 		Material blueMaterial = Resources.Load(BLUE_MATERIAL_PATH) as Material;
@@ -93,7 +92,8 @@ public class Muscle : BodyComponent {
 		var muscle = muscleEmpty.AddComponent<Muscle>();
 		muscle.AddLineRenderer();
 		muscle.SetMaterial(muscleMaterial);
-		muscle.ID = ID_COUNTER;
+
+		muscle.MuscleData = data;
 
 		muscle.redMaterial = muscleMaterial;
 		muscle.blueMaterial = blueMaterial;
@@ -119,14 +119,14 @@ public class Muscle : BodyComponent {
 			throw e;
 		}
 
-		var muscle = Muscle.Create();
-		muscle.ID = muscleID;
-		ID_COUNTER = Mathf.Max(ID_COUNTER - 1, muscle.ID);	// ID_COUNTER - 1 because the counter gets increased on Create()
+		var muscleData = new MuscleData(muscleID, startID, endID, Defaults.MaxForce, true);
+		var muscle = Muscle.CreateFromData(muscleData);
 
+		// TODO: Move this into the CreatureBuilder
 		foreach (var bone in bones) {
-			if(bone.ID == startID) {
+			if (bone.BoneData.id == startID) {
 				muscle.startingJoint = bone.muscleJoint;
-			} else if (bone.ID == endID) {
+			} else if (bone.BoneData.id == endID) {
 				muscle.endingJoint = bone.muscleJoint;
 			}
 		}
@@ -159,12 +159,6 @@ public class Muscle : BodyComponent {
 
 		UpdateLinePoints();
 		UpdateContractionVisibility();
-
-//		if (muscleAction == MuscleAction.CONTRACT) {
-//			Contract();
-//		} else {
-//			Expand();	
-//		}
 	}
 
 	void FixedUpdate() {
@@ -463,9 +457,10 @@ public class Muscle : BodyComponent {
 		living = true;
 	}
 
+	// TODO: Remove this
 	public override string GetSaveString () {
 		
-		return string.Format("{0}%{1}%{2}", ID, startingJoint.ID, endingJoint.ID);
+		return string.Format("{0}%{1}%{2}", MuscleData.id, MuscleData.startBoneID, MuscleData.endBoneID);
 	}
 
 	/** Deletes the muscle gameobject and the springjoint. */

@@ -165,7 +165,6 @@ public class CreatureSaver {
 	/// </summary>
 	public static void LoadCreatureFromContents(string contents, CreatureBuilder builder) {
 
-		BodyComponent.ResetID();
 		var components = contents.Split(SPLIT_ARRAY, System.StringSplitOptions.None);
 
 		var jointStrings = components[0].Split('\n');

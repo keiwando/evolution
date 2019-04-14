@@ -32,9 +32,11 @@ public class CreatureEditor: MonoBehaviour {
 	private Texture2D mouseDeleteTexture;
 
     private CreatureBuilder creatureBuilder;
+    private HistoryManager historyManager;
 
     void Start() {
         creatureBuilder = new CreatureBuilder();
+        historyManager = new HistoryManager();
     }
 
     void Update() {
@@ -48,14 +50,35 @@ public class CreatureEditor: MonoBehaviour {
     /// </summary>
     public void Clear() {
         
+        creatureBuilder.Reset();
+    }
+
+    public void LoadDesign(CreatureDesign design) {
+        creatureBuilder.Reset();
+        creatureBuilder = new CreatureBuilder(design);
+        print("LoadDesign");
     }
     
     /// <summary>
     /// Saves the current creature design to a local file
     /// </summary>
     public void SaveCurrentDesign() {
+        
+        SaveDesign(creatureBuilder.GetDesign());
+    }
+
+    /// <summary>
+    /// Saves the current creature design to a local file with the given name.
+    /// </summary>
+    public void SaveCurrentDesign(string name) {
         var design = creatureBuilder.GetDesign();
-        // TODO: Save the design
+        design.Name = name;
+        SaveDesign(design);
+    }
+
+    
+    public void SaveDesign(CreatureDesign design) {
+        // TODO: Implement
     }
     
 
@@ -70,7 +93,21 @@ public class CreatureEditor: MonoBehaviour {
         // Load simulation scene
     }
 
-    // MARK: - Input Management
+    public void StartSimulation(SimulationData simulationData) {
+        
+    }
+
+    #region State Management
+
+    public void Refresh(EditorState state) {
+
+        creatureBuilder.Reset();
+        creatureBuilder = new CreatureBuilder(state.CreatureDesign);
+        // TODO: Implement non creature building related state changes
+    }
+
+    #endregion
+    #region Input Management
 
     /// <summary>
 	/// Checks for click / touch events and handles them appropiately depending on the 
@@ -132,7 +169,7 @@ public class CreatureEditor: MonoBehaviour {
                 if (EventSystem.current.IsPointerOverGameObject()) return;
                 if (InputUtils.IsPointerOverUIObject()) return;
                 if (Input.touchCount > 1) return;
-                creatureBuilder.TryPlacingJoint(Input.mousePosition); 
+                creatureBuilder.TryPlacingJoint(clickWorldPos); 
                 break;
 
             case Tool.Bone: 
@@ -209,4 +246,6 @@ public class CreatureEditor: MonoBehaviour {
             break;
         }
     }
+
+    #endregion
 }
