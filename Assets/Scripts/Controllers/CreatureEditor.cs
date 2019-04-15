@@ -26,17 +26,18 @@ public class CreatureEditor: MonoBehaviour {
     [SerializeField]
     private CameraController cameraController;
     [SerializeField]
+    private HistoryManager historyManager;
+    [SerializeField]
     private Grid grid;
 
     [SerializeField]
 	private Texture2D mouseDeleteTexture;
 
     private CreatureBuilder creatureBuilder;
-    private HistoryManager historyManager;
 
     void Start() {
         creatureBuilder = new CreatureBuilder();
-        historyManager = new HistoryManager();
+        // historyManager.Push(GetState());
     }
 
     void Update() {
@@ -106,6 +107,12 @@ public class CreatureEditor: MonoBehaviour {
         // TODO: Implement non creature building related state changes
     }
 
+    public EditorState GetState() {
+        return new EditorState() {
+            CreatureDesign = creatureBuilder.GetDesign()
+        };
+    }
+
     #endregion
     #region Input Management
 
@@ -163,27 +170,39 @@ public class CreatureEditor: MonoBehaviour {
         // Mouse Up
         else if (InputUtils.MouseUp()) {
 
+            var creatureEdited = false;
+            var oldDesign = creatureBuilder.GetDesign();
+
             switch (selectedTool) {
 
             case Tool.Joint:
                 if (EventSystem.current.IsPointerOverGameObject()) return;
                 if (InputUtils.IsPointerOverUIObject()) return;
                 if (Input.touchCount > 1) return;
-                creatureBuilder.TryPlacingJoint(clickWorldPos); 
+                creatureEdited = creatureBuilder.TryPlacingJoint(clickWorldPos); 
                 break;
 
             case Tool.Bone: 
-                creatureBuilder.PlaceCurrentBone(); break;
+                creatureEdited = creatureBuilder.PlaceCurrentBone(); break;
             case Tool.Muscle:
-                creatureBuilder.PlaceCurrentMuscle(); break;
+                creatureEdited = creatureBuilder.PlaceCurrentMuscle(); break;
             case Tool.Move: 
-                creatureBuilder.MoveEnded(); break;
+                creatureEdited = creatureBuilder.MoveEnded(); break;
             case Tool.Delete:
-                creatureBuilder.DeleteHoveringBodyComponent(); break;
+                creatureEdited = creatureBuilder.DeleteHoveringBodyComponent(); break;
 
             default: break;
             }
+
+            if (creatureEdited) {
+                var state = new EditorState() {
+                    CreatureDesign = oldDesign
+                };
+                historyManager.Push(state);
+            }
         }
+
+        viewController.Refresh();
     }
 
     
@@ -215,6 +234,36 @@ public class CreatureEditor: MonoBehaviour {
 		else if (input.GetKeyDown(KeyCode.E)) {
 			StartSimulation();
 		}
+
+        
+        else if (Input.GetKey(KeyCode.LeftCommand) || Input.GetKey(KeyCode.RightCommand) ||
+                Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) {
+            
+            // Cmd + Z = Undo
+            if (input.GetKeyDown(KeyCode.Z)) {
+                historyManager.Undo();
+            } 
+
+            // Cmd + Shift + Z = Redo
+            else if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && 
+                    input.GetKeyDown(KeyCode.Z)) {
+                historyManager.Redo();
+            }
+            
+            // Cmd + Y = Redo
+            else if (input.GetKeyDown(KeyCode.Y)) {
+                historyManager.Redo();
+            }
+            
+        } 
+
+        // TODO: Remove
+        else if (input.GetKeyDown(KeyCode.P)) {
+            Debug.Log(historyManager.GetDebugState());
+        }
+        else if (input.GetKeyDown(KeyCode.Q)) {
+            Debug.Log(GetState().CreatureDesign.GetDebugDescription());
+        }
 
         viewController.Refresh();
     }

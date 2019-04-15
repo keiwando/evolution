@@ -19,18 +19,26 @@ public class EditorViewController: MonoBehaviour {
     [SerializeField]
     private CreatureDesignControlsView creatureDesignControlsView;
 
+    [SerializeField]
+    private Button undoButton;
+    [SerializeField]
+    private Button redoButton;
+    [SerializeField]
+    private HistoryManager historyManager;
+
     private EditorMode editorMode {
         get { return (EditorMode)Settings.EditorMode; }
         set { Settings.EditorMode = (int)value; }
     }
 
     void Start() {
-        RefreshEditorViews();
+        Refresh();
         SetupActions();
     }
 
     public void Refresh() {
         RefreshEditorViews();
+        RefreshUndoButtons();
     }
 
     private void SetupActions() {
@@ -59,5 +67,24 @@ public class EditorViewController: MonoBehaviour {
         advancedControls.SetActive(advancedMode);
         buttonManager.Refresh();
         // TODO: Refresh Creature Design Controls View
+    }
+
+    private void RefreshUndoButtons() {
+
+        float disabledAlpha = 0.5f;
+        var undoEnabled = historyManager.CanUndo();
+        undoButton.interactable = undoEnabled;
+        var undoCanvasGroup = undoButton.GetComponent<CanvasGroup>();
+        // For some reason the CanvasGroups end up getting destroyed sometimes
+        if (undoCanvasGroup) {
+            undoCanvasGroup.alpha = undoEnabled ? 1f : disabledAlpha;
+        }
+
+        var redoEnabled = historyManager.CanRedo();
+        redoButton.interactable = redoEnabled;
+        var redoCanvasGroup = redoButton.GetComponent<CanvasGroup>();
+        if (redoCanvasGroup) {
+            redoCanvasGroup.alpha = redoEnabled ? 1f : disabledAlpha;
+        }
     }
 }

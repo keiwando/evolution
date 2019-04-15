@@ -90,7 +90,8 @@ public class CreatureBuilder {
 	/// <summary>
 	/// Attempts to place a joint at the specified world position.
 	/// </summary>
-	public void TryPlacingJoint(Vector3 position) {
+	/// <remarks>Returns whether a joint was placed.</remarks>
+	public bool TryPlacingJoint(Vector3 position) {
 
 		// Make sure the joint doesn't overlap another one
 		bool noOverlap = true;
@@ -103,8 +104,9 @@ public class CreatureBuilder {
 
 		if (noOverlap) {
 			PlaceJoint(position);
-			// Notify delegate about creature change
 		}
+
+		return noOverlap;
 	}
 
 	/// <summary>
@@ -152,15 +154,18 @@ public class CreatureBuilder {
 			Debug.Log(string.Format("The connecting joints for bone {0} were not found!", data.id));
 			return;
 		}
-		CreateBoneBetween(startingJoint, endingJoint, data);
+		var bone = CreateBoneBetween(startingJoint, endingJoint, data);
+		bone.ConnectToJoints();
+		bones.Add(bone);
 	}
 
-	private void CreateBoneBetween(Joint startingJoint, Joint endingJoint, BoneData data) {
+	private Bone CreateBoneBetween(Joint startingJoint, Joint endingJoint, BoneData data) {
 
 		var bone = Bone.CreateAtPoint(startingJoint.center, data);
 		PlaceConnectionBetweenPoints(bone.gameObject, startingJoint.center, endingJoint.center, CONNECTION_WIDTH);
 		bone.startingJoint = startingJoint;
 		bone.endingJoint = endingJoint;
+		return bone;
 	}
 
 	/// <summary>
@@ -212,23 +217,25 @@ public class CreatureBuilder {
 	/// Checks to see if the current bone is valid (attached to two joints) and if so 
 	/// adds it to the list of bones.
 	/// </summary>
-	public void PlaceCurrentBone() {
+	/// <returns>Returns whether the current bone was placed.</returns>
+	public bool PlaceCurrentBone() {
 
-		if (currentBone == null) return;
+		if (currentBone == null) return false;
 
 		if (currentBone.endingJoint == null || 
 		    HoveringUtil.GetHoveringObject<Joint>(joints) == null || 
 			currentBone.endingJoint.Equals(currentBone.startingJoint)) {
 			// The connection has no connected ending -> Destroy
 			UnityEngine.Object.Destroy(currentBone.gameObject);
+			currentBone = null;
+			return false;
 		} else {
 			currentBone.ConnectToJoints();
 			bones.Add(currentBone);
+			currentBone = null;
 			// The creature was modified
-			// TODO: Notify delegate about creature change
+			return true;
 		}
-
-		currentBone = null;
 	} 
 
 	#endregion
@@ -294,6 +301,41 @@ public class CreatureBuilder {
 		}
 	}
 
+	/// <summary>
+	/// Checks to see if the current muscle is valid (attached to two joints) and if so
+	/// adds it to the list of muscles.
+	/// </summary>
+	/// <returns>Returns whether the current muscle was placed</returns>
+	public bool PlaceCurrentMuscle() {
+			
+		if (currentMuscle == null) return false;
+
+		if (currentMuscle.endingJoint == null || 
+		    HoveringUtil.GetHoveringObject<Bone>(bones) == null) {
+			// The connection has no connected ending -> Destroy
+			UnityEngine.Object.Destroy(currentMuscle.gameObject);
+			currentMuscle = null;
+			return false;
+		} else {
+
+			// Validate the muscle doesn't exist already
+			foreach (Muscle muscle in muscles) {
+				if (muscle.Equals(currentMuscle)) {
+					UnityEngine.Object.Destroy(currentMuscle.gameObject);
+					currentMuscle = null;
+					return false;
+				}
+			}
+
+			currentMuscle.ConnectToJoints();
+			currentMuscle.AddCollider();
+			muscles.Add(currentMuscle);
+			currentMuscle = null;
+			// The creature was modified
+			return true;
+		}
+	}
+
 	private void CreateMuscleFromData(MuscleData data) {
 		// Find the connecting joints
 		var startingBone = FindBoneWithId(data.startBoneID);
@@ -303,10 +345,13 @@ public class CreatureBuilder {
 			Debug.Log(string.Format("The connecting joints for bone {0} were not found!", data.id));
 			return;
 		}
-		CreateMuscleBetween(startingBone, endingBone, data);
+		var muscle = CreateMuscleBetween(startingBone, endingBone, data);
+		muscle.ConnectToJoints();
+		muscle.AddCollider();
+		muscles.Add(muscle);
 	}
 
-	private void CreateMuscleBetween(Bone startingBone, Bone endingBone, MuscleData data) {
+	private Muscle CreateMuscleBetween(Bone startingBone, Bone endingBone, MuscleData data) {
 
 		var muscle = Muscle.CreateFromData(data);
 		var startJoint = startingBone.muscleJoint;
@@ -315,9 +360,11 @@ public class CreatureBuilder {
 		muscle.startingJoint = startJoint;
 		muscle.endingJoint = endJoint;
 
-		currentMuscle.SetLinePoints(startJoint.transform.position, endJoint.transform.position);
+		muscle.SetLinePoints(startJoint.transform.position, endJoint.transform.position);
+		return muscle;
 	}
 
+	#endregion
 	#region Move
 
 	/// <summary>
@@ -352,46 +399,27 @@ public class CreatureBuilder {
 	/// <summary>
 	/// Resets all properties used while moving a body component.
 	/// </summary>
-	public void MoveEnded() {
-		currentMovingJoint = null;
-	}
+	/// <returns>Returns whether the creature design was changed.</returns>
+	public bool MoveEnded() {
 
-	#endregion
-
-	/// <summary>
-	/// Checks to see if the current muscle is valid (attached to two joints) and if so
-	/// adds it to the list of muscles.
-	/// </summary>
-	public void PlaceCurrentMuscle() {
-			
-		if (currentMuscle == null) return;
-
-		if (currentMuscle.endingJoint == null || 
-		    HoveringUtil.GetHoveringObject<Bone>(bones) == null) {
-			// The connection has no connected ending -> Destroy
-			UnityEngine.Object.Destroy(currentMuscle.gameObject);
-		} else {
-
-			// Validate the muscle doesn't exist already
-			foreach (Muscle muscle in muscles) {
-				if (muscle.Equals(currentMuscle)) {
-					UnityEngine.Object.Destroy(currentMuscle.gameObject);
-					currentMuscle = null;
-					return;
-				}
-			}
-
-			currentMuscle.ConnectToJoints();
-			currentMuscle.AddCollider();
-			muscles.Add(currentMuscle);
-			// The creature was modified
-			// TODO: Notify delegate about creature change
+		// TODO: Check old position
+		var didChange = currentMovingJoint != null;
+		if (didChange) {
+			var oldData = currentMovingJoint.JointData;
+			var newData = new JointData(oldData.id, currentMovingJoint.center, oldData.weight);
+			currentMovingJoint.JointData = newData;
 		}
-
-		currentMuscle = null;
+		currentMovingJoint = null;
+		return didChange;
 	}
 
 	#endregion
+
+
+	public void Reset() {
+		DeleteAll();
+		idCounter = 0;
+	}
 
 	/// <summary>
 	/// Deletes all body components placed with this builder.
@@ -412,7 +440,8 @@ public class CreatureBuilder {
 	/// Deletes the placed body components that are currently being
 	/// hovered over.
 	/// </summary>
-	public void DeleteHoveringBodyComponent() {
+	/// <returns>Returns whether the creature design was modified.</returns>
+	public bool DeleteHoveringBodyComponent() {
 
 		BodyComponent joint = HoveringUtil.GetHoveringObject<Joint>(joints);
 		BodyComponent bone = HoveringUtil.GetHoveringObject<Bone>(bones);
@@ -423,10 +452,11 @@ public class CreatureBuilder {
 		if (toDelete != null) {
 			toDelete.Delete();
 			RemoveDeletedObjects();
-			// The creature was modified
-			// TODO: Notify a delegate object
-
 			Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+			// The creature was modified
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -475,11 +505,6 @@ public class CreatureBuilder {
 		var boneData = this.bones.Select(b => b.BoneData).ToList();
 		var muscleData = this.muscles.Select(m => m.MuscleData).ToList();
 		return new CreatureDesign(name, jointData, boneData, muscleData);
-	}
-
-	public void Reset() {
-		DeleteAll();
-		idCounter = 0;
 	}
 
 	// TODO: Migrate the code below

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 [Serializable]
 public class CreatureDesign {
@@ -17,5 +18,20 @@ public class CreatureDesign {
         this.Joints = joints;
         this.Bones = bones;
         this.Muscles = muscles;
+    }
+
+    public string GetDebugDescription() {
+        var stringBuilder = new StringBuilder();
+        foreach (var joint in Joints) {
+            stringBuilder.AppendLine(string.Format("Joint {0} - {1} - {2}", joint.id, joint.position.x, joint.position.y));
+        }
+        foreach (var bone in Bones) {
+            stringBuilder.AppendLine(string.Format("Bone {0} - {1} - {2}", bone.id, bone.startJointID, bone.endJointID));
+        }
+        foreach (var muscle in Muscles) {
+            stringBuilder.AppendLine(string.Format("Muscle {0} - {1} - {2}", muscle.id, muscle.startBoneID, muscle.endBoneID));
+        }
+        stringBuilder.AppendLine("----------------------");
+        return stringBuilder.ToString();
     }
 }
