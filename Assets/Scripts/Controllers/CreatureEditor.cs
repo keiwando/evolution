@@ -36,8 +36,14 @@ public class CreatureEditor: MonoBehaviour {
     private CreatureBuilder creatureBuilder;
 
     void Start() {
+
+        Screen.sleepTimeout = SleepTimeout.SystemSetting;
+
         creatureBuilder = new CreatureBuilder();
-        // historyManager.Push(GetState());
+        var simulationConfigs = GameObject.FindGameObjectsWithTag("SimulationConfig");
+        foreach (var configContainer in simulationConfigs) {
+            Destroy(configContainer);
+        }
     }
 
     void Update() {
@@ -51,6 +57,7 @@ public class CreatureEditor: MonoBehaviour {
     /// </summary>
     public void Clear() {
         
+        historyManager.Push(GetState());
         creatureBuilder.Reset();
     }
 
@@ -88,10 +95,23 @@ public class CreatureEditor: MonoBehaviour {
     /// </summary>
     public void StartSimulation () {
 
-        // TODO: Implement
-        // Get creature design
-        // Get simulation settings
+        var editorState = GetState();
+        var creatureDesign = creatureBuilder.GetDesign();
+
+        // Don't start the simulation if the creature design is empty
+        if (creatureDesign.IsEmpty) return;
+
+        var simulationConfig = new SimulationConfig(creatureDesign, 
+                                                    editorState.SimulationSettings, 
+                                                    editorState.NeuralNetworkSettings);
+        var containerObject = new GameObject("SimulationConfig");
+        containerObject.tag = "SimulationConfig";
+        var configContainer = containerObject.AddComponent<SimulationConfigContainer>();
+        configContainer.SimulationConfig = simulationConfig;
+        DontDestroyOnLoad(containerObject);
+        
         // Load simulation scene
+        SceneController.LoadSync(SceneController.Scene.Simulation);
     }
 
     public void StartSimulation(SimulationData simulationData) {

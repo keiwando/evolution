@@ -7,7 +7,11 @@ public class CreatureDesign {
 
     public readonly int Version = 2;
 
-    public string Name { get; set; }
+    public bool IsEmpty {
+        get { return Joints.Count == 0; }
+    }
+
+    public string Name;
     public readonly List<JointData> Joints;
     public readonly List<BoneData> Bones;
     public readonly List<MuscleData> Muscles;

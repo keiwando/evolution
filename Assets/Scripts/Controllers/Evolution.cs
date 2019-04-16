@@ -111,6 +111,8 @@ public class Evolution : MonoBehaviour {
 	
 	void Start () {
 
+		Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
 		// Find the configuration
 		var configContainer = FindObjectOfType<SimulationConfigContainer>();
 		if (configContainer == null) {
@@ -122,51 +124,51 @@ public class Evolution : MonoBehaviour {
 		this.brainSettings = config.NeuralNetworkSettings;
 		this.settings = config.SimulationSettings;
 
-		var creatureBuilder = new CreatureBuilder();
-
-		// TODO: Create the creature
+		var creatureBuilder = new CreatureBuilder(config.CreatureDesign);
+		this._creature = creatureBuilder.Build();
 		// TODO: Begin simulation
 	}
 	
 	// Update is called once per frame
+	// TODO: Move this somewhere else
 	void Update () {
 
 		HandleKeyboardInput();
 	}
 
+	// TODO: Move this somewhere else
 	private void HandleKeyboardInput() {
 
-		if (!running) { return; }
+		if (!running) return; 
+		if (!Input.anyKeyDown) return; 
 
-		if (Input.anyKeyDown) {
+		if (Input.GetKeyDown(KeyCode.LeftArrow)) {
 
-			if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+			FocusOnPreviousCreature();
+		
+		} else if (Input.GetKeyDown(KeyCode.RightArrow)) {
 
-				FocusOnPreviousCreature();
-			
-			} else if (Input.GetKeyDown(KeyCode.RightArrow)) {
+			FocusOnNextCreature();
 
-				FocusOnNextCreature();
-
-			} else if (Input.GetKeyDown(KeyCode.Escape)) {
-				GoBackToCreatureBuilding();
-			}
-
-			if (Application.platform == RuntimePlatform.Android && Input.GetKeyDown(KeyCode.Backspace)) {
-				GoBackToCreatureBuilding();
-			}
-
+		} else if (Input.GetKeyDown(KeyCode.Escape)) {
+			GoBackToEditor();
 		}
+
+		if (Application.platform == RuntimePlatform.Android && Input.GetKeyDown(KeyCode.Backspace)) {
+			GoBackToEditor();
+		}	
 	}
 
-	public void GoBackToCreatureBuilding() {
-		// Go back to the Creature building view.
-		Screen.sleepTimeout = SleepTimeout.SystemSetting;
-		SceneManager.LoadScene("CreatureBuildingScene");
+	public void GoBackToEditor() {
+		
 		KillGeneration();
-		Destroy(creature.gameObject);
-		Destroy(this.gameObject);
 		running = false;
+		SceneController.LoadSync(SceneController.Scene.Editor);
+		// SceneManager.LoadScene("CreatureBuildingScene");
+		
+		// Destroy(creature.gameObject);
+		// Destroy(this.gameObject);
+		// running = false;
 	}
 
 	public void FocusOnNextCreature() {

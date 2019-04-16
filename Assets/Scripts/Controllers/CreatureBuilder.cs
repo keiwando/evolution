@@ -471,6 +471,8 @@ public class CreatureBuilder {
 	/// </summary>
 	public Creature Build() {
 
+		ResetHoverableColliders();
+
 		GameObject creatureObj = new GameObject();
 		creatureObj.name = "Creature";
 		Creature creature = creatureObj.AddComponent<Creature>();
@@ -506,122 +508,6 @@ public class CreatureBuilder {
 		var muscleData = this.muscles.Select(m => m.MuscleData).ToList();
 		return new CreatureDesign(name, jointData, boneData, muscleData);
 	}
-
-	// TODO: Migrate the code below
-
-	// /// <summary>
-	// /// Generates a creature from the currently places body components
-	// /// and starts the simulation.
-	// /// </summary>
-	// public void Evolve() {
-
-	// 	// Don't attempt evolution if there is no creature
-	// 	if (joints.Count == 0) return;
-
-	// 	ResetHoverableColliders();
-
-	// 	var name = CreatureSaver.GetCurrentCreatureName();
-	// 	CreatureSaver.SaveCurrentCreature(name, joints, bones, muscles);
-
-	// 	Creature creature = BuildCreature();
-	// 	DontDestroyOnLoad(creature.gameObject);
-
-	// 	AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
-	// 	//AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("TestEvolutionScene");
-	// 	sceneLoading.allowSceneActivation = true;
-	// 	DontDestroyOnLoad(evolution.gameObject);
-	// 	evolution.creature = creature;
-
-	// 	var settings = settingsMenu.GetSimulationSettings();
-
-	// 	evolution.Settings = settings;
-	// 	evolution.BrainSettings = settingsMenu.GetNeuralNetworkSettings();
-
-	// 	SetMobileNoSleep();
-
-	// 	StartCoroutine(WaitForEvolutionSceneToLoad(sceneLoading));
-	// 	DontDestroyOnLoad(this);
-	// }
-
-	// IEnumerator WaitForEvolutionSceneToLoad(AsyncOperation loadingOperation) {
-
-	// 	while(!loadingOperation.isDone){
-	// 		//print(loadingOperation.progress);
-	// 		yield return null;
-	// 	}
-			
-	// 	Destroy(this.gameObject);
-	// 	print("Starting Evolution");
-	// 	evolution.StartEvolution();
-	// }
-
-	// /// <summary>
-	// /// Changes to the evolution scene for continuing a saved simulation.
-	// /// </summary>
-	// public void ContinueEvolution(Evolution evolution, Action completion) {
-
-	// 	SetMobileNoSleep();
-
-	// 	ResetHoverableColliders();
-
-	// 	var name = CreatureSaver.GetCurrentCreatureName();
-	// 	CreatureSaver.SaveCurrentCreature(name, joints, bones, muscles);
-
-	// 	AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
-	// 	//AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("TestEvolutionScene");
-	// 	sceneLoading.allowSceneActivation = true;
-	// 	DontDestroyOnLoad(evolution.gameObject);
-
-	// 	StartCoroutine(WaitForEvolutionSceneToLoadForLoad(sceneLoading, completion));
-	// 	DontDestroyOnLoad(this);
-	// }
-
-	// IEnumerator WaitForEvolutionSceneToLoadForLoad(AsyncOperation loadingOperation, Action completion) {
-
-	// 	while(!loadingOperation.isDone){
-	// 		yield return null;
-	// 	}
-
-	// 	Destroy(this.gameObject);
-	// 	completion();
-	// }
-
-	// /// <summary>
-	// /// Attempts to save the current creature. Shows an error screen if something went wrong.
-	// /// </summary>
-	// /// <param name="name">Name.</param>
-	// public void SaveCreature(string name) {
-
-	// 	CreatureSaver.WriteSaveFile(name, joints, bones, muscles);
-	// 	CreatureSaver.SaveCurrentCreatureName(name);
-	// 	RefreshCurrentCreatureName();
-	// }
-
-	// /// <summary>
-	// /// Loads a previously saved creature design into the scene.
-	// /// </summary>
-	// public void LoadCreature(string name) {
-
-	// 	DeleteCreature();
-	// 	CreatureSaver.SaveCurrentCreatureName(name);
-	// 	RefreshCurrentCreatureName();
-
-	// 	CreatureSaver.LoadCreature(name, this);
-	// }
-
-	// /// <summary>
-	// /// Sets the screen to not go to sleep on mobile devices.
-	// /// </summary>
-	// private void SetMobileNoSleep() {
-	// 	Screen.sleepTimeout = SleepTimeout.NeverSleep;
-	// }
-
-	// /// <summary>
-	// /// Resets the sleep timeout settings to the system settings.
-	// /// </summary>
-	// private void SetMobileDefaultSleep() {
-	// 	Screen.sleepTimeout = SleepTimeout.SystemSetting;
-	// }
 
 	#region Hover Configuration
 
