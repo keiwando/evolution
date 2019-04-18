@@ -1,5 +1,6 @@
 bool DidMigrateCreatureSaves = false
 bool DidMigrateSimulationSaves = false
+bool ShowMuscleContraction = false (showMuscleContraction)
 
 int EditorMode = 0
 

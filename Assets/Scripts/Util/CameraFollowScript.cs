@@ -9,8 +9,6 @@ public class CameraFollowScript : MonoBehaviour {
 
 	public Creature toFollow;
 
-	public int currentlyWatchingIndex;
-
 	public bool DiagonalLock = false;
 
 	new private Camera camera;
