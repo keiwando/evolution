@@ -23,57 +23,39 @@ public class BestCreaturesController : MonoBehaviour {
 	public GameObject BCThumbScreen;
 	public InputField BCGenerationInput;
 
-	public Transform floorHeight;
-	public Vector3 dropHeight;
 
 	/// <summary>
 	/// The list of best creature brains (as chromosome strings). The index + 1 = generation Number.
 	/// </summary>
-	private List<string> BestCreatures;
-	//private List<float> BestFitness;
-	private List<CreatureStats> BestCreatureStats;
-
-	private Creature creature;
-	public Creature Creature {
-		set { creature = value; }
-	}
+	// private List<string> BestCreatures;
+	// //private List<float> BestFitness;
+	// private List<CreatureStats> BestCreatureStats;
 
 	private Creature currentBest;
+
 	/// <summary>
-	/// The generation of the currently showing 
+	/// The generation of the currently showing best creature.
 	/// </summary>
-	private int currentGeneration;
+	public int CurrentGeneration { get; private set; }
 
 	//private bool autoplayEnabled = true;
 	private float autoplayDuration = 10f;
 	private Coroutine autoplayRoutine;
-
-	public GameObject Obstacle {
-		set {
-			this.obstacle = value;
-		}
-	}
-	private GameObject obstacle;
 
 	private Evolution evolution;
 
 	// Use this for initialization
 	void Start () {
 
-		evolution = GameObject.FindGameObjectWithTag("Evolution").GetComponent<Evolution>();
+		evolution = FindObjectOfType<Evolution>();
 		
-		BestCreatures = new List<string>();
-		BestCreatureStats = new List<CreatureStats>();
+		// BestCreatures = new List<string>();
+		// BestCreatureStats = new List<CreatureStats>();
 
 		autoplayDuration = evolution.Settings.simulationTime;
 		viewController.autoplaySlider.value = autoplayDuration;
 
 		BCThumbScreen.gameObject.SetActive(false);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-
 	}
 
 	public void RefreshMuscleContractionVisibility() {
@@ -185,8 +167,6 @@ public class BestCreaturesController : MonoBehaviour {
 
 	private void SpawnCreature(string chromosome) {
 
-		if (this.creature == null) return;
-
 		if (currentBest != null) {
 			Destroy(currentBest.gameObject);
 		}
@@ -195,7 +175,7 @@ public class BestCreaturesController : MonoBehaviour {
 		evolution.ApplyBrain(creature, chromosome);
 	
 		BCCamera.toFollow = creature;
-		currentBest = creature;
+		this.currentBest = creature;
 
 		creature.SetOnBestCreatureLayer();
 
@@ -205,13 +185,6 @@ public class BestCreaturesController : MonoBehaviour {
 
 		creature.Alive = true;
 		creature.gameObject.SetActive(true);
-	}
-
-	private Creature CreateCreature(){
-
-		Creature creat = (Creature) ((GameObject) Instantiate(creature.gameObject, dropHeight, Quaternion.identity)).GetComponent<Creature>();
-		creat.RefreshLineRenderers();
-		return creat;
 	}
 
 	public void GoToNextGeneration() {

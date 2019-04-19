@@ -7,6 +7,11 @@ using UnityEngine.UI;
 
 public class ViewController : MonoBehaviour {
 
+	enum VisibleScreen {
+		Simulation,
+		BestCreatures
+	}
+
 	[SerializeField] private Text generationLabel;
 	[SerializeField] private Text EVOLGenerationLabel;
 
@@ -36,15 +41,17 @@ public class ViewController : MonoBehaviour {
 	[SerializeField] private Slider timeScaleSlider;
 	[SerializeField] private Text timeScaleLabel;
 
-	private Evolution evolution;
+	private VisibleScreen visibleScreen = VisibleScreen.Simulation;
 
-	[SerializeField] private BestCreaturesController bcController;
+	private Evolution evolution;
+	private BestCreaturesController bestCreatureController;
 
 	public bool shouldAutoplay { get { return autoplayToggle.isOn; } }
 
 	void Start () {
 
-		evolution = GameObject.Find("Evolution").GetComponent<Evolution>();
+		bestCreatureController = FindObjectOfType<BestCreaturesController>();
+		evolution = FindObjectOfType<Evolution>();
 
 		ErrorMessageColor = BCErrorMessage.color;
 		savedLabelColor = SavedLabel.color;
@@ -68,16 +75,22 @@ public class ViewController : MonoBehaviour {
 		//	timeScaleLabel.text = arg0.ToString("0.0") + "X";
 		//});
 	}
-	
-	void Update () {
-		if (Input.GetKeyDown(KeyCode.Escape)) {
-			GoBackToCreatureBuilding();
+
+	public void Refresh() {
+
+		if (visibleScreen == VisibleScreen.Simulation) {
+
+			UpdateGeneration();
+
+		} else {
+			UpdateBCGeneration();
+			UpdateFitnessLabel();
 		}
 	}
 
-	public void UpdateGeneration(int generation) {
+	private void UpdateGeneration() {
 		
-		var text = string.Format("Generation {0}", generation);
+		var text = string.Format("Generation {0}", evolution.CurrentGenerationNumber);
 
 		if (evolution.ShouldSimulateInBatches) {
 			text += string.Format(" (Batch {0}/{1})", evolution.CurrentBatchNumber, Mathf.Ceil((float)evolution.Settings.populationSize / evolution.CurrentBatchSize));
@@ -87,14 +100,16 @@ public class ViewController : MonoBehaviour {
 		EVOLGenerationLabel.text = text;
 	}
 
-	public void UpdateBCGeneration(int generation) {
+	private void UpdateBCGeneration() {
 		
+		int generation = bestCreatureController.CurrentGeneration;
 		BCGenerationLabel.text = string.Format("Best of Gen. {0}", generation);
 		BCInputField.text = generation.ToString();
 	}
 
-	public void UpdateFitness(float fitness) {
+	private void UpdateFitnessLabel() {
 
+		var fitness = bestCreatureController.GetCurrentFitness();
 		var percentageFitness = Mathf.Round(fitness * 10000f) / 100f;
 		FitnessLabel.text = string.Format("Fitness: {0}%", percentageFitness);
 	}
@@ -202,10 +217,6 @@ public class ViewController : MonoBehaviour {
 
 	public void UpdateAutoPlayDurationLabel(float duration) {
 		AutoplayDurationLabel.text = string.Format("Duration {0}s", duration);
-	}
-
-	public void GoBackToCreatureBuilding() {
-		evolution.GoBackToCreatureBuilding();
 	}
 
 	public void SaveSimulation() {

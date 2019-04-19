@@ -14,6 +14,7 @@ public class Evolution : MonoBehaviour {
 
 	public event Action NewGenerationDidBegin;
 	public event Action NewBatchDidBegin;
+	public event Action SimulationWasSaved;
 
 	#endregion
 	#region Settings
@@ -43,15 +44,43 @@ public class Evolution : MonoBehaviour {
 	public int CurrentBatchSize { get { return batchSizeCached; } }
 
 	#endregion
+	#region Global Simulation Data
 
+
+	private SimulationData simulationData;
 	
 	/// <summary>
 	/// The creature body template, from which the entire generation is instantiated. 
 	/// Has no brain by default.
 	/// </summary>
 	private Creature creature;
-	
- 	/// <summary>
+
+	/// <summary>
+	/// The obstacle gameobject of the "Obstacle Jump" task.
+	/// </summary>
+	public GameObject Obstacle { get; set; }
+
+	/// <summary>
+	/// The height from the ground from which the creatures should be dropped on spawn.
+	/// </summary>
+	private Vector3 dropHeight;
+
+	/// <summary>
+	/// An offset added to the drop height in order to prevent creatures from being
+	/// spawned into the ground.
+	/// </summary>
+	private float safeHeightOffset;
+
+	public int CurrentGenerationNumber { get { return currentGenerationNumber; } }
+	/// <summary>
+	/// The number of the currently simulating generation. Starts at 1.
+	/// </summary>
+	private int currentGenerationNumber = 1;
+
+	#endregion
+	#region Per Generation Data
+
+	/// <summary>
 	/// The chromosome strings of the current generation.
 	/// </summary>
 	private string[] currentChromosomes;
@@ -77,45 +106,22 @@ public class Evolution : MonoBehaviour {
 	}
 	private int currentBatchNumber;
 
-	private int currentGenerationNumber = 1;
-	
+	#endregion
+	#region Utils & Controllers
 
-
-
-	public GameObject Obstacle { get; set; }
-
-	
-
-	/// <summary>
-	/// The height from the ground from which the creatures should be dropped on spawn.
-	/// </summary>
-	private Vector3 dropHeight;
-
-	/// <summary>
-	/// An offset added to the drop height in order to prevent creatures from being
-	/// spawned into the ground.
-	/// </summary>
-	private float safeHeightOffset;
-
-	/// <summary>
-	/// Whether the simulation is currently running or not. (Paused is still true)
-	/// </summary>
-	private bool running;
-
-	private BestCreaturesController BCController;
-
-	// UI
+	private BestCreaturesController BestCreaturesController;
+	// TODO: Get rid of this reference
 	private ViewController viewController;
-
-	// Auto-Save
 	private AutoSaver autoSaver;
 
-	private Dictionary<int, string> chromosomeCache = new Dictionary<int, string>();
-
+	#endregion
 	
 	void Start () {
 
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
+		this.autoSaver = new AutoSaver();
+		this.
 
 		// Find the configuration
 		var configContainer = FindObjectOfType<SimulationConfigContainer>();
@@ -124,17 +130,8 @@ public class Evolution : MonoBehaviour {
 			return;
 		}
 
-		var config = configContainer.SimulationConfig;
-		this.brainSettings = config.NeuralNetworkSettings;
-		this.settings = config.SimulationSettings;
-
-		var creatureBuilder = new CreatureBuilder(config.CreatureDesign);
-		this.creature = creatureBuilder.Build();
-		// Update safe drop offset
-		// Ensures that the creature isn't spawned into the ground
-		var lowestY = creature.GetLowestPoint().y;
-		this.safeHeightOffset = lowestY < 0 ? -lowestY + 1f : 0f;
-		// TODO: Begin simulation
+		var data = configContainer.SimulationData;
+		StartSimulation(data);
 	}
 	
 	/// <summary>
@@ -142,7 +139,42 @@ public class Evolution : MonoBehaviour {
 	/// </summary>
 	public void Finish() {
 		KillGeneration();
-		running = false;
+	}
+
+	/// <summary>
+	/// Continues
+	/// </summary>
+	private void StartSimulation(SimulationData data) {
+
+		this.brainSettings = data.NetworkSettings;
+		this.settings = data.Settings;
+		this.simulationData = data;
+
+		// Instantiate the creature template
+		var creatureBuilder = new CreatureBuilder(data.CreatureDesign);
+		this.creature = creatureBuilder.Build();
+		this.creature.RemoveMuscleColliders();
+		this.creature.Alive = false;
+
+		// Update safe drop offset
+		// Ensures that the creature isn't spawned into the ground
+		var lowestY = creature.GetLowestPoint().y;
+		this.safeHeightOffset = lowestY < 0 ? -lowestY + 1f : 0f;
+		// Calculate the drop height
+		float distanceFromGround = creature.DistanceFromGround();
+		float padding = 0.5f;
+		this.dropHeight = creature.transform.position;
+		this.dropHeight.y -= distanceFromGround - padding;
+		
+
+
+		this.currentGenerationNumber = data.BestCreatures.Count + 1;
+		this.currentChromosomes = data.CurrentChromosomes;
+		
+		// Batch simulation
+		this.currentBatchNumber = 1;
+
+
 	}
 
 	/// <summary>
@@ -170,7 +202,6 @@ public class Evolution : MonoBehaviour {
 
 		creature.RemoveMuscleColliders();
 		creature.Alive = false;
-		running = true;
 
 		viewController.UpdateGeneration(generationNum);
 
@@ -180,8 +211,7 @@ public class Evolution : MonoBehaviour {
 		CalculateDropHeight();
 
 		BCController = GameObject.Find("Best Creature Controller").GetComponent<BestCreaturesController>();
-		BCController.dropHeight = dropHeight;
-		BCController.Creature = creature;
+		
 
 		BCController.SetBestChromosomes(bestChromosomes);
 		BCController.ShowBCThumbScreen();
@@ -371,7 +401,13 @@ public class Evolution : MonoBehaviour {
 	private string[] CreateNewChromosomesFromGeneration() {
 
 		string[] result = new string[settings.populationSize];
-		SetupRandomPickingWeights();
+
+		var lazyChromosomes = new List<LazyChromosomeData>();
+		foreach (var creature in currentGeneration) {
+			lazyChromosomes.Add(new LazyChromosomeData(creature, creature.GetStatistics()));
+		}
+		var selection = new Selection<LazyChromosomeData>(Selection<LazyChromosomeData>.Mode.FitnessProportional, lazyChromosomes);
+		
 
 		chromosomeCache.Clear();
 
@@ -379,19 +415,24 @@ public class Evolution : MonoBehaviour {
 		if (settings.keepBestCreatures) {
 
 			// keep the two best creatures
-			result[0] = GetChromosomeWithCaching(0);
-			result[1] = GetChromosomeWithCaching(1);
+			var best = selection.SelectBest(2);
+			result[0] = best[0].Chromosome;
+			result[1] = best[1].Chromosome;
+			// result[0] = GetChromosomeWithCaching(0);
+			// result[1] = GetChromosomeWithCaching(1);
 			start = 2;
 		}
 
 		for(int i = start; i < settings.populationSize; i += 2) {
 
 			// randomly pick two creatures and let them "mate"
-			int index1 = PickRandomWeightedIndex();
-			int index2 = PickRandomWeightedIndex();
+			// int index1 = PickRandomWeightedIndex();
+			// int index2 = PickRandomWeightedIndex();
 
-			string chrom1 = GetChromosomeWithCaching(index1);
-			string chrom2 = GetChromosomeWithCaching(index2);
+			string chrom1 = selection.Select().Chromosome;
+			string chrom2 = selection.Select().Chromosome;
+			// string chrom1 = GetChromosomeWithCaching(index1);
+			// string chrom2 = GetChromosomeWithCaching(index2);
 
 			string[] newChromosomes = CombineChromosomes(chrom1, chrom2);
 
@@ -406,15 +447,6 @@ public class Evolution : MonoBehaviour {
 
 		return result;
 
-	}
-
-	private string GetChromosomeWithCaching(int currentGenIndex) {
-
-		if (chromosomeCache.ContainsKey(currentGenIndex)) {
-			return chromosomeCache[currentGenIndex];
-		}
-
-		return currentGeneration[currentGenIndex].brain.ToChromosomeString();
 	}
 
 	/// <summary>
@@ -465,37 +497,6 @@ public class Evolution : MonoBehaviour {
 		}
 
 		return chromosome;
-	}
-
-	/// <summary>
-	/// Picks an index between 0 and POPULATION_SIZE. The first indices are more likely to be picked. The weights decrease towards to.
-	/// </summary>
-	/// <returns>The randomly weighted index.</returns>
-	private int PickRandomWeightedIndex() {
-
-		int number = UnityEngine.Random.Range(0, randomPickingWeights[0] - 1);
-		// find the index in the random pickingweights
-		for(int i = settings.populationSize - 1; i >= 0; i--) {
-			if( randomPickingWeights[i] >= number ) {
-				return i;
-			}
-		} 
-
-		return 0;
-	}
-
-	/** Initialized the weights array for randomly picking the  */
-	private void SetupRandomPickingWeights() {
-
-		int[] weights = new int[settings.populationSize];
-		// fill the weights array
-		int value = 1;
-		for (int i = 0; i < settings.populationSize; i++) {
-			weights[weights.Length - 1 - i] = value;
-			value += i;
-		}
-
-		randomPickingWeights = weights;
 	}
 
 	private void ResetCreatures() {

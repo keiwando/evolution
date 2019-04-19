@@ -2,5 +2,5 @@ using UnityEngine;
 
 public class SimulationConfigContainer: MonoBehaviour {
 
-    public SimulationConfig SimulationConfig { get; set; }
+    public SimulationData SimulationData { get; set; }
 }

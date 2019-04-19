@@ -101,13 +101,13 @@ public class CreatureEditor: MonoBehaviour {
         // Don't start the simulation if the creature design is empty
         if (creatureDesign.IsEmpty) return;
 
-        var simulationConfig = new SimulationConfig(creatureDesign, 
-                                                    editorState.SimulationSettings, 
-                                                    editorState.NeuralNetworkSettings);
+        var simulationData = new SimulationData(editorState.SimulationSettings, 
+                                                editorState.NeuralNetworkSettings,
+                                                creatureDesign);
         var containerObject = new GameObject("SimulationConfig");
         containerObject.tag = "SimulationConfig";
         var configContainer = containerObject.AddComponent<SimulationConfigContainer>();
-        configContainer.SimulationConfig = simulationConfig;
+        configContainer.SimulationData = simulationData;
         DontDestroyOnLoad(containerObject);
         
         // Load simulation scene
