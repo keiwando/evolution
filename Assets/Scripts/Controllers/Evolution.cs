@@ -30,7 +30,7 @@ public class Evolution : MonoBehaviour {
 	// Cached values
 
 	private bool simulateInBatchesCached;
-	public bool ShouldSimulateInBatches { get { return simulateInBatchesCached; } }
+	public bool IsSimulatingInBatches { get { return simulateInBatchesCached; } }
 
 	// If generation should be simulated in batches the batch size needs to be cached
 	// at the beginning of each generation simulation to prevent problems with the adjustable
@@ -88,7 +88,7 @@ public class Evolution : MonoBehaviour {
 	/// <summary>
 	/// The current generation of Creatures.
 	/// </summary>
-	public Creature[] currentGeneration;
+	private Creature[] currentGeneration;
 
 	/// <summary>
 	/// The currently simulating batch of creatures (a subset of currentGeneration).
@@ -109,10 +109,10 @@ public class Evolution : MonoBehaviour {
 	#endregion
 	#region Utils & Controllers
 
+	public AutoSaver AutoSaver { get; private set; }
 	private BestCreaturesController BestCreaturesController;
 	// TODO: Get rid of this reference
-	private ViewController viewController;
-	private AutoSaver autoSaver;
+	private SimulationViewController viewController;
 
 	#endregion
 	
@@ -120,8 +120,9 @@ public class Evolution : MonoBehaviour {
 
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
-		this.autoSaver = new AutoSaver();
-		this.
+		this.viewController = FindObjectOfType<SimulationViewController>();
+
+		this.AutoSaver = new AutoSaver();
 
 		// Find the configuration
 		var configContainer = FindObjectOfType<SimulationConfigContainer>();

@@ -6,8 +6,6 @@ using UnityEngine.UI;
 
 public class BestCreaturesController : MonoBehaviour {
 
-	public ViewController viewController;
-
 	/// <summary>
 	/// The camera that follows the creatures in the main evolution "scene".
 	/// </summary>
@@ -16,12 +14,6 @@ public class BestCreaturesController : MonoBehaviour {
 	/// The camera used to follow the best creature of the selected generation.
 	/// </summary>
 	public CameraFollowScript BCCamera;
-
-	public Canvas EvolutionCanvas;
-	public Canvas BCCanvas;
-
-	public GameObject BCThumbScreen;
-	public InputField BCGenerationInput;
 
 
 	/// <summary>
@@ -39,7 +31,9 @@ public class BestCreaturesController : MonoBehaviour {
 	public int CurrentGeneration { get; private set; }
 
 	//private bool autoplayEnabled = true;
-	private float autoplayDuration = 10f;
+	public bool AutoplayEnabled { get; set; }
+	public int AutoplayDuration { get; set; }
+
 	private Coroutine autoplayRoutine;
 
 	private Evolution evolution;
@@ -48,12 +42,14 @@ public class BestCreaturesController : MonoBehaviour {
 	void Start () {
 
 		evolution = FindObjectOfType<Evolution>();
+
+		AutoplayEnabled = true;
+		AutoplayDuration = 10;
 		
 		// BestCreatures = new List<string>();
 		// BestCreatureStats = new List<CreatureStats>();
 
 		autoplayDuration = evolution.Settings.simulationTime;
-		viewController.autoplaySlider.value = autoplayDuration;
 
 		BCThumbScreen.gameObject.SetActive(false);
 	}
@@ -116,26 +112,7 @@ public class BestCreaturesController : MonoBehaviour {
 		ShowBestCreature(generation);
 	} 
 
-	/// <summary>
-	/// This function is called when the user finished selecting a new generation to show. 
-	/// </summary>
-	/// <param name="value">Value.</param>
-	public void GenerationSelected(string value) {
-		
-		int generation;  
-		if (!int.TryParse(value, out generation)) {
-			throw new System.FormatException("The generation number value could not be parsed to an int");
-		}
-
-		GenerationSelected(generation);
-	}
-
-	private void GenerationSelected(int generation) {
-
-		if (generation <= 0) {
-			viewController.UpdateBCGeneration(currentGeneration);
-			return;
-		}
+	public void GenerationSelected(int generation) {
 		
 		// check to see if the selected generation was already simulated. If not, show a message.
 		if (!GenerationSimulated(generation)) {

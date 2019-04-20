@@ -2,11 +2,13 @@ using UnityEngine;
 
 public class SimulationInputManager: MonoBehaviour {
 
-    [SerializeField]
     private Evolution evolution;
+    private SimulationViewController viewController;
 
-    [SerializeField]
-    private CameraFollowController cameraFollowController;
+    void Start() {
+        evolution = FindObjectOfType<Evolution>();
+        viewController = FindObjectOfType<SimulationViewController>();
+    }
 
     void Update () {
 
@@ -19,31 +21,18 @@ public class SimulationInputManager: MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.LeftArrow)) {
 
-			FocusOnPreviousCreature();
+			viewController.FocusOnPreviousCreature();
 		
 		} else if (Input.GetKeyDown(KeyCode.RightArrow)) {
 
-			FocusOnNextCreature();
+			viewController.FocusOnNextCreature();
 
 		} else if (Input.GetKeyDown(KeyCode.Escape)) {
-			GoBackToEditor();
+			viewController.GoBackToEditor();
 		}
 
 		if (Application.platform == RuntimePlatform.Android && Input.GetKeyDown(KeyCode.Backspace)) {
-			GoBackToEditor();
+			viewController.GoBackToEditor();
 		}	
-    }
-
-    private void GoBackToEditor() {
-        evolution.Finish();
-        SceneController.LoadSync(SceneController.Scene.Editor);
-    }
-
-    private void FocusOnPreviousCreature() {
-        cameraFollowController.FocusOnPreviousCreature();
-    }
-
-    private void FocusOnNextCreature() {
-        cameraFollowController.FocusOnNextCreature();
     }
 }

@@ -9,30 +9,29 @@ public class EvolutionPauseMenu : MonoBehaviour {
 	private Evolution evolution;
 
 	// Keep best creatures
-	[SerializeField] private Toggle keepBestCreaturesToggle;
+	[SerializeField] 
+	private Toggle keepBestCreaturesToggle;
 
 	// Batch simulation
-	[SerializeField] private InputField batchSizeInput;
-	[SerializeField] private Toggle batchSizeToggle;
+	[SerializeField] 
+	private InputField batchSizeInput;
+	[SerializeField] 
+	private Toggle batchSizeToggle;
 
 	// Simulation Time
-	[SerializeField] private InputField simulationTimeInput;
+	[SerializeField] 
+	private InputField simulationTimeInput;
 
 	// Mutation rate
-	[SerializeField] private InputField mutationRateInput;
-
-	private float evolutionTimescale = 1.0f;
+	[SerializeField] 
+	private InputField mutationRateInput;
 
 	// Use this for initialization
 	void Start () {
 
-		FindEvolution();
+		evolution = FindObjectOfType<Evolution>();
 
 		Setup();
-	}
-
-	private void FindEvolution() {
-		evolution = GameObject.FindGameObjectWithTag("Evolution").GetComponent<Evolution>();
 	}
 
 	private void Setup() {
@@ -78,18 +77,12 @@ public class EvolutionPauseMenu : MonoBehaviour {
 	public void Pause() {
 		this.gameObject.SetActive(true);
 
-		if (evolution == null) FindEvolution();
-
-		evolutionTimescale = evolution.TimeScale;
-		evolution.TimeScale = 0;
+		Time.timeScale = 0;
 	}
 
 	public void Continue() {
 		this.gameObject.SetActive(false);
-
-		if (evolution == null) FindEvolution();
-
-		evolution.TimeScale = evolutionTimescale;
+		Time.timeScale = 1f;
 	}
 
 	public void KeepBestCreaturesToggled(bool value) {
