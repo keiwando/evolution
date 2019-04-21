@@ -41,15 +41,20 @@ public class CameraFollowController: MonoBehaviour {
         var batch = evolution.CurrentCreatureBatch;
 		if (batch == null) { return; }
 
-        
-		var contractionVisibility = PlayerPrefs.GetInt(PlayerPrefsKeys.SHOW_MUSCLE_CONTRACTION, 0) == 1;
+		// TODO: Replace after Compile
+		// bool showContraction = Settings.ShowMuscleContraction;
+		bool showContraction = true;
 
 		foreach (var creature in batch) {
-			creature.RefreshMuscleContractionVisibility(contractionVisibility);
+			creature.RefreshMuscleContractionVisibility(showContraction);
 		}
 
+		// TODO: Replace after Compile
+		// bool oneAtATime = Settings.ShowOneAtATime;
+		bool oneAtAtime = false;
+
 		// Determine if all or only one creature should be visible
-		if (evolution.Settings.showOneAtATime) {
+		if (oneAtAtime) {
 
 			foreach (var creature in batch) {
 				creature.SetOnInvisibleLayer();

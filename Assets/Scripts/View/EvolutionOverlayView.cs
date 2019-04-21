@@ -6,6 +6,8 @@ public interface IEvolutionOverlayViewDelegate {
     void FocusOnNextCreature();
     void FocusOnPreviousCreature();
     void DidClickOnPipView(EvolutionOverlayView view);
+    void ShowOneAtATimeDidChange(EvolutionOverlayView view, bool showOneAtATime);
+    void ShowMuscleContractionDidChange(EvolutionOverlayView view, bool showMuscleContraction); 
 
     int GetCurrentGenerationNumber(EvolutionOverlayView view);
     int GetGurrentBestOfGenerationNumber(EvolutionOverlayView view);
@@ -41,6 +43,10 @@ public class EvolutionOverlayView: MonoBehaviour {
     private Button pipButton;
 
     void Start() {
+
+        showOneAtATimeToggle.onValueChanged.AddListener(delegate (bool enabled) {
+
+        });
         
         focusOnNextButton.onClick.AddListener(delegate () {
             Delegate.FocusOnNextCreature();
@@ -61,7 +67,7 @@ public class EvolutionOverlayView: MonoBehaviour {
         showMuscleContractionToggle.isOn = Delegate.ShouldShowMuscleContraction(this);
     }
 
-    public RenderTexture GetRenderTexture() {
+    public RenderTexture GetPipRenderTexture() {
         return pipRenderTexture;
     }
 

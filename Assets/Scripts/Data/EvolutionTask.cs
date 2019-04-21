@@ -1,31 +1,31 @@
 ﻿
 public enum EvolutionTask {
 
-	RUNNING = 0,
-	JUMPING = 1,
-	OBSTACLE_JUMP = 2,
-	CLIMBING = 3
+	Running = 0,
+	Jumping = 1,
+	ObstacleJump = 2,
+	Climbing = 3
 }
 
 static class EvolutionTaskUtil {
 
 	public static EvolutionTask TaskForNumber(int n) {
 		switch(n) {
-		case 0: return EvolutionTask.RUNNING; 
-		case 1: return EvolutionTask.JUMPING; 
-		case 2: return EvolutionTask.OBSTACLE_JUMP; 
-		case 3: return EvolutionTask.CLIMBING;
+		case 0: return EvolutionTask.Running; 
+		case 1: return EvolutionTask.Jumping; 
+		case 2: return EvolutionTask.ObstacleJump; 
+		case 3: return EvolutionTask.Climbing;
 		}
 
-		return EvolutionTask.RUNNING;
+		return EvolutionTask.Running;
 	}
 
 	public static string StringRepresentation(this EvolutionTask task) {
 		switch(task) {
-		case EvolutionTask.RUNNING: return "Running";
-		case EvolutionTask.JUMPING: return "Jumping"; 
-		case EvolutionTask.OBSTACLE_JUMP: return "Obstacle Jump";
-		case EvolutionTask.CLIMBING: return "Climbing";
+		case EvolutionTask.Running: return "Running";
+		case EvolutionTask.Jumping: return "Jumping"; 
+		case EvolutionTask.ObstacleJump: return "Obstacle Jump";
+		case EvolutionTask.Climbing: return "Climbing";
 		}
 
 		//return "Running";
@@ -36,10 +36,10 @@ static class EvolutionTaskUtil {
 
 		switch(task.ToUpper()) {
 
-		case "RUNNING": return EvolutionTask.RUNNING; 
-		case "JUMPING": return EvolutionTask.JUMPING; 
-		case "OBSTACLE JUMP": return EvolutionTask.OBSTACLE_JUMP;
-		case "CLIMBING": return EvolutionTask.CLIMBING; 
+		case "RUNNING": return EvolutionTask.Running; 
+		case "JUMPING": return EvolutionTask.Jumping; 
+		case "OBSTACLE JUMP": return EvolutionTask.ObstacleJump;
+		case "CLIMBING": return EvolutionTask.Climbing; 
 
 		default: throw new System.Exception("The string cannot be converted to an EvolutionTask");
 		}

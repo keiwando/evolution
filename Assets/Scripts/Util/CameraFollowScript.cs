@@ -20,16 +20,12 @@ public class CameraFollowScript : MonoBehaviour {
 
 		camera = GetComponent<Camera>();
 		startPos = camera.transform.position;
-
-		toFollow = GameObject.Find("Creature").GetComponent<Creature>();
-
-		if (gameObject.tag == "SecondCamera") {
-			SwitchToMiniViewport();
-		}
 	}
 
 	// Update is called once per frame
 	void Update () {
+
+		if (toFollow == null) return;
 
 		Vector3 newPos = transform.position;
 		newPos.x = toFollow.GetXPosition();
@@ -40,14 +36,4 @@ public class CameraFollowScript : MonoBehaviour {
 
 		transform.position = newPos;
 	}
-
-	public void SwitchToMiniViewport() {
-		camera.targetTexture = renderTexture;
-	}
-
-	public void SwitchToFullscreen() {
-		camera.targetTexture = null;
-	}
-
-
 }

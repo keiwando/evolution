@@ -24,6 +24,8 @@ public class CreatureDesign {
         this.Muscles = muscles;
     }
 
+    #region DEBUG
+
     public string GetDebugDescription() {
         var stringBuilder = new StringBuilder();
         foreach (var joint in Joints) {
@@ -38,4 +40,6 @@ public class CreatureDesign {
         stringBuilder.AppendLine("----------------------");
         return stringBuilder.ToString();
     }
+
+    #endregion
 }

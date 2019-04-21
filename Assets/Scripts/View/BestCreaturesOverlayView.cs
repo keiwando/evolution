@@ -9,11 +9,10 @@ public interface IBestCreaturesOverlayViewDelegate {
     void SelectedGeneration(BestCreaturesOverlayView view, int generation);
     void DidChangeAutoplayEnabled(BestCreaturesOverlayView view, bool enabled);
     void DidChangeAutoplayDuration(BestCreaturesOverlayView view, int duration);
-    void DidClickOnPIPView(BestCreaturesOverlayView view);
+    void DidClickOnPipView(BestCreaturesOverlayView view);
     
     bool IsAutoplayEnabled(BestCreaturesOverlayView view);
     int GetAutoplayDuration(BestCreaturesOverlayView view);
-    int GetMaxAutoplayDuration(BestCreaturesOverlayView view);
     
     int GetCurrentSimulationGeneration(BestCreaturesOverlayView view);
     int GetGenerationOfCurrentBest(BestCreaturesOverlayView view);
@@ -90,13 +89,13 @@ public class BestCreaturesOverlayView: MonoBehaviour {
         });
 
         autoplayDurationSlider.onValueChanged.AddListener(delegate (float value) {
-            int newDuration = Math.Max(1, (int)(value * Delegate.GetMaxAutoplayDuration(this)));
+            int newDuration = Math.Max(2, (int)value);
             Delegate.DidChangeAutoplayDuration(this, newDuration);
             RefreshAutoplayDurationLabel();
         });
 
         pipButton.onClick.AddListener(delegate () {
-            Delegate.DidClickOnPIPView(this);
+            Delegate.DidClickOnPipView(this);
         });
     }
 
@@ -110,7 +109,7 @@ public class BestCreaturesOverlayView: MonoBehaviour {
 
         autoplayToggle.isOn = Delegate.IsAutoplayEnabled(this);
         autoplaySettingsContainer.SetActive(autoplayToggle.isOn);
-        autoplayDurationSlider.value = ((float)Delegate.GetAutoplayDuration(this) / (float)Delegate.GetMaxAutoplayDuration(this));
+        autoplayDurationSlider.value = (float)Delegate.GetAutoplayDuration(this);
         RefreshAutoplayDurationLabel();
     }
 
@@ -177,7 +176,7 @@ public class BestCreaturesOverlayView: MonoBehaviour {
         pipGenerationLabel.text = string.Format("Generation {0}", generation);
     }
 
-    public RenderTexture GetRenderTexture() {
+    public RenderTexture GetPipRenderTexture() {
         return pipRenderTexture;
     }
 
@@ -191,5 +190,16 @@ public class BestCreaturesOverlayView: MonoBehaviour {
 
         var canvasGroup = errorLabel.GetComponent<CanvasGroup>();
         errorFadeRoutine = StartCoroutine(AnimationUtils.Flash(canvasGroup, 1f, 3.5f));
+    }
+
+    /// <summary>
+    /// Immediately ends all fading animations and hides the error message label.
+    /// </summary>
+    public void HideErrorMessage() {
+
+        if (errorFadeRoutine != null) {
+            StopCoroutine(errorFadeRoutine);
+        }
+        errorLabel.GetComponent<CanvasGroup>().alpha = 0f;
     }
 }

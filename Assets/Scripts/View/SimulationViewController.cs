@@ -25,6 +25,9 @@ public class SimulationViewController : MonoBehaviour,
 	private BestCreaturesOverlayView bestCreatureOverlayView;
 	private SharedSimulationOverlayView sharedOverlayView;
 
+    [SerializeField] private Camera simulationCamera;
+    [SerializeField] private Camera bestCreatureCamera;
+
 	private VisibleScreen visibleScreen = VisibleScreen.Simulation;
 
 	void Start () {
@@ -41,19 +44,6 @@ public class SimulationViewController : MonoBehaviour,
 		sharedOverlayView.Delegate = this;
 
 		Refresh();
-
-		showOneAtATimeToggle.onValueChanged.AddListener(delegate(bool arg0) {
-			evolution.Settings.showOneAtATime = arg0;
-			cameraFollowController.RefreshVisibleCreatures();
-		});
-
-		showMuscleContractionToggle.isOn = PlayerPrefs.GetInt(PlayerPrefsKeys.SHOW_MUSCLE_CONTRACTION, 0) == 1;
-		showMuscleContractionToggle.onValueChanged.AddListener(delegate(bool arg0) {
-			PlayerPrefs.SetInt(PlayerPrefsKeys.SHOW_MUSCLE_CONTRACTION, arg0 ? 1 : 0);
-			PlayerPrefs.Save();
-			cameraFollowController.RefreshVisibleCreatures();
-			bcController.RefreshMuscleContractionVisibility();
-		});
 	}
 
 	public void Refresh() {
@@ -63,7 +53,7 @@ public class SimulationViewController : MonoBehaviour,
 		evolutionOverlayView.gameObject.SetActive(visibleScreen == VisibleScreen.Simulation);
 		bestCreatureOverlayView.gameObject.SetActive(visibleScreen == VisibleScreen.BestCreatures);
 
-		// TODO: Connect cameras to correct render textures 
+		ConnectCameraOutputs();
 
 		if (visibleScreen == VisibleScreen.Simulation) {
 			evolutionOverlayView.Refresh();
@@ -93,6 +83,17 @@ public class SimulationViewController : MonoBehaviour,
 	private void SaveSimulation() {
 		// TODO: Implement
 	}
+
+    private void ConnectCameraOutputs() {
+        
+        if (visibleScreen == VisibleScreen.Simulation) {
+            simulationCamera.targetTexture = null;
+            bestCreatureCamera.targetTexture = evolutionOverlayView.GetPipRenderTexture();
+        } else {
+            simulationCamera.targetTexture = bestCreatureOverlayView.GetPipRenderTexture();
+            bestCreatureCamera.targetTexture = null;
+        }
+    }
 	
 
 	#region ISharedSimulationOverlayViewDelegate
@@ -120,15 +121,25 @@ public class SimulationViewController : MonoBehaviour,
 	#endregion
 	#region IEvolutionOverlayViewDelegate
 
-	public void DidClickOnPIPView(EvolutionOverlayView view) {
+	public void DidClickOnPipView(EvolutionOverlayView view) {
 
-		if (visibleScreen == VisibleScreen.Simulation) {
-			visibleScreen = VisibleScreen.BestCreatures;
-		} else {
-			visibleScreen = VisibleScreen.Simulation;
-		} 
+		visibleScreen = VisibleScreen.BestCreatures;
 		Refresh();
 	}
+
+    public void ShowOneAtATimeDidChange(EvolutionOverlayView view, bool showOneAtATime) {
+        // TODO: Replace after Compile
+        // Settings.ShowOneAtATime = showOneAtATime;
+        cameraFollowController.RefreshVisibleCreatures();
+    }
+
+    public void ShowMuscleContractionDidChange(EvolutionOverlayView view, bool showMuscleContraction) {
+        // TODO: Replace after Compile
+        // Settings.ShowMuscleContraction = showMuscleContraction;
+        cameraFollowController.RefreshVisibleCreatures();
+        // TODO: Replace after Compile
+        // bestCreatureController.RefreshMuscleContractionVisibility(Settings.ShowMuscleContraction);
+    }
 
     public int GetCurrentGenerationNumber(EvolutionOverlayView view) {
 		return evolution.CurrentGenerationNumber;
@@ -166,7 +177,18 @@ public class SimulationViewController : MonoBehaviour,
 	#region IBestCreaturesOverlayViewDelegate
 
 	public void SelectedGeneration(BestCreaturesOverlayView view, int generation) {
-		bestCreatureController.GenerationSelected(generation);
+
+        generation = Math.Max(1, generation);
+        // Check if the selected generation has been simulated yet.
+        var lastSimulatedGeneration = evolution.SimulationData.BestCreatures.Count;
+        if (lastSimulatedGeneration < generation) {
+            view.ShowErrorMessage(string.Format("Generation {0} has not been simulated yet.\n\nCurrently Simulated up to Generation {1}", generation, lastSimulatedGeneration));
+            return;
+        }
+
+        view.HideErrorMessage();
+        bestCreatureController.ShowBestCreature(generation);
+        Refresh();
 	}
 
     public void DidChangeAutoplayEnabled(BestCreaturesOverlayView view, bool enabled) {
@@ -177,20 +199,45 @@ public class SimulationViewController : MonoBehaviour,
 		bestCreatureController.AutoplayDuration = duration;
 	}
 
-    public void DidClickOnPIPView(BestCreaturesOverlayView view) {
-
+    public void DidClickOnPipView(BestCreaturesOverlayView view) {
+		visibleScreen = VisibleScreen.Simulation;
+		Refresh();
 	}
     
-    bool IsAutoplayEnabled(BestCreaturesOverlayView view);
-    int GetAutoplayDuration(BestCreaturesOverlayView view);
-    int GetMaxAutoplayDuration(BestCreaturesOverlayView view);
-    
-    int GetCurrentSimulationGeneration(BestCreaturesOverlayView view);
-    int GetGenerationOfCurrentBest(BestCreaturesOverlayView view);
-    CreatureStats GetCreatureStatsOfCurrentBest(BestCreaturesOverlayView view);
-    NeuralNetworkSettings GetNetworkSettingsOfCurrentBest(BestCreaturesOverlayView view);
-    int GetNumberOfNetworkInputs(BestCreaturesOverlayView view);
+    public bool IsAutoplayEnabled(BestCreaturesOverlayView view) {
+		return bestCreatureController.AutoplayEnabled;
+	}
+
+    public int GetAutoplayDuration(BestCreaturesOverlayView view) {
+		return bestCreatureController.AutoplayDuration;
+	}
+	
+    public int GetCurrentSimulationGeneration(BestCreaturesOverlayView view) {
+		return evolution.CurrentGenerationNumber;
+	}
+
+    public int GetGenerationOfCurrentBest(BestCreaturesOverlayView view) {
+		return bestCreatureController.CurrentGeneration;
+	}
+
+    public CreatureStats GetCreatureStatsOfCurrentBest(BestCreaturesOverlayView view) {
+
+        var generation = bestCreatureController.CurrentGeneration;
+        var info = evolution.SimulationData.BestCreatures[generation - 1];
+        return info.Stats;
+    }
+
+    public NeuralNetworkSettings GetNetworkSettingsOfCurrentBest(BestCreaturesOverlayView view) {
+        return evolution.NetworkSettings;
+    }
+
+    public int GetNumberOfNetworkInputs(BestCreaturesOverlayView view) {
+        if (bestCreatureController.CurrentBest != null) {
+            return bestCreatureController.CurrentBest.brain.NUMBER_OF_INPUTS;
+        }
+        // TODO: Improve this implementation
+        return 0;
+    }
 
 	#endregion
-
 }

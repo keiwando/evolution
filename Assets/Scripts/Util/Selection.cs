@@ -10,7 +10,10 @@ public interface ISelectable<T> {
 public class Selection<T> where T: ISelectable<T> {
 
     public enum Mode {
-        FitnessProportional
+        Uniform,
+        FitnessProportional,
+        TournamentSelection,
+        RankProportional
     }
 
     private Mode mode;
