@@ -41,7 +41,7 @@ public class BestCreaturesController : MonoBehaviour {
 		AutoplayEnabled = true;
 		AutoplayDuration = 10;
 
-		AutoplayDuration = evolution.Settings.simulationTime;
+		AutoplayDuration = evolution.Settings.SimulationTime;
 
 		evolution.NewGenerationDidBegin += delegate () {
 			if (CurrentBest == null && GenerationHasBeenSimulated(1)) {

@@ -33,23 +33,6 @@ public class Joint : BodyComponent {
 		return joint;
 	}
 
-	public static Joint CreateFromString(string data) {
-		
-		var parts = data.Split('%');
-		//print(data);
-		// Format: ID - pos.x - pos.y - pos.z
-		var x = float.Parse(parts[1]);
-		var y = float.Parse(parts[2]);
-		var z = float.Parse(parts[3]);
-
-		var id = int.Parse(parts[0]);
-
-		var jointData = new JointData(id, new Vector3(x,y,z), 1f);
-		var joint = CreateFromData(jointData);
-
-		return joint;
-	}
-
 	public override void Start () {
 		base.Start();
 

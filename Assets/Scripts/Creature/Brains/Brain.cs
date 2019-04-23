@@ -495,7 +495,7 @@ abstract public class Brain : MonoBehaviour {
 	}
 
 	/** If chromosome is an empty string the weights will be setup randomly. */
-	public void SetupNeuralNet(string chromosome) {
+	public void SetupNeuralNet(string chromosome = "") {
 
 		if (muscles.Length == 0) return;
 

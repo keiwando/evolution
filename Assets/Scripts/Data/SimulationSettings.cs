@@ -68,6 +68,11 @@ public struct SimulationSettings {
 
 	// }
 
+	public string Encode() {
+		// TODO: Remove Prettyprint after debugging
+		return JsonUtility.ToJson(this, true);
+	}
+
 	public static SimulationSettings Decode(string encoded) {
 		// TODO: Check which decode version is needed
 		return DecodeV1(encoded);

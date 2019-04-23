@@ -35,41 +35,7 @@ public class Bone : BodyComponent {
 		bone.BoneData = data;
 		return bone;
 	}
-
-	public static Bone CreateFromString(string data, List<Joint> joints) {
-		
-		
-		// Format: ID - startingJoint.ID - endingJoint.ID
-		var parts = data.Split('%');
-		var boneID = int.Parse(parts[0]);
-		var jointID1 = int.Parse(parts[1]);
-		var jointID2 = int.Parse(parts[2]);
-
-		// Move this into creature builder
-
-		var boneData = new BoneData(boneID, jointID1, jointID2, 1f);
-		var bone = Bone.CreateAtPoint(Vector3.zero, boneData);
-
-		// attach to joints
-		foreach (var joint in joints) {
-
-			if (joint.JointData.id == jointID1) {
-				bone.startingJoint = joint;	
-			} else if (joint.JointData.id == jointID2) {
-				bone.endingJoint = joint;
-			}
-		}
-
-		CreatureBuilder.PlaceConnectionBetweenPoints(
-			bone.gameObject, 
-			bone.startingPoint, 
-			bone.endingPoint, 
-			CreatureBuilder.CONNECTION_WIDTH);
-		bone.ConnectToJoints();
-
-		return bone;
-	}
-
+	
 	// Use this for initialization
 	public override void Start () {
 		base.Start();

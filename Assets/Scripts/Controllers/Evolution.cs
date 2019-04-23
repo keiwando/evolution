@@ -75,7 +75,7 @@ public class Evolution : MonoBehaviour {
 	/// <summary>
 	/// The chromosome strings of the current generation.
 	/// </summary>
-	private string[] currentChromosomes;
+	// private string[] currentChromosomes;
 
 	/// <summary>
 	/// The current generation of Creatures.
@@ -99,11 +99,10 @@ public class Evolution : MonoBehaviour {
 	private int currentBatchNumber;
 
 	#endregion
-	#region Utils & Controllers
 
 	public AutoSaver AutoSaver { get; private set; }
 
-	#endregion
+	private Coroutine simulationRoutine;
 	
 	void Start () {
 
@@ -155,23 +154,87 @@ public class Evolution : MonoBehaviour {
 		this.dropHeight.y -= distanceFromGround - padding;
 		
 		this.currentGenerationNumber = data.BestCreatures.Count + 1;
-		this.currentChromosomes = data.CurrentChromosomes;
-		this.currentGeneration = CreateGeneration();
-		// TODO: Apply brains
+		// this.currentChromosomes = data.CurrentChromosomes;
+		this.currentGeneration = CreateCreatures(Settings.PopulationSize);
+		ApplyBrains(this.currentGeneration, data.CurrentChromosomes);
 
-		// Batch simulation
-		this.currentBatchNumber = 1;
-		// Cache values that can be changed during the simulation
-		this.cachedSettings = this.Settings;
-		
 		this.creature.gameObject.SetActive(false);
 
-		SimulateGeneration();
+		this.simulationRoutine = StartCoroutine(Simulate());
 	}
 
-	private void SimulateGeneration() {
+	private IEnumerator Simulate() {
 
+		while (true) {
+			yield return SimulateGeneration();
+			EvaluateGeneration();
+		}
+	}
 
+	private IEnumerator SimulateGeneration() {
+
+		// Prepare batch simulation
+		int actualBatchSize = Settings.SimulateInBatches ? Settings.BatchSize : Settings.PopulationSize;
+		int numberOfBatches = (int)Math.Ceiling((double)this.Settings.PopulationSize / actualBatchSize);
+		// Cache values that can be changed during the simulation
+		this.cachedSettings = this.Settings;
+
+		NewGenerationDidBegin();
+
+		for (int i = 0; i < numberOfBatches; i++) {
+			
+			this.currentBatchNumber = i + 1;
+			int remainingCreatures = Settings.PopulationSize - (i * actualBatchSize);
+			int currentBatchSize = Math.Min(actualBatchSize, remainingCreatures);
+			
+			this.currentCreatureBatch = new Creature[currentBatchSize];
+			Array.Copy(currentGeneration, this.currentBatchNumber * actualBatchSize, currentCreatureBatch, 0, currentBatchSize);
+
+			yield return SimulateBatch();
+		}
+	}
+
+	private IEnumerator SimulateBatch() {
+
+		foreach (Creature creature in currentGeneration) {
+			creature.Alive = false;
+			creature.gameObject.SetActive(false);
+		}
+
+		foreach (Creature creature in currentCreatureBatch) {
+			creature.Alive = true;
+			creature.gameObject.SetActive(true);
+		}
+
+		NewBatchDidBegin();
+
+		yield return new WaitForSeconds(cachedSettings.SimulationTime);
+	}
+
+	private void EvaluateGeneration() {
+
+		foreach (Creature creature in currentGeneration) {
+			creature.Alive = false;
+		}
+
+		EvaluateCreatures(currentGeneration);
+		SortGenerationByFitness(currentGeneration);
+
+		// Save the best creature
+		var best = currentGeneration[0];
+		SimulationData.BestCreatures.Add(new ChromosomeData(best.brain.ToChromosomeString(), best.GetStatistics()));
+
+		// Autosave if necessary
+		bool saved = AutoSaver.Update(this.currentGenerationNumber, this);
+		if (saved) {
+			SimulationWasSaved();
+		}
+
+		// TODO: Replace with SimulationData.CurrentChromosomes
+		this.SimulationData.CurrentChromosomes = CreateNewChromosomes(Settings.PopulationSize, this.currentGeneration, Settings.KeepBestCreatures);
+		this.currentGenerationNumber += 1;
+
+		ResetCreatures();
 	}
 
 	/// <summary>
@@ -186,218 +249,218 @@ public class Evolution : MonoBehaviour {
 	/// <param name="bestChromosomes">The list of best chromosomes of the already simluated generations.</param>
 	/// <param name="currentChromosomes">A list of chromosomes of creatures of the last (current) generation.</param>
 	//public void ContinueEvolution(int generationNum, int timePerGen, List<ChromosomeInfo> bestChromosomes, List<string> currentChromosomes) {
-	public void ContinueEvolution(int generationNum, SimulationSettings SimulationSettings, NeuralNetworkSettings networkSettings, List<ChromosomeStats> bestChromosomes, List<string> currentChromosomes) {
+	// public void ContinueEvolution(int generationNum, SimulationSettings SimulationSettings, NeuralNetworkSettings networkSettings, List<ChromosomeStats> bestChromosomes, List<string> currentChromosomes) {
 
-		this.settings = SimulationSettings;
-		this.brainSettings = networkSettings;
+	// 	this.settings = SimulationSettings;
+	// 	this.brainSettings = networkSettings;
 
-		viewController = GameObject.Find("ViewController").GetComponent<ViewController>();
-		Assert.IsNotNull(viewController);
+	// 	viewController = GameObject.Find("ViewController").GetComponent<ViewController>();
+	// 	Assert.IsNotNull(viewController);
 
-		this.currentGenerationNumber = generationNum;
-		this.currentChromosomes = currentChromosomes.ToArray();
+	// 	this.currentGenerationNumber = generationNum;
+	// 	this.currentChromosomes = currentChromosomes.ToArray();
 
-		creature.RemoveMuscleColliders();
-		creature.Alive = false;
+	// 	creature.RemoveMuscleColliders();
+	// 	creature.Alive = false;
 
-		viewController.UpdateGeneration(generationNum);
+	// 	viewController.UpdateGeneration(generationNum);
 
-		autoSaver = new AutoSaver();
+	// 	autoSaver = new AutoSaver();
 
-		// Setup Evolution call
-		CalculateDropHeight();
+	// 	// Setup Evolution call
+	// 	CalculateDropHeight();
 
-		BCController = GameObject.Find("Best Creature Controller").GetComponent<BestCreaturesController>();
+	// 	BCController = GameObject.Find("Best Creature Controller").GetComponent<BestCreaturesController>();
 		
 
-		BCController.SetBestChromosomes(bestChromosomes);
-		BCController.ShowBCThumbScreen();
-		BCController.RunBestCreatures(generationNum - 1);
+	// 	BCController.SetBestChromosomes(bestChromosomes);
+	// 	BCController.ShowBCThumbScreen();
+	// 	BCController.RunBestCreatures(generationNum - 1);
 
-		currentGeneration = CreateGeneration();
+	// 	currentGeneration = CreateGeneration();
 
-		// Batch simulation
-		currentBatchNumber = 1;
-		simulateInBatchesCached = settings.simulateInBatches;
-		batchSizeCached = settings.simulateInBatches ? settings.batchSize : settings.populationSize;
-		var currentBatchSize = Mathf.Min(batchSizeCached, settings.populationSize - ((currentBatchNumber - 1) * batchSizeCached));
-		currentCreatureBatch = new Creature[currentBatchSize]; 
+	// 	// Batch simulation
+	// 	currentBatchNumber = 1;
+	// 	simulateInBatchesCached = settings.simulateInBatches;
+	// 	batchSizeCached = settings.simulateInBatches ? settings.batchSize : settings.populationSize;
+	// 	var currentBatchSize = Mathf.Min(batchSizeCached, settings.populationSize - ((currentBatchNumber - 1) * batchSizeCached));
+	// 	currentCreatureBatch = new Creature[currentBatchSize]; 
 
-		Array.Copy(currentGeneration, 0, currentCreatureBatch, 0, currentBatchSize);
+	// 	Array.Copy(currentGeneration, 0, currentCreatureBatch, 0, currentBatchSize);
 
-		creature.gameObject.SetActive(false);
+	// 	creature.gameObject.SetActive(false);
 
-		SimulateGeneration();
+	// 	SimulateGeneration();
 
-		var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
-		cameraFollow.toFollow = currentGeneration[0];
-		cameraFollow.currentlyWatchingIndex = 0;
+	// 	var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
+	// 	cameraFollow.toFollow = currentGeneration[0];
+	// 	cameraFollow.currentlyWatchingIndex = 0;
 
-		RefreshVisibleCreatures();
-	}
+	// 	RefreshVisibleCreatures();
+	// }
 
-	/** Starts the Evolution for the current */
-	public void StartEvolution() {
+	// /** Starts the Evolution for the current */
+	// public void StartEvolution() {
 
-		viewController = GameObject.Find("ViewController").GetComponent<ViewController>();
-		Assert.IsNotNull(viewController);
+	// 	viewController = GameObject.Find("ViewController").GetComponent<ViewController>();
+	// 	Assert.IsNotNull(viewController);
 
-		creature.RemoveMuscleColliders();
-		creature.Alive = false;
-		running = true;
-		SetupEvolution();
-	}
+	// 	creature.RemoveMuscleColliders();
+	// 	creature.Alive = false;
+	// 	running = true;
+	// 	SetupEvolution();
+	// }
 
-	private void SetupEvolution() {
+	// private void SetupEvolution() {
 
-		CalculateDropHeight();
+	// 	CalculateDropHeight();
 
-		BCController = GameObject.Find("Best Creature Controller").GetComponent<BestCreaturesController>();
-		BCController.dropHeight = dropHeight;
-		BCController.Creature = creature;
+	// 	BCController = GameObject.Find("Best Creature Controller").GetComponent<BestCreaturesController>();
+	// 	BCController.dropHeight = dropHeight;
+	// 	BCController.Creature = creature;
 
-		// The first generation will have random brains.
-		currentGeneration = CreateCreatures();
-		ApplyBrains(currentGeneration, true);
+	// 	// The first generation will have random brains.
+	// 	currentGeneration = CreateCreatures();
+	// 	ApplyBrains(currentGeneration, true);
 
 
-		// Batch simulation
-		currentBatchNumber = 1;
-		simulateInBatchesCached = settings.simulateInBatches;
-		batchSizeCached = settings.simulateInBatches ? settings.batchSize : settings.populationSize;
-		var currentBatchSize = Mathf.Min(batchSizeCached, settings.populationSize - ((currentBatchNumber - 1) * batchSizeCached));
-		currentCreatureBatch = new Creature[currentBatchSize];
-		Array.Copy(currentGeneration, 0, currentCreatureBatch, 0, currentBatchSize);
+	// 	// Batch simulation
+	// 	currentBatchNumber = 1;
+	// 	simulateInBatchesCached = settings.simulateInBatches;
+	// 	batchSizeCached = settings.simulateInBatches ? settings.batchSize : settings.populationSize;
+	// 	var currentBatchSize = Mathf.Min(batchSizeCached, settings.populationSize - ((currentBatchNumber - 1) * batchSizeCached));
+	// 	currentCreatureBatch = new Creature[currentBatchSize];
+	// 	Array.Copy(currentGeneration, 0, currentCreatureBatch, 0, currentBatchSize);
 
-		SimulateGeneration();
+	// 	SimulateGeneration();
 
-		creature.gameObject.SetActive(false);
+	// 	creature.gameObject.SetActive(false);
 
-		var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
-		cameraFollow.toFollow = currentGeneration[0];
-		cameraFollow.currentlyWatchingIndex = 0;
+	// 	var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
+	// 	cameraFollow.toFollow = currentGeneration[0];
+	// 	cameraFollow.currentlyWatchingIndex = 0;
 
-		RefreshVisibleCreatures();
+	// 	RefreshVisibleCreatures();
 
-		viewController.UpdateGeneration(currentGenerationNumber);
+	// 	viewController.UpdateGeneration(currentGenerationNumber);
 
-		autoSaver = new AutoSaver();
-	}
+	// 	autoSaver = new AutoSaver();
+	// }
 		
 	/// <summary>
 	/// Simulates the task for every creature in the current batch
 	/// </summary>
-	private void SimulateGeneration() {
+	// private void SimulateGeneration() {
 
-		foreach (Creature creature in currentGeneration) {
-			creature.Alive = false;
-			creature.gameObject.SetActive(false);
-		}
+	// 	foreach (Creature creature in currentGeneration) {
+	// 		creature.Alive = false;
+	// 		creature.gameObject.SetActive(false);
+	// 	}
 
-		foreach (Creature creature in currentCreatureBatch) {
-			creature.Alive = true;
-			creature.gameObject.SetActive(true);
-		}
+	// 	foreach (Creature creature in currentCreatureBatch) {
+	// 		creature.Alive = true;
+	// 		creature.gameObject.SetActive(true);
+	// 	}
 
-		StartCoroutine(StopSimulationAfterTime(settings.simulationTime));
-	}
+	// 	StartCoroutine(StopSimulationAfterTime(settings.simulationTime));
+	// }
 
-	IEnumerator StopSimulationAfterTime(float time)
-	{
-		yield return new WaitForSeconds(time);
+	// IEnumerator StopSimulationAfterTime(float time)
+	// {
+	// 	yield return new WaitForSeconds(time);
 
-		// Check if all of the batches of the current generation were simulated.
-		var creaturesLeft = settings.populationSize - (currentBatchNumber * batchSizeCached);
-		if (simulateInBatchesCached && creaturesLeft > 0 ) {
-			// Simulate the next batch first
+	// 	// Check if all of the batches of the current generation were simulated.
+	// 	var creaturesLeft = settings.populationSize - (currentBatchNumber * batchSizeCached);
+	// 	if (simulateInBatchesCached && creaturesLeft > 0 ) {
+	// 		// Simulate the next batch first
 
-			var currentBatchSize = Mathf.Min(batchSizeCached, creaturesLeft);
-			currentCreatureBatch = new Creature[currentBatchSize];
-			Array.Copy(currentGeneration, currentBatchNumber * batchSizeCached, currentCreatureBatch, 0, currentBatchSize);
-			currentBatchNumber += 1;
+	// 		var currentBatchSize = Mathf.Min(batchSizeCached, creaturesLeft);
+	// 		currentCreatureBatch = new Creature[currentBatchSize];
+	// 		Array.Copy(currentGeneration, currentBatchNumber * batchSizeCached, currentCreatureBatch, 0, currentBatchSize);
+	// 		currentBatchNumber += 1;
 
-			viewController.UpdateGeneration(currentGenerationNumber);
+	// 		viewController.UpdateGeneration(currentGenerationNumber);
 
-			var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
-			cameraFollow.toFollow = currentCreatureBatch[0];
-			cameraFollow.currentlyWatchingIndex = 0;
+	// 		var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
+	// 		cameraFollow.toFollow = currentCreatureBatch[0];
+	// 		cameraFollow.currentlyWatchingIndex = 0;
 
-			RefreshVisibleCreatures();
+	// 		RefreshVisibleCreatures();
 
-			SimulateGeneration();
+	// 		SimulateGeneration();
 
-		} else {
-			EndSimulation();	
-		}
-	}
+	// 	} else {
+	// 		EndSimulation();	
+	// 	}
+	// }
 
 	/// <summary>
 	/// Ends the simulation of the current creature batch.
 	/// </summary>
-	private void EndSimulation() {
+	// private void EndSimulation() {
 
-		if(!running) return;
+	// 	if(!running) return;
 
-		foreach( Creature creature in currentGeneration ) {
-			creature.Alive = false;
-		}
+	// 	foreach( Creature creature in currentGeneration ) {
+	// 		creature.Alive = false;
+	// 	}
 
-		EvaluateCreatures(currentGeneration);
-		SortGenerationByFitness();
+	// 	EvaluateCreatures(currentGeneration);
+	// 	SortGenerationByFitness();
 
-		// save the best creature
-		var best = currentGeneration[0];
+	// 	// save the best creature
+	// 	var best = currentGeneration[0];
 
-		BCController.AddBestCreature(currentGenerationNumber, best.brain.ToChromosomeString(), best.GetStatistics());
+	// 	BCController.AddBestCreature(currentGenerationNumber, best.brain.ToChromosomeString(), best.GetStatistics());
 
-		var saved = autoSaver.Update(currentGenerationNumber, this);
+	// 	var saved = autoSaver.Update(currentGenerationNumber, this);
 
-		if (saved) {
-			viewController.ShowSavedLabel();
-		}
+	// 	if (saved) {
+	// 		viewController.ShowSavedLabel();
+	// 	}
 
-		currentChromosomes = CreateNewChromosomesFromGeneration();
-		currentGenerationNumber++;
+	// 	currentChromosomes = CreateNewChromosomesFromGeneration();
+	// 	currentGenerationNumber++;
 
-		ResetCreatures();
+	// 	ResetCreatures();
 
 
-		var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
-		cameraFollow.toFollow = currentGeneration[0];
-		cameraFollow.currentlyWatchingIndex = 0;
+	// 	var cameraFollow = Camera.main.GetComponent<CameraFollowScript>();
+	// 	cameraFollow.toFollow = currentGeneration[0];
+	// 	cameraFollow.currentlyWatchingIndex = 0;
 
-		// Batch simulation
-		currentBatchNumber = 1;
-		simulateInBatchesCached = settings.simulateInBatches;
-		batchSizeCached = settings.simulateInBatches ? settings.batchSize : settings.populationSize;
-		var currentBatchSize = Mathf.Min(batchSizeCached, settings.populationSize);
-		currentCreatureBatch = new Creature[currentBatchSize]; 
-		Array.Copy(currentGeneration, 0, currentCreatureBatch, 0, currentBatchSize);
+	// 	// Batch simulation
+	// 	currentBatchNumber = 1;
+	// 	simulateInBatchesCached = settings.simulateInBatches;
+	// 	batchSizeCached = settings.simulateInBatches ? settings.batchSize : settings.populationSize;
+	// 	var currentBatchSize = Mathf.Min(batchSizeCached, settings.populationSize);
+	// 	currentCreatureBatch = new Creature[currentBatchSize]; 
+	// 	Array.Copy(currentGeneration, 0, currentCreatureBatch, 0, currentBatchSize);
 
-		// Update the view
-		viewController.UpdateGeneration(currentGenerationNumber);
+	// 	// Update the view
+	// 	viewController.UpdateGeneration(currentGenerationNumber);
 
-		RefreshVisibleCreatures();
+	// 	RefreshVisibleCreatures();
 
-		SimulateGeneration();
+	// 	SimulateGeneration();
 
-	}
+	// }
 
 	/** Determines a fitness score for every creature in the array. */
-	private void EvaluateCreatures(Creature[] creatures) {
+	private static void EvaluateCreatures(Creature[] creatures) {
 
 		foreach (Creature creature in creatures) {
 			creature.brain.EvaluateFitness();
 		}
 	}
 
-	private void SortGenerationByFitness() {
-		Array.Sort(currentGeneration, delegate(Creature a, Creature b) { return b.brain.fitness.CompareTo(a.brain.fitness); } );
+	private static void SortGenerationByFitness(Creature[] generation) {
+		Array.Sort(generation, delegate(Creature a, Creature b) { return b.brain.fitness.CompareTo(a.brain.fitness); } );
 	}
 
-	private string[] CreateNewChromosomesFromGeneration() {
+	private string[] CreateNewChromosomes(int nextGenerationSize, Creature[] currentGeneration, bool keepBest) {
 
-		string[] result = new string[Settings.PopulationSize];
+		string[] result = new string[nextGenerationSize];
 
 		var lazyChromosomes = new List<LazyChromosomeData>();
 		foreach (var creature in currentGeneration) {
@@ -406,7 +469,7 @@ public class Evolution : MonoBehaviour {
 		var selection = new Selection<LazyChromosomeData>(Selection<LazyChromosomeData>.Mode.FitnessProportional, lazyChromosomes);
 
 		int start = 0;
-		if (Settings.KeepBestCreatures) {
+		if (keepBest) {
 
 			// keep the two best creatures
 			var best = selection.SelectBest(2);
@@ -417,7 +480,7 @@ public class Evolution : MonoBehaviour {
 			start = 2;
 		}
 
-		for(int i = start; i < Settings.PopulationSize; i += 2) {
+		for (int i = start; i < result.Length; i += 2) {
 
 			// randomly pick two creatures and let them "mate"
 			// int index1 = PickRandomWeightedIndex();
@@ -490,28 +553,28 @@ public class Evolution : MonoBehaviour {
 
 			var currentCreature = currentGeneration[i];
 			currentCreature.Reset();
-			ApplyBrain(currentCreature, currentChromosomes[i]);
+			ApplyBrain(currentCreature, this.SimulationData.CurrentChromosomes[i]);
 		}
 	}
 
-	private Creature[] CreateGeneration(string[] chromosomes) {
+	// private Creature[] CreateGeneration(int population, string[] chromosomes) {
 		
-		this.creature.gameObject.SetActive(true);
+	// 	this.creature.gameObject.SetActive(true);
 
-		Creature[] creatures = new Creature[chromosomes.Length];
-		Creature creature;
+	// 	Creature[] creatures = new Creature[population];
+	// 	Creature creature;
 
-		for(int i = 0; i < chromosomes.Length; i++) {
-			creature = CreateCreature();
-			ApplyBrain(creature, currentChromosomes[i]);
-			creatures[i] = creature;
+	// 	for(int i = 0; i < chromosomes.Length; i++) {
+	// 		creature = CreateCreature();
+	// 		ApplyBrain(creature, currentChromosomes[i]);
+	// 		creatures[i] = creature;
 
-			creature.name = "Creature " + (i+1);
-		}
+	// 		creature.name = "Creature " + (i+1);
+	// 	}
 
-		this.creature.gameObject.SetActive(false);
-		return creatures;
-	}
+	// 	this.creature.gameObject.SetActive(false);
+	// 	return creatures;
+	// }
 
 	private void KillGeneration() {
 		
@@ -524,7 +587,7 @@ public class Evolution : MonoBehaviour {
 
 		Creature[] creatures = new Creature[count];
 
-		for(int i = 0; i < count; i++) {
+		for (int i = 0; i < count; i++) {
 			creatures[i] = CreateCreature();
 		}
 
@@ -536,24 +599,27 @@ public class Evolution : MonoBehaviour {
 		var dropPos = dropHeight;
 		dropPos.y += safeHeightOffset;
 
-		Creature creat = (Creature) (Instantiate(creature.gameObject, dropPos, Quaternion.identity)).GetComponent<Creature>();
+		Creature creat = Instantiate(creature.gameObject, dropPos, Quaternion.identity).GetComponent<Creature>();
 		creat.RefreshLineRenderers();
 		creat.Obstacle = this.Obstacle;
 
 		return creat;
 	}
 
-	private void ApplyBrains(Creature[] creatures, bool random){
+	private void ApplyBrains(Creature[] creatures, string[] chromosomes) {
 
 		for (int i = 0; i < creatures.Length; i++) {
 
-			Creature creature = creatures[i];
-			string chromosome = random ? "" : currentChromosomes[i];
-			ApplyBrain(creature, chromosome);
+			if (i < chromosomes.Length) {
+				ApplyBrain(creatures[i], chromosomes[i]);
+			} else {
+				// Random brain
+				ApplyBrain(creatures[i]);
+			}
 		}
 	}
 
-	public void ApplyBrain(Creature creature, string chromosome) {
+	public void ApplyBrain(Creature creature, string chromosome = "") {
 		
 		Brain brain = creature.GetComponent<Brain>();
 		

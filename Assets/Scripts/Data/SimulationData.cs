@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 [Serializable]
 public class SimulationData {
@@ -18,7 +19,7 @@ public class SimulationData {
         this.NetworkSettings = networkSettings;
         this.CreatureDesign = design;
         this.BestCreatures = new List<ChromosomeData>();
-        this.CurrentChromosomes = new string[settings.populationSize];
+        this.CurrentChromosomes = new string[0];
     }
 
     public SimulationData(SimulationSettings settings, NeuralNetworkSettings networkSettings, CreatureDesign design,
@@ -26,5 +27,9 @@ public class SimulationData {
                           : this(settings, networkSettings, design) {
         this.BestCreatures = bestCreatures;
         this.CurrentChromosomes = currentChromosomes;
+    }
+
+    public string Encode() {
+        return JsonUtility.ToJson(this);
     }
 }

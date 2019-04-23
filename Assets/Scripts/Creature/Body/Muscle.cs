@@ -100,44 +100,6 @@ public class Muscle : BodyComponent {
 
 		return muscle;
 	}
-
-	public static Muscle CreateFromString(string data, List<Bone> bones) {
-
-		var muscleID = 0;
-		var startID = 0;
-		var endID = 0;
-
-		var parts = data.Split('%');
-		try {
-			muscleID = int.Parse(parts[0]);
-			startID = int.Parse(parts[1]);
-			endID = int.Parse(parts[2]);
-		
-		} catch (System.FormatException e) {
-
-			Debug.Log(string.Format("x{0}x", data));
-			throw e;
-		}
-
-		var muscleData = new MuscleData(muscleID, startID, endID, Defaults.MaxForce, true);
-		var muscle = Muscle.CreateFromData(muscleData);
-
-		// TODO: Move this into the CreatureBuilder
-		foreach (var bone in bones) {
-			if (bone.BoneData.id == startID) {
-				muscle.startingJoint = bone.muscleJoint;
-			} else if (bone.BoneData.id == endID) {
-				muscle.endingJoint = bone.muscleJoint;
-			}
-		}
-
-		muscle.ConnectToJoints();
-		muscle.UpdateLinePoints();
-
-		muscle.AddCollider();
-
-		return muscle;
-	}
 		
 	public override void Start () {
 		base.Start();

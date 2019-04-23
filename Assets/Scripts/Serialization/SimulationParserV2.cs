@@ -20,14 +20,14 @@ using UnityEngine;
 /// -separator-
 /// A list of the current chromosomes (The chromosomes of all creatures of the last simulating generation)
 /// </summary>
-public class SimulationLoaderV2 {
+public class SimulationParserV2 {
 
     /// <summary>
 	/// Loads the simulation from save file with the format version 2
 	/// </summary>
 	/// <param name="name">The name of the simulation save.</param>
 	/// <param name="content">The Content of the save file.</param>
-	public static void LoadSimulationFromSaveFile(string name, string content, SimulationSerializer.SplitOptions splitOptions, CreatureEditor editor) {
+	public static SimulationData ParseSimulationData(string name, string content, LegacySimulationLoader.SplitOptions splitOptions) {
 
 		var creatureName = name.Split('-')[0].Replace(" ", "");
 		if (string.IsNullOrEmpty(creatureName))
@@ -65,11 +65,7 @@ public class SimulationLoaderV2 {
 			}
 		}
 
-		var currentGeneration = bestChromosomes.Count + 1;
-
-		var simulationData = new SimulationData(simulationSettings, networkSettings, creatureDesign, 
-												bestChromosomes, currentChromosomes.ToArray());
-
-		editor.StartSimulation(simulationData);
+		return new SimulationData(simulationSettings, networkSettings, creatureDesign, 
+			   					  bestChromosomes, currentChromosomes.ToArray());
 	}
 }

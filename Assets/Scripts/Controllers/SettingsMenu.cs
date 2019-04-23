@@ -73,15 +73,15 @@ public class SettingsMenu : MonoBehaviour {
 		// Evolution settings
 		var settings = LoadSimulationSettings();
 
-		keepBestCreaturesToggle.isOn = settings.keepBestCreatures;
+		keepBestCreaturesToggle.isOn = settings.KeepBestCreatures;
 
-		BatchSizeToggled(settings.simulateInBatches);
-		batchSizeToggle.isOn = settings.simulateInBatches;
+		BatchSizeToggled(settings.SimulateInBatches);
+		batchSizeToggle.isOn = settings.SimulateInBatches;
 
-		batchSizeInput.text = settings.batchSize.ToString();
-		populationSizeInput.text = settings.populationSize.ToString();
-		simulationTimeInput.text = settings.simulationTime.ToString();
-		mutationRateInput.text = settings.mutationRate.ToString();
+		batchSizeInput.text = settings.BatchSize.ToString();
+		populationSizeInput.text = settings.PopulationSize.ToString();
+		simulationTimeInput.text = settings.SimulationTime.ToString();
+		mutationRateInput.text = settings.MutationRate.ToString();
 
 		/*var keepBestCreatures = PlayerPrefs.GetInt(KEEP_BEST_CREATURE_KEY, 0) == 1;
 		keepBestCreaturesToggle.isOn = keepBestCreatures;
@@ -113,7 +113,7 @@ public class SettingsMenu : MonoBehaviour {
 	private void SetupTaskDropDown() {
 
 		var settings = LoadSimulationSettings();
-		var taskString = settings.task.StringRepresentation().ToUpper();
+		var taskString = settings.Task.StringRepresentation().ToUpper();
 
 		var index = new List<string>(TASK_OPTIONS).IndexOf(taskString);
 
@@ -123,7 +123,7 @@ public class SettingsMenu : MonoBehaviour {
 	public void TaskChanged() {
 
 		var settings = LoadSimulationSettings();
-		settings.task = EvolutionTaskUtil.TaskFromString(taskDropdown.captionText.text);
+		settings.Task = EvolutionTaskUtil.TaskFromString(taskDropdown.captionText.text);
 		SaveSimulationSettings(settings);
 	}
 
@@ -162,7 +162,7 @@ public class SettingsMenu : MonoBehaviour {
 	public void KeepBestCreaturesToggled(bool value) {
 
 		var settings = LoadSimulationSettings();
-		settings.keepBestCreatures = value;
+		settings.KeepBestCreatures = value;
 		SaveSimulationSettings(settings);
 	}
 
@@ -172,7 +172,7 @@ public class SettingsMenu : MonoBehaviour {
 		populationSizeInput.text = num.ToString();
 
 		var settings = LoadSimulationSettings();
-		settings.populationSize = num;
+		settings.PopulationSize = num;
 		SaveSimulationSettings(settings);
 	}
 
@@ -182,7 +182,7 @@ public class SettingsMenu : MonoBehaviour {
 		simulationTimeInput.text = time.ToString();
 
 		var settings = LoadSimulationSettings();
-		settings.simulationTime = time;
+		settings.SimulationTime = time;
 		SaveSimulationSettings(settings);
 	}
 
@@ -192,7 +192,7 @@ public class SettingsMenu : MonoBehaviour {
 		mutationRateInput.text = rate.ToString();
 
 		var settings = LoadSimulationSettings();
-		settings.mutationRate = rate;
+		settings.MutationRate = rate;
 		SaveSimulationSettings(settings);
 	}
 
@@ -202,14 +202,14 @@ public class SettingsMenu : MonoBehaviour {
 		batchSizeInput.text = batchSize.ToString();
 
 		var settings = LoadSimulationSettings();
-		settings.batchSize = batchSize;
+		settings.BatchSize = batchSize;
 		SaveSimulationSettings(settings);
 	}
 
 	private int ClampBatchSize(int size) {
 
 		var settings = LoadSimulationSettings();
-		var populationSize = settings.populationSize;
+		var populationSize = settings.PopulationSize;
 
 		return Mathf.Clamp(size, 1, populationSize);
 	}
@@ -219,7 +219,7 @@ public class SettingsMenu : MonoBehaviour {
 		batchSizeInput.gameObject.SetActive(val);
 
 		var settings = LoadSimulationSettings();
-		settings.simulateInBatches = val;
+		settings.SimulateInBatches = val;
 		SaveSimulationSettings(settings);
 	}
 
@@ -232,7 +232,7 @@ public class SettingsMenu : MonoBehaviour {
 		var task = EvolutionTaskUtil.TaskFromString(taskString);
 		
 		var settings = LoadSimulationSettings();
-		settings.task = task;
+		settings.Task = task;
 		SaveSimulationSettings(settings);
 
 		return task;

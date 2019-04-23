@@ -17,35 +17,22 @@ public class IllegalFilenameException: IOException {
 /// <summary>
 /// Handles saving and loading of Creatures
 /// </summary>
-public class CreatureSaver {
-
-	public static readonly char[] INVALID_NAME_CHARACTERS = new char[]{ '\\', '/', '.' };
-	private static readonly Regex INVALID_NAME_REGEX = 
-					new Regex(string.Format("[{0}]", new string(INVALID_NAME_CHARACTERS)));
+public class CreatureSerializer {
 
 	/// <summary>
 	/// The name of the folder that holds the creature save files.
 	/// </summary>
 	private const string SAVE_FOLDER = "CreatureSaves";
-	
-	/// <summary>
-	/// The separator to use in the save file between the different body component types. 
-	/// </summary>
-	private static  string COMPONENT_SEPARATOR = "--%%--\n"; // + System.Environment.NewLine;
 
-	/// <summary>
-	/// Used for splitting the text file by the body component types.
-	/// </summary>
-	private static string[] SPLIT_ARRAY = new string[]{ COMPONENT_SEPARATOR };
+	private const string FILE_EXTENSION = ".creat";
 	
-	private static readonly Regex EXTENSION_PATTERN = new Regex(".creat");
+	private static readonly Regex EXTENSION_PATTERN = new Regex(string.Format("{0}$", FILE_EXTENSION));
 
 	private static readonly string RESOURCE_PATH = Path.Combine(Application.persistentDataPath, SAVE_FOLDER);
 
-	static CreatureSaver() {
+	static CreatureSerializer() {
 		MigrateToFiles();
 		CopyDefaultCreatures();
-		ResetCurrentCreature();
 	}
 
 	/// <summary>
@@ -74,15 +61,15 @@ public class CreatureSaver {
 	/// The name cannot contain a dot (.)
 	/// </summary>
 	/// <exception cref="IllegalFilenameException"></exception>
-	public static void WriteSaveFile(string name, List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
+	// public static void WriteSaveFile(string name, List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
 
-		if ( INVALID_NAME_REGEX.IsMatch(name) || string.IsNullOrEmpty(name) ) 
-			throw new IllegalFilenameException();
+	// 	if ( INVALID_NAME_REGEX.IsMatch(name) || string.IsNullOrEmpty(name) ) 
+	// 		throw new IllegalFilenameException();
 
-		var content = CreateSaveInfoFromCreature(joints, bones, muscles);
-		name = EXTENSION_PATTERN.Replace(name, "");
-		SaveCreatureDesign(name, content);
-	}
+	// 	var content = CreateSaveInfoFromCreature(joints, bones, muscles);
+	// 	name = EXTENSION_PATTERN.Replace(name, "");
+	// 	SaveCreatureDesign(name, content);
+	// }
 
 	/// <summary>
 	/// Returns the path to the save location for the creature design with the specified name.
@@ -121,14 +108,15 @@ public class CreatureSaver {
 		
 		if (IsWebGL()) return GetDefaultCreatureNames();
 
-		CreateSaveFolder();
+		// CreateSaveFolder();
 
-		var info = new DirectoryInfo(RESOURCE_PATH);
-		var fileInfo = info.GetFiles();
+		// var info = new DirectoryInfo(RESOURCE_PATH);
+		// var fileInfo = info.GetFiles();
 
-		var creatureNames = fileInfo.Where(f => f.Name.EndsWith(".creat"))
-		.Select(f => EXTENSION_PATTERN.Replace(f.Name, "")).ToList();
-
+		// var creatureNames = fileInfo.Where(f => f.Name.EndsWith(".creat"))
+		// .Select(f => EXTENSION_PATTERN.Replace(f.Name, "")).ToList();
+		var creatureNames = FileUtil.GetFilenamesInDirectory(RESOURCE_PATH, FILE_EXTENSION);
+		
 		creatureNames.Sort();
 
 		return creatureNames;
@@ -149,119 +137,15 @@ public class CreatureSaver {
 	/// </summary>
 	public static void LoadCreature(string name, CreatureBuilder builder) {
 
-		if (IsWebGL()) {
-			LoadDefaultCreature(name, builder);
-			return;
-		}
+		#if UNITY_WEBGL
+		LoadDefaultCreature(name, builder);
+		return;
+		#endif
 
 		var contents = LoadSaveData(name);
 		if (string.IsNullOrEmpty(contents)) return;
 
 		LoadCreatureFromContents(contents, builder);
-	}
-
-	/// <summary>
-	/// Loads a creature from the contents of a save file.
-	/// </summary>
-	public static void LoadCreatureFromContents(string contents, CreatureBuilder builder) {
-
-		var components = contents.Split(SPLIT_ARRAY, System.StringSplitOptions.None);
-
-		var jointStrings = components[0].Split('\n');
-		var boneStrings = components[1].Split('\n');
-		var muscleStrings = components[2].Split('\n');
-
-		var joints = new List<Joint>();
-		var bones = new List<Bone>();
-		var muscles = new List<Muscle>();
-
-		// create all the joints
-		foreach (var data in jointStrings) {
-			if (data.Length > 0) {
-				joints.Add(Joint.CreateFromString(data));
-			}
-		}
-		// create all the bones
-		foreach (var data in boneStrings) {
-			if (data.Length > 0) {
-				bones.Add(Bone.CreateFromString(data, joints));
-			}
-		}
-		// create all the muscles
-		foreach (var data in muscleStrings) {
-			if (data.Length > 1) {
-				muscles.Add(Muscle.CreateFromString(data, bones));
-			}
-		}
-
-		builder.SetBodyComponents(joints, bones, muscles);
-	}
-
-	/// <summary>
-	/// Encodes the specified creature components into the contents of
-	/// a creature design save file.
-	/// </summary>
-	public static string CreateSaveInfoFromCreature(List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
-
-		var content = new StringBuilder();
-		// add joint data
-		foreach (var joint in joints) {
-			content.Append(joint.GetSaveString());
-			content.Append('\n');
-		}
-		content.Append(COMPONENT_SEPARATOR);
-		// add bone data
-		foreach (var bone in bones) {
-			content.Append(bone.GetSaveString());
-			content.Append('\n');
-		}
-		content.Append(COMPONENT_SEPARATOR);
-		// add muscle data
-		foreach (var muscle in muscles) {
-			content.Append(muscle.GetSaveString());
-			content.Append('\n');
-		}
-
-		return content.ToString();
-	}
-
-	public static void LoadCurrentCreature(CreatureBuilder builder) {
-
-		LoadCreatureFromContents(GetCurrentCreatureData(), builder);
-	}
-
-	public static void SaveCurrentCreature(string name, List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
-
-		var content = CreateSaveInfoFromCreature(joints, bones, muscles);
-
-		SaveCurrentCreatureName(name);
-		SaveCurrentCreatureDesign(content);
-		return;
-	}
-
-	public static void SaveCurrentCreature(string name, string designData) {
-		SaveCurrentCreatureName(name);
-		SaveCurrentCreatureDesign(designData);
-	}
-
-	public static void SaveCurrentCreatureName(string name) {
-		Settings.CurrentCreatureName = name;
-	}
-
-	public static string GetCurrentCreatureName() {
-		return Settings.CurrentCreatureName;
-	}
-
-	public static void SaveCurrentCreatureDesign(string creatureData) {
-		Settings.CurrentCreatureDesign = creatureData;
-	}
-
-	public static string GetCurrentCreatureData() {
-		return Settings.CurrentCreatureDesign;
-	}
-
-	public static void ResetCurrentCreature() {
-		SaveCurrentCreature("Unnamed", "");
 	}
 
 	/// <summary>
@@ -294,7 +178,7 @@ public class CreatureSaver {
 		}
 	}
 
-	private static void LoadDefaultCreature(string name, CreatureBuilder builder) {
+	private static CreatureDesign GetDefaultCreatureDesign(string name) {
 
 		if (!DefaultCreatures.defaultCreatures.ContainsKey(name)) {
 			Debug.Log("Creature not found!");
@@ -337,6 +221,8 @@ public class CreatureSaver {
 		return names;
 	}
 
+	#region Migration
+
 	/// <summary>
 	/// Migrates all existing creature design saves from the PlayerPrefs (an awful
 	/// way of storing them) to use actual files.
@@ -364,4 +250,6 @@ public class CreatureSaver {
 	private static List<string> GetCreatureNamesFromPlayerPrefs() {
 		return new List<string>(Settings.CreatureNames.Split('\n'));
 	}
+
+	#endregion
 }

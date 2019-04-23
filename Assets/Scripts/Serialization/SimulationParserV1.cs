@@ -18,14 +18,14 @@ using UnityEngine;
 /// -separator-
 /// A list of the current chromosomes (The chromosomes of all creatures of the last simulating generation)
 /// </summary>
-public class SimulationLoaderV1 {
+public class SimulationParserV1 {
 
     /// <summary>
 	/// Loads the simulation from save file of format version 1.
 	/// </summary>
 	/// <param name="name">The name of the simualtion save.</param>
 	/// <param name="content">The Content of the save file.</param>
-	public static void LoadSimulationFromSaveFile(string name, string content, SimulationSerializer.SplitOptions splitOptions, CreatureEditor editor) { 
+	public static void LoadSimulationFromSaveFile(string name, string content, LegacySimulationLoader.SplitOptions splitOptions, CreatureEditor editor) { 
 
 		var creatureName = name.Split('-')[0].Replace(" ", "");
 		if (string.IsNullOrEmpty(creatureName))
@@ -71,9 +71,9 @@ public class SimulationLoaderV1 {
 		var currentGeneration = bestChromosomes.Count + 1;
 
 		var settings = new SimulationSettings();
-		settings.task = taskType;
-		settings.simulationTime = timePerGen;
-		settings.populationSize = currentChromosomes.Count;
+		settings.Task = taskType;
+		settings.SimulationTime = timePerGen;
+		settings.PopulationSize = currentChromosomes.Count;
 
 		var networkSettings = new NeuralNetworkSettings();
 		
