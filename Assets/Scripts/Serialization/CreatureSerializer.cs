@@ -24,15 +24,19 @@ public class CreatureSerializer {
 	/// </summary>
 	private const string SAVE_FOLDER = "CreatureSaves";
 
-	private const string FILE_EXTENSION = ".creat";
+	public const string FILE_EXTENSION = ".creat";
 	
-	private static readonly Regex EXTENSION_PATTERN = new Regex(string.Format("{0}$", FILE_EXTENSION));
+	public static readonly Regex EXTENSION_PATTERN = new Regex(string.Format("{0}$", FILE_EXTENSION));
 
 	private static readonly string RESOURCE_PATH = Path.Combine(Application.persistentDataPath, SAVE_FOLDER);
 
 	static CreatureSerializer() {
 		MigrateToFiles();
 		CopyDefaultCreatures();
+	}
+
+	public static void SaveCreatureDesign(CreatureDesign design) {
+		// TODO: Implement
 	}
 
 	/// <summary>
@@ -54,6 +58,33 @@ public class CreatureSerializer {
 
 		CreateSaveFolder();
 		File.WriteAllText(path, saveData);
+	}
+
+	/// <summary>
+	/// Loads a creature design with a specified name.
+	/// </summary>
+	public static CreatureDesign LoadCreatureDesign(string name) {
+
+		#if UNITY_WEBGL
+		return GetDefaultCreatureDesign(name);
+		#endif
+
+		var contents = LoadSaveData(name);
+		
+		if (string.IsNullOrEmpty(contents)) 
+			return new CreatureDesign();
+
+		return ParseCreatureDesign(contents, name);
+	}
+
+	public static CreatureDesign ParseCreatureDesign(string encoded, string name = "") {
+
+		// Distinguish between JSON and legacy custom encodings
+		if (encoded.StartsWith("{")) {
+			return (CreatureDesign)JsonUtility.FromJson(encoded, typeof(CreatureDesign));
+		}
+
+		return LegacyCreatureParser.ParseCreatureDesign(name, encoded);
 	}
 
 	/// <summary>
@@ -132,21 +163,7 @@ public class CreatureSerializer {
 			File.Delete(path);
 	}
 
-	/// <summary>
-	/// Loads a creature design with a specified name.
-	/// </summary>
-	public static void LoadCreature(string name, CreatureBuilder builder) {
-
-		#if UNITY_WEBGL
-		LoadDefaultCreature(name, builder);
-		return;
-		#endif
-
-		var contents = LoadSaveData(name);
-		if (string.IsNullOrEmpty(contents)) return;
-
-		LoadCreatureFromContents(contents, builder);
-	}
+	
 
 	/// <summary>
 	/// Returns a creature design name that is still available based on the 
@@ -165,7 +182,12 @@ public class CreatureSerializer {
 	}
 
 	private static bool IsWebGL() {
-		return Application.platform == RuntimePlatform.WebGLPlayer;
+		#if UNITY_WEBGL
+		return true;
+		#else
+		return false;
+		#endif
+		// return Application.platform == RuntimePlatform.WebGLPlayer;
 	}
 
 	private static string LoadSaveData(string name) {
@@ -182,11 +204,11 @@ public class CreatureSerializer {
 
 		if (!DefaultCreatures.defaultCreatures.ContainsKey(name)) {
 			Debug.Log("Creature not found!");
-			return;
+			return new CreatureDesign();
 		}
 
 		var contents = DefaultCreatures.defaultCreatures[name];
-		LoadCreatureFromContents(contents, builder);
+		return ParseCreatureDesign(contents, name);
 	}
 
 	/// <summary>

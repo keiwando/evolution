@@ -18,6 +18,8 @@ public class CreatureFileManager : MonoBehaviour,
 	private SaveDialog saveDialog;
 	[SerializeField]
 	private UIFade importIndicator;
+	[SerializeField]
+	private UIFade failedImportIndicator;
 
 	private int selectedIndex = 0;
 	private List<string> creatureNames = new List<string>();
@@ -28,8 +30,17 @@ public class CreatureFileManager : MonoBehaviour,
 			foreach (var file in files) { 
 				var extension = file.Extension.ToLower();
 				if (extension.Equals(".creat")) {
-					// TODO: Validate file contents
-					CreatureSaver.SaveCreatureDesign(file.Name, file.ToUTF8String());
+
+					var nameFromFile = CreatureSerializer.EXTENSION_PATTERN.Replace(file.Name, "");
+					var encoded = file.ToUTF8String();
+					try {
+						var design = CreatureSerializer.ParseCreatureDesign(encoded, name);
+						CreatureSerializer.SaveCreatureDesign(design.Name, encoded, false);	
+					} catch {
+						didImport = false;
+						Debug.LogError(string.Format("Failed to parse .creat file contents: {0}", encoded));
+						continue;
+					}
 					didImport = true;
 				}
 			}
@@ -37,6 +48,8 @@ public class CreatureFileManager : MonoBehaviour,
 			viewController.Refresh();
 			if (didImport) {
 				importIndicator.FadeInOut();
+			} else {
+				failedImportIndicator.FadeInOut(1.8f);
 			}
 		};
 	}
@@ -63,7 +76,7 @@ public class CreatureFileManager : MonoBehaviour,
 			editor.SaveCurrentDesign(name);
 		} catch (IllegalFilenameException e) {
 			dialog.ShowErrorMessage(string.Format("The creature name cannot contain: {0}", 
-			new string(CreatureSaver.INVALID_NAME_CHARACTERS)));
+			new string(FileUtil.INVALID_FILENAME_CHARACTERS)));
 			return;
 		}
 
@@ -71,11 +84,11 @@ public class CreatureFileManager : MonoBehaviour,
 	}
 
 	public bool CanEnterCharacter(SaveDialog dialog, int index, char c) {
-		return !CreatureSaver.INVALID_NAME_CHARACTERS.Contains(c);
+		return !FileUtil.INVALID_FILENAME_CHARACTERS.Contains(c);
 	}
 
 	public void DidChangeValue(SaveDialog dialog, string value) {
-		if (CreatureSaver.CreatureExists(value)) {
+		if (CreatureSerializer.CreatureExists(value)) {
 			dialog.ShowErrorMessage(string.Format("The existing save for {0} will be overwritten!", value));
 		} else {
 			dialog.ResetErrors();
@@ -109,11 +122,11 @@ public class CreatureFileManager : MonoBehaviour,
 	}
 
 	public bool IsCharacterValidForName(FileSelectionViewController controller, char c) {
-		return !CreatureSaver.INVALID_NAME_CHARACTERS.Contains(c);
+		return !FileUtil.INVALID_FILENAME_CHARACTERS.Contains(c);
 	}
 
 	public bool IsNameAvailable(FileSelectionViewController controller, string newName) {
-		return !CreatureSaver.CreatureExists(newName);
+		return !CreatureSerializer.CreatureExists(newName);
 	}
 
 	public void DidEditTitleAtIndex(FileSelectionViewController controller, int index, string newName) {
@@ -121,7 +134,7 @@ public class CreatureFileManager : MonoBehaviour,
 		if (!IsNameAvailable(controller, newName)) return;
 
 		var currentName = creatureNames[index];
-		CreatureSaver.RenameCreatureDesign(currentName, newName);
+		CreatureSerializer.RenameCreatureDesign(currentName, newName);
 		RefreshCache();
 	}
 
@@ -136,8 +149,8 @@ public class CreatureFileManager : MonoBehaviour,
 
 		yield return new WaitForEndOfFrame();
 
-		// TODO: Get CreatureDesign file
-		//editor.LoadDesign(design);
+		var design = CreatureSerializer.LoadCreatureDesign(name);
+		editor.LoadDesign(design);
 	}
 
 	public void ImportButtonClicked(FileSelectionViewController controller) {
@@ -151,7 +164,21 @@ public class CreatureFileManager : MonoBehaviour,
 			if (filesWereOpened) {
 			  	foreach (OpenedFile file in files) {
 
-					CreatureSaver.SaveCreatureDesign(file.Name, file.ToUTF8String());
+					var extension = file.Extension.ToLower();
+					if (extension.Equals(".creat")) {
+						
+						var nameFromFile = CreatureSerializer.EXTENSION_PATTERN.Replace(file.Name, "");
+						var encoded = file.ToUTF8String();
+						try {
+							var design = CreatureSerializer.ParseCreatureDesign(encoded, name);
+							CreatureSerializer.SaveCreatureDesign(design.Name, encoded, false);	
+						} catch {
+							failedImportIndicator.FadeInOut(1.8f);	
+							Debug.LogError(string.Format("Failed to parse .creat file contents: {0}", encoded));
+							continue;
+						}
+					}
+
 				  	RefreshCache();
 				  	viewController.Refresh();
 					importIndicator.FadeInOut();
@@ -163,7 +190,7 @@ public class CreatureFileManager : MonoBehaviour,
 	public void ExportButtonClicked(FileSelectionViewController controller) {
 
 		var name = creatureNames[selectedIndex];
-		string path = CreatureSaver.PathToCreatureDesign(name);
+		string path = CreatureSerializer.PathToCreatureDesign(name);
 
 		FileToSave file = new FileToSave(path, CustomEvolutionFileType.creat);
 
@@ -172,7 +199,7 @@ public class CreatureFileManager : MonoBehaviour,
 
 	public void DeleteButtonClicked(FileSelectionViewController controller) {
 		var name = creatureNames[selectedIndex];
-		CreatureSaver.DeleteCreatureSave(name);
+		CreatureSerializer.DeleteCreatureSave(name);
 		selectedIndex = 0;
 		RefreshCache();
 	}
@@ -187,6 +214,6 @@ public class CreatureFileManager : MonoBehaviour,
 	}
 
 	private void RefreshCache() {
-		creatureNames = CreatureSaver.GetCreatureNames();
+		creatureNames = CreatureSerializer.GetCreatureNames();
 	}
 }

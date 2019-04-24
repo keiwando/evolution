@@ -25,7 +25,7 @@ public class SimulationParserV1 {
 	/// </summary>
 	/// <param name="name">The name of the simualtion save.</param>
 	/// <param name="content">The Content of the save file.</param>
-	public static void LoadSimulationFromSaveFile(string name, string content, LegacySimulationLoader.SplitOptions splitOptions, CreatureEditor editor) { 
+	public static SimulationData ParseSimulationData(string name, string content, LegacySimulationLoader.SplitOptions splitOptions) { 
 
 		var creatureName = name.Split('-')[0].Replace(" ", "");
 		if (string.IsNullOrEmpty(creatureName))
@@ -39,9 +39,7 @@ public class SimulationParserV1 {
 		var timePerGen = int.Parse(components[1].Replace(Environment.NewLine, ""));
 
 		var creatureData = components[2];
-		// CreatureSaver.LoadCreatureFromContents(creatureData, creatureBuilder);
-		// TODO: Replace this with actual design parsed from the save file
-		var creatureDesign = new CreatureDesign("Unnamed", new List<JointData>(), new List<BoneData>(), new List<MuscleData>());
+		var creatureDesign = CreatureSerializer.ParseCreatureDesign(creatureData, creatureName);
 
 		var bestChromosomesData = new List<string>(components[3].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None));
 		var bestChromosomes = new List<ChromosomeData>();
@@ -78,9 +76,7 @@ public class SimulationParserV1 {
 		var networkSettings = new NeuralNetworkSettings();
 		
 
-		var simulationData = new SimulationData(settings, networkSettings, creatureDesign, 
-												bestChromosomes, currentChromosomes.ToArray());
-
-		editor.StartSimulation(simulationData);
+		return new SimulationData(settings, networkSettings, creatureDesign, 
+								  bestChromosomes, currentChromosomes.ToArray());
 	}
 }

@@ -39,9 +39,7 @@ public class SimulationParserV2 {
 		var networkSettings = NeuralNetworkSettings.Decode(components[2]);
 
 		var creatureData = components[3];
-		// TODO: Replace this with actual design parsed from the save file
-		var creatureDesign = new CreatureDesign("Unnamed", new List<JointData>(), new List<BoneData>(), new List<MuscleData>());
-		// CreatureSaver.LoadCreatureFromContents(creatureData, creatureBuilder);
+		var creatureDesign = CreatureSerializer.ParseCreatureDesign(creatureData);
 
 		var bestChromosomesData = new List<string>(components[4].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None));
 		var bestChromosomes = new List<ChromosomeData>();

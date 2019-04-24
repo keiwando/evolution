@@ -14,6 +14,8 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 	private FileSelectionViewController viewController;
 	[SerializeField]
 	private UIFade importIndicator;
+	[SerializeField]
+	private UIFade failedImportIndicator;
 
 	private int selectedIndex = 0;
 	private List<string> filenames;
@@ -25,6 +27,10 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 				var extension = file.Extension.ToLower();
 				if (extension.Equals(".evol")) {
 					// TODO: Validate file contents
+					var encoded = file.ToUTF8String();
+					try {
+						var simulationData = SimulationSerializer.
+					}
 					SimulationSerializer.SaveSimulationFile(file.Name, file.ToUTF8String());
 					didImport = true;
 				}
@@ -69,7 +75,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 	}
 
 	public bool IsCharacterValidForName(FileSelectionViewController controller, char c) {
-		return !SimulationSerializer.INVALID_NAME_CHARACTERS.Contains(c);
+		return !FileUtil.INVALID_FILENAME_CHARACTERS.Contains(c);
 	}
 
 	public bool IsNameAvailable(FileSelectionViewController controller, string newName) {

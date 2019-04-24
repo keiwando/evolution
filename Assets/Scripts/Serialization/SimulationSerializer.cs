@@ -34,15 +34,33 @@ public class SimulationSerializer {
 	/// </summary>
 	private const string SAVE_FOLDER = "EvolutionSaves";
 
-	private const string FILE_EXTENSION = ".evol";
+	public const string FILE_EXTENSION = ".evol";
 
-	private static readonly Regex EXTENSION_PATTERN = new Regex(FILE_EXTENSION);
+	public static readonly Regex EXTENSION_PATTERN = new Regex(FILE_EXTENSION);
 
 	private static string RESOURCE_PATH = Path.Combine(Application.persistentDataPath, SAVE_FOLDER);
 
 	static SimulationSerializer() {
+
+		#if UNITY_WEBGL
+		return;
+		#endif
+
 		MigrateSimulationSaves();
 		CopyDefaultSimulations();
+	}
+
+	public static void SaveSimulation(SimulationData data) {
+
+		string contents = data.Encode();
+		string creatureName = data.CreatureDesign.Name;
+		string dateString = System.DateTime.Now.ToString("MMM dd, yyyy");
+		string taskString = EvolutionTaskUtil.StringRepresentation(data.Settings.Task);
+		int generation = data.BestCreatures.Count + 1;
+		string filename = string.Format("{0} - {1} - {2} - Gen({3})", creatureName, taskString, dateString, generation);
+
+		// Save without overwriting existing saves
+		SaveSimulationFile(filename, contents, false);
 	}
 
 	/// <summary>
@@ -63,82 +81,6 @@ public class SimulationSerializer {
 		File.WriteAllText(path, encodedData);
 	}
 
-	public static void SaveSimulation(SimulationData data) {
-
-		string contents = data.Encode();
-		string creatureName = data.CreatureDesign.Name;
-		string dateString = System.DateTime.Now.ToString("MMM dd, yyyy");
-		string taskString = EvolutionTaskUtil.StringRepresentation(data.Settings.Task);
-		int generation = data.BestCreatures.Count + 1;
-		string filename = string.Format("{0} - {1} - {2} - Gen({3})", creatureName, taskString, dateString, generation);
-
-		// Save without overwriting existing saves
-		SaveSimulationFile(filename, contents, false);
-	}
-
-	/// <summary>
-	/// Saves the given information about an evolution simulation of a creature in a file, so that
-	/// it can be loaded and continued at the same generation again.
-	/// </summary>
-	/// <remarks>
-	/// The file is always written in the latest save version format.
-	/// </remarks>
-	/// <exception cref="IllegalFilenameException">Thrown if the filename contains 
-	/// illegal characters</exception>
-	/// <returns>The name of the saved file.</returns>
-	// public static string WriteSaveFile(string creatureName, 
-	// 								   SimulationSettings settings, 
-	// 								   NeuralNetworkSettings networkSettings, 
-	// 								   int generationNumber, 
-	// 								   string creatureSaveData, 
-	// 								   List<ChromosomeStats> bestChromosomes, 
-	// 								   List<string> currentChromosomes) {
-
-	// 	if (string.IsNullOrEmpty(creatureName)) 
-	// 		throw new IllegalFilenameException();
-
-	// 	var splitOptions = new SplitOptions();
-
-	// 	var date = System.DateTime.Now.ToString("yyyy-MM-dd");
-
-	// 	var name = string.Format("{0} - {1} - {2} - Gen({3})", creatureName, settings.Task, date, generationNumber);
-	// 	name = GetAvailableSimulationName(name);
-
-	// 	var stringBuilder = new StringBuilder();
-
-	// 	// Add the version number
-	// 	stringBuilder.AppendLine(string.Format("v {0}", version.ToString()));
-	// 	stringBuilder.Append(splitOptions.COMPONENT_SEPARATOR);
-
-	// 	// Add the encoded evolution settings
-	// 	stringBuilder.AppendLine(settings.Encode());
-	// 	stringBuilder.Append(splitOptions.COMPONENT_SEPARATOR);
-
-	// 	// Add the encoded neural network settings
-	// 	stringBuilder.AppendLine(networkSettings.Encode());
-	// 	stringBuilder.Append(splitOptions.COMPONENT_SEPARATOR);
-
-	// 	// Add the creature save data 
-	// 	stringBuilder.AppendLine(creatureSaveData);
-	// 	stringBuilder.Append(splitOptions.COMPONENT_SEPARATOR);
-
-	// 	// Add the list of best chromosomes
-	// 	foreach (var chromosome in bestChromosomes) {
-	// 		stringBuilder.AppendLine(chromosome.ToString());
-	// 	}
-	// 	stringBuilder.Append(splitOptions.COMPONENT_SEPARATOR);
-
-	// 	// Add the list of current chromosomes
-	// 	foreach (var chromosome in currentChromosomes) {
-	// 		stringBuilder.AppendLine(chromosome);
-	// 	}
-	// 	stringBuilder.Append(splitOptions.COMPONENT_SEPARATOR);
-
-	// 	SaveSimulationFile(name, stringBuilder.ToString());
-
-	// 	return name;
-	// }
-
 	/// <summary>
 	/// Returns a simulation save filename that is still available based on the
 	/// specified suggested name. (Both without extensions)
@@ -156,34 +98,29 @@ public class SimulationSerializer {
 	}
 
 	/// <summary>
-	/// Returns the SimulationData of a previously saved simulation.
+	/// Loads a previously saved simulation data with the specified name
 	/// </summary>
-	/// <param name="name">The name of the saved simulation without the file extension.</param>
-	public static SimulationData ParseSimulationFromSaveFile(string name) {
+	/// <param name="name"></param>
+	/// <returns></returns>
+	public static SimulationData LoadSimulationData(string name) {
 
-		var path = PathToSimulationSave(name);
-		var contents = File.ReadAllText(path);
-
+		var contents = LoadSaveData(name);
 
 	}
 
 	/// <summary>
-	/// Loads a previously saved simulation from an existing file and continues the
-	/// evolution process.
+	/// Returns the SimulationData of a previously saved simulation.
 	/// </summary>
 	/// <param name="name">The name of the saved simulation without the file extension.</param>
-	public static void LoadSimulationFromSaveFile(string name, CreatureEditor editor) {
+	public static SimulationData ParseSimulationData(string encoded, string filename = "Unnamed.evol") {
 
-		var path = PathToSimulationSave(name);
-		var contents = File.ReadAllText(path);
+		// Distinguish between JSON and legacy custom encodings
+		if (encoded.StartsWith("{")) {
+			return (SimulationData)JsonUtility.FromJson(encoded, typeof(SimulationData));
+		}
 
-		
-			
-		
+		return LegacySimulationLoader.ParseSimulationData(encoded, filename);
 
-		
-
-		
 	}
 
 	/// <summary>
@@ -235,7 +172,8 @@ public class SimulationSerializer {
 	public static void DeleteSaveFile(string name) {
 
 		var path = PathToSimulationSave(name);
-		File.Delete(path);
+		if (File.Exists(path))
+			File.Delete(path);
 	}
 
 	/// <summary>
@@ -285,6 +223,8 @@ public class SimulationSerializer {
 		Directory.CreateDirectory(RESOURCE_PATH);
 	}
 
+	#region Migration
+
 	/// <summary>
 	/// Updates the extension for all existing save files from .txt to .evol
 	/// </summary>
@@ -305,4 +245,6 @@ public class SimulationSerializer {
 
 		Settings.DidMigrateSimulationSaves = true;
 	}
+
+	#endregion
 }

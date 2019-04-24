@@ -24,6 +24,9 @@ public class CreatureDesign {
         this.Muscles = muscles;
     }
 
+    public CreatureDesign() : 
+        this("Unnamed", new List<JointData>(), new List<BoneData>(), new List<MuscleData>()) {}
+
     #region DEBUG
 
     public string GetDebugDescription() {
