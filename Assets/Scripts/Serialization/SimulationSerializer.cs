@@ -50,7 +50,11 @@ public class SimulationSerializer {
 		CopyDefaultSimulations();
 	}
 
-	public static void SaveSimulation(SimulationData data) {
+	/// <summary>
+	/// Saves the specified simulation data to a file
+	/// </summary>
+	/// <returns>The filename of the save file without the extensions</returns>
+	public static string SaveSimulation(SimulationData data) {
 
 		string contents = data.Encode();
 		string creatureName = data.CreatureDesign.Name;
@@ -60,7 +64,7 @@ public class SimulationSerializer {
 		string filename = string.Format("{0} - {1} - {2} - Gen({3})", creatureName, taskString, dateString, generation);
 
 		// Save without overwriting existing saves
-		SaveSimulationFile(filename, contents, false);
+		return SaveSimulationFile(filename, contents, false);
 	}
 
 	/// <summary>
@@ -68,7 +72,8 @@ public class SimulationSerializer {
 	/// </summary>
 	/// <param name="name">The filename without an extension.</param>
 	/// <param name="encodedData"></param>
-	public static void SaveSimulationFile(string name, string encodedData, bool overwrite = false) { 
+	/// <returns>The filename of the save file without the extension</returns>
+	public static string SaveSimulationFile(string name, string encodedData, bool overwrite = false) { 
 
 		name = EXTENSION_PATTERN.Replace(name, "");
 
@@ -79,6 +84,8 @@ public class SimulationSerializer {
 
 		CreateSaveFolder();
 		File.WriteAllText(path, encodedData);
+
+		return name;
 	}
 
 	/// <summary>
@@ -91,7 +98,7 @@ public class SimulationSerializer {
 		int counter = 2;
 		var finalName = suggestedName;
 		while (existingNames.Contains(finalName)) {
-			finalName = string.Format("{0} ({1})", suggestedName, counter);
+			finalName = string.Format("{0} {1}", suggestedName, counter);
 			counter++;
 		}
 		return finalName;
@@ -106,6 +113,10 @@ public class SimulationSerializer {
 
 		var contents = LoadSaveData(name);
 
+		if (string.IsNullOrEmpty(contents))
+			throw new Exception("Invalid Simulation Data file contents - empty!");
+
+		return ParseSimulationData(contents);
 	}
 
 	/// <summary>
@@ -120,7 +131,6 @@ public class SimulationSerializer {
 		}
 
 		return LegacySimulationLoader.ParseSimulationData(encoded, filename);
-
 	}
 
 	/// <summary>
@@ -176,6 +186,16 @@ public class SimulationSerializer {
 			File.Delete(path);
 	}
 
+	private static string LoadSaveData(string name) {
+		
+		var path = PathToSimulationSave(name);
+		if (File.Exists(path)) {
+			return File.ReadAllText(path);
+		} else {
+			return "";
+		}
+	}
+
 	/// <summary>
 	/// Copies the default simulation files from the resources folder into the savefile directory
 	/// </summary>
@@ -205,7 +225,7 @@ public class SimulationSerializer {
 	/// (without an extension).
 	/// </summary>
 	public static string PathToSimulationSave(string name) {
-		return Path.Combine(RESOURCE_PATH, string.Format("{0}.evol", name));
+		return Path.Combine(RESOURCE_PATH, string.Format("{0}{1}", name, FILE_EXTENSION));
 	}
 
 	/// <summary>

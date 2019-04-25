@@ -4,6 +4,8 @@ public class Settings {
 
 	private const string DID_MIGRATE_CREATURE_SAVES_KEY = "DID_MIGRATE_CREATURE_SAVES_KEY";
 	private const string DID_MIGRATE_SIMULATION_SAVES_KEY = "DID_MIGRATE_SIMULATION_SAVES_KEY";
+	private const string SHOW_MUSCLE_CONTRACTION_KEY = "showMuscleContraction";
+	private const string SHOW_ONE_AT_ATIME_KEY = "SHOW_ONE_AT_ATIME_KEY";
 	private const string EDITOR_MODE_KEY = "EDITOR_MODE_KEY";
 	private const string CREATURE_NAMES_KEY = "_CreatureNames";
 	private const string CURRENT_CREATURE_NAME_KEY = "CURRENT_CREATURE_NAME_KEY";
@@ -18,6 +20,16 @@ public class Settings {
 	public static bool DidMigrateSimulationSaves {
 		get { return GetBool(DID_MIGRATE_SIMULATION_SAVES_KEY); }
 		set { SetBool(DID_MIGRATE_SIMULATION_SAVES_KEY, value); }
+	}
+
+	public static bool ShowMuscleContraction {
+		get { return GetBool(SHOW_MUSCLE_CONTRACTION_KEY); }
+		set { SetBool(SHOW_MUSCLE_CONTRACTION_KEY, value); }
+	}
+
+	public static bool ShowOneAtATime {
+		get { return GetBool(SHOW_ONE_AT_ATIME_KEY); }
+		set { SetBool(SHOW_ONE_AT_ATIME_KEY, value); }
 	}
 
 	public static int EditorMode {
@@ -55,6 +67,8 @@ public class Settings {
 	private static void Initialize() {
 		DidMigrateCreatureSaves = false;
 		DidMigrateSimulationSaves = false;
+		ShowMuscleContraction = false;
+		ShowOneAtATime = false;
 		EditorMode = 0;
 	}
 

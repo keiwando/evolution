@@ -128,17 +128,17 @@ public class SimulationViewController : MonoBehaviour,
 	}
 
     public void ShowOneAtATimeDidChange(EvolutionOverlayView view, bool showOneAtATime) {
-        // TODO: Replace after Compile
-        // Settings.ShowOneAtATime = showOneAtATime;
+
+        Settings.ShowOneAtATime = showOneAtATime;
         cameraFollowController.RefreshVisibleCreatures();
     }
 
     public void ShowMuscleContractionDidChange(EvolutionOverlayView view, bool showMuscleContraction) {
-        // TODO: Replace after Compile
-        // Settings.ShowMuscleContraction = showMuscleContraction;
+        
+        Settings.ShowMuscleContraction = showMuscleContraction;
         cameraFollowController.RefreshVisibleCreatures();
-        // TODO: Replace after Compile
-        // bestCreatureController.RefreshMuscleContractionVisibility(Settings.ShowMuscleContraction);
+        
+        bestCreatureController.RefreshMuscleContractionVisibility(Settings.ShowMuscleContraction);
     }
 
     public int GetCurrentGenerationNumber(EvolutionOverlayView view) {
@@ -154,7 +154,7 @@ public class SimulationViewController : MonoBehaviour,
 	}
 
     public int GetTotalBatchCount(EvolutionOverlayView view) {
-		return (int)Math.Ceiling(((float)evolution.Settings.populationSize / evolution.CurrentCreatureBatch.Length));
+		return (int)Math.Ceiling(((float)evolution.Settings.PopulationSize / evolution.CurrentCreatureBatch.Length));
 	}
 
     public bool IsSimulatingInBatches(EvolutionOverlayView view) {
@@ -162,15 +162,13 @@ public class SimulationViewController : MonoBehaviour,
 	}
 
     public bool ShouldShowOneAtATime(EvolutionOverlayView view) {
-		return true;
-		// TODO: Replace after Compile
-		// return Settings.ShowOneAtATime;
+		
+		return Settings.ShowOneAtATime;
 	}
 
     public bool ShouldShowMuscleContraction(EvolutionOverlayView view) {
-		return true;
-		// TODO: Replace after Compile
-		// return Settings.ShowMuscleContraction;
+		
+		return Settings.ShowMuscleContraction;
 	}
 
 	#endregion

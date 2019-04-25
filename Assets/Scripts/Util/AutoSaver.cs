@@ -14,6 +14,7 @@ public class AutoSaver {
 	/// <summary>
 	/// The distance between two autosaves in generations.
 	/// </summary>
+	/// // TODO: Make this configurable
 	public int GenerationDistance = 10;
 
 	//private int lastSavedGeneration = -100;
@@ -37,10 +38,10 @@ public class AutoSaver {
 		var lastSave = this.lastSaveFileName;
 
 		//this.lastSavedGeneration = generation;
-		this.lastSaveFileName = evolution.SaveSimulation();
+		this.lastSaveFileName = SimulationSerializer.SaveSimulation(evolution.SimulationData);
 
 		// Delete the last auto-saved file
-		if (lastSave != "" && lastSave.EndsWith(".txt")) {
+		if (lastSave != "") {
 			SimulationSerializer.DeleteSaveFile(lastSave);
 		}
 	}

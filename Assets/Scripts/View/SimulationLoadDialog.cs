@@ -51,7 +51,8 @@ public class SimulationLoadDialog : MonoBehaviour {
 
 		yield return new WaitForEndOfFrame();
 
-		SimulationSerializer.LoadSimulationFromSaveFile(filename, editor);
+		var simulationData = SimulationSerializer.LoadSimulationData(filename);
+		editor.StartSimulation(simulationData);
 	}
 
 	private void SetupDropDown() {

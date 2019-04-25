@@ -43,9 +43,8 @@ public class Creature : MonoBehaviour {
 	private float floorHeight = 0;
 
 	public GameObject Obstacle {
-		set {
-			obstacle = value;
-		}	
+		get { return obstacle; }
+		set { obstacle = value; }	
 	}
 	private GameObject obstacle;
 

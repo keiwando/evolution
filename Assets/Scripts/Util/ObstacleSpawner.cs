@@ -61,7 +61,7 @@ public class ObstacleSpawner : MonoBehaviour {
 		if (!BCScene) {
 			GameObject.Find("Evolution").GetComponent<Evolution>().UpdateCreaturesWithObstacle(obstacle);	
 		} else {
-			BCController.Obstacle = obstacle;
+			BCController.CurrentBest.Obstacle = obstacle;
 		}
 	}
 }

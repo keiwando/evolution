@@ -21,6 +21,8 @@ public static class Recombination<T> where T: IRecombinable<T> {
     }
 
     private static T[] RecombineOnePoint(T lhs, T rhs) {
-        
+        T[] result = new T[2];
+        // TODO: Implement
+        return result;
     }
 }

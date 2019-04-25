@@ -19,9 +19,15 @@ public class Evolution : MonoBehaviour {
 	#endregion
 	#region Settings
 
-	public SimulationSettings Settings { get; set; }
+	public SimulationSettings Settings { 
+		get { return SimulationData.Settings; } 
+		set { SimulationData.Settings = value; } 
+	}
 
-	public NeuralNetworkSettings NetworkSettings { get; set; }
+	public NeuralNetworkSettings NetworkSettings {
+		get { return SimulationData.NetworkSettings; }
+		set { SimulationData.NetworkSettings = value; }
+	}
 
 	// Cached values
 	private SimulationSettings cachedSettings;
@@ -133,8 +139,6 @@ public class Evolution : MonoBehaviour {
 	/// </summary>
 	private void StartSimulation(SimulationData data) {
 
-		this.NetworkSettings = data.NetworkSettings;
-		this.Settings = data.Settings;
 		this.SimulationData = data;
 
 		// Instantiate the creature template
@@ -660,20 +664,4 @@ public class Evolution : MonoBehaviour {
 			creature.Obstacle = obstacle;
 		}
 	}
-
-	/// <summary>
-	/// Saves the simulation.
-	/// </summary>
-	/// <returns>The filename of the savefile.</returns>
-	// public string SaveSimulation() {
-
-	// 	if (currentGenerationNumber == 1) return null;
-
-	// 	var creatureName = CreatureSaver.GetCurrentCreatureName();
-	// 	var creatureSaveData = CreatureSaver.GetCurrentCreatureData();
-	// 	var bestChromosomes = BCController.GetBestChromosomes();
-	// 	var currentChromosomes = new List<string>(this.currentChromosomes);
-
-	// 	return SimulationSerializer.WriteSaveFile(creatureName, settings, brainSettings, currentGenerationNumber, creatureSaveData, bestChromosomes, currentChromosomes);
-	// }
 }

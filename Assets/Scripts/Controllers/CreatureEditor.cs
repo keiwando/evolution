@@ -104,6 +104,11 @@ public class CreatureEditor: MonoBehaviour {
         var simulationData = new SimulationData(editorState.SimulationSettings, 
                                                 editorState.NeuralNetworkSettings,
                                                 creatureDesign);
+        StartSimulation(simulationData);
+    }
+
+    public void StartSimulation(SimulationData simulationData) {
+        
         var containerObject = new GameObject("SimulationConfig");
         containerObject.tag = "SimulationConfig";
         var configContainer = containerObject.AddComponent<SimulationConfigContainer>();
@@ -112,11 +117,7 @@ public class CreatureEditor: MonoBehaviour {
         
         // Load simulation scene
         SceneController.LoadSync(SceneController.Scene.Simulation);
-    }
-
-    public void StartSimulation(SimulationData simulationData) {
-        
-    }
+    }   
 
     #region State Management
 

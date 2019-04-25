@@ -29,7 +29,12 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 					// TODO: Validate file contents
 					var encoded = file.ToUTF8String();
 					try {
-						var simulationData = SimulationSerializer.
+						var simulationData = SimulationSerializer.ParseSimulationData(encoded);
+						SimulationSerializer.SaveSimulation(simulationData);
+					} catch {
+						didImport = false;
+						Debug.LogError(string.Format("Failed to parse .evol file contents: {0}", encoded));
+						continue;
 					}
 					SimulationSerializer.SaveSimulationFile(file.Name, file.ToUTF8String());
 					didImport = true;
@@ -101,7 +106,8 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 
 		yield return new WaitForEndOfFrame();
 
-		SimulationSerializer.LoadSimulationFromSaveFile(filename, editor);
+		var simulationData = SimulationSerializer.LoadSimulationData(filename);
+		editor.StartSimulation(simulationData);
 	}
 
 	public void ImportButtonClicked(FileSelectionViewController controller) {

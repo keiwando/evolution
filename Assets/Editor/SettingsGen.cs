@@ -11,20 +11,20 @@ public class SettingsGen {
 	/// The path to the settings file to be parsed relative to the root of
 	/// the assets directory.
 	/// </summary>
-	private const string INPUT_PATH = "Scripts/Settings/settings.txt";
+	private const string INPUT_PATH = "Scripts/Data/settings.txt";
 	/// <summary>
 	/// The path to the directory that the generated .cs file should be written
 	/// to.
 	/// </summary>
 	/// <remarks> An existing file with the same name will be overwritten!</remarks>
-	private const string OUTPUT_DIR = "Scripts/Settings";
+	private const string OUTPUT_DIR = "Scripts/Data";
 	/// <summary>
 	/// The name of the generated C# class.
 	/// </summary>
 	private const string OUTPUT_CLASS_NAME = "Settings";
 
 	private static readonly Regex PARSING_PATTERN = 
-		new Regex(@"(bool|string|int|float) ([\w\d_]+);?( ?= ?([^;]+);?)?( ?\(([^)]+)\);?)?");
+		new Regex(@"(bool|string|int|float) ([\w\d_]+);?( ?= ?([^; ]+);?)?( ?\(([^)]+)\);?)?");
 
 	private static readonly Regex UPPERCACSE_PATTERN = new Regex("[A-Z]+|[0-9]+");
 

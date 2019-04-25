@@ -72,12 +72,15 @@ public class BestCreaturesController : MonoBehaviour {
 
 	private void SpawnCreature(string chromosome) {
 
+		var obstacle = CurrentBest.Obstacle;
+
 		if (CurrentBest != null) {
 			Destroy(CurrentBest.gameObject);
 		}
 
 		var creature = evolution.CreateCreature();
 		evolution.ApplyBrain(creature, chromosome);
+		creature.Obstacle = obstacle;
 	
 		camera.toFollow = creature;
 		this.CurrentBest = creature;
