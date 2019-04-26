@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class HelpScreen : MonoBehaviour {
 
-	private const string LANGUAGE_KEY = "HELP_SCREEN_LANGUAGE";
 	private const string LANGUAGE_ENGLISH = "LANGUAGE_ENGLISH";
 	private const string LANGUAGE_GERMAN = "LANGUAGE_GERMAN";
 	private const string LANGUAGE_RUSSIAN = "LANGUAGE_RUSSIAN";
@@ -44,7 +43,7 @@ public class HelpScreen : MonoBehaviour {
 			{ LANGUAGE_PORTUGUESE, portugueseButton }
 		};
 
-		var currentLanguage = PlayerPrefs.GetString(LANGUAGE_KEY, LANGUAGE_ENGLISH);
+		var currentLanguage = Settings.HelpScreenLanguage;
 		LanguageSelected(currentLanguage);
 	}
 
@@ -67,8 +66,7 @@ public class HelpScreen : MonoBehaviour {
 
 	private void LanguageSelected(string language) {
 
-		PlayerPrefs.SetString(LANGUAGE_KEY, language);
-		PlayerPrefs.Save();
+		Settings.HelpScreenLanguage = language;
 
 		foreach (var rect in languageMap.Values) {
 			rect.gameObject.SetActive (false);

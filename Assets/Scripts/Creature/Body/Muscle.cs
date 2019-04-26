@@ -39,8 +39,7 @@ public class Muscle : BodyComponent {
 		set {
 			_living = value;
 			if (_living) {
-				ShouldShowContraction = PlayerPrefs.GetInt(PlayerPrefsKeys.SHOW_MUSCLE_CONTRACTION, 0) == 1;
-				//print("Should show contraction");
+				ShouldShowContraction = Settings.ShowMuscleContraction;
 			}
 		}
 		get { return _living; }
@@ -204,7 +203,6 @@ public class Muscle : BodyComponent {
 	public void Contract() {
 
 		if (living) {
-
 			Contract(currentForce);
 		}
 	}
@@ -227,7 +225,6 @@ public class Muscle : BodyComponent {
 	public void Expand() {
 
 		if (living) {
-
 			Expand(currentForce);
 		}
 	}
@@ -261,13 +258,6 @@ public class Muscle : BodyComponent {
 
 		startingJoint.ConnectedBone.AddForceAtPosition(startingForce, startingJoint.transform.position);
 		endingJoint.ConnectedBone.AddForceAtPosition(endingForce, endingJoint.transform.position);
-	}
-
-	private void TestContraction () {
-		if (living) {
-
-			Contract(currentForce);
-		}
 	}
 
 	IEnumerator ExpandAfterTime(float time)

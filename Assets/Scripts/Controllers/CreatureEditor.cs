@@ -64,7 +64,6 @@ public class CreatureEditor: MonoBehaviour {
     public void LoadDesign(CreatureDesign design) {
         creatureBuilder.Reset();
         creatureBuilder = new CreatureBuilder(design);
-        print("LoadDesign");
     }
     
     /// <summary>
@@ -129,9 +128,7 @@ public class CreatureEditor: MonoBehaviour {
     }
 
     public EditorState GetState() {
-        return new EditorState() {
-            CreatureDesign = creatureBuilder.GetDesign()
-        };
+        return EditorStateManager.Load();
     }
 
     #endregion

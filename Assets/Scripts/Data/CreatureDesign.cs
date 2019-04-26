@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 [Serializable]
 public class CreatureDesign {
@@ -26,6 +27,10 @@ public class CreatureDesign {
 
     public CreatureDesign() : 
         this("Unnamed", new List<JointData>(), new List<BoneData>(), new List<MuscleData>()) {}
+
+    public string Encode() {
+        return JsonUtility.ToJson(this, false);
+    }
 
     #region DEBUG
 

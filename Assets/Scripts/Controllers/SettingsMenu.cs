@@ -6,11 +6,6 @@ using UnityEngine.UI;
 
 public class SettingsMenu : MonoBehaviour {
 
-	public const string GRID_SIZE_KEY = "GRID_SIZE";
-	public const string GRID_ENABLED_KEY = "GRID_ENABLED";
-
-	private const string EVOLUTION_SETTINGS_KEY = "EVOLUTION_SETTINGS";
-
 	private static string[] TASK_OPTIONS = new string[] {"RUNNING", "JUMPING", "OBSTACLE JUMP", "CLIMBING"};
 
 	private const float DEFAULT_GRID_SIZE = 2.0f;
@@ -61,12 +56,12 @@ public class SettingsMenu : MonoBehaviour {
 		SetupTaskDropDown();
 
 		// Setup the grid stuff
-		var gridSize = PlayerPrefs.GetFloat(GRID_SIZE_KEY, DEFAULT_GRID_SIZE);
+		var gridSize = Settings.GridSize;
 		grid.Size = gridSize;
 		gridSizeSlider.value = gridSize;
 		UpdateGridSizeText(gridSize);
 
-		var gridEnabled = PlayerPrefs.GetInt(GRID_ENABLED_KEY, 0) == 1;
+		var gridEnabled = Settings.GridEnabled;
 		grid.gameObject.SetActive(gridEnabled);
 		gridToggle.isOn = gridEnabled;
 
@@ -82,13 +77,6 @@ public class SettingsMenu : MonoBehaviour {
 		populationSizeInput.text = settings.PopulationSize.ToString();
 		simulationTimeInput.text = settings.SimulationTime.ToString();
 		mutationRateInput.text = settings.MutationRate.ToString();
-
-		/*var keepBestCreatures = PlayerPrefs.GetInt(KEEP_BEST_CREATURE_KEY, 0) == 1;
-		keepBestCreaturesToggle.isOn = keepBestCreatures;
-
-		var batchSimulationEnabled = PlayerPrefs.GetInt(BATCH_SIMULATION_ENABLED_KEY, 0) == 1;
-		BatchSizeToggled(batchSimulationEnabled);
-		batchSizeToggle.isOn = batchSimulationEnabled;*/
 	}
 
 	private void SetupInputFieldCallbacks() {
@@ -141,8 +129,7 @@ public class SettingsMenu : MonoBehaviour {
 
 	public void GridToggled(bool val) {
 
-		PlayerPrefs.SetInt(GRID_ENABLED_KEY, val ? 1 : 0);
-
+		Settings.GridEnabled = val;
 		grid.gameObject.SetActive(val);
 	}
 
@@ -152,7 +139,7 @@ public class SettingsMenu : MonoBehaviour {
 		grid.Size = value;
 		grid.VisualRefresh();
 
-		PlayerPrefs.SetFloat(GRID_SIZE_KEY, value);
+		Settings.GridSize = value;
 	}
 
 	private void UpdateGridSizeText(float value) {
@@ -239,11 +226,11 @@ public class SettingsMenu : MonoBehaviour {
 	}
 
 	public SimulationSettings GetSimulationSettings() {
-		return EditorStateManager.LoadFromSerialization().SimulationSettings;
+		return EditorStateManager.Load().SimulationSettings;
 	}
 
 	private void SaveSimulationSettings(SimulationSettings settings) {
-		PlayerPrefs.SetString(EVOLUTION_SETTINGS_KEY, settings.Encode());
+		Settings.SimulationSettings = settings.Encode();
 	}
 
 	/// <summary>
@@ -251,15 +238,8 @@ public class SettingsMenu : MonoBehaviour {
 	/// </summary>
 	/// <returns>The evolution settings.</returns>
 	private SimulationSettings LoadSimulationSettings() {
-
-		var settingsString = PlayerPrefs.GetString(EVOLUTION_SETTINGS_KEY, "");
-
-		if (settingsString == "") {
-			// Default settings
-			return new SimulationSettings();
-		}
-
-		return SimulationSettings.Decode(settingsString);
+		
+		return SimulationSettings.Decode(Settings.SimulationSettings);
 	}
 
 	public NeuralNetworkSettings GetNeuralNetworkSettings() {

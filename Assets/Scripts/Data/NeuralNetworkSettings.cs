@@ -3,49 +3,52 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class NeuralNetworkSettings {
+[SerializeField]
+public struct NeuralNetworkSettings {
 
 	public static readonly int MAX_LAYERS = 10;
-	public static readonly int MAX_NODES_PER_LAYER = 100; 
+	public static readonly int MAX_NODES_PER_LAYER = 100;
+	
+	public static NeuralNetworkSettings Default = new NeuralNetworkSettings(new int[] { 10 });
 
-	public int numberOfIntermediateLayers { get { return nodesPerIntermediateLayer.Length; } }
-
-	public int[] nodesPerIntermediateLayer = new int[] { 10 };
-
-	/// <summary>
-	/// String format: 
-	/// number of nodes per intermediate layer separated by a #
-	/// </summary>
-	public string Encode() {
-
-		var nodesPerLayerAsStrings = nodesPerIntermediateLayer.Select(delegate(int arg) {
-			return arg.ToString();
-		}).ToArray();
-
-		return string.Join("#", nodesPerLayerAsStrings);
+	public int NumberOfIntermediateLayers {
+		get { return NodesPerIntermediateLayer.Length; }
 	}
 
-	public static NeuralNetworkSettings Decode(string str) {
+	public int[] NodesPerIntermediateLayer;
 
-		var numsAsStrings = str.Split('#');
+	public NeuralNetworkSettings(int[] nodesPerIntermediateLayer) {
+		this.NodesPerIntermediateLayer = nodesPerIntermediateLayer;
+	}
+
+	#region Encode & Decode
+
+	public string Encode() {
+		return JsonUtility.ToJson(this, false);
+	}
+
+	public static NeuralNetworkSettings Decode(string encoded) {
+
+		if (string.IsNullOrEmpty(encoded)) {
+			return Default;
+		}
+		if (encoded.StartsWith("{")) {
+			return (NeuralNetworkSettings)JsonUtility.FromJson(encoded, typeof(NeuralNetworkSettings));
+		}
+		return DecodeV1(encoded);
+	}
+
+	private static NeuralNetworkSettings DecodeV1(string encoded) {
+		var numsAsStrings = encoded.Split('#');
 
 		var nodesPIL = numsAsStrings.Select(delegate(string arg) {
 			return int.Parse(arg);	
 		}).ToArray();
 
-		var settings = new NeuralNetworkSettings();
-		settings.nodesPerIntermediateLayer = nodesPIL;
+		var settings = new NeuralNetworkSettings(nodesPIL);
 
 		return settings;
 	}
 
-	public static NeuralNetworkSettings GetDefaultSettings() {
-
-		var nodesPIL = new int[]{ 10 };
-
-		var settings = new NeuralNetworkSettings();
-		settings.nodesPerIntermediateLayer = nodesPIL;
-
-		return settings;
-	}
+	#endregion
 }

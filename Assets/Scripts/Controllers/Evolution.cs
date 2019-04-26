@@ -162,9 +162,9 @@ public class Evolution : MonoBehaviour {
 		this.currentGeneration = CreateCreatures(Settings.PopulationSize);
 		ApplyBrains(this.currentGeneration, data.CurrentChromosomes);
 
-		this.creature.gameObject.SetActive(false);
+		// this.creature.gameObject.SetActive(false);
 
-		this.simulationRoutine = StartCoroutine(Simulate());
+		// this.simulationRoutine = StartCoroutine(Simulate());
 	}
 
 	private IEnumerator Simulate() {
@@ -183,7 +183,7 @@ public class Evolution : MonoBehaviour {
 		// Cache values that can be changed during the simulation
 		this.cachedSettings = this.Settings;
 
-		NewGenerationDidBegin();
+		if (NewGenerationDidBegin != null) NewGenerationDidBegin();
 
 		for (int i = 0; i < numberOfBatches; i++) {
 			
@@ -192,7 +192,7 @@ public class Evolution : MonoBehaviour {
 			int currentBatchSize = Math.Min(actualBatchSize, remainingCreatures);
 			
 			this.currentCreatureBatch = new Creature[currentBatchSize];
-			Array.Copy(currentGeneration, this.currentBatchNumber * actualBatchSize, currentCreatureBatch, 0, currentBatchSize);
+			Array.Copy(currentGeneration, i * currentBatchSize, currentCreatureBatch, 0, currentBatchSize);
 
 			yield return SimulateBatch();
 		}
@@ -210,7 +210,7 @@ public class Evolution : MonoBehaviour {
 			creature.gameObject.SetActive(true);
 		}
 
-		NewBatchDidBegin();
+		if (NewBatchDidBegin != null) NewBatchDidBegin();
 
 		yield return new WaitForSeconds(cachedSettings.SimulationTime);
 	}
@@ -230,7 +230,7 @@ public class Evolution : MonoBehaviour {
 
 		// Autosave if necessary
 		bool saved = AutoSaver.Update(this.currentGenerationNumber, this);
-		if (saved) {
+		if (saved && SimulationWasSaved != null) {
 			SimulationWasSaved();
 		}
 

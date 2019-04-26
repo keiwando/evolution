@@ -4,9 +4,15 @@ bool DidMigrateSimulationSaves = false
 bool ShowMuscleContraction = false (showMuscleContraction)
 bool ShowOneAtATime = false 
 
+float GridSize = 1.0f (GRID_SIZE)
+bool GridEnabled = false (GRID_ENABLED)
+
+string HelpScreenLanguage = "LANGUAGE_ENGLISH" (HELP_SCREEN_LANGUAGE)
+bool HelpIndicatorShown (FIRST_TIME)
+
 int EditorMode = 0
 
 string CreatureNames (_CreatureNames)
-string CurrentCreatureName
-string CurrentCreatureDesign
 string SimulationSettings (EVOLUTION_SETTINGS)
+string NetworkSettings (NEURAL NETWORK SETTINGS)
+string CurrentCreatureDesign

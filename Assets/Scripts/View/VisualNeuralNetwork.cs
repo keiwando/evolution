@@ -34,7 +34,7 @@ public class VisualNeuralNetwork : MonoBehaviour {
 
 	private float horizontalNodeDistance {
 		get {
-			return (rightEdge - leftEdge) / (networkSettings.numberOfIntermediateLayers + 1);
+			return (rightEdge - leftEdge) / (networkSettings.NumberOfIntermediateLayers + 1);
 		}
 	}
 
@@ -70,7 +70,7 @@ public class VisualNeuralNetwork : MonoBehaviour {
 
 	public void Refresh() {
 		
-		var maxNodesPerLayer = networkSettings.nodesPerIntermediateLayer.Max();
+		var maxNodesPerLayer = networkSettings.NodesPerIntermediateLayer.Max();
 		minifyingScale = Mathf.Min(1.0f, 10f / maxNodesPerLayer);
 
 		DeleteCurrentNet();
@@ -84,7 +84,7 @@ public class VisualNeuralNetwork : MonoBehaviour {
 		var currentLayer = new List<Image>();
 		var nextLayer = new List<Image>();
 
-		for (int i = 0; i < networkSettings.numberOfIntermediateLayers + 1; i++) {
+		for (int i = 0; i < networkSettings.NumberOfIntermediateLayers + 1; i++) {
 
 			currentLayer.Clear();
 			currentLayer.AddRange(nextLayer);
@@ -97,7 +97,7 @@ public class VisualNeuralNetwork : MonoBehaviour {
 			} 
 
 			// Create the next layer nodes
-			if (i == networkSettings.numberOfIntermediateLayers) {
+			if (i == networkSettings.NumberOfIntermediateLayers) {
 				var output = InstantiateNode();
 				output.transform.localPosition = new Vector3(rightEdge, 0, transform.position.z);
 
@@ -105,7 +105,7 @@ public class VisualNeuralNetwork : MonoBehaviour {
 			
 			} else {
 				// The next layer is an intermediate layer
-				var numOfNodesInLayer = networkSettings.nodesPerIntermediateLayer[i];
+				var numOfNodesInLayer = networkSettings.NodesPerIntermediateLayer[i];
 				var top = -((numOfNodesInLayer - 1) * verticalNodeDistance * minifyingScale) / 2;
 				var xPos = GetXPosForIntermediateLayer(i);
 

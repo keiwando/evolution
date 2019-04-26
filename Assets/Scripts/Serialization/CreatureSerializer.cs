@@ -79,6 +79,9 @@ public class CreatureSerializer {
 
 	public static CreatureDesign ParseCreatureDesign(string encoded, string name = "") {
 
+		if (string.IsNullOrEmpty(encoded)) 
+			return new CreatureDesign();
+
 		// Distinguish between JSON and legacy custom encodings
 		if (encoded.StartsWith("{")) {
 			return (CreatureDesign)JsonUtility.FromJson(encoded, typeof(CreatureDesign));
@@ -146,7 +149,8 @@ public class CreatureSerializer {
 
 		// var creatureNames = fileInfo.Where(f => f.Name.EndsWith(".creat"))
 		// .Select(f => EXTENSION_PATTERN.Replace(f.Name, "")).ToList();
-		var creatureNames = FileUtil.GetFilenamesInDirectory(RESOURCE_PATH, FILE_EXTENSION);
+		var creatureNames = FileUtil.GetFilenamesInDirectory(RESOURCE_PATH, FILE_EXTENSION)
+			.Select(filename => EXTENSION_PATTERN.Replace(filename, "")).ToList();
 		
 		creatureNames.Sort();
 

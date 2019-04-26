@@ -42,6 +42,16 @@ public struct SimulationSettings {
 	/// </summary>
 	public int MutationRate;
 
+	public static SimulationSettings Default = new SimulationSettings() {
+		Task = EvolutionTask.Running,
+		KeepBestCreatures = true,
+		SimulationTime = 10,
+		PopulationSize = 10,
+		BatchSize = 10,
+		SimulateInBatches = false,
+		MutationRate = 50
+	};
+
 	public SimulationSettings(EvolutionTask task) {
 
 		this.Task = task;
@@ -69,12 +79,16 @@ public struct SimulationSettings {
 	// }
 
 	public string Encode() {
-		// TODO: Remove Prettyprint after debugging
-		return JsonUtility.ToJson(this, true);
+		return JsonUtility.ToJson(this, false);
 	}
 
 	public static SimulationSettings Decode(string encoded) {
-		// TODO: Check which decode version is needed
+
+		if (string.IsNullOrEmpty(encoded))
+			return Default;
+		if (encoded.StartsWith("{"))
+			return (SimulationSettings)JsonUtility.FromJson(encoded, typeof(SimulationSettings));
+		
 		return DecodeV1(encoded);
 	}
 

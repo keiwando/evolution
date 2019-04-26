@@ -4,36 +4,27 @@ using UnityEngine;
 
 public class EditorStateManager {
 
-    public static EditorState LoadFromSerialization() {
+    public static EditorState Load() {
 
-        var simulationSettings = LoadSimulationSettings();
-        var networkSettings = LoadNetworkSettings();
-        var creatureDesign = LoadCreatureDesign();
-
-        return new EditorState () {
-            SimulationSettings = simulationSettings,
-            NeuralNetworkSettings = networkSettings,
-            CreatureDesign = creatureDesign
-        };
+        return new EditorState(LoadCreatureDesign(), LoadSimulationSettings(), LoadNetworkSettings());
     }
 
     public static void Serialize(EditorState state) {
-        // TODO: Implement
+        Settings.SimulationSettings = state.SimulationSettings.Encode();
+        Settings.NetworkSettings = state.NeuralNetworkSettings.Encode();
+        Settings.CurrentCreatureDesign = state.CreatureDesign.Encode();
     }
 
     private static SimulationSettings LoadSimulationSettings() {
 
-        // TODO: Load from PlayerPrefs
-        return new SimulationSettings();
+        return SimulationSettings.Decode(Settings.SimulationSettings);
     }
 
     private static NeuralNetworkSettings LoadNetworkSettings() {
-        // TODO: Load from PlayerPrefs
-        return new NeuralNetworkSettings();
+        return NeuralNetworkSettings.Decode(Settings.NetworkSettings);
     }
 
     private static CreatureDesign LoadCreatureDesign() {
-        // TODO: Load from PlayerPrefs
-        return new CreatureDesign("Unnamed", new List<JointData>(), new List<BoneData>(), new List<MuscleData>());
+        return CreatureSerializer.ParseCreatureDesign(Settings.CurrentCreatureDesign);
     }
 }

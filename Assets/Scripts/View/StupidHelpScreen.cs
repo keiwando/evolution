@@ -9,18 +9,14 @@ public class StupidHelpScreen : MonoBehaviour {
 	[SerializeField]
 	private HelpScreen helpScreen;
 
-	private const string FIRST_TIME_KEY = "FIRST_TIME";
-
-
 	void Start () {
 
 		// Apparently only Android users are for some reason incapable of finding
 		// the help page on their own.
-		if (Application.platform == RuntimePlatform.Android && PlayerPrefs.GetInt(FIRST_TIME_KEY, 1) == 1) {
+		if (Application.platform == RuntimePlatform.Android && !Settings.HelpIndicatorShown) {
 
 			Show();
-
-			PlayerPrefs.SetInt(FIRST_TIME_KEY, 0);
+			Settings.HelpIndicatorShown = true;
 		}
 	}
 

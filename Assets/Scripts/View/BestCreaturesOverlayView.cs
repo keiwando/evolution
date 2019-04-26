@@ -147,14 +147,14 @@ public class BestCreaturesOverlayView: MonoBehaviour {
         var networkStats = Delegate.GetNetworkSettingsOfCurrentBest(this);
 
         stringBuilder.AppendLine();
-        stringBuilder.AppendLine("Neural Net: " + (networkStats.numberOfIntermediateLayers + 2) + " layers");
+        stringBuilder.AppendLine("Neural Net: " + (networkStats.NumberOfIntermediateLayers + 2) + " layers");
 
         var numberOfInputs = Delegate.GetNumberOfNetworkInputs(this);
         int numberOfNodes = numberOfInputs + stats.numberOfMuscles;
         var layersStringBuilder = new StringBuilder();
         layersStringBuilder.Append(numberOfInputs);
         layersStringBuilder.Append(" + ");
-        foreach (var layerNodeCount in networkStats.nodesPerIntermediateLayer) {
+        foreach (var layerNodeCount in networkStats.NodesPerIntermediateLayer) {
             numberOfNodes += layerNodeCount;
             layersStringBuilder.Append(layerNodeCount);
             layersStringBuilder.Append(" + ");

@@ -33,7 +33,7 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 
 		var settings = GetNetworkSettings();
 
-		numberOfLayersInput.text = (settings.numberOfIntermediateLayers + 2).ToString();
+		numberOfLayersInput.text = (settings.NumberOfIntermediateLayers + 2).ToString();
 
 		// Make sure a visual network is connected
 		if (visualNetwork == null) throw new System.NullReferenceException();
@@ -42,7 +42,7 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 		visualNetwork.networkSettings = settings;
 
 		// Create an input field for every intermediate layer
-		for (int i = 0; i < settings.numberOfIntermediateLayers; i++) {
+		for (int i = 0; i < settings.NumberOfIntermediateLayers; i++) {
 
 			var position = new Vector3(visualNetwork.GetXPosForIntermediateLayer(i), 0, transform.position.z);
 			var input = CreateInputField(position);
@@ -55,7 +55,7 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 				LayerSizeInputChanged(index, arg0);
 			});
 
-			input.text = settings.nodesPerIntermediateLayer[i].ToString();
+			input.text = settings.NodesPerIntermediateLayer[i].ToString();
 		}
 
 		visualNetwork.Refresh();
@@ -81,9 +81,9 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 		var settings = GetNetworkSettings();
 		var num = Mathf.Clamp(int.Parse(value), 1, NeuralNetworkSettings.MAX_NODES_PER_LAYER);
 
-		if (num == settings.nodesPerIntermediateLayer[index]) return;
+		if (num == settings.NodesPerIntermediateLayer[index]) return;
 
-		settings.nodesPerIntermediateLayer[index] = num;
+		settings.NodesPerIntermediateLayer[index] = num;
 		SaveNewSettings(settings);
 
 		Refresh();
@@ -103,11 +103,11 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 
 		var settings = GetNetworkSettings();
 
-		var oldNumber = settings.numberOfIntermediateLayers + 2;
+		var oldNumber = settings.NumberOfIntermediateLayers + 2;
 
 		if (num != oldNumber) {
 			// Number was changed
-			var layerSizes = new List<int>(settings.nodesPerIntermediateLayer);
+			var layerSizes = new List<int>(settings.NodesPerIntermediateLayer);
 
 			if (num > oldNumber) {
 				// Duplicate the last layer
@@ -127,31 +127,25 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 	private void SaveNewSettings(int[] nodesPerIntermediateLayer) {
 
 		var settings = new NeuralNetworkSettings();
-		settings.nodesPerIntermediateLayer = nodesPerIntermediateLayer;
+		settings.NodesPerIntermediateLayer = nodesPerIntermediateLayer;
 
 		SaveNewSettings(settings);
 	}
 
 	private void SaveNewSettings(NeuralNetworkSettings settings) {
-		PlayerPrefs.SetString(NETWORK_SETTINGS_KEY, settings.Encode());
+		Settings.NetworkSettings = settings.Encode();
 	}
 
 	public void Reset() {
 		
-		var settings = NeuralNetworkSettings.GetDefaultSettings();
+		var settings = NeuralNetworkSettings.Default;
 		SaveNewSettings(settings);
 		Refresh();
 	}
 
 	public static NeuralNetworkSettings GetNetworkSettings() {
 
-		var settingsString = PlayerPrefs.GetString(NETWORK_SETTINGS_KEY, "");
-
-		if (settingsString == "") {
-			return NeuralNetworkSettings.GetDefaultSettings();
-		}
-
-		return NeuralNetworkSettings.Decode(settingsString);
+		return NeuralNetworkSettings.Decode(Settings.NetworkSettings);
 	}
 
 }

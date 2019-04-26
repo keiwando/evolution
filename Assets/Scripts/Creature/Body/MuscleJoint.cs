@@ -4,19 +4,6 @@ using System.Collections.Generic;
 
 public class MuscleJoint : MonoBehaviour { //: Hoverable
 
-	public int ID;
-
-//	public Vector3 position { 
-//		get {
-//			return transform.position;
-//		} 
-//	}
-
-//	public FixedJoint FixedJoint {
-//		get { return fixedJoint; }
-//	}
-//	private FixedJoint fixedJoint;
-
 	public Rigidbody ConnectedBone {
 		get { return bone; }
 	}
@@ -33,6 +20,7 @@ public class MuscleJoint : MonoBehaviour { //: Hoverable
 		//fixedJoint = GetComponent<FixedJoint>();
 		bone = GetComponentInParent<Rigidbody>();
 		body = GetComponent<Rigidbody>();
+
 	}
 
 	public void Connect(Muscle muscle) {
