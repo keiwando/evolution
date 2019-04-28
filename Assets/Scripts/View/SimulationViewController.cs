@@ -19,11 +19,12 @@ public class SimulationViewController : MonoBehaviour,
 	private Evolution evolution;
 	private CameraFollowController cameraFollowController;
 	private BestCreaturesController bestCreatureController;
-	private EvolutionPauseMenu pauseView;
+	
+	[SerializeField] private EvolutionPauseMenu pauseView;
 
-	private EvolutionOverlayView evolutionOverlayView;
-	private BestCreaturesOverlayView bestCreatureOverlayView;
-	private SharedSimulationOverlayView sharedOverlayView;
+	[SerializeField] private EvolutionOverlayView evolutionOverlayView;
+	[SerializeField] private BestCreaturesOverlayView bestCreatureOverlayView;
+	[SerializeField] private SharedSimulationOverlayView sharedOverlayView;
 
     [SerializeField] private Camera simulationCamera;
     [SerializeField] private Camera bestCreatureCamera;
@@ -36,14 +37,13 @@ public class SimulationViewController : MonoBehaviour,
 		cameraFollowController = FindObjectOfType<CameraFollowController>();
 		evolution = FindObjectOfType<Evolution>();
 
-		evolutionOverlayView = FindObjectOfType<EvolutionOverlayView>();
 		evolutionOverlayView.Delegate = this;
-		bestCreatureOverlayView = FindObjectOfType<BestCreaturesOverlayView>();
 		bestCreatureOverlayView.Delegate = this;
-		sharedOverlayView = FindObjectOfType<SharedSimulationOverlayView>();
 		sharedOverlayView.Delegate = this;
 
-		Refresh();
+		evolution.NewBatchDidBegin += delegate () {
+			Refresh();
+		};
 	}
 
 	public void Refresh() {

@@ -130,7 +130,7 @@ public class SimulationSerializer {
 			return (SimulationData)JsonUtility.FromJson(encoded, typeof(SimulationData));
 		}
 
-		return LegacySimulationLoader.ParseSimulationData(encoded, filename);
+		return LegacySimulationLoader.ParseSimulationData(filename, encoded);
 	}
 
 	/// <summary>
@@ -252,14 +252,14 @@ public class SimulationSerializer {
 		if (Settings.DidMigrateSimulationSaves) return;
 		Debug.Log("Beginning simulation save migration.");
 
-		var filenames = new DirectoryInfo(RESOURCE_PATH).GetFiles().Select(f => f.Name);
+		var filenames = FileUtil.GetFilenamesInDirectory(RESOURCE_PATH, ".txt");
 		var txtReplace = new Regex(".txt");
 		foreach (var filename in filenames) {
 			var newName = txtReplace.Replace(filename, ".evol");
 			var oldPath = GetSavePathForFile(filename);
 			var newPath = GetSavePathForFile(newName);
 
-			if (File.Exists(oldPath))
+			if (File.Exists(oldPath) && !File.Exists(newPath))
 				File.Move(oldPath, newPath);
 		}
 

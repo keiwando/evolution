@@ -14,6 +14,7 @@ public class CameraFollowController: MonoBehaviour {
 
         evolution.NewBatchDidBegin += delegate() {
             this.watchingIndex = 0;
+			RefreshCameraFocus();
 			RefreshVisibleCreatures();
         };
     }
@@ -22,8 +23,8 @@ public class CameraFollowController: MonoBehaviour {
 
         var batch = evolution.CurrentCreatureBatch;
         watchingIndex = (watchingIndex + 1) % batch.Length;
-		cameraFollow.toFollow = batch[watchingIndex];
-
+		
+		RefreshCameraFocus();
 		RefreshVisibleCreatures();
 	}
 
@@ -31,10 +32,15 @@ public class CameraFollowController: MonoBehaviour {
 
 		var batch = evolution.CurrentCreatureBatch;
         watchingIndex = watchingIndex - 1 < 0 ? batch.Length - 1 : watchingIndex - 1;
-		cameraFollow.toFollow = batch[watchingIndex];
 		
+		RefreshCameraFocus();
 		RefreshVisibleCreatures();
 	}
+
+	private void RefreshCameraFocus() {
+		var batch = evolution.CurrentCreatureBatch;
+		cameraFollow.toFollow = batch[watchingIndex];
+	} 
 
     public void RefreshVisibleCreatures() {
 

@@ -125,8 +125,9 @@ GameObject:
   - component: {fileID: 777552}
   - component: {fileID: 777551}
   - component: {fileID: 777550}
+  - component: {fileID: 777553}
   m_Layer: 5
-  m_Name: Shared Canvas
+  m_Name: Shared Overlay View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -195,6 +196,23 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &777553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aed895101f39b42c2b877be5ae5fffd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pauseButton: {fileID: 131677417}
+  autosaveToggle: {fileID: 1500397759}
+  saveButton: {fileID: 321432587}
+  successfulSaveLabel: {fileID: 1664378893}
+  backButton: {fileID: 1659588229}
 --- !u!1 &40514269
 GameObject:
   m_ObjectHideFlags: 0
@@ -1363,6 +1381,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 226951595}
+  - component: {fileID: 226951596}
   m_Layer: 0
   m_Name: Camera Follow Controller
   m_TagString: Untagged
@@ -1384,6 +1403,20 @@ Transform:
   m_Father: {fileID: 1507750166}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &226951596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226951594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 557221daadd1143b0aa6c86e8eb564ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  evolution: {fileID: 1467418367}
+  cameraFollow: {fileID: 956411641}
 --- !u!1 &262803597
 GameObject:
   m_ObjectHideFlags: 0
@@ -1397,7 +1430,7 @@ GameObject:
   - component: {fileID: 262803599}
   - component: {fileID: 1013789958}
   m_Layer: 5
-  m_Name: EVOL Generation Label
+  m_Name: Generation Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1720,7 +1753,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1224338102}
+      - m_Target: {fileID: 0}
         m_MethodName: SaveSimulation
         m_Mode: 1
         m_Arguments:
@@ -2119,8 +2152,9 @@ GameObject:
   - component: {fileID: 613141428}
   - component: {fileID: 613141430}
   - component: {fileID: 613141429}
+  - component: {fileID: 613141432}
   m_Layer: 5
-  m_Name: Best Creatures Canvas
+  m_Name: Best Creatures Overlay View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2210,6 +2244,31 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &613141432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 613141427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 420e561f7259f4a78bd31a581d8fbb9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  generationInputField: {fileID: 1366865757}
+  showPreviousGenerationButton: {fileID: 1114405003}
+  showNextGenerationButton: {fileID: 1551180574}
+  fitnessLabel: {fileID: 1013789955}
+  statsLabel: {fileID: 1013789954}
+  autoplayToggle: {fileID: 1013789951}
+  autoplaySettingsContainer: {fileID: 1013789953}
+  autoplayDurationSlider: {fileID: 1013789950}
+  autoplayDurationLabel: {fileID: 1013789952}
+  errorLabel: {fileID: 1013789956}
+  pipRenderTexture: {fileID: 8400000, guid: 9df058a82577d40c680ff3618910c18a, type: 2}
+  pipGenerationLabel: {fileID: 1013789958}
+  pipButton: {fileID: 209967347}
 --- !u!1 &616724066
 GameObject:
   m_ObjectHideFlags: 0
@@ -2878,7 +2937,7 @@ GameObject:
   - component: {fileID: 849682274}
   - component: {fileID: 1556594260}
   m_Layer: 5
-  m_Name: BC Label
+  m_Name: Generation Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3160,6 +3219,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 930420638}
+  - component: {fileID: 930420639}
   m_Layer: 0
   m_Name: Simulation Input Manager
   m_TagString: Untagged
@@ -3181,6 +3241,18 @@ Transform:
   m_Father: {fileID: 1953577052}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &930420639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930420637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57722ed24e8f04ae88bb0655f95b68e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &935511740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3194,15 +3266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cbbc6ceefcfc4ff6a90f0aa7ba1cdc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewController: {fileID: 1224338102}
-  MainCamera: {fileID: 956411641}
-  BCCamera: {fileID: 1661777020}
-  EvolutionCanvas: {fileID: 200513233}
-  BCCanvas: {fileID: 613141428}
-  BCThumbScreen: {fileID: 1174666641}
-  BCGenerationInput: {fileID: 1366865757}
-  floorHeight: {fileID: 1136825157}
-  dropHeight: {x: 0, y: 0, z: 0}
+  camera: {fileID: 1661777020}
 --- !u!1001 &949406958
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3438,7 +3502,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   renderTexture: {fileID: 8400000, guid: 9df058a82577d40c680ff3618910c18a, type: 2}
   toFollow: {fileID: 0}
-  currentlyWatchingIndex: 0
   DiagonalLock: 0
 --- !u!1 &974457826
 GameObject:
@@ -4019,7 +4082,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1051480188}
   m_Layer: 5
-  m_Name: EVOL Thumb Screen
+  m_Name: PIP View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4622,7 +4685,7 @@ GameObject:
   - component: {fileID: 751526730}
   - component: {fileID: 1134569356}
   m_Layer: 5
-  m_Name: Show Muscle Contraction
+  m_Name: Show Muscle Contraction Toggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4707,8 +4770,9 @@ GameObject:
   - component: {fileID: 200513233}
   - component: {fileID: 1145864260}
   - component: {fileID: 1145864259}
+  - component: {fileID: 1145864262}
   m_Layer: 5
-  m_Name: Evolution Canvas
+  m_Name: Evolution Overlay View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4778,6 +4842,27 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1145864262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145864258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fefd14ef422f470599317c2e8ed3851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  generationLabel: {fileID: 647496411}
+  showOneAtATimeToggle: {fileID: 1491541442}
+  showMuscleContractionToggle: {fileID: 751526730}
+  focusOnPreviousButton: {fileID: 1425312937}
+  focusOnNextButton: {fileID: 1389066169}
+  pipContainer: {fileID: 1174666641}
+  pipRenderTexture: {fileID: 8400000, guid: 5fd56a39dc81b44dca0e0c137288786f, type: 2}
+  pipBestOfGenLabel: {fileID: 1556594260}
+  pipButton: {fileID: 40514271}
 --- !u!1 &1174666641
 GameObject:
   m_ObjectHideFlags: 0
@@ -4789,7 +4874,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1174666642}
   m_Layer: 5
-  m_Name: BC Thumb Screen
+  m_Name: PIP View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4937,26 +5022,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1224338100}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60abd7e48dbeb4154894f85b4a25dd66, type: 3}
+  m_Script: {fileID: 11500000, guid: 1bc4286de693240f0a214be2400b4fff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  generationLabel: {fileID: 647496411}
-  EVOLGenerationLabel: {fileID: 1013789958}
-  BCGenerationLabel: {fileID: 1556594260}
-  BCInputField: {fileID: 1366865757}
-  BCErrorMessage: {fileID: 1013789956}
-  showOneAtATimeToggle: {fileID: 1491541442}
-  showMuscleContractionToggle: {fileID: 751526730}
-  FitnessLabel: {fileID: 1013789955}
-  CreatureStatsLabelField: {fileID: 1013789954}
-  AutoplaySettings: {fileID: 1013789953}
-  AutoplayDurationLabel: {fileID: 1013789952}
-  autoplayToggle: {fileID: 1013789951}
-  autoplaySlider: {fileID: 1013789950}
-  SavedLabel: {fileID: 1664378893}
-  timeScaleSlider: {fileID: 0}
-  timeScaleLabel: {fileID: 0}
-  bcController: {fileID: 935511740}
+  evolutionOverlayView: {fileID: 1145864262}
+  bestCreatureOverlayView: {fileID: 613141432}
+  sharedOverlayView: {fileID: 777553}
+  simulationCamera: {fileID: 956411639}
+  bestCreatureCamera: {fileID: 1661777024}
 --- !u!1 &1229900715
 GameObject:
   m_ObjectHideFlags: 0
@@ -5460,7 +5533,7 @@ GameObject:
   - component: {fileID: 1389066170}
   - component: {fileID: 1389066169}
   m_Layer: 5
-  m_Name: Right Arrow
+  m_Name: Focus On Next Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5527,7 +5600,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1224338102}
+      - m_Target: {fileID: 0}
         m_MethodName: FocusOnNextCreature
         m_Mode: 1
         m_Arguments:
@@ -5591,7 +5664,7 @@ GameObject:
   - component: {fileID: 1414153857}
   - component: {fileID: 1491541442}
   m_Layer: 5
-  m_Name: Focus On One Toggle
+  m_Name: Show One At A Time Toggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5633,7 +5706,7 @@ GameObject:
   - component: {fileID: 1425312938}
   - component: {fileID: 1425312937}
   m_Layer: 5
-  m_Name: Left Arrow
+  m_Name: Focus On Previous Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5700,7 +5773,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1224338102}
+      - m_Target: {fileID: 0}
         m_MethodName: FocusOnPreviousCreature
         m_Mode: 1
         m_Arguments:
@@ -5829,8 +5902,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e6e2092bd7ce4323bc62154612bbdc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstacle: {fileID: 0}
-  currentGeneration: []
 --- !u!4 &1467418368
 Transform:
   m_ObjectHideFlags: 0
@@ -6031,7 +6102,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1224338102}
+      - m_Target: {fileID: 0}
         m_MethodName: AutoPlayToggled
         m_Mode: 0
         m_Arguments:
@@ -6744,7 +6815,7 @@ GameObject:
   - component: {fileID: 1659588230}
   - component: {fileID: 1659588229}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Back Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6812,7 +6883,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1224338102}
+      - m_Target: {fileID: 0}
         m_MethodName: GoBackToCreatureBuilding
         m_Mode: 1
         m_Arguments:
@@ -6911,7 +6982,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   renderTexture: {fileID: 8400000, guid: 5fd56a39dc81b44dca0e0c137288786f, type: 2}
   toFollow: {fileID: 0}
-  currentlyWatchingIndex: 0
   DiagonalLock: 0
 --- !u!124 &1661777022
 Behaviour:

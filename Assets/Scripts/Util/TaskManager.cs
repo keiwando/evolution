@@ -21,8 +21,10 @@ public class TaskManager : MonoBehaviour {
 	void Start () {
 
 		evolution = GameObject.FindGameObjectWithTag("Evolution").GetComponent<Evolution>();
-
-		SetupTask();
+		SetupRunningTask();
+		evolution.InitializationDidEnd += delegate () {
+			SetupTask();
+		};
 	}
 
 	private void SetupTask() {

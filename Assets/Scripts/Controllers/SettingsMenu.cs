@@ -215,6 +215,8 @@ public class SettingsMenu : MonoBehaviour {
 	/// </summary>
 	public EvolutionTask GetTask() {
 
+		// TODO: Save when Task is changed
+
 		var taskString = taskDropdown.captionText.text.ToUpper();
 		var task = EvolutionTaskUtil.TaskFromString(taskString);
 		

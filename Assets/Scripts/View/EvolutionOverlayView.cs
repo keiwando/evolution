@@ -36,6 +36,8 @@ public class EvolutionOverlayView: MonoBehaviour {
     private Button focusOnNextButton;
 
     [SerializeField]
+    private GameObject pipContainer;
+    [SerializeField]
     private RenderTexture pipRenderTexture;
     [SerializeField]
     private Text pipBestOfGenLabel;
@@ -45,7 +47,10 @@ public class EvolutionOverlayView: MonoBehaviour {
     void Start() {
 
         showOneAtATimeToggle.onValueChanged.AddListener(delegate (bool enabled) {
-
+            Delegate.ShowOneAtATimeDidChange(this, enabled);
+        });
+        showMuscleContractionToggle.onValueChanged.AddListener(delegate (bool enabled) {
+            Delegate.ShowMuscleContractionDidChange(this, enabled);
         });
         
         focusOnNextButton.onClick.AddListener(delegate () {
@@ -65,6 +70,7 @@ public class EvolutionOverlayView: MonoBehaviour {
         RefreshPipGenerationLabel();
         showOneAtATimeToggle.isOn = Delegate.ShouldShowOneAtATime(this);
         showMuscleContractionToggle.isOn = Delegate.ShouldShowMuscleContraction(this);
+        pipContainer.SetActive(Delegate.GetCurrentGenerationNumber(this) > 1);
     }
 
     public RenderTexture GetPipRenderTexture() {

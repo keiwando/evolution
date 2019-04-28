@@ -41,7 +41,9 @@ public class BestCreaturesController : MonoBehaviour {
 		AutoplayEnabled = true;
 		AutoplayDuration = 10;
 
-		AutoplayDuration = evolution.Settings.SimulationTime;
+		evolution.InitializationDidEnd += delegate () {
+			AutoplayDuration = evolution.Settings.SimulationTime;
+		};
 
 		evolution.NewGenerationDidBegin += delegate () {
 			if (CurrentBest == null && GenerationHasBeenSimulated(1)) {
@@ -72,9 +74,10 @@ public class BestCreaturesController : MonoBehaviour {
 
 	private void SpawnCreature(string chromosome) {
 
-		var obstacle = CurrentBest.Obstacle;
+		GameObject obstacle = null;
 
 		if (CurrentBest != null) {
+			obstacle = CurrentBest.Obstacle;
 			Destroy(CurrentBest.gameObject);
 		}
 
@@ -110,7 +113,8 @@ public class BestCreaturesController : MonoBehaviour {
 		// Check to see if the next generation has been simulated yet,
 		// otherwise wait for 1 / 3 of time again.
 		while (!GenerationHasBeenSimulated(CurrentGeneration + 1)) {
-			yield return new WaitForSeconds(time / 3);
+			// yield return new WaitForSeconds(time / 3);
+			yield return new WaitForSeconds(time / 30.0f);
 		}
 
 		ShowBestCreature(CurrentGeneration + 1);
@@ -122,6 +126,6 @@ public class BestCreaturesController : MonoBehaviour {
 	}
 
 	private bool GenerationHasBeenSimulated(int generation) {
-		return generation > 0 && generation < evolution.SimulationData.BestCreatures.Count;
+		return generation > 0 && generation <= evolution.SimulationData.BestCreatures.Count;
 	}
 }

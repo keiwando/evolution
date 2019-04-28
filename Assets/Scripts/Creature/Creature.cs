@@ -48,17 +48,13 @@ public class Creature : MonoBehaviour {
 	}
 	private GameObject obstacle;
 
-	private LayerMask groundDistanceLayerMask;
+	private static LayerMask groundLayerMask = 1 << 9; //LayerMask.NameToLayer("Ground");
 
 	private float maxJumpingHeight;
 
 	//private Vector3 currentLowest;
 
 	//public bool DEBUG = false;
-
-	void Start () {
-		groundDistanceLayerMask = LayerMask.NameToLayer("Ground");
-	}
 
 	void Update () {
 
@@ -182,9 +178,8 @@ public class Creature : MonoBehaviour {
 	public float DistanceFromGround() {
 		RaycastHit hit;
 
-		if(Physics.Raycast(GetLowestPoint(), Vector3.down, out hit, groundDistanceLayerMask)) {
+		if (Physics.Raycast(GetLowestPoint(), Vector3.down, out hit, Mathf.Infinity, groundLayerMask)) {
 			
-			//if (hit.collider.gameObject.tag.ToUpper() == "GROUND") {
 			if (hit.collider.gameObject.CompareTag("Ground")) {
 				return hit.distance;
 			}

@@ -255,7 +255,7 @@ public class Muscle : BodyComponent {
 
 //		startingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(startingForce ,startingJoint.position);
 //		endingJoint.GetComponent<FixedJoint>().connectedBody.AddForceAtPosition(endingForce, endingJoint.position);
-
+		
 		startingJoint.ConnectedBone.AddForceAtPosition(startingForce, startingJoint.transform.position);
 		endingJoint.ConnectedBone.AddForceAtPosition(endingForce, endingJoint.transform.position);
 	}
@@ -329,8 +329,8 @@ public class Muscle : BodyComponent {
 	}
 
 	public void RemoveCollider() {
-		Destroy(GetComponent<Rigidbody>());
-		Destroy(GetComponent<BoxCollider>());
+		DestroyImmediate(GetComponent<Rigidbody>());
+		DestroyImmediate(GetComponent<BoxCollider>());
 		//Destroy(this._body);
 		//Destroy(this._collider);
 	}

@@ -156,6 +156,8 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 	}
 
 	private void RefreshCache() {
-		filenames = SimulationSerializer.GetEvolutionSaveFilenames();
+		filenames = SimulationSerializer.GetEvolutionSaveFilenames()
+			.Select(filename => SimulationSerializer.EXTENSION_PATTERN.Replace(filename, ""))
+			.ToList();
 	}
 }

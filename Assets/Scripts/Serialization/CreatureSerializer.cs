@@ -266,7 +266,7 @@ public class CreatureSerializer {
 		foreach (var creatureName in creatureNames) {
 			var saveData = PlayerPrefs.GetString(creatureName, "");
 			if (!string.IsNullOrEmpty(saveData)) {
-				SaveCreatureDesign(creatureName, saveData);
+				SaveCreatureDesign(creatureName, saveData, false);
 			}
 		}
 

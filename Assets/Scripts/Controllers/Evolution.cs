@@ -15,6 +15,7 @@ public class Evolution : MonoBehaviour {
 	public event Action NewGenerationDidBegin;
 	public event Action NewBatchDidBegin;
 	public event Action SimulationWasSaved;
+	public event Action InitializationDidEnd;
 
 	#endregion
 	#region Settings
@@ -94,7 +95,7 @@ public class Evolution : MonoBehaviour {
 	public Creature[] CurrentCreatureBatch {
 		get { return currentCreatureBatch; }
 	}
-	private Creature[] currentCreatureBatch;
+	private Creature[] currentCreatureBatch = new Creature[1];
 
 	/// <summary>
 	/// The number of the currently simulating batch. Between 1 and Ceil(populationSize / batchSizeCached)
@@ -140,31 +141,37 @@ public class Evolution : MonoBehaviour {
 	private void StartSimulation(SimulationData data) {
 
 		this.SimulationData = data;
+		this.cachedSettings = Settings;
+
+		Debug.Log("Task " + EvolutionTaskUtil.StringRepresentation(data.Settings.Task));
 
 		// Instantiate the creature template
 		var creatureBuilder = new CreatureBuilder(data.CreatureDesign);
 		this.creature = creatureBuilder.Build();
 		this.creature.RemoveMuscleColliders();
 		this.creature.Alive = false;
-
+		
 		// Update safe drop offset
 		// Ensures that the creature isn't spawned into the ground
 		var lowestY = creature.GetLowestPoint().y;
 		this.safeHeightOffset = lowestY < 0 ? -lowestY + 1f : 0f;
+
 		// Calculate the drop height
 		float distanceFromGround = creature.DistanceFromGround();
 		float padding = 0.5f;
 		this.dropHeight = creature.transform.position;
 		this.dropHeight.y -= distanceFromGround - padding;
 		
+		
 		this.currentGenerationNumber = data.BestCreatures.Count + 1;
 		// this.currentChromosomes = data.CurrentChromosomes;
 		this.currentGeneration = CreateCreatures(Settings.PopulationSize);
 		ApplyBrains(this.currentGeneration, data.CurrentChromosomes);
 
-		// this.creature.gameObject.SetActive(false);
+		this.creature.gameObject.SetActive(false);
+		if (this.InitializationDidEnd != null) InitializationDidEnd();
 
-		// this.simulationRoutine = StartCoroutine(Simulate());
+		this.simulationRoutine = StartCoroutine(Simulate());
 	}
 
 	private IEnumerator Simulate() {
@@ -234,7 +241,6 @@ public class Evolution : MonoBehaviour {
 			SimulationWasSaved();
 		}
 
-		// TODO: Replace with SimulationData.CurrentChromosomes
 		this.SimulationData.CurrentChromosomes = CreateNewChromosomes(Settings.PopulationSize, this.currentGeneration, Settings.KeepBestCreatures);
 		this.currentGenerationNumber += 1;
 
@@ -489,9 +495,11 @@ public class Evolution : MonoBehaviour {
 			// randomly pick two creatures and let them "mate"
 			// int index1 = PickRandomWeightedIndex();
 			// int index2 = PickRandomWeightedIndex();
+			var parent1 = selection.Select();
+			var parent2 = selection.Select();
 
-			string chrom1 = selection.Select().Chromosome;
-			string chrom2 = selection.Select().Chromosome;
+			string chrom1 = parent1.Chromosome;
+			string chrom2 = parent2.Chromosome;
 			// string chrom1 = GetChromosomeWithCaching(index1);
 			// string chrom2 = GetChromosomeWithCaching(index2);
 
@@ -544,11 +552,11 @@ public class Evolution : MonoBehaviour {
 
 	private StringBuilder Mutate(StringBuilder chromosome) {
 
-		bool shouldMutate = UnityEngine.Random.Range(0,100.0f) < Settings.MutationRate;
+		bool shouldMutate = UnityEngine.Random.Range(0, 100.0f) < Settings.MutationRate;
 
 		if (!shouldMutate) return chromosome;
 
-		return Mutation.Mutate<MutableString, char>(new MutableString(chromosome), Mutation.Mode.Inversion).Builder;
+		return Mutation.Mutate<MutableString, char>(new MutableString(chromosome), Mutation.Mode.ChunkFlip).Builder;
 	}
 
 	private void ResetCreatures() {

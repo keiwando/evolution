@@ -32,6 +32,8 @@ public class Selection<T> where T: ISelectable<T> {
         if (solutions.Count > 0) {
             this.solutions.Sort(solutions[0].GetDescendingComparer());
         }
+
+        SetupPickingWeights(mode, solutions.Count);
     }
 
     public T Select() {
@@ -44,7 +46,7 @@ public class Selection<T> where T: ISelectable<T> {
 				index = i;
                 break;
 			}
-		} 
+		}
 
         return solutions[index];
     }
@@ -77,8 +79,8 @@ public class Selection<T> where T: ISelectable<T> {
 
     private void SetupFitnessProportionalWeights(int[] weights) {
         int value = 1;
-		for (int i = 0; i < weights.Length; i++) {
-			weights[weights.Length - 1 - i] = value;
+		for (int i = 1; i <= weights.Length; i++) {
+			weights[weights.Length - i] = value;
 			value += i;
 		}
     }
