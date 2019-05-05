@@ -5,13 +5,15 @@ using UnityEngine.UI;
 
 public class NeuralNetworkSettingsManager : MonoBehaviour {
 
-	private static readonly string NETWORK_SETTINGS_KEY = "NEURAL NETWORK SETTINGS";
-
 	private static readonly string INPUT_FIELD_PREFAB_NAME = "Prefabs/Layer Input Field";
 
 	[SerializeField] private InputField numberOfLayersInput;
 
-	[SerializeField] private VisualNeuralNetwork visualNetwork;
+	// [SerializeField] private VisualNeuralNetwork visualNetwork;
+	[SerializeField] private VisualNeuralNetworkRenderer networkRenderer;
+	[SerializeField] private RectTransform leftEdge;
+	[SerializeField] private RectTransform rightEdge;
+	[SerializeField] private RenderTexture renderTexture;
 
 	private Dictionary<int, InputField> intermediateInputs = new Dictionary<int, InputField>();
 
@@ -20,7 +22,7 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 		numberOfLayersInput.onEndEdit.AddListener(delegate(string arg0) {
 			NumberOfLayersChanged(arg0);
 		});
-
+		
 		Refresh();
 	}
 
@@ -35,16 +37,16 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 
 		numberOfLayersInput.text = (settings.NumberOfIntermediateLayers + 2).ToString();
 
-		// Make sure a visual network is connected
-		if (visualNetwork == null) throw new System.NullReferenceException();
-
-		visualNetwork.Setup();
-		visualNetwork.networkSettings = settings;
+		var left = leftEdge.transform.localPosition.x;
+		var right = rightEdge.transform.localPosition.x;
+		var rectWidth = right - left;
+		var spacing = rectWidth / (settings.NumberOfIntermediateLayers + 1);
 
 		// Create an input field for every intermediate layer
 		for (int i = 0; i < settings.NumberOfIntermediateLayers; i++) {
 
-			var position = new Vector3(visualNetwork.GetXPosForIntermediateLayer(i), 0, transform.position.z);
+			var x = left + (i + 1) * spacing;
+			var position = new Vector3(x, 0, transform.position.z);
 			var input = CreateInputField(position);
 
 			intermediateInputs.Add(i, input); 
@@ -58,7 +60,8 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 			input.text = settings.NodesPerIntermediateLayer[i].ToString();
 		}
 
-		visualNetwork.Refresh();
+		// visualNetwork.Refresh();
+		networkRenderer.Render(settings, renderTexture);
 	}
 
 	public InputField CreateInputField(Vector3 position) {
@@ -97,7 +100,7 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 
 		int num = int.Parse(value);
 
-		num = Mathf.Clamp(num, 2, NeuralNetworkSettings.MAX_LAYERS);
+		num = Mathf.Clamp(num, 3, NeuralNetworkSettings.MAX_LAYERS);
 
 		numberOfLayersInput.text = num.ToString();
 

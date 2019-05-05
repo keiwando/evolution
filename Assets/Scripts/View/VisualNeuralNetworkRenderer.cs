@@ -7,26 +7,26 @@ using UnityEngine.Rendering;
 
 public class VisualNeuralNetworkRenderer: MonoBehaviour {
 
-    private static Matrix4x4 identityMatrix = Matrix4x4.identity;
-
-    [SerializeField] private Texture2D circleTexture;
+    [SerializeField] private Texture2D nodeTexture;
+    [SerializeField] private Texture2D connectionTexture;
 
     [SerializeField] private RenderTexture targetTexture;
 
-    void Start() {
-        var testNetworkSettings = NeuralNetworkSettings.Default;
-        // testNetworkSettings = new NeuralNetworkSettings(new [] { 20, 10, 40, 40, 5 });
-        // testNetworkSettings = new NeuralNetworkSettings(new [] { 100, 100, 100, 100, 100, 100, 100, 100 });
-        Render(testNetworkSettings, targetTexture, circleTexture);
-        // StartCoroutine(RenderDelayed(testNetworkSettings, targetTexture, circleTexture, 3));
-    }
+    // void Start() {
+    //     var testNetworkSettings = NeuralNetworkSettings.Default;
+    //     // testNetworkSettings = new NeuralNetworkSettings(new [] { 20, 10, 2, 13, 5 });
+    //     // testNetworkSettings = new NeuralNetworkSettings(new [] { 20, 10, 40, 40, 5 });
+    //     // testNetworkSettings = new NeuralNetworkSettings(new [] { 100, 100, 100, 100, 100, 100, 100, 100 });
+    //     Render(testNetworkSettings, targetTexture);
+    //     // StartCoroutine(RenderDelayed(testNetworkSettings, targetTexture, 3));
+    // }
 
-    public IEnumerator RenderDelayed(NeuralNetworkSettings network, RenderTexture renderTexture, Texture2D nodeTexture, float delay) {
+    public IEnumerator RenderDelayed(NeuralNetworkSettings network, RenderTexture renderTexture, float delay) {
         yield return new WaitForSeconds(delay);
-        Render(network, renderTexture, nodeTexture);
+        Render(network, renderTexture);
     }
 
-    public static void Render(NeuralNetworkSettings network, RenderTexture renderTexture, Texture2D nodeTexture) {
+    public void Render(NeuralNetworkSettings network, RenderTexture renderTexture) {
 
         var nodeShader = Shader.Find("Sprites/Default");
         var nodeMaterial = new Material(nodeShader);
@@ -34,14 +34,10 @@ public class VisualNeuralNetworkRenderer: MonoBehaviour {
         nodeMaterial.enableInstancing = true;
         nodeMaterial.SetTexture("_MainTex", nodeTexture);
 
-        var connectionShader = Shader.Find("Unlit/Color");
-        var connectionMaterial = new Material(connectionShader);
-        connectionMaterial.color = new Color(1, 0.647f, 0.647f);
+        var connectionMaterial = new Material(nodeShader);
+        // connectionMaterial.color = new Color(1, 0.647f, 0.647f);
         connectionMaterial.enableInstancing = true;
-
-        var outlineMaterial = new Material(connectionShader);
-        outlineMaterial.color = new Color(0.519f, 0.241f, 0.241f); //new Color(0.7411f, 0.344f, 0.344f);
-        outlineMaterial.enableInstancing = true;
+        connectionMaterial.SetTexture("_MainTex", connectionTexture);
 
         var quad = GetQuad();
 
@@ -73,21 +69,13 @@ public class VisualNeuralNetworkRenderer: MonoBehaviour {
 
         nodesList.Add(new [] { MatrixForNode(layerSizes.Length - 1, 0, layerSizes, renderTexture) });
 
-        var allNodes = new List<Matrix4x4>(layerSizes.Sum());
+        var allNodes = new Matrix4x4[layerSizes.Sum()];
+        int nodeIndex = 0;
         foreach (var layer in nodesList) {
             foreach (var node in layer) {
-                allNodes.Add(node);
+                allNodes[nodeIndex++] = node;
             }
         }
-        
-        // var combine = new CombineInstance[allNodes.Count];
-        // for (int i = 0; i < allNodes.Count; i++) {
-        //     combine[i].mesh = quad;
-        //     combine[i].transform = allNodes[i]; 
-        // }
-
-        // var nodesMesh = new Mesh();
-        // nodesMesh.CombineMeshes(combine);
 
         // Create Connection Mesh
 
@@ -96,9 +84,8 @@ public class VisualNeuralNetworkRenderer: MonoBehaviour {
             numberOfConnections += layerSizes[i] * layerSizes[i + 1];
         }
 
-        var connections = new List<Matrix4x4>(numberOfConnections);
-        var connectionBGs = new List<Matrix4x4>(numberOfConnections);
-
+        var connections = new Matrix4x4[numberOfConnections];
+        int listIndex = 0;
         for (int i = 0; i < nodesList.Count - 1; i++) {
             // Create connections between layers i and i + 1
             for (int l = 0; l < layerSizes[i]; l++) {
@@ -106,20 +93,10 @@ public class VisualNeuralNetworkRenderer: MonoBehaviour {
                     var prevMatrix = nodesList[i][l];
                     var nextMatrix = nodesList[i + 1][m];
                     
-                    connections.Add(MatrixForConnection(prevMatrix, nextMatrix));
-                    connectionBGs.Add(MatrixForConnection(prevMatrix, nextMatrix, 0.4f));
+                    connections[listIndex++] = MatrixForConnection(prevMatrix, nextMatrix);
                 }
-            }   
+            }
         }
-
-        // combine = new CombineInstance[connections.Count];
-        // for (int i = 0; i < connections.Count; i++) {
-        //     combine[i].mesh = quad;
-        //     combine[i].transform = connections[i]; 
-        // }
-
-        // var connectionMesh = new Mesh();
-        // connectionMesh.CombineMeshes(combine);
 
         // Setup CommandBuffer
 
@@ -130,24 +107,25 @@ public class VisualNeuralNetworkRenderer: MonoBehaviour {
 
         commandBuffer.SetViewProjectionMatrices(Matrix4x4.identity, projMatrix);
 
-        // commandBuffer.DrawMesh(connectionMesh, Matrix4x4.identity, connectionMaterial);
-        // commandBuffer.DrawMesh(nodesMesh, Matrix4x4.identity, nodeMaterial);
-        // commandBuffer.DrawMeshInstanced(quad, 0, nodeMaterial, -1, allNodes.ToArray());
-        
-        // for (int i = 0; i < connectionBGs.Count; i++) {
-        //     commandBuffer.DrawMesh(quad, connectionBGs[i], outlineMaterial);
-        // }
 
-        for (int i = 0; i < connections.Count; i++) {
-            commandBuffer.DrawMesh(quad, connectionBGs[i], outlineMaterial);
+        var rnd = new System.Random();
+        
+        // Perform Fisher-Yates shuffle (https://en.wikipedia.org/wiki/Fisher–Yates_shuffle)
+        for (int i = connections.Length - 1; i >= 1; i--) {
+            int random = rnd.Next(i);
+            var tmp = connections[i];
+            connections[i] = connections[random];
+            connections[random] = tmp;
+        }
+        
+        for (int i = 0; i < connections.Length; i++) {
             commandBuffer.DrawMesh(quad, connections[i], connectionMaterial);
         }
 
-        for (int i = 0; i < allNodes.Count; i++) {
+        for (int i = 0; i < allNodes.Length; i++) {
             commandBuffer.DrawMesh(quad, allNodes[i], nodeMaterial);
         }
 
-        // Camera.main.AddCommandBuffer(CameraEvent.AfterEverything, commandBuffer);
         Graphics.ExecuteCommandBuffer(commandBuffer);
     }
 
@@ -183,17 +161,11 @@ public class VisualNeuralNetworkRenderer: MonoBehaviour {
         
         float x = (float)(layer * dLayerX + 0.5 * nodeHeight) - target.width * 0.5f;
         float y = (float)(topNodeY - indexInLayer * (nodeHeight + dNodeY));
-
-        // if (layer == 0 || layer == 2) {
-        //     Debug.Log(string.Format("Node pos: ({0}, {1})", x, y));
-        //     Debug.Log(string.Format("Node height: {0}", nodeHeight));   
-        //     Debug.Log(string.Format("{0}", topNodeY));
-        // }
         
         return Matrix4x4.TRS(new Vector3(x, y), Quaternion.identity, new Vector3(nodeHeight, nodeHeight, 1f));
     }
 
-    private static Matrix4x4 MatrixForConnection(Matrix4x4 startNodeMat, Matrix4x4 endNodeMat, float heightFactor = 0.2f) {
+    private static Matrix4x4 MatrixForConnection(Matrix4x4 startNodeMat, Matrix4x4 endNodeMat, float heightFactor = 0.3f) {
 
         var nodeHeight = startNodeMat.m00;
         var startPos = TranslationFromMatrix(startNodeMat);

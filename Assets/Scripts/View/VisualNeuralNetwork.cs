@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 
+[Obsolete("Do not use this class anymore! Instead use the significantly more efficient VisualNeuralNetworkRenderer.", true)]
 public class VisualNeuralNetwork : MonoBehaviour {
 
 	private const string NODE_PREFAB_NAME = "Prefabs/Node";
@@ -55,7 +57,7 @@ public class VisualNeuralNetwork : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		Setup();
+		// Setup();
 		//Refresh();
 	}
 
