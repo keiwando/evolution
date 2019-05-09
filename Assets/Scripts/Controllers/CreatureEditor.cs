@@ -115,7 +115,7 @@ public class CreatureEditor: MonoBehaviour {
         DontDestroyOnLoad(containerObject);
         
         // Load simulation scene
-        SceneController.LoadSync(SceneController.Scene.Simulation);
+        SceneController.LoadSync(SceneController.Scene.SimulationContainer);
     }   
 
     #region State Management

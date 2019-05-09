@@ -58,6 +58,7 @@ public class BestCreaturesController : MonoBehaviour {
 	}
 
 	public void ShowBestCreature(int generation) {
+		return;
 
 		var lastSimulatedGeneration = evolution.SimulationData.BestCreatures.Count;
 		if (generation < 1 || generation > lastSimulatedGeneration) {

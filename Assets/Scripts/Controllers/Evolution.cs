@@ -87,7 +87,7 @@ public class Evolution : MonoBehaviour {
 	/// <summary>
 	/// The current generation of Creatures.
 	/// </summary>
-	private Creature[] currentGeneration;
+	// private Creature[] currentGeneration;
 
 	/// <summary>
 	/// The currently simulating batch of creatures (a subset of currentGeneration).
@@ -132,13 +132,19 @@ public class Evolution : MonoBehaviour {
 	/// Performs cleanup necessary to completely stop the simulation.
 	/// </summary>
 	public void Finish() {
-		KillGeneration();
+		// TODO: Check if necessary
+		// KillGeneration();
 	}
 
 	/// <summary>
 	/// Continues the simulation from the state given by data.
 	/// </summary>
 	private void StartSimulation(SimulationData data) {
+
+		// TODO: Remove after debug
+		// var settings = data.Settings;
+		// settings.PopulationSize = 60;
+		// data.Settings = settings;
 
 		this.SimulationData = data;
 		this.cachedSettings = Settings;
@@ -165,8 +171,10 @@ public class Evolution : MonoBehaviour {
 		
 		this.currentGenerationNumber = data.BestCreatures.Count + 1;
 		// this.currentChromosomes = data.CurrentChromosomes;
-		this.currentGeneration = CreateCreatures(Settings.PopulationSize);
-		ApplyBrains(this.currentGeneration, data.CurrentChromosomes);
+		// this.currentGeneration = CreateCreatures(Settings.PopulationSize);
+		// Debug.Break();
+		// ApplyBrains(this.currentGeneration, data.CurrentChromosomes);
+		// Debug.Break();
 
 		this.creature.gameObject.SetActive(false);
 		if (this.InitializationDidEnd != null) InitializationDidEnd();
@@ -177,6 +185,7 @@ public class Evolution : MonoBehaviour {
 	private IEnumerator Simulate() {
 
 		while (true) {
+			
 			yield return SimulateGeneration();
 			EvaluateGeneration();
 		}
@@ -184,9 +193,11 @@ public class Evolution : MonoBehaviour {
 
 	private IEnumerator SimulateGeneration() {
 
+		var population = new Creature[Settings.PopulationSize]; 
 		// Prepare batch simulation
 		int actualBatchSize = Settings.SimulateInBatches ? Settings.BatchSize : Settings.PopulationSize;
 		int numberOfBatches = (int)Math.Ceiling((double)this.Settings.PopulationSize / actualBatchSize);
+		int firstChromosomeIndex = 0;
 		// Cache values that can be changed during the simulation
 		this.cachedSettings = this.Settings;
 
@@ -197,17 +208,32 @@ public class Evolution : MonoBehaviour {
 			this.currentBatchNumber = i + 1;
 			int remainingCreatures = Settings.PopulationSize - (i * actualBatchSize);
 			int currentBatchSize = Math.Min(actualBatchSize, remainingCreatures);
+
+			var batchScene = SceneController.LoadSimulationScene();
+			batchScene.name = "Batch Scene";
+			var batchSpawner = FindObjectOfType<SimulationBatchSpawner>();
+			var dropPos = dropHeight;
+			dropPos.y += safeHeightOffset;
+			var batch = batchSpawner.SpawnBatch(this.SimulationData.CreatureDesign, currentBatchSize, dropPos);
 			
-			this.currentCreatureBatch = new Creature[currentBatchSize];
-			Array.Copy(currentGeneration, i * currentBatchSize, currentCreatureBatch, 0, currentBatchSize);
+			this.currentCreatureBatch = batch;
+			var chromosomes = new string[batch.Length];
+			for (int c = 0; c < batch.Length; c++) {
+				chromosomes[c] = this.SimulationData.CurrentChromosomes[c + firstChromosomeIndex];
+
+			}
+			firstChromosomeIndex += batch.Length;
+			ApplyBrains(batch, chromosomes);
 
 			yield return SimulateBatch();
+
+			yield return SceneManager.UnloadSceneAsync(batchScene);
 		}
 	}
 
 	private IEnumerator SimulateBatch() {
 
-		foreach (Creature creature in currentGeneration) {
+		foreach (Creature creature in currentCreatureBatch) {
 			creature.Alive = false;
 			creature.gameObject.SetActive(false);
 		}
@@ -241,10 +267,16 @@ public class Evolution : MonoBehaviour {
 			SimulationWasSaved();
 		}
 
-		this.SimulationData.CurrentChromosomes = CreateNewChromosomes(Settings.PopulationSize, this.currentGeneration, Settings.KeepBestCreatures);
+		// TODO: Enable after Debugging
+		// this.SimulationData.CurrentChromosomes = CreateNewChromosomes(Settings.PopulationSize, this.currentGeneration, Settings.KeepBestCreatures);
 		this.currentGenerationNumber += 1;
 
-		ResetCreatures();
+		// ResetCreatures();
+		// foreach (var creature in currentGeneration) {
+		// 	Destroy(creature.gameObject);
+		// }
+		// this.currentGeneration = CreateCreatures(Settings.PopulationSize);
+		// ApplyBrains(this.currentGeneration, SimulationData.CurrentChromosomes);
 	}
 
 	/// <summary>
@@ -559,15 +591,15 @@ public class Evolution : MonoBehaviour {
 		return Mutation.Mutate<MutableString, char>(new MutableString(chromosome), Mutation.Mode.ChunkFlip).Builder;
 	}
 
-	private void ResetCreatures() {
+	// private void ResetCreatures() {
 
-		for (int i = 0; i < currentGeneration.Length; i++) {
+	// 	for (int i = 0; i < currentGeneration.Length; i++) {
 
-			var currentCreature = currentGeneration[i];
-			currentCreature.Reset();
-			ApplyBrain(currentCreature, this.SimulationData.CurrentChromosomes[i]);
-		}
-	}
+	// 		var currentCreature = currentGeneration[i];
+	// 		currentCreature.Reset();
+	// 		// ApplyBrain(currentCreature, this.SimulationData.CurrentChromosomes[i]);
+	// 	}
+	// }
 
 	// private Creature[] CreateGeneration(int population, string[] chromosomes) {
 		
@@ -588,9 +620,9 @@ public class Evolution : MonoBehaviour {
 	// 	return creatures;
 	// }
 
-	private void KillGeneration() {
+	private void KillGeneration(Creature[] generation) {
 		
-		foreach(Creature creature in currentGeneration) {
+		foreach(Creature creature in generation) {
 			Destroy(creature.gameObject);
 		}
 	}
@@ -623,7 +655,9 @@ public class Evolution : MonoBehaviour {
 		for (int i = 0; i < creatures.Length; i++) {
 
 			if (i < chromosomes.Length) {
-				ApplyBrain(creatures[i], chromosomes[i]);
+				// TODO: Remove after DEBUG
+				ApplyBrain(creatures[i], chromosomes[0]);
+				// ApplyBrain(creatures[i], chromosomes[i]);
 			} else {
 				// Random brain
 				ApplyBrain(creatures[i]);
@@ -665,11 +699,13 @@ public class Evolution : MonoBehaviour {
 
 	public void UpdateCreaturesWithObstacle(GameObject obstacle) {
 
-		if (currentGeneration == null) return;
+		print("NOT IMPLEMENTED!!");
 
-		this.Obstacle = obstacle;
-		foreach (var creature in currentGeneration) {
-			creature.Obstacle = obstacle;
-		}
+		// if (currentGeneration == null) return;
+
+		// this.Obstacle = obstacle;
+		// foreach (var creature in currentGeneration) {
+		// 	creature.Obstacle = obstacle;
+		// }
 	}
 }

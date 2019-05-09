@@ -1999,7 +1999,7 @@ GameObject:
   - component: {fileID: 86318701}
   - component: {fileID: 86318700}
   m_Layer: 5
-  m_Name: Back Button
+  m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11025,7 +11025,7 @@ GameObject:
   - component: {fileID: 825748405}
   - component: {fileID: 825748404}
   m_Layer: 5
-  m_Name: Back Button
+  m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15191,7 +15191,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1774733257}
         m_MethodName: Reset
         m_Mode: 1
         m_Arguments:
@@ -16175,6 +16175,7 @@ GameObject:
   - component: {fileID: 1281179213}
   - component: {fileID: 1281179212}
   - component: {fileID: 1281179211}
+  - component: {fileID: 1281179214}
   m_Layer: 5
   m_Name: Viewport
   m_TagString: Untagged
@@ -16252,6 +16253,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 0
+--- !u!114 &1281179214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1281179209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -146154839, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1295958424
 GameObject:
   m_ObjectHideFlags: 0
@@ -22531,7 +22544,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -235.41998}
-  m_SizeDelta: {x: -40, y: 400}
+  m_SizeDelta: {x: -40, y: 379.76343}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1771504741
 MonoBehaviour:
@@ -25865,7 +25878,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 214116299}
         m_MethodName: Hide
         m_Mode: 1
         m_Arguments:

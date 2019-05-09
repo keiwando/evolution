@@ -49,7 +49,9 @@ public class Bone : BodyComponent {
 	public void Reset() {
 		transform.SetPositionAndRotation(resetPosition, resetRotation);
 		body.velocity = Vector3.zero;
+		body.angularVelocity = Vector3.zero;
 		muscleJoint.Body.velocity = Vector3.zero;
+		muscleJoint.Body.angularVelocity = Vector3.zero;
 		muscleJoint.transform.localPosition = Vector3.zero;
 		muscleJoint.transform.localRotation = Quaternion.identity;
 	}

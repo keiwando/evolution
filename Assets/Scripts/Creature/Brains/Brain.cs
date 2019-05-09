@@ -53,7 +53,10 @@ abstract public class Brain : MonoBehaviour {
 	/** A value between 0 and 1 that determines how good the creature is at solving the task. 0 = bad. 1 = perfect. */
 	public float fitness;
 
+	public int DebugCounter = 0;
+
 	private StringBuilder debugBuilder;
+	private StringBuilder debugInputBuilder;
 
 	private StringBuilder builder = new StringBuilder();
 	private byte[] byteStore = new byte[8];
@@ -81,10 +84,19 @@ abstract public class Brain : MonoBehaviour {
 
 	virtual public void FixedUpdate() {
 
-		if (isActive) {
+		if (creature.Alive && isActive) {
 
 			outputs = CalcOutputs();
 			ApplyOutputs(outputs);
+
+			if (DebugCounter == 1) {
+				// DEBUG_PRINT_INPUTS();
+				// DEBUG_PRINT_OUTPUTS();
+				// if (fitness != 0 && DebugCounter == 1) {
+					// Debug.Break();
+				// }
+			} 
+			DebugCounter++;
 		}
 	}
 
@@ -681,7 +693,9 @@ abstract public class Brain : MonoBehaviour {
 
 	protected virtual void DEBUG_PRINT_INPUTS() {
 
-		debugBuilder = new StringBuilder();
+		// debugBuilder = new StringBuilder();
+		if (debugInputBuilder == null) debugInputBuilder = new StringBuilder();
+		var debugBuilder = debugInputBuilder;
 
 		debugBuilder.AppendLine("Distance from ground: " + inputs[0][0]);
 		debugBuilder.AppendLine("Horiz vel: " + inputs[0][1]);
@@ -690,14 +704,15 @@ abstract public class Brain : MonoBehaviour {
 		debugBuilder.AppendLine("points touchnig gr: " + inputs[0][4]);
 		debugBuilder.AppendLine("rotation: " + inputs[0][5] + "\n");
 
-		//print(sBuilder.ToString());
+		print(debugBuilder.ToString());
 	}
 
 	protected virtual void DEBUG_PRINT_OUTPUTS() {
 
 		//var sBuilder = new StringBuilder();
+		if (debugBuilder == null) debugBuilder = new StringBuilder();
 
-		for (int i = 0; i < creature.muscles.Count; i++) {
+		for (int i = 0; i < outputs[0].Length; i++) {
 			debugBuilder.AppendLine("Muscle " + (i+1) + " : " + outputs[0][i]);
 		}
 

@@ -36,10 +36,18 @@ static class EvolutionTaskUtil {
 
 		switch(task.ToUpper()) {
 
-		case "RUNNING": return EvolutionTask.Running; 
-		case "JUMPING": return EvolutionTask.Jumping; 
-		case "OBSTACLE JUMP": return EvolutionTask.ObstacleJump;
-		case "CLIMBING": return EvolutionTask.Climbing; 
+		case "Running": 
+		case "RUNNING": 
+			return EvolutionTask.Running; 
+		case "Jumping":
+		case "JUMPING": 
+			return EvolutionTask.Jumping; 
+		case "Obstacle Jump":
+		case "OBSTACLE JUMP": 
+			return EvolutionTask.ObstacleJump;
+		case "Climbing":
+		case "CLIMBING": 
+			return EvolutionTask.Climbing; 
 
 		default: throw new System.Exception("The string cannot be converted to an EvolutionTask");
 		}

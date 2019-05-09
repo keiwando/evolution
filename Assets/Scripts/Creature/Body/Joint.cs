@@ -45,6 +45,9 @@ public class Joint : BodyComponent {
 	public void Reset() {
 		transform.SetPositionAndRotation(resetPosition, resetRotation);
 		body.velocity = Vector3.zero;
+		body.angularVelocity = Vector3.zero;
+		isCollidingWithGround = false;
+		isCollidingWithObstacle = false;
 	}
 
 	/// <summary>

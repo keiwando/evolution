@@ -59,8 +59,10 @@ public class Creature : MonoBehaviour {
 	void Update () {
 
 		//maxJumpingHeight = Mathf.Max(maxJumpingHeight, DistanceFromGround());
-		maxJumpingHeight = Mathf.Max(maxJumpingHeight, DistanceFromFlatFloor());
 
+		if (Alive) {
+			maxJumpingHeight = Mathf.Max(maxJumpingHeight, DistanceFromFlatFloor());
+		}
 		//currentLowest = GetLowestPoint();
 	}
 
@@ -449,6 +451,9 @@ public class Creature : MonoBehaviour {
 
 		for (int i = 0; i < muscles.Count; i++)
 			muscles[i].Reset();
+
+		// TODO: Remove
+		brain.DebugCounter = 0;
 	}
 
 	public void RemoveMuscleColliders() {
