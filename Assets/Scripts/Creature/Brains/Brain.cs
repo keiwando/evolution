@@ -3,7 +3,7 @@ using System;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq; // REMOVE WHEN NOT TESTING!
+using System.Linq;
 
 /** 
  * The Brain contains a neural network that takes the following inputs and produces
@@ -88,15 +88,6 @@ abstract public class Brain : MonoBehaviour {
 
 			outputs = CalcOutputs();
 			ApplyOutputs(outputs);
-
-			if (DebugCounter == 1) {
-				// DEBUG_PRINT_INPUTS();
-				// DEBUG_PRINT_OUTPUTS();
-				// if (fitness != 0 && DebugCounter == 1) {
-					// Debug.Break();
-				// }
-			} 
-			DebugCounter++;
 		}
 	}
 
@@ -641,15 +632,15 @@ abstract public class Brain : MonoBehaviour {
 		return result;
 	}
 
-	public float[][] MatrixCreate(int rows, int cols) {
-		// creates a matrix initialized to all 0.0s  
-		float[][] result = new float[rows][];
+	// public float[][] MatrixCreate(int rows, int cols) {
+	// 	// creates a matrix initialized to all 0.0s  
+	// 	float[][] result = new float[rows][];
 
-		for (int i = 0; i < rows; ++i)
-			result[i] = new float[cols];
-		// auto init to 0.0  
-		return result;
-	}
+	// 	for (int i = 0; i < rows; ++i)
+	// 		result[i] = new float[cols];
+	// 	// auto init to 0.0  
+	// 	return result;
+	// }
 
 	public float[][] VectorTranspose(float[] array) {
 		
@@ -659,23 +650,23 @@ abstract public class Brain : MonoBehaviour {
 		return transpose;
 	} 
 
-	public float[][] RandomMatrixCreate(int rows, int cols) {
+	// public float[][] RandomMatrixCreate(int rows, int cols) {
 
-		float[][] result = MatrixCreate(rows, cols);
+	// 	float[][] result = MatrixCreate(rows, cols);
 
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < cols; j++) {
+	// 	for (int i = 0; i < rows; i++) {
+	// 		for (int j = 0; j < cols; j++) {
 				
-				result[i][j] = RandomFloat();
-			}
-		}
+	// 			result[i][j] = RandomFloat();
+	// 		}
+	// 	}
 
-		return result;
-	}
+	// 	return result;
+	// }
 
-	private float RandomFloat() {
-		return UnityEngine.Random.Range(MINWEIGHT, MAXWEIGHT);
-	}
+	// private float RandomFloat() {
+	// 	return UnityEngine.Random.Range(MINWEIGHT, MAXWEIGHT);
+	// }
 
 	private int MatrixSize(float[][] matrix) {
 		return matrix.Length * matrix[0].Length;

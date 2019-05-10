@@ -6,11 +6,15 @@ public class SimulationBatchSpawner: MonoBehaviour {
 
 
         var template = new CreatureBuilder(design).Build();
+        template.RemoveMuscleColliders();
+		template.Alive = false;
         template.gameObject.SetActive(true);
 
         var batch = new Creature[batchSize];        
         for (int i = 0; i < batchSize; i++) {
             batch[i] = Instantiate(template, dropPos, Quaternion.identity);
+            batch[i].RefreshLineRenderers();
+            // TODO: Connect Obstacle
         }
 
         template.gameObject.SetActive(false);

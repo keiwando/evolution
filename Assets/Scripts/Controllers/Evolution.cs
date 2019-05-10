@@ -185,9 +185,7 @@ public class Evolution : MonoBehaviour {
 	private IEnumerator Simulate() {
 
 		while (true) {
-			
 			yield return SimulateGeneration();
-			EvaluateGeneration();
 		}
 	}
 
@@ -210,7 +208,8 @@ public class Evolution : MonoBehaviour {
 			int currentBatchSize = Math.Min(actualBatchSize, remainingCreatures);
 
 			var batchScene = SceneController.LoadSimulationScene();
-			batchScene.name = "Batch Scene";
+			yield return new WaitForEndOfFrame();
+			yield return new WaitForEndOfFrame();
 			var batchSpawner = FindObjectOfType<SimulationBatchSpawner>();
 			var dropPos = dropHeight;
 			dropPos.y += safeHeightOffset;
@@ -220,15 +219,17 @@ public class Evolution : MonoBehaviour {
 			var chromosomes = new string[batch.Length];
 			for (int c = 0; c < batch.Length; c++) {
 				chromosomes[c] = this.SimulationData.CurrentChromosomes[c + firstChromosomeIndex];
-
+				population[c + firstChromosomeIndex] = batch[c];
 			}
 			firstChromosomeIndex += batch.Length;
 			ApplyBrains(batch, chromosomes);
 
 			yield return SimulateBatch();
-
+			
 			yield return SceneManager.UnloadSceneAsync(batchScene);
 		}
+
+		EvaluateGeneration(population);
 	}
 
 	private IEnumerator SimulateBatch() {
@@ -248,17 +249,17 @@ public class Evolution : MonoBehaviour {
 		yield return new WaitForSeconds(cachedSettings.SimulationTime);
 	}
 
-	private void EvaluateGeneration() {
+	private void EvaluateGeneration(Creature[] creatures) {
 
-		foreach (Creature creature in currentGeneration) {
+		foreach (Creature creature in creatures) {
 			creature.Alive = false;
 		}
 
-		EvaluateCreatures(currentGeneration);
-		SortGenerationByFitness(currentGeneration);
+		EvaluateCreatures(creatures);
+		SortGenerationByFitness(creatures);
 
 		// Save the best creature
-		var best = currentGeneration[0];
+		var best = creatures[0];
 		SimulationData.BestCreatures.Add(new ChromosomeData(best.brain.ToChromosomeString(), best.GetStatistics()));
 
 		// Autosave if necessary

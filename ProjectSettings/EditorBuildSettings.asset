@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/EditorScene.unity
     guid: 2d1a8ab43bad447d8a840c6fbd76c124
   - enabled: 1
+    path: Assets/Scenes/SimulationContainerScene.unity
+    guid: 8b3ea87189fa0463aae942ce4c1ef056
+  - enabled: 1
     path: Assets/Scenes/SimulationScene.unity
     guid: b0f1cc9c575f543b695a230e345d9cd0
   m_configObjects: {}
