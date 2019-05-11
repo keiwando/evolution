@@ -10,6 +10,11 @@ using System.Linq;
 
 public class Evolution : MonoBehaviour {
 
+	private struct Solution {
+		public IChromosomeEncodable Encodable;
+		public CreatureStats Stats;
+	}
+
 	#region Events
 
 	public event Action NewGenerationDidBegin;
@@ -105,6 +110,8 @@ public class Evolution : MonoBehaviour {
 	}
 	private int currentBatchNumber;
 
+	private PhysicsScene batchPhysicsScene;
+
 	#endregion
 
 	public AutoSaver AutoSaver { get; private set; }
@@ -131,10 +138,7 @@ public class Evolution : MonoBehaviour {
 	/// <summary>
 	/// Performs cleanup necessary to completely stop the simulation.
 	/// </summary>
-	public void Finish() {
-		// TODO: Check if necessary
-		// KillGeneration();
-	}
+	public void Finish() {}
 
 	/// <summary>
 	/// Continues the simulation from the state given by data.
@@ -191,7 +195,8 @@ public class Evolution : MonoBehaviour {
 
 	private IEnumerator SimulateGeneration() {
 
-		var population = new Creature[Settings.PopulationSize]; 
+		var solutions = new Solution[Settings.PopulationSize];
+		var solutionIndex = 0;
 		// Prepare batch simulation
 		int actualBatchSize = Settings.SimulateInBatches ? Settings.BatchSize : Settings.PopulationSize;
 		int numberOfBatches = (int)Math.Ceiling((double)this.Settings.PopulationSize / actualBatchSize);
@@ -210,26 +215,40 @@ public class Evolution : MonoBehaviour {
 			var batchScene = SceneController.LoadSimulationScene();
 			yield return new WaitForEndOfFrame();
 			yield return new WaitForEndOfFrame();
+			var activeScene = SceneManager.GetActiveScene();
+			SceneManager.SetActiveScene(batchScene);
 			var batchSpawner = FindObjectOfType<SimulationBatchSpawner>();
 			var dropPos = dropHeight;
 			dropPos.y += safeHeightOffset;
 			var batch = batchSpawner.SpawnBatch(this.SimulationData.CreatureDesign, currentBatchSize, dropPos);
+			SceneManager.SetActiveScene(activeScene);
+			this.batchPhysicsScene = batchScene.GetPhysicsScene();
 			
 			this.currentCreatureBatch = batch;
 			var chromosomes = new string[batch.Length];
 			for (int c = 0; c < batch.Length; c++) {
 				chromosomes[c] = this.SimulationData.CurrentChromosomes[c + firstChromosomeIndex];
-				population[c + firstChromosomeIndex] = batch[c];
 			}
 			firstChromosomeIndex += batch.Length;
 			ApplyBrains(batch, chromosomes);
 
 			yield return SimulateBatch();
+
+			// Evaluate creatures and destroy their gameobjects after extracting all 
+			// required performance statistics
+			for (int j = 0; j < batch.Length; j++) {
+				var creature = batch[j];
+				solutions[solutionIndex++] = new Solution() { 
+					Encodable = creature.brain.Network,
+					Stats = creature.GetStatistics()
+				};
+				// Destroy(creature.gameObject);
+			}
 			
 			yield return SceneManager.UnloadSceneAsync(batchScene);
 		}
 
-		EvaluateGeneration(population);
+		EvaluateSolutions(solutions);
 	}
 
 	private IEnumerator SimulateBatch() {
@@ -249,18 +268,13 @@ public class Evolution : MonoBehaviour {
 		yield return new WaitForSeconds(cachedSettings.SimulationTime);
 	}
 
-	private void EvaluateGeneration(Creature[] creatures) {
+	private void EvaluateSolutions(Solution[] solutions) {
 
-		foreach (Creature creature in creatures) {
-			creature.Alive = false;
-		}
+		SortGenerationByFitness(solutions);
 
-		EvaluateCreatures(creatures);
-		SortGenerationByFitness(creatures);
-
-		// Save the best creature
-		var best = creatures[0];
-		SimulationData.BestCreatures.Add(new ChromosomeData(best.brain.ToChromosomeString(), best.GetStatistics()));
+		// Save the best solution
+		var best = solutions[0];
+		SimulationData.BestCreatures.Add(new ChromosomeData(best.Encodable.ToChromosomeString(), best.Stats));
 
 		// Autosave if necessary
 		bool saved = AutoSaver.Update(this.currentGenerationNumber, this);
@@ -268,16 +282,14 @@ public class Evolution : MonoBehaviour {
 			SimulationWasSaved();
 		}
 
-		// TODO: Enable after Debugging
-		// this.SimulationData.CurrentChromosomes = CreateNewChromosomes(Settings.PopulationSize, this.currentGeneration, Settings.KeepBestCreatures);
+		this.SimulationData.CurrentChromosomes = CreateNewChromosomes(Settings.PopulationSize, solutions, Settings.KeepBestCreatures);
 		this.currentGenerationNumber += 1;
+	}
 
-		// ResetCreatures();
-		// foreach (var creature in currentGeneration) {
-		// 	Destroy(creature.gameObject);
-		// }
-		// this.currentGeneration = CreateCreatures(Settings.PopulationSize);
-		// ApplyBrains(this.currentGeneration, SimulationData.CurrentChromosomes);
+	void FixedUpdate() {
+		if (batchPhysicsScene != null && batchPhysicsScene.IsValid()) {
+			batchPhysicsScene.Simulate(Time.fixedDeltaTime);
+		}
 	}
 
 	/// <summary>
@@ -490,24 +502,24 @@ public class Evolution : MonoBehaviour {
 	// }
 
 	/** Determines a fitness score for every creature in the array. */
-	private static void EvaluateCreatures(Creature[] creatures) {
+	// private static void EvaluateCreatures(Creature[] creatures) {
 
-		foreach (Creature creature in creatures) {
-			creature.brain.EvaluateFitness();
-		}
+	// 	foreach (Creature creature in creatures) {
+	// 		creature.brain.EvaluateFitness();
+	// 	}
+	// }
+
+	private static void SortGenerationByFitness(Solution[] generation) {
+		Array.Sort(generation, delegate(Solution lhs, Solution rhs) { return rhs.Stats.fitness.CompareTo(lhs.Stats.fitness); } );
 	}
 
-	private static void SortGenerationByFitness(Creature[] generation) {
-		Array.Sort(generation, delegate(Creature a, Creature b) { return b.brain.fitness.CompareTo(a.brain.fitness); } );
-	}
-
-	private string[] CreateNewChromosomes(int nextGenerationSize, Creature[] currentGeneration, bool keepBest) {
+	private string[] CreateNewChromosomes(int nextGenerationSize, Solution[] solutions, bool keepBest) {
 
 		string[] result = new string[nextGenerationSize];
 
 		var lazyChromosomes = new List<LazyChromosomeData>();
-		foreach (var creature in currentGeneration) {
-			lazyChromosomes.Add(new LazyChromosomeData(creature, creature.GetStatistics()));
+		foreach (var solution in solutions) {
+			lazyChromosomes.Add(new LazyChromosomeData(solution.Encodable, solution.Stats));
 		}
 		var selection = new Selection<LazyChromosomeData>(Selection<LazyChromosomeData>.Mode.FitnessProportional, lazyChromosomes);
 
@@ -621,13 +633,6 @@ public class Evolution : MonoBehaviour {
 	// 	return creatures;
 	// }
 
-	private void KillGeneration(Creature[] generation) {
-		
-		foreach(Creature creature in generation) {
-			Destroy(creature.gameObject);
-		}
-	}
-
 	private Creature[] CreateCreatures(int count) {
 
 		Creature[] creatures = new Creature[count];
@@ -656,9 +661,8 @@ public class Evolution : MonoBehaviour {
 		for (int i = 0; i < creatures.Length; i++) {
 
 			if (i < chromosomes.Length) {
-				// TODO: Remove after DEBUG
-				ApplyBrain(creatures[i], chromosomes[0]);
-				// ApplyBrain(creatures[i], chromosomes[i]);
+				// ApplyBrain(creatures[i], chromosomes[0]);
+				ApplyBrain(creatures[i], chromosomes[i]);
 			} else {
 				// Random brain
 				ApplyBrain(creatures[i]);
@@ -672,15 +676,12 @@ public class Evolution : MonoBehaviour {
 		
 		if (brain == null) {
 			brain = AddBrainComponent(Settings.Task, creature.gameObject);
-			brain.muscles = creature.muscles.ToArray();
 		}
+		brain.Init(NetworkSettings, creature.muscles.ToArray(), chromosome);
 		
 		brain.SimulationTime = cachedSettings.SimulationTime;
-		brain.networkSettings = NetworkSettings;
-		brain.creature = creature;
+		brain.Creature = creature;
 		creature.brain = brain;
-
-		brain.SetupNeuralNet(chromosome);
 	}
 
 	private static Brain AddBrainComponent(EvolutionTask task, GameObject gameObject) {

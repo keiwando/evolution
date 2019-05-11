@@ -276,12 +276,12 @@ public class CreatureEditor: MonoBehaviour {
         } 
 
         // TODO: Remove
-        else if (input.GetKeyDown(KeyCode.P)) {
-            Debug.Log(historyManager.GetDebugState());
-        }
-        else if (input.GetKeyDown(KeyCode.Q)) {
-            Debug.Log(GetState().CreatureDesign.GetDebugDescription());
-        }
+        // else if (input.GetKeyDown(KeyCode.P)) {
+        //     Debug.Log(historyManager.GetDebugState());
+        // }
+        // else if (input.GetKeyDown(KeyCode.Q)) {
+        //     Debug.Log(GetState().CreatureDesign.GetDebugDescription());
+        // }
 
         viewController.Refresh();
     }

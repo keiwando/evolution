@@ -231,7 +231,7 @@ public class SimulationViewController : MonoBehaviour,
 
     public int GetNumberOfNetworkInputs(BestCreaturesOverlayView view) {
         if (bestCreatureController.CurrentBest != null) {
-            return bestCreatureController.CurrentBest.brain.NUMBER_OF_INPUTS;
+            return bestCreatureController.CurrentBest.brain.NumberOfInputs;
         }
         // TODO: Improve this implementation
         return 0;

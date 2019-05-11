@@ -3,21 +3,10 @@ using UnityEngine;
 
 public class ClimbingBrain : Brain {
 
-	public override int NUMBER_OF_INPUTS {
-		get {
-			return 6;
-		}
-	}
+	public override int NumberOfInputs { get { return 6; } }
 
-	private float MAX_HEIGHT = 100f;
+	private const float MAX_HEIGHT = 100f;
 
-
-	// Use this for initialization
-	void Start () {
-		if(IntermediateLayerSizes.Length != NUMBER_OF_LAYERS - 2) {
-			Debug.LogError("IntermediateLayerSizes has too many or not enough elements.");
-		}
-	}
 
 	// Update is called once per frame
 	public override void FixedUpdate () {
@@ -26,9 +15,9 @@ public class ClimbingBrain : Brain {
 
 	public override void EvaluateFitness (){
 
-		MAX_HEIGHT *= SimulationTime / 10f;
+		var maxHeight = MAX_HEIGHT * SimulationTime / 10f;
 		// The fitness for the climbing task is made up of the final distance from the ground.
-		fitness = Mathf.Clamp((creature.DistanceFromFlatFloor() / MAX_HEIGHT) + 0.5f, 0f, 1f);
+		fitness = Mathf.Clamp((Creature.DistanceFromFlatFloor() / maxHeight) + 0.5f, 0f, 1f);
 		//print(string.Format("Climbing fitness: {0}",fitness));
 		//print(string.Format("Distance from floor: {0}", creature.DistanceFromFlatFloor()));
 	}
@@ -45,17 +34,17 @@ public class ClimbingBrain : Brain {
 	protected override void UpdateInputs (){
 
 		// distance from ground
-		inputs[0][0] = creature.DistanceFromGround();
+		Network.Inputs[0] = Creature.DistanceFromGround();
 		// horizontal velocity
-		Vector3 velocity = creature.GetVelocity();
-		inputs[0][1] = velocity.x;
+		Vector3 velocity = Creature.GetVelocity();
+		Network.Inputs[1] = velocity.x;
 		// vertical velocity
-		inputs[0][2] = velocity.y;
+		Network.Inputs[2] = velocity.y;
 		// rotational velocity
-		inputs[0][3] = creature.GetAngularVelocity().z;
+		Network.Inputs[3] = Creature.GetAngularVelocity().z;
 		// number of points touching ground
-		inputs[0][4] = creature.GetNumberOfPointsTouchingGround();
-		// creature rotation
-		inputs[0][5] = creature.GetRotation();
+		Network.Inputs[4] = Creature.GetNumberOfPointsTouchingGround();
+		// Creature rotation
+		Network.Inputs[5] = Creature.GetRotation();
 	}
 }

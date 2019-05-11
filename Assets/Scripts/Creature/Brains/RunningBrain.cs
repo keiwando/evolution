@@ -3,38 +3,18 @@ using System.Collections;
 
 public class RunningBrain : Brain {
 
-	public override int NUMBER_OF_INPUTS {
-		get {
-			return 6;
-		}
-	}
+	/// <summary>The optimal distance a "perfect" creature could travel in the simulation time.</summary>
+	private const int MAX_DISTANCE = 55;
 
-	/*protected override int[] IntermediateLayerSizes {
-		get {
-			return new int[]{ 10 };
-		}
-	}*/
+	public override int NumberOfInputs { get { return 6; } }
 
-	private int MAX_DISTANCE = 55;	// The optimal distance a "perfect" creature could travel in the simulation time.
-	//private int MAX_SPEED = 60;
 	private float averageSpeed = 0;
-
-	// Use this for initialization
-	void Start () {
-		
-		//TestMatrixConversion();
-
-		if(IntermediateLayerSizes.Length != NUMBER_OF_LAYERS - 2) {
-			Debug.LogError("IntermediateLayerSizes has too many or not enough elements.");
-		}
-	}
 	
 	// Update is called once per frame
-	public override void FixedUpdate ()
-	{
+	public override void FixedUpdate () {
 		base.FixedUpdate();
 		//averageSpeed = (averageSpeed + creature.GetVelocity().x) / 2;
-		var velX = inputs[0][1];
+		var velX = Network.Inputs[1];
 		averageSpeed = (averageSpeed + velX) / 2; 
 	}
 
@@ -49,7 +29,7 @@ public class RunningBrain : Brain {
 		// The fitness for the running task is made up of the distance travelled to the
 		// right at the end of the time and the average weighted speed of the creature.
 		//fitness = (creature.GetXPosition() + 0.5f * Mathf.Abs(averageSpeed)) / ((MAX_DISTANCE * SimulationTime) + MAX_SPEED);
-		fitness = Mathf.Clamp(creature.GetXPosition() / (MAX_DISTANCE * SimulationTime), 0f, 1f);
+		fitness = Mathf.Clamp(Creature.GetXPosition() / (MAX_DISTANCE * SimulationTime), 0f, 1f);
 	}
 
 	/*Inputs:
@@ -63,19 +43,19 @@ public class RunningBrain : Brain {
 	*/
 	protected override void UpdateInputs () {
 
-		var basicInputs = creature.CalculateBasicBrainInputs();
+		var basicInputs = Creature.CalculateBasicBrainInputs();
 
-		inputs[0][0] = basicInputs.DistanceFromFloor;
+		Network.Inputs[0] = basicInputs.DistanceFromFloor;
 		// horizontal velocity
-		inputs[0][1] = basicInputs.VelocityX;
+		Network.Inputs[1] = basicInputs.VelocityX;
 		// vertical velocity
-		inputs[0][2] = basicInputs.VelocityY;
+		Network.Inputs[2] = basicInputs.VelocityY;
 		// rotational velocity
-		inputs[0][3] = basicInputs.AngularVelocity;
+		Network.Inputs[3] = basicInputs.AngularVelocity;
 		// number of points touching ground
-		inputs[0][4] = basicInputs.PointsTouchingGroundCount;
+		Network.Inputs[4] = basicInputs.PointsTouchingGroundCount;
 		// creature rotation
-		inputs[0][5] = basicInputs.Rotation;
+		Network.Inputs[5] = basicInputs.Rotation;
 
 		// distance from ground
 //		inputs[0][0] = creature.DistanceFromGround();
@@ -97,12 +77,12 @@ public class RunningBrain : Brain {
 	/// </summary>
 	protected virtual void DEBUG_PRINT() {
 
-		print("Distance from ground: " + inputs[0][0]);
-		print("Horiz vel: " + inputs[0][1]);
-		print("Vert vel: " + inputs[0][2]);
-		print("rot vel: " + inputs[0][3]);
-		print("points touchnig gr: " + inputs[0][4]);
-		print("rotation: " + inputs[0][5] + "\n");
+		print("Distance from ground: " + Network.Inputs[0]);
+		print("Horiz vel: " + Network.Inputs[1]);
+		print("Vert vel: " + Network.Inputs[2]);
+		print("rot vel: " + Network.Inputs[3]);
+		print("points touchnig gr: " + Network.Inputs[4]);
+		print("rotation: " + Network.Inputs[5] + "\n");
 	}
 
 }

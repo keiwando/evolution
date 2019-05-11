@@ -6,18 +6,18 @@ public struct LazyChromosomeData: ISelectable<LazyChromosomeData> {
     public string Chromosome {
         get {
             if (cachedChromosome == null) {
-                cachedChromosome = this.Creature.brain.ToChromosomeString();
+                cachedChromosome = this.encodable.ToChromosomeString();
             }
             return cachedChromosome;
         }
     }
     private string cachedChromosome;
 
-    public readonly Creature Creature;
+    private readonly IChromosomeEncodable encodable;
     public readonly CreatureStats Stats;
 
-    public LazyChromosomeData(Creature creature, CreatureStats stats) {
-        this.Creature = creature;
+    public LazyChromosomeData(IChromosomeEncodable encodable, CreatureStats stats) {
+        this.encodable = encodable;
         this.Stats = stats;
         this.cachedChromosome = null;
     } 

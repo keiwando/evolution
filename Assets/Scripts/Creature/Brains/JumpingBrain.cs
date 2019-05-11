@@ -4,30 +4,12 @@ using UnityEngine.Assertions;
 
 public class JumpingBrain : Brain {
 
-	public override int NUMBER_OF_INPUTS {
-		get {
-			return 6;
-		}
-	}
+	public override int NumberOfInputs { get { return 6; } }
 
-
-	// Use this for initialization
-	void Start () {
-		if(IntermediateLayerSizes.Length != NUMBER_OF_LAYERS - 2) {
-			Debug.LogError("IntermediateLayerSizes has too many or not enough elements.");
-		}
-	}
-
-	//private const float MAX_HEIGHT = 20f;
 	private const float MAX_HEIGHT = 20f;
 
 	private float maxHeightJumped;
 	private float maxWeightedAverageHeight = 0f;
-
-	// Update is called once per frame
-	public override void FixedUpdate () {
-		base.FixedUpdate();
-	}
 
 	public override void EvaluateFitness (){
 
@@ -42,32 +24,32 @@ public class JumpingBrain : Brain {
 	* - dy velocity
 	* - rotational velocity
 	* - number of points touching ground
-	* - creature rotation
+	* - Creature rotation
 	*/
 	protected override void UpdateInputs (){
 
 		// distance from ground
-		Assert.IsNotNull(creature, "Creature is null");
-		Assert.IsNotNull(inputs, "Input array is null");
-		inputs[0][0] = creature.DistanceFromGround();
+		Assert.IsNotNull(Creature, "Creature is null");
+		Assert.IsNotNull(Network.Inputs, "Input array is null");
+		Network.Inputs[0] = Creature.DistanceFromGround();
 
-		maxHeightJumped = Mathf.Max(inputs[0][0], maxHeightJumped);
-		float maxHeight = creature.GetHighestPoint().y - creature.GetLowestPoint().y + inputs[0][0];
+		maxHeightJumped = Mathf.Max(Network.Inputs[0], maxHeightJumped);
+		float maxHeight = Creature.GetHighestPoint().y - Creature.GetLowestPoint().y + Network.Inputs[0];
 
-		//print(inputs[0][0] + " : " + maxHeight);
+		//print(Network.Inputs[0] + " : " + maxHeight);
 
-		CalculateWeightedAverageHeight(inputs[0][0], maxHeight);
+		CalculateWeightedAverageHeight(Network.Inputs[0], maxHeight);
 		// horizontal velocity
-		Vector3 velocity = creature.GetVelocity();
-		inputs[0][1] = velocity.x;
+		Vector3 velocity = Creature.GetVelocity();
+		Network.Inputs[1] = velocity.x;
 		// vertical velocity
-		inputs[0][2] = velocity.y;
+		Network.Inputs[2] = velocity.y;
 		// rotational velocity
-		inputs[0][3] = creature.GetAngularVelocity().z;
+		Network.Inputs[3] = Creature.GetAngularVelocity().z;
 		// number of points touching ground
-		inputs[0][4] = creature.GetNumberOfPointsTouchingGround();
-		// creature rotation
-		inputs[0][5] = creature.GetRotation();
+		Network.Inputs[4] = Creature.GetNumberOfPointsTouchingGround();
+		// Creature rotation
+		Network.Inputs[5] = Creature.GetRotation();
 	}
 
 	private void CalculateWeightedAverageHeight(float minHeight, float maxHeight) {
