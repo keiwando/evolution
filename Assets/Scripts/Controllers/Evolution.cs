@@ -145,11 +145,6 @@ public class Evolution : MonoBehaviour {
 	/// </summary>
 	private void StartSimulation(SimulationData data) {
 
-		// TODO: Remove after debug
-		// var settings = data.Settings;
-		// settings.PopulationSize = 60;
-		// data.Settings = settings;
-
 		this.SimulationData = data;
 		this.cachedSettings = Settings;
 
@@ -172,13 +167,7 @@ public class Evolution : MonoBehaviour {
 		this.dropHeight = creature.transform.position;
 		this.dropHeight.y -= distanceFromGround - padding;
 		
-		
 		this.currentGenerationNumber = data.BestCreatures.Count + 1;
-		// this.currentChromosomes = data.CurrentChromosomes;
-		// this.currentGeneration = CreateCreatures(Settings.PopulationSize);
-		// Debug.Break();
-		// ApplyBrains(this.currentGeneration, data.CurrentChromosomes);
-		// Debug.Break();
 
 		this.creature.gameObject.SetActive(false);
 		if (this.InitializationDidEnd != null) InitializationDidEnd();
@@ -217,10 +206,10 @@ public class Evolution : MonoBehaviour {
 			yield return new WaitForEndOfFrame();
 			var activeScene = SceneManager.GetActiveScene();
 			SceneManager.SetActiveScene(batchScene);
-			var batchSpawner = FindObjectOfType<SimulationBatchSpawner>();
+			var sceneSetup = FindObjectOfType<SimulationSceneSetup>();
 			var dropPos = dropHeight;
 			dropPos.y += safeHeightOffset;
-			var batch = batchSpawner.SpawnBatch(this.SimulationData.CreatureDesign, currentBatchSize, dropPos);
+			var batch = sceneSetup.SpawnBatch(this.SimulationData.CreatureDesign, currentBatchSize, dropPos);
 			SceneManager.SetActiveScene(activeScene);
 			this.batchPhysicsScene = batchScene.GetPhysicsScene();
 			
@@ -234,7 +223,7 @@ public class Evolution : MonoBehaviour {
 
 			yield return SimulateBatch();
 
-			// Evaluate creatures and destroy their gameobjects after extracting all 
+			// Evaluate creatures and destroy the scene after extracting all 
 			// required performance statistics
 			for (int j = 0; j < batch.Length; j++) {
 				var creature = batch[j];
@@ -242,7 +231,6 @@ public class Evolution : MonoBehaviour {
 					Encodable = creature.brain.Network,
 					Stats = creature.GetStatistics()
 				};
-				// Destroy(creature.gameObject);
 			}
 			
 			yield return SceneManager.UnloadSceneAsync(batchScene);
@@ -501,14 +489,6 @@ public class Evolution : MonoBehaviour {
 
 	// }
 
-	/** Determines a fitness score for every creature in the array. */
-	// private static void EvaluateCreatures(Creature[] creatures) {
-
-	// 	foreach (Creature creature in creatures) {
-	// 		creature.brain.EvaluateFitness();
-	// 	}
-	// }
-
 	private static void SortGenerationByFitness(Solution[] generation) {
 		Array.Sort(generation, delegate(Solution lhs, Solution rhs) { return rhs.Stats.fitness.CompareTo(lhs.Stats.fitness); } );
 	}
@@ -604,15 +584,6 @@ public class Evolution : MonoBehaviour {
 		return Mutation.Mutate<MutableString, char>(new MutableString(chromosome), Mutation.Mode.ChunkFlip).Builder;
 	}
 
-	// private void ResetCreatures() {
-
-	// 	for (int i = 0; i < currentGeneration.Length; i++) {
-
-	// 		var currentCreature = currentGeneration[i];
-	// 		currentCreature.Reset();
-	// 		// ApplyBrain(currentCreature, this.SimulationData.CurrentChromosomes[i]);
-	// 	}
-	// }
 
 	// private Creature[] CreateGeneration(int population, string[] chromosomes) {
 		

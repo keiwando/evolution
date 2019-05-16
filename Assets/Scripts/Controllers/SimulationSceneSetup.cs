@@ -1,6 +1,8 @@
 using UnityEngine;
 
-public class SimulationBatchSpawner: MonoBehaviour {
+public class SimulationSceneSetup: MonoBehaviour {
+
+    
 
     public Creature[] SpawnBatch(CreatureDesign design, int batchSize, Vector3 dropPos) {
 
