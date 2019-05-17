@@ -3,7 +3,7 @@ using Keiwando.Evolution.Scenes;
 
 public class SimulationSceneSetup: MonoBehaviour {
 
-    public void SetupScene(SimulationScene scene) {
+    public void BuildScene(SimulationScene scene) {
         SimulationSceneBuilder.Build(scene);
     }
 

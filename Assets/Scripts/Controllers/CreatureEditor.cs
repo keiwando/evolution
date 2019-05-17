@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Keiwando.Evolution.Scenes;
 
 public class CreatureEditor: MonoBehaviour {
 
@@ -103,9 +104,12 @@ public class CreatureEditor: MonoBehaviour {
         // Don't start the simulation if the creature design is empty
         if (creatureDesign.IsEmpty) return;
 
+        var sceneDescription = DefaultSimulationScenes.DefaultSceneForTask(editorState.SimulationSettings.Task);
+
         var simulationData = new SimulationData(editorState.SimulationSettings, 
                                                 editorState.NeuralNetworkSettings,
-                                                creatureDesign);
+                                                creatureDesign,
+                                                sceneDescription);
         StartSimulation(simulationData);
     }
 

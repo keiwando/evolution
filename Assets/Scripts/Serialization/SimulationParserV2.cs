@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Keiwando.Evolution.Scenes;
 
 /// <summary>
 /// The Evolution Save files have the following format (VERSION 2):
@@ -63,7 +64,11 @@ public class SimulationParserV2 {
 			}
 		}
 
-		return new SimulationData(simulationSettings, networkSettings, creatureDesign, 
-			   					  bestChromosomes, currentChromosomes.ToArray());
+		var sceneDescription = DefaultSimulationScenes.DefaultSceneForTask(simulationSettings.Task);
+
+		return new SimulationData(
+			simulationSettings, networkSettings, creatureDesign, 
+			sceneDescription, bestChromosomes, currentChromosomes.ToArray()
+		);
 	}
 }

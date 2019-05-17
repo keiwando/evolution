@@ -16,7 +16,8 @@ public class DistanceMarkerSpawner: MonoBehaviour {
     private List<DistanceMarker> allMarkers = new List<DistanceMarker>();
 
     void Start() {
-        Spawn();
+        // TODO: Fix after Scene refactoring
+        // Spawn();
     }
 
     public void Spawn() {

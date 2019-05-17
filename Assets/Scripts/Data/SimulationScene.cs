@@ -20,14 +20,11 @@ namespace Keiwando.Evolution.Scenes {
             registeredStructures[encodingID] = decode;
         }
 
-        public Vector3 SpawnPoint;
-
         public IStructure[] Structures;
 
         #region Encode & Decode
 
         private static class CodingKey {
-            public const string SpawnPoint = "spawnPoint";
             public const string Structures = "structures";
             public const string EncodingID = "encodingID";
             public const string StructureData = "structureData";
@@ -36,7 +33,6 @@ namespace Keiwando.Evolution.Scenes {
         public string Encode() {
 
             var sceneJSON = new JObject();
-            sceneJSON[CodingKey.SpawnPoint] = JToken.FromObject(SpawnPoint);
 
             var structures = new JObject[Structures.Length];
             for (int i = 0; i < structures.Length; i++) {
@@ -54,7 +50,6 @@ namespace Keiwando.Evolution.Scenes {
 
             JObject json = JObject.Parse(encoded);
             
-            var spawnPoint = json[CodingKey.SpawnPoint].ToObject<Vector3>();
             var encodedStructures = json[CodingKey.Structures].ToObject<List<JObject>>();
             var structures = new IStructure[encodedStructures.Count];
             
@@ -71,7 +66,6 @@ namespace Keiwando.Evolution.Scenes {
             }
 
             return new SimulationScene() {
-                SpawnPoint = spawnPoint,
                 Structures = structures
             };
         }
