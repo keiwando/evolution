@@ -44,6 +44,9 @@ public class CreatureEditor: MonoBehaviour {
         foreach (var configContainer in simulationConfigs) {
             Destroy(configContainer);
         }
+
+        // DEBUG:
+        // Instantiate(Resources.Load("Prefabs/Structures/Ground"), new Vector3(0, 0, 10f), Quaternion.identity);
     }
 
     void Update() {

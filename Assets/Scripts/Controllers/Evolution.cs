@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System;
 using System.Text;
 using System.Linq;
+using Keiwando.Evolution.Scenes;
 
 public class Evolution : MonoBehaviour {
 
@@ -207,6 +208,12 @@ public class Evolution : MonoBehaviour {
 			var activeScene = SceneManager.GetActiveScene();
 			SceneManager.SetActiveScene(batchScene);
 			var sceneSetup = FindObjectOfType<SimulationSceneSetup>();
+
+			// Create the Structures
+			var simulationScene = DefaultSimulationScenes.DefaultSceneForTask(Settings.Task);
+			sceneSetup.SetupScene(simulationScene);
+			yield return new WaitForEndOfFrame();
+
 			var dropPos = dropHeight;
 			dropPos.y += safeHeightOffset;
 			var batch = sceneSetup.SpawnBatch(this.SimulationData.CreatureDesign, currentBatchSize, dropPos);

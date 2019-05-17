@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
@@ -9,11 +10,21 @@ namespace Keiwando.Evolution.Scenes {
         public static readonly SimulationScene ObstacleJumpScene = CreateObstacleJumpScene();
         public static readonly SimulationScene ClimbingScene = CreateClimbingScene();
 
+        public static SimulationScene DefaultSceneForTask(EvolutionTask task) {
+            switch (task) {
+            case EvolutionTask.Running: return RunningScene;
+            case EvolutionTask.Jumping: return JumpingScene;
+            case EvolutionTask.ObstacleJump: return ObstacleJumpScene;
+            case EvolutionTask.Climbing: return ClimbingScene;
+            default: throw new System.ArgumentException("Invalid task!");
+            }
+        }
 
         private static SimulationScene CreateRunningScene() {
             
             var groundPos = new Vector3(0.476771f, -4.8f, -2.61f);
-            var groundTransform = new Transform(groundPos);
+            var groundScale = new Vector3(1000000f, 9.56f, 29.8f);
+            var groundTransform = new Transform(groundPos, groundScale);
             var ground = new Ground(groundTransform);
 
             var distanceMarkerSpawner = new DistanceMarkerSpawner(
@@ -36,14 +47,16 @@ namespace Keiwando.Evolution.Scenes {
         private static SimulationScene CreateObstacleJumpScene() {
 
             var groundPos = new Vector3(0.476771f, -4.8f, -2.61f);
-            var groundTransform = new Transform(groundPos);
+            var groundScale = new Vector3(1000000f, 9.56f, 29.8f);
+            var groundTransform = new Transform(groundPos, groundScale);
             var ground = new Ground(groundTransform);
 
             var rightWallPos = new Vector3(40f, -4.8f, -2.61f);
             var leftWallPos = new Vector3(-34.9f, -4.8f, -2.61f);
-            var leftWallScale = new Vector3(1f, 0.8580294802f, 1f);
-            var rightWall = new Wall(new Transform(rightWallPos));
-            var leftWall = new Wall(new Transform(leftWallPos, 0f, leftWallScale));
+            var rightWallScale = new Vector3(10000f, 35.78f, 29.8f);
+            var leftWallScale = new Vector3(10000f, 22.12f, 29.8f);
+            var rightWall = new Wall(new Transform(rightWallPos, rightWallScale));
+            var leftWall = new Wall(new Transform(leftWallPos, leftWallScale));
 
             var obstacleSpawnerPos = new Vector3(31.1f, 4.41f, 0f);
             var obstacleSpawner = new RollingObstacleSpawner(new Transform(obstacleSpawnerPos, 180f));

@@ -1,8 +1,11 @@
 using UnityEngine;
+using Keiwando.Evolution.Scenes;
 
 public class SimulationSceneSetup: MonoBehaviour {
 
-    
+    public void SetupScene(SimulationScene scene) {
+        SimulationSceneBuilder.Build(scene);
+    }
 
     public Creature[] SpawnBatch(CreatureDesign design, int batchSize, Vector3 dropPos) {
 
