@@ -9,8 +9,6 @@ using System.Text;
 using System.Linq;
 using Keiwando.Evolution.Scenes;
 
-using SimulationSceneLoadConfig = SceneController.SimulationSceneLoadConfig;
-
 public class Evolution : MonoBehaviour {
 
 	private struct Solution {
@@ -106,7 +104,8 @@ public class Evolution : MonoBehaviour {
 	private Coroutine simulationRoutine;
 	
 	void Start () {
-
+		
+		Physics.autoSimulation = false;
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
 		this.AutoSaver = new AutoSaver();
@@ -189,8 +188,7 @@ public class Evolution : MonoBehaviour {
 			int remainingCreatures = Settings.PopulationSize - (i * actualBatchSize);
 			int currentBatchSize = Math.Min(actualBatchSize, remainingCreatures);
 
-			
-			var sceneLoadConfig = new SimulationSceneLoadConfig(
+			var sceneLoadConfig = new SceneController.SimulationSceneLoadConfig(
 				this.SimulationData.CreatureDesign,
 				currentBatchSize,
 				this.SimulationData.SceneDescription,
@@ -202,22 +200,7 @@ public class Evolution : MonoBehaviour {
 
 			yield return SceneController.LoadSimulationScene(sceneLoadConfig, context);
 			
-			// yield return new WaitForEndOfFrame();
-			// yield return new WaitForEndOfFrame();
-
-			// var activeScene = SceneManager.GetActiveScene();
-			// SceneManager.SetActiveScene(batchScene);
-			// var sceneSetup = FindObjectOfType<SimulationSceneSetup>();
-
-			// // Create the Structures
-			// var simulationScene = DefaultSimulationScenes.DefaultSceneForTask(Settings.Task);
-			// sceneSetup.SetupScene(simulationScene);
-			// yield return new WaitForEndOfFrame();
-
-			// var dropPos = spawnPosition;
-			// var batch = sceneSetup.SpawnBatch(this.SimulationData.CreatureDesign, currentBatchSize, dropPos);
-			// SceneManager.SetActiveScene(activeScene);
-			// this.batchPhysicsScene = batchScene.GetPhysicsScene();
+			this.batchPhysicsScene = context.PhysicsScene;
 			
 			var batch = context.Creatures;
 			this.currentCreatureBatch = batch;
@@ -455,5 +438,9 @@ public class Evolution : MonoBehaviour {
 		// foreach (var creature in currentGeneration) {
 		// 	creature.Obstacle = obstacle;
 		// }
+	}
+
+	public Vector3 GetSpawnPosition() {
+		return this.spawnPosition;
 	}
 }

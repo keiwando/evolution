@@ -49,6 +49,10 @@ class SceneController {
         SceneManager.LoadScene(NameForScene(scene));
     }
 
+    public static IEnumerator UnloadAsync(UnityEngine.SceneManagement.Scene scene) {
+        yield return SceneManager.UnloadSceneAsync(scene);
+    }
+
     public static IEnumerator LoadSimulationScene(SimulationSceneLoadConfig config, SimulationSceneLoadContext context) {
         
         // Load Scene
@@ -57,6 +61,7 @@ class SceneController {
         SceneManager.LoadScene(sceneName, options);
         var scene = SceneManager.GetSceneByName(sceneName);
         context.PhysicsScene = scene.GetPhysicsScene();
+        context.Scene = scene;
         // We need to wait two frames before the scene and its GameObjects
         // are fully loaded
         yield return new WaitForEndOfFrame();
@@ -65,12 +70,19 @@ class SceneController {
         // Find setup script in the new scene
         var prevActiveScene = SceneManager.GetActiveScene();
         SceneManager.SetActiveScene(scene);
-        var sceneSetup = GameObject.FindObjectOfType<SimulationSceneSetup>();
+        
+        SimulationSceneSetup sceneSetup = null;
+        var rootObjects = scene.GetRootGameObjects();
+        for (int i = 0; i < rootObjects.Length; i++) {
+            sceneSetup = rootObjects[i].GetComponent<SimulationSceneSetup>();
+            if (sceneSetup != null) break;
+        }
 
         // Create the structures
         sceneSetup.BuildScene(config.SceneDescription);
+        SceneManager.SetActiveScene(prevActiveScene);
         yield return new WaitForEndOfFrame();
-
+        SceneManager.SetActiveScene(scene);
         // Spawn Creatures
         var creatures = sceneSetup.SpawnBatch(config.CreatureDesign, config.CreatureSpawnCount, config.SpawnPoint);
         SceneManager.SetActiveScene(prevActiveScene);

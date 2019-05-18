@@ -31,10 +31,9 @@ namespace Keiwando.Evolution.Scenes {
                 new Transform(new Vector3(-0.45f, 1.63f, 0))
             );
 
-            var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
+            // var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
 
             return new SimulationScene() {
-                SpawnPoint = spawnPoint,
                 Structures = new IStructure[] { ground, distanceMarkerSpawner }
             };
         }
@@ -61,10 +60,9 @@ namespace Keiwando.Evolution.Scenes {
             var obstacleSpawnerPos = new Vector3(31.1f, 4.41f, 0f);
             var obstacleSpawner = new RollingObstacleSpawner(new Transform(obstacleSpawnerPos, 180f));
 
-            var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
+            // var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
 
             return new SimulationScene() {
-                SpawnPoint = spawnPoint,
                 Structures = new IStructure[] { ground, leftWall, rightWall, obstacleSpawner }
             };
         }
@@ -91,10 +89,9 @@ namespace Keiwando.Evolution.Scenes {
                 structures[i + 1] = new Stairstep(new Transform(spawnPosition, -16f, stepScale));
             }
 
-            var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
+            // var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
 
             return new SimulationScene() {
-                SpawnPoint = spawnPoint,
                 Structures = structures
             };
         }

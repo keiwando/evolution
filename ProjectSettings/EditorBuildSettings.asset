@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SimulationScene.unity
     guid: b0f1cc9c575f543b695a230e345d9cd0
+  - enabled: 1
+    path: Assets/Scenes/BestCreaturesScene.unity
+    guid: 70cf4c386214a43b692e5164804107a7
   m_configObjects: {}
