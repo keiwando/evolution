@@ -65,6 +65,7 @@ public class BestCreaturesController : MonoBehaviour {
 	}
 
 	public void ShowBestCreature(int generation) {
+		
 		if (this.playbackRoutine != null) 
 			StopCoroutine(this.playbackRoutine);
 		this.playbackRoutine = StartCoroutine(StartPlayback(generation));
@@ -86,16 +87,13 @@ public class BestCreaturesController : MonoBehaviour {
 			this.evolution.SimulationData.CreatureDesign,
 			1,
 			this.evolution.SimulationData.SceneDescription,
-			SceneController.SimulationSceneType.BestCreatures,
-			this.evolution.GetSpawnPosition()
+			SceneController.SimulationSceneType.BestCreatures
 		);
 		var context = new SceneController.SimulationSceneLoadContext();
 
 		yield return SceneController.LoadSimulationScene(sceneLoadConfig, context);
 		this.physicsScene = context.PhysicsScene;
 		this.playbackScene = context.Scene;
-
-		Debug.Log(generation);
 
 		var chromosome = evolution.SimulationData.BestCreatures[generation - 1].Chromosome;
 		this.CurrentBest = context.Creatures[0];
@@ -115,32 +113,6 @@ public class BestCreaturesController : MonoBehaviour {
 		AutoPlay();
 		CurrentGeneration = generation;
 	}
-
-	// private void SpawnCreature(string chromosome) {
-
-	// 	GameObject obstacle = null;
-
-	// 	if (CurrentBest != null) {
-	// 		obstacle = CurrentBest.Obstacle;
-	// 		Destroy(CurrentBest.gameObject);
-	// 	}
-
-	// 	var creature = evolution.CreateCreature();
-	// 	evolution.ApplyBrain(creature, chromosome);
-	// 	creature.Obstacle = obstacle;
-	
-	// 	camera.toFollow = creature;
-	// 	this.CurrentBest = creature;
-
-	// 	creature.SetOnBestCreatureLayer();
-
-	// 	// THIS IS NEEDED! DO NOT REMOVE! IMPORTANT!
-	// 	creature.Alive = false;
-	// 	creature.gameObject.SetActive(false);
-
-	// 	creature.Alive = true;
-	// 	creature.gameObject.SetActive(true);
-	// }
 
 	private void AutoPlay() {
 

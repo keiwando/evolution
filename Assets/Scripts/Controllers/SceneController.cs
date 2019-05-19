@@ -21,20 +21,17 @@ class SceneController {
         public readonly int CreatureSpawnCount;
         public readonly SimulationScene SceneDescription;
         public readonly SimulationSceneType SceneType;
-        public readonly Vector3 SpawnPoint;
 
         public SimulationSceneLoadConfig(
             CreatureDesign design,
             int spawnCount,
             SimulationScene sceneDescription,
-            SimulationSceneType sceneType,
-            Vector3 spawnPoint
+            SimulationSceneType sceneType
         ) {
             this.CreatureDesign = design;
             this.CreatureSpawnCount = spawnCount;
             this.SceneDescription = sceneDescription;
             this.SceneType = sceneType;
-            this.SpawnPoint = spawnPoint;
         }
     }
 
@@ -58,6 +55,7 @@ class SceneController {
         // Load Scene
         var sceneName = NameForScene(config.SceneType);
         var options = new LoadSceneParameters(LoadSceneMode.Additive, LocalPhysicsMode.Physics3D);
+    
         SceneManager.LoadScene(sceneName, options);
         var scene = SceneManager.GetSceneByName(sceneName);
         context.PhysicsScene = scene.GetPhysicsScene();
@@ -80,11 +78,13 @@ class SceneController {
 
         // Create the structures
         sceneSetup.BuildScene(config.SceneDescription);
+
         SceneManager.SetActiveScene(prevActiveScene);
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForFixedUpdate();
         SceneManager.SetActiveScene(scene);
+
         // Spawn Creatures
-        var creatures = sceneSetup.SpawnBatch(config.CreatureDesign, config.CreatureSpawnCount, config.SpawnPoint);
+        var creatures = sceneSetup.SpawnBatch(config.CreatureDesign, config.CreatureSpawnCount, context.PhysicsScene);
         SceneManager.SetActiveScene(prevActiveScene);
         context.Creatures = creatures;
     }

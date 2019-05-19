@@ -212,7 +212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30660aaab0442484f99387434772e507, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseHoverTexture: {fileID: 2800000, guid: 1703e4f9f62c14e1a981c84899a4c68e, type: 3}
+  mouseHoverTexture: {fileID: 2800000, guid: 0f0df806c1f994a349a8d50bb06c1b0f, type: 3}
   deleted: 0
   startingJoint: {fileID: 0}
   endingJoint: {fileID: 0}

@@ -65,11 +65,6 @@ public class Evolution : MonoBehaviour {
 	/// </summary>
 	public GameObject Obstacle { get; set; }
 
-	/// <summary>
-	/// The height from the ground from which the creatures should be dropped on spawn.
-	/// </summary>
-	private Vector3 spawnPosition;
-
 	public int CurrentGenerationNumber { get { return currentGenerationNumber; } }
 	/// <summary>
 	/// The number of the currently simulating generation. Starts at 1.
@@ -142,18 +137,6 @@ public class Evolution : MonoBehaviour {
 		this.creature.RemoveMuscleColliders();
 		this.creature.Alive = false;
 		
-		// Update safe drop offset
-		// Ensures that the creature isn't spawned into the ground
-		var lowestY = creature.GetLowestPoint().y;
-		var safeHeightOffset = lowestY < 0 ? -lowestY + 1f : 0f;
-
-		// Calculate the drop height
-		float distanceFromGround = creature.DistanceFromGround();
-		float padding = 0.5f;
-		this.spawnPosition = creature.transform.position;
-		this.spawnPosition.y -= distanceFromGround - padding;
-		this.spawnPosition.y += safeHeightOffset;
-		
 		this.currentGenerationNumber = data.BestCreatures.Count + 1;
 
 		this.creature.gameObject.SetActive(false);
@@ -192,8 +175,7 @@ public class Evolution : MonoBehaviour {
 				this.SimulationData.CreatureDesign,
 				currentBatchSize,
 				this.SimulationData.SceneDescription,
-				SceneController.SimulationSceneType.Simulation,
-				this.spawnPosition
+				SceneController.SimulationSceneType.Simulation
 			);
 
 			var context = new SceneController.SimulationSceneLoadContext();
@@ -365,25 +347,25 @@ public class Evolution : MonoBehaviour {
 		return Mutation.Mutate<MutableString, char>(new MutableString(chromosome), Mutation.Mode.ChunkFlip).Builder;
 	}
 
-	private Creature[] CreateCreatures(int count) {
+	// private Creature[] CreateCreatures(int count) {
 
-		Creature[] creatures = new Creature[count];
+	// 	Creature[] creatures = new Creature[count];
 
-		for (int i = 0; i < count; i++) {
-			creatures[i] = CreateCreature();
-		}
+	// 	for (int i = 0; i < count; i++) {
+	// 		creatures[i] = CreateCreature();
+	// 	}
 
-		return creatures;
-	}
+	// 	return creatures;
+	// }
 
-	public Creature CreateCreature() {
+	// public Creature CreateCreature() {
 
-		Creature creat = Instantiate(creature.gameObject, this.spawnPosition, Quaternion.identity).GetComponent<Creature>();
-		creat.RefreshLineRenderers();
-		creat.Obstacle = this.Obstacle;
+	// 	Creature creat = Instantiate(creature.gameObject, this.spawnPosition, Quaternion.identity).GetComponent<Creature>();
+	// 	creat.RefreshLineRenderers();
+	// 	creat.Obstacle = this.Obstacle;
 
-		return creat;
-	}
+	// 	return creat;
+	// }
 
 	private void ApplyBrains(Creature[] creatures, string[] chromosomes) {
 
@@ -440,7 +422,7 @@ public class Evolution : MonoBehaviour {
 		// }
 	}
 
-	public Vector3 GetSpawnPosition() {
-		return this.spawnPosition;
-	}
+	// public Vector3 GetSpawnPosition() {
+	// 	return this.spawnPosition;
+	// }
 }
