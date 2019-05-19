@@ -186,8 +186,10 @@ public class Evolution : MonoBehaviour {
 			
 			var batch = context.Creatures;
 			this.currentCreatureBatch = batch;
-			var chromosomes = new string[batch.Length];
-			for (int c = 0; c < batch.Length; c++) {
+
+			var chromosomeCount = Math.Min(this.SimulationData.CurrentChromosomes.Length, batch.Length);
+			var chromosomes = new string[chromosomeCount];
+			for (int c = 0; c < chromosomeCount; c++) {
 				chromosomes[c] = this.SimulationData.CurrentChromosomes[c + firstChromosomeIndex];
 			}
 			firstChromosomeIndex += batch.Length;

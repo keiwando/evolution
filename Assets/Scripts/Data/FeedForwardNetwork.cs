@@ -39,7 +39,7 @@ public class FeedForwardNetwork: IChromosomeEncodable {
         if (string.IsNullOrEmpty(encoded)) {
             // Setup Random weights
             this.weights = new float[layerCount - 1][][];
-            for (int i = 0; i < weights.Length - 1; i++) {
+            for (int i = 0; i < weights.Length; i++) {
                 this.weights[i] = MatrixUtils.CreateRandomMatrix2D(layerSizes[i], layerSizes[i + 1], 
                                                                    Constants.MIN_WEIGHT, Constants.MAX_WEIGHT);
             }

@@ -21,8 +21,6 @@ public class SimulationSceneSetup: MonoBehaviour {
 		var lowestY = template.GetLowestPoint().y;
 		var safeHeightOffset = lowestY < 0 ? -lowestY + 1f : 0f;
 
-        Debug.Log(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
-
 		// Calculate the drop height
 		float distanceFromGround = template.DistanceFromGround();
 		float padding = 0.5f;
