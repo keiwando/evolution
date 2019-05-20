@@ -29,7 +29,7 @@ namespace Keiwando.Evolution.Scenes {
             return new StairstepBuilder(this);
         }
 
-        public class StairstepBuilder: BaseStructureBuilder {
+        public class StairstepBuilder: BaseStructureBuilder<Stairstep> {
 
             protected override string prefabPath => "Prefabs/Structures/Stairstep";
 

@@ -1,42 +1,44 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class DistanceMarkerSpawner: MonoBehaviour {
+namespace Keiwando.Evolution {
 
-    private const int INITIAL_SPAWN_COUNT = 100;
-    private const float MARKER_DISTANCE = 5f;
-    private const float STAT_ADJUSTMENT_FACTOR = 5f;
+    public class DistanceMarkerSpawner: MonoBehaviour {
 
-    [SerializeField]
-    private Transform spawnPosition;
+        private const int INITIAL_SPAWN_COUNT = 100;
+        private const float STAT_ADJUSTMENT_FACTOR = 5f;
 
-    [SerializeField]
-    private DistanceMarker template;
+        public float MarkerDistance { get; set; } = 5f;
 
-    private List<DistanceMarker> allMarkers = new List<DistanceMarker>();
+        [SerializeField]
+        private DistanceMarker template;
 
-    void Start() {
-        // Spawn();
-    }
+        private List<DistanceMarker> allMarkers = new List<DistanceMarker>();
 
-    public void Spawn() {
-
-        template.gameObject.SetActive(true);
-        template.GetComponent<MeshRenderer>().sortingOrder = 30;
-        var pos = template.transform.position;
-        // Push the markers into the background
-        pos.z = 3;
-        var spawnX = spawnPosition.transform.position.x;
-
-        // Create markers
-        for (float i = 1; i <= INITIAL_SPAWN_COUNT; i++) {
-            var dX = i * MARKER_DISTANCE;
-            pos.x = (dX * STAT_ADJUSTMENT_FACTOR) + spawnX;
-            var newMarker = Instantiate(template, pos, Quaternion.identity, template.transform.parent);
-            newMarker.Text.text = dX.ToString("0");
-            allMarkers.Add(newMarker);
+        void Start() {
+            Spawn();
         }
 
-        template.gameObject.SetActive(false);
+        public void Spawn() {
+
+            template.gameObject.SetActive(true);
+            template.GetComponent<MeshRenderer>().sortingOrder = 30;
+            
+            var pos = transform.position;
+            // Push the markers into the background
+            pos.z = 3;
+
+            // Create markers
+            for (float i = 1; i <= INITIAL_SPAWN_COUNT; i++) {
+                pos += transform.right * MarkerDistance * STAT_ADJUSTMENT_FACTOR;
+                var labelValue = i * MarkerDistance;
+                var newMarker = Instantiate(template, pos, Quaternion.identity, template.transform.parent);
+                newMarker.Text.text = labelValue.ToString("0");
+                allMarkers.Add(newMarker);
+            }
+
+            template.gameObject.SetActive(false);
+        }
     }
 }
+

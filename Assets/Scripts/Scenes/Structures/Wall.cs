@@ -29,7 +29,7 @@ namespace Keiwando.Evolution.Scenes {
             return new WallBuilder(this);
         }
 
-        public class WallBuilder: BaseStructureBuilder {
+        public class WallBuilder: BaseStructureBuilder<Wall> {
 
             protected override string prefabPath => "Prefabs/Structures/Wall";
 

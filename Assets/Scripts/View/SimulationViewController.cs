@@ -44,6 +44,10 @@ public class SimulationViewController : MonoBehaviour,
 		evolution.NewBatchDidBegin += delegate () {
 			Refresh();
 		};
+
+		bestCreatureController.PlaybackDidBegin += delegate () {
+			Refresh();
+		};
 	}
 
 	public void Refresh() {

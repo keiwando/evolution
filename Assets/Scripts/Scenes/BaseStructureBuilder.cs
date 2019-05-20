@@ -1,17 +1,19 @@
+using UnityEngine;
+
 namespace Keiwando.Evolution.Scenes {
 
-    public abstract class BaseStructureBuilder: IStructureBuilder {
+    public abstract class BaseStructureBuilder<T>: IStructureBuilder where T: BaseStructure {
 
         protected abstract string prefabPath { get; }
 
-        private BaseStructure structure;
+        protected T structure;
 
-        public BaseStructureBuilder(BaseStructure structure) {
+        public BaseStructureBuilder(T structure) {
             this.structure = structure;
         }
 
-        public void Build() {
-            StructureBuilderUtils.Build(prefabPath, structure.Transform);
+        public virtual GameObject Build() {
+            return StructureBuilderUtils.Build(prefabPath, structure.Transform);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Keiwando.Evolution.Scenes {
             return new GroundBuilder(this);
         }
 
-        public class GroundBuilder: BaseStructureBuilder {
+        public class GroundBuilder: BaseStructureBuilder<Ground> {
 
             protected override string prefabPath => "Prefabs/Structures/Ground";
 

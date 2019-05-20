@@ -29,7 +29,7 @@ namespace Keiwando.Evolution.Scenes {
             return new RollingObstacleSpawnerBuilder(this);
         }
 
-        public class RollingObstacleSpawnerBuilder: BaseStructureBuilder {
+        public class RollingObstacleSpawnerBuilder: BaseStructureBuilder<RollingObstacleSpawner> {
 
             protected override string prefabPath => "Prefabs/Structures/RollingObstacleSpawner";
 

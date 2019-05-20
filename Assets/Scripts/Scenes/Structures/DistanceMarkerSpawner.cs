@@ -8,7 +8,7 @@ namespace Keiwando.Evolution.Scenes {
 
         private static readonly string ENCODING_ID = "evolution::structure::distancemarkerspawner";
 
-        // TODO: Add more customization options
+        public float MarkerDistance { get; private set; }
 
         static DistanceMarkerSpawner() {
             SimulationScene.RegisterStructure(ENCODING_ID, delegate(JObject json) {
@@ -16,26 +16,45 @@ namespace Keiwando.Evolution.Scenes {
             });
         }
 
-        public DistanceMarkerSpawner(Transform transform): base(transform) {}
+        public DistanceMarkerSpawner(Transform transform, float markerDistance): base(transform) {
+            this.MarkerDistance = markerDistance;
+        }
 
         public override string GetEncodingKey() {
             return ENCODING_ID;
         }
 
+        private static class CodingKey {
+            public const string MarkerDistance = "markerDistance";
+        }
+
+        public override JObject Encode() {
+            var json = base.Encode();
+            json[CodingKey.MarkerDistance] = MarkerDistance;
+            return json;
+        }
+
         public static DistanceMarkerSpawner Decode(JObject json) {
             var transform = BaseStructure.DecodeTransform(json);
-            return new DistanceMarkerSpawner(transform);
+            var markerDistance = json[CodingKey.MarkerDistance].ToObject<float>();
+            return new DistanceMarkerSpawner(transform, markerDistance);
         }
 
         public override IStructureBuilder GetBuilder() {
             return new DistanceMarkerSpawnerBuilder(this);
         }
 
-        public class DistanceMarkerSpawnerBuilder: BaseStructureBuilder {
+        public class DistanceMarkerSpawnerBuilder: BaseStructureBuilder<DistanceMarkerSpawner> {
 
             protected override string prefabPath => "Prefabs/Structures/DistanceMarkerSpawner";
 
-            public DistanceMarkerSpawnerBuilder(DistanceMarkerSpawner step): base(step) {}
+            public DistanceMarkerSpawnerBuilder(DistanceMarkerSpawner spawner): base(spawner) {}
+
+            public override GameObject Build() {
+                var spawner = base.Build().GetComponent<Keiwando.Evolution.DistanceMarkerSpawner>();
+                spawner.MarkerDistance = this.structure.MarkerDistance;
+                return spawner.gameObject;
+            }
         }
     }
 }

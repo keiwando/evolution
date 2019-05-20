@@ -80,7 +80,7 @@ public class Evolution : MonoBehaviour {
 	public Creature[] CurrentCreatureBatch {
 		get { return currentCreatureBatch; }
 	}
-	private Creature[] currentCreatureBatch = new Creature[1];
+	private Creature[] currentCreatureBatch = new Creature[0];
 
 	/// <summary>
 	/// The number of the currently simulating batch. Between 1 and Ceil(populationSize / batchSizeCached)
@@ -348,26 +348,6 @@ public class Evolution : MonoBehaviour {
 
 		return Mutation.Mutate<MutableString, char>(new MutableString(chromosome), Mutation.Mode.ChunkFlip).Builder;
 	}
-
-	// private Creature[] CreateCreatures(int count) {
-
-	// 	Creature[] creatures = new Creature[count];
-
-	// 	for (int i = 0; i < count; i++) {
-	// 		creatures[i] = CreateCreature();
-	// 	}
-
-	// 	return creatures;
-	// }
-
-	// public Creature CreateCreature() {
-
-	// 	Creature creat = Instantiate(creature.gameObject, this.spawnPosition, Quaternion.identity).GetComponent<Creature>();
-	// 	creat.RefreshLineRenderers();
-	// 	creat.Obstacle = this.Obstacle;
-
-	// 	return creat;
-	// }
 
 	private void ApplyBrains(Creature[] creatures, string[] chromosomes) {
 

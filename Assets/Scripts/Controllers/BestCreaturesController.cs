@@ -1,10 +1,17 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class BestCreaturesController : MonoBehaviour {
+
+	#region Events
+
+	public event Action PlaybackDidBegin;
+
+	#endregion
 
 	[SerializeField] new private CameraFollowScript camera;
 
@@ -112,6 +119,8 @@ public class BestCreaturesController : MonoBehaviour {
 
 		AutoPlay();
 		CurrentGeneration = generation;
+
+		if (PlaybackDidBegin != null) PlaybackDidBegin();
 	}
 
 	private void AutoPlay() {

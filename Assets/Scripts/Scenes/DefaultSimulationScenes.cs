@@ -28,7 +28,8 @@ namespace Keiwando.Evolution.Scenes {
             var ground = new Ground(groundTransform);
 
             var distanceMarkerSpawner = new DistanceMarkerSpawner(
-                new Transform(new Vector3(-0.45f, 1.63f, 0))
+                new Transform(new Vector3(-0.45f, 1.63f, 0)),
+                5f
             );
 
             // var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
