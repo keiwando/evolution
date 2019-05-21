@@ -50,7 +50,7 @@ class SceneController {
         yield return SceneManager.UnloadSceneAsync(scene);
     }
 
-    public static IEnumerator LoadSimulationScene(SimulationSceneLoadConfig config, SimulationSceneLoadContext context) {
+    public static IEnumerator LoadSimulationScene(SimulationSceneLoadConfig config, SimulationSceneLoadContext context, ISceneContext sceneContext = null) {
         
         // Load Scene
         var sceneName = NameForScene(config.SceneType);
@@ -77,7 +77,7 @@ class SceneController {
         }
 
         // Create the structures
-        sceneSetup.BuildScene(config.SceneDescription);
+        sceneSetup.BuildScene(config.SceneDescription, sceneContext);
 
         SceneManager.SetActiveScene(prevActiveScene);
         yield return new WaitForFixedUpdate();

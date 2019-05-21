@@ -50,9 +50,10 @@ namespace Keiwando.Evolution.Scenes {
 
             public DistanceMarkerSpawnerBuilder(DistanceMarkerSpawner spawner): base(spawner) {}
 
-            public override GameObject Build() {
-                var spawner = base.Build().GetComponent<Keiwando.Evolution.DistanceMarkerSpawner>();
+            public override GameObject Build(ISceneContext context) {
+                var spawner = base.Build(context).GetComponent<Keiwando.Evolution.DistanceMarkerSpawner>();
                 spawner.MarkerDistance = this.structure.MarkerDistance;
+                spawner.Context = context;
                 return spawner.gameObject;
             }
         }

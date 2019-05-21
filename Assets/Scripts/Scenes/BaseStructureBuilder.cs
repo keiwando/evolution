@@ -12,7 +12,7 @@ namespace Keiwando.Evolution.Scenes {
             this.structure = structure;
         }
 
-        public virtual GameObject Build() {
+        public virtual GameObject Build(ISceneContext context) {
             return StructureBuilderUtils.Build(prefabPath, structure.Transform);
         }
     }

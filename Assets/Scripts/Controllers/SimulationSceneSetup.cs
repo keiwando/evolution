@@ -3,8 +3,8 @@ using Keiwando.Evolution.Scenes;
 
 public class SimulationSceneSetup: MonoBehaviour {
 
-    public void BuildScene(SimulationScene scene) {
-        SimulationSceneBuilder.Build(scene);
+    public void BuildScene(SimulationScene scene, ISceneContext context) {
+        SimulationSceneBuilder.Build(scene, context);
     }
 
     public Creature[] SpawnBatch(CreatureDesign design, int batchSize, PhysicsScene physicsScene) {

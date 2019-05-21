@@ -179,8 +179,9 @@ public class Evolution : MonoBehaviour {
 			);
 
 			var context = new SceneController.SimulationSceneLoadContext();
+			var sceneContext = new SimulationSceneContext(this.SimulationData);
 
-			yield return SceneController.LoadSimulationScene(sceneLoadConfig, context);
+			yield return SceneController.LoadSimulationScene(sceneLoadConfig, context, sceneContext);
 			
 			this.batchPhysicsScene = context.PhysicsScene;
 			

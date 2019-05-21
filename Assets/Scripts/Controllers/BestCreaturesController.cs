@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Keiwando.Evolution.Scenes;
 
 public class BestCreaturesController : MonoBehaviour {
 
@@ -97,8 +98,9 @@ public class BestCreaturesController : MonoBehaviour {
 			SceneController.SimulationSceneType.BestCreatures
 		);
 		var context = new SceneController.SimulationSceneLoadContext();
+		var sceneContext = new PlaybackSceneContext(this.evolution.SimulationData, this);
 
-		yield return SceneController.LoadSimulationScene(sceneLoadConfig, context);
+		yield return SceneController.LoadSimulationScene(sceneLoadConfig, context, sceneContext);
 		this.physicsScene = context.PhysicsScene;
 		this.playbackScene = context.Scene;
 

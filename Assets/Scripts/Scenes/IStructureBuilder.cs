@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Keiwando.Evolution.Scenes {
 
     public interface IStructureBuilder {
-        GameObject Build();
+        GameObject Build(ISceneContext context);
     }
 
     public static class StructureBuilderUtils {
