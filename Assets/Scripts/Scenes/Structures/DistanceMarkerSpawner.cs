@@ -54,6 +54,7 @@ namespace Keiwando.Evolution.Scenes {
                 var spawner = base.Build(context).GetComponent<Keiwando.Evolution.DistanceMarkerSpawner>();
                 spawner.MarkerDistance = this.structure.MarkerDistance;
                 spawner.Context = context;
+                spawner.gameObject.layer = context.GetBackgroundLayer();
                 return spawner.gameObject;
             }
         }

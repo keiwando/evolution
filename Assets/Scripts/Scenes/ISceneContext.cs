@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
 
@@ -7,5 +8,7 @@ namespace Keiwando.Evolution.Scenes {
         CreatureStats GetStatsForBestOfGeneration(int generation);
         float GetDistanceOfBest(int generation);
         int GetCurrentGeneration();
+
+        LayerMask GetBackgroundLayer();
     }
 }

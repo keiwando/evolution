@@ -91,6 +91,8 @@ public class BestCreaturesController : MonoBehaviour {
 			yield return SceneController.UnloadAsync(this.playbackScene);
 		}
 
+		this.CurrentGeneration = generation;
+
 		var sceneLoadConfig = new SceneController.SimulationSceneLoadConfig(
 			this.evolution.SimulationData.CreatureDesign,
 			1,
@@ -120,7 +122,6 @@ public class BestCreaturesController : MonoBehaviour {
 		this.CurrentBest.gameObject.SetActive(true);
 
 		AutoPlay();
-		CurrentGeneration = generation;
 
 		if (PlaybackDidBegin != null) PlaybackDidBegin();
 	}

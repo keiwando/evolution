@@ -1,13 +1,16 @@
 using System;
+using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
 
     public class SimulationSceneContext: ISceneContext {
 
         private readonly SimulationData data;
+        private LayerMask layerWithoutCollision;
 
         public SimulationSceneContext(SimulationData data) {
             this.data = data;
+            this.layerWithoutCollision = LayerMask.NameToLayer("SimulationBackground");
         }
 
         public CreatureStats GetStatsForBestOfGeneration(int generation) {
@@ -33,6 +36,10 @@ namespace Keiwando.Evolution.Scenes {
 
         public int GetCurrentGeneration() {
             return this.data.BestCreatures.Count + 1;
+        }
+
+        public LayerMask GetBackgroundLayer() {
+            return layerWithoutCollision;
         }
     }
 }

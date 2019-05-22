@@ -45,18 +45,21 @@ namespace Keiwando.Evolution {
             if (!float.IsNaN(prevBestDistance)) {
                 var actualDistance = prevBestDistance / STAT_ADJUSTMENT_FACTOR;
                 var bestLabelPos = transform.position + (prevBestDistance * transform.right);
-                var marker = AddMarker(bestMarkerTemplate, bestLabelPos, actualDistance.ToString("0"));
-                marker.Text.color = new Color(0.784f, 0.149f, 0.133f);
-                print(bestLabelPos);
+                var rotationEulerAngle = transform.eulerAngles.z + 90f;
+                var marker = AddMarker(bestMarkerTemplate, bestLabelPos, actualDistance.ToString("0"), rotationEulerAngle);
+                marker.Text.text = "---  ";
+                marker.Text.color = new Color(0.23f, 0.23f, 0.23f, 0.36f);
             }
 
             template.gameObject.SetActive(false);
             bestMarkerTemplate.gameObject.SetActive(false);
         }
 
-        private DistanceMarker AddMarker(DistanceMarker template, Vector3 pos, string label) {
-            var newMarker = Instantiate(template, pos, Quaternion.identity, template.transform.parent);
+        private DistanceMarker AddMarker(DistanceMarker template, Vector3 pos, string label, float rotation = 0) {
+
+            var newMarker = Instantiate(template, pos, Quaternion.Euler(0, 0, rotation), template.transform.parent);
             newMarker.Text.text = label;
+            newMarker.gameObject.layer = this.gameObject.layer;
             allMarkers.Add(newMarker);
             return newMarker;
         }
