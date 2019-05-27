@@ -22,6 +22,7 @@ public class Evolution : MonoBehaviour {
 	public event Action NewBatchDidBegin;
 	public event Action SimulationWasSaved;
 	public event Action InitializationDidEnd;
+	
 
 	#endregion
 	#region Settings

@@ -77,10 +77,13 @@ public class SimulationParserV1 {
 		var networkSettings = new NeuralNetworkSettings();
 		var sceneDescription = DefaultSimulationScenes.DefaultSceneForTask(settings.Task);
 
+		int lastSimulatedV2Generation = bestChromosomes.Count;
+
 		return new SimulationData(
 			settings, networkSettings, creatureDesign,
 			sceneDescription, bestChromosomes, 
-			currentChromosomes.ToArray()
+			currentChromosomes.ToArray(),
+			lastSimulatedV2Generation
 		);
 	}
 }

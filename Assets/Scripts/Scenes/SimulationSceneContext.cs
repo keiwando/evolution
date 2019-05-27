@@ -14,7 +14,7 @@ namespace Keiwando.Evolution.Scenes {
         }
 
         public CreatureStats GetStatsForBestOfGeneration(int generation) {
-            if (generation < 0 || generation > data.BestCreatures.Count) {
+            if (generation < 1 || generation > data.BestCreatures.Count) {
                 return null;
             }
             return data.BestCreatures[generation - 1].Stats;

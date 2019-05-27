@@ -6,7 +6,7 @@ using Keiwando.Evolution.Scenes;
 [Serializable]
 public class SimulationData {
 
-    public readonly int Version = 3;
+    public int Version { get; private set; } = 3;
 
     public SimulationSettings Settings { get; set; }
     public NeuralNetworkSettings NetworkSettings { get; set; }
@@ -15,6 +15,8 @@ public class SimulationData {
 
     public List<ChromosomeData> BestCreatures { get; set; }
     public string[] CurrentChromosomes { get; set; }
+
+    public readonly int LastV2SimulatedGeneration;
 
     public SimulationData(
         SimulationSettings settings, 
@@ -28,6 +30,7 @@ public class SimulationData {
         this.SceneDescription = sceneDescription;
         this.BestCreatures = new List<ChromosomeData>();
         this.CurrentChromosomes = new string[0];
+        this.LastV2SimulatedGeneration = 0;
     }
 
     public SimulationData(
@@ -36,10 +39,12 @@ public class SimulationData {
         CreatureDesign design,
         SimulationScene sceneDescription,
         List<ChromosomeData> bestCreatures, 
-        string[] currentChromosomes
+        string[] currentChromosomes,
+        int lastV2SimulatedGeneration = 0
     ): this(settings, networkSettings, design, sceneDescription) {
         this.BestCreatures = bestCreatures;
         this.CurrentChromosomes = currentChromosomes;
+        this.LastV2SimulatedGeneration = lastV2SimulatedGeneration;
     }
 
     public string Encode() {

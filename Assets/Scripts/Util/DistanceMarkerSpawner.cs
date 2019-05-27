@@ -10,6 +10,7 @@ namespace Keiwando.Evolution {
         private const float STAT_ADJUSTMENT_FACTOR = 5f;
 
         public float MarkerDistance { get; set; } = 5f;
+        public float DistanceAngleFactor { get; set; } = 1f;
 
         public ISceneContext Context { get; set; }
 
@@ -36,14 +37,14 @@ namespace Keiwando.Evolution {
             // Create markers
             for (int i = 1; i <= INITIAL_SPAWN_COUNT; i++) {
                 pos += transform.right * MarkerDistance * STAT_ADJUSTMENT_FACTOR;
-                var labelValue = i * MarkerDistance;
+                var labelValue = i * MarkerDistance * DistanceAngleFactor;
                 AddMarker(template, pos, labelValue.ToString("0"));
             }
 
             // Create marker for best of previous gen
             var prevBestDistance = Context != null ? Context.GetDistanceOfBest(Context.GetCurrentGeneration() - 1) : float.NaN;
             if (!float.IsNaN(prevBestDistance)) {
-                var actualDistance = prevBestDistance / STAT_ADJUSTMENT_FACTOR;
+                var actualDistance = prevBestDistance / (STAT_ADJUSTMENT_FACTOR * DistanceAngleFactor);
                 var bestLabelPos = transform.position + (prevBestDistance * transform.right);
                 var rotationEulerAngle = transform.eulerAngles.z + 90f;
                 var marker = AddMarker(bestMarkerTemplate, bestLabelPos, actualDistance.ToString("0"), rotationEulerAngle);

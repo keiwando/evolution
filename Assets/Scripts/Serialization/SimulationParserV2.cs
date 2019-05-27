@@ -68,7 +68,8 @@ public class SimulationParserV2 {
 
 		return new SimulationData(
 			simulationSettings, networkSettings, creatureDesign, 
-			sceneDescription, bestChromosomes, currentChromosomes.ToArray()
+			sceneDescription, bestChromosomes, currentChromosomes.ToArray(),
+			bestChromosomes.Count
 		);
 	}
 }

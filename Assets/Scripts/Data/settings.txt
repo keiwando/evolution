@@ -2,7 +2,9 @@ bool DidMigrateCreatureSaves = false
 bool DidMigrateSimulationSaves = false
 
 bool ShowMuscleContraction = false (showMuscleContraction)
-bool ShowOneAtATime = false 
+bool ShowOneAtATime = false
+
+bool DontShowV2SimulationDeprecationOverlayAgain = false
 
 float GridSize = 1.0f (GRID_SIZE)
 bool GridEnabled = false (GRID_ENABLED)

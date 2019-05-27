@@ -6,6 +6,7 @@ public class Settings {
 	private const string DID_MIGRATE_SIMULATION_SAVES_KEY = "DID_MIGRATE_SIMULATION_SAVES_KEY";
 	private const string SHOW_MUSCLE_CONTRACTION_KEY = "showMuscleContraction";
 	private const string SHOW_ONE_AT_ATIME_KEY = "SHOW_ONE_AT_ATIME_KEY";
+	private const string DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY = "DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY";
 	private const string GRID_SIZE_KEY = "GRID_SIZE";
 	private const string GRID_ENABLED_KEY = "GRID_ENABLED";
 	private const string HELP_SCREEN_LANGUAGE_KEY = "HELP_SCREEN_LANGUAGE";
@@ -34,6 +35,11 @@ public class Settings {
 	public static bool ShowOneAtATime {
 		get { return GetBool(SHOW_ONE_AT_ATIME_KEY); }
 		set { SetBool(SHOW_ONE_AT_ATIME_KEY, value); }
+	}
+
+	public static bool DontShowV2SimulationDeprecationOverlayAgain {
+		get { return GetBool(DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY); }
+		set { SetBool(DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY, value); }
 	}
 
 	public static float GridSize {
@@ -93,6 +99,7 @@ public class Settings {
 		DidMigrateSimulationSaves = false;
 		ShowMuscleContraction = false;
 		ShowOneAtATime = false;
+		DontShowV2SimulationDeprecationOverlayAgain = false;
 		GridSize = 1.0f;
 		GridEnabled = false;
 		HelpScreenLanguage = "LANGUAGE_ENGLISH";

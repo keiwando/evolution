@@ -105,7 +105,7 @@ public class CreatureEditor: MonoBehaviour {
         if (creatureDesign.IsEmpty) return;
 
         var sceneDescription = DefaultSimulationScenes.DefaultSceneForTask(editorState.SimulationSettings.Task);
-
+        
         var simulationData = new SimulationData(editorState.SimulationSettings, 
                                                 editorState.NeuralNetworkSettings,
                                                 creatureDesign,

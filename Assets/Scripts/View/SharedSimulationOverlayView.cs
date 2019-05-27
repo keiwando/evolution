@@ -6,7 +6,9 @@ using UnityEngine.UI;
 public interface ISharedSimulationOverlayViewDelegate {   
     
     bool IsAutoSaveEnabled(SharedSimulationOverlayView view);
+    bool IsPlaybackPossiblyInaccurate(SharedSimulationOverlayView view);
 
+    void InaccuratePlaybackButtonClicked(SharedSimulationOverlayView view);
     void PauseButtonClicked(SharedSimulationOverlayView view);
     void BackButtonClicked(SharedSimulationOverlayView view);
     void SaveButtonClicked(SharedSimulationOverlayView view);
@@ -18,18 +20,15 @@ public class SharedSimulationOverlayView: MonoBehaviour {
 
     public ISharedSimulationOverlayViewDelegate Delegate { get; set; }
 
-    [SerializeField]
-    private Button pauseButton;
+    [SerializeField] private Button inaccuratePlaybackButton;
 
-    [SerializeField]
-    private Toggle autosaveToggle;
-    [SerializeField]
-    private Button saveButton;
-    [SerializeField]
-    private Text successfulSaveLabel;
+    [SerializeField] private Button pauseButton;
 
-    [SerializeField]
-    private Button backButton;
+    [SerializeField] private Toggle autosaveToggle;
+    [SerializeField] private Button saveButton;
+    [SerializeField] private Text successfulSaveLabel;
+
+    [SerializeField] private Button backButton;
 
     // MARK: - Animations
     private Coroutine savedLabelFadeRoutine;
@@ -48,6 +47,10 @@ public class SharedSimulationOverlayView: MonoBehaviour {
             Delegate.SaveButtonClicked(this);
         });
 
+        inaccuratePlaybackButton.onClick.AddListener(delegate () {
+            Delegate.InaccuratePlaybackButtonClicked(this);
+        });
+
         autosaveToggle.onValueChanged.AddListener(delegate (bool value) {
             Delegate.AutosaveToggled(this, value);
         });
@@ -56,6 +59,7 @@ public class SharedSimulationOverlayView: MonoBehaviour {
     public void Refresh() {
 
         autosaveToggle.isOn = Delegate.IsAutoSaveEnabled(this);
+        inaccuratePlaybackButton.gameObject.SetActive(Delegate.IsPlaybackPossiblyInaccurate(this));
     }
 
     public void ShowSuccessfulSaveAlert() {
