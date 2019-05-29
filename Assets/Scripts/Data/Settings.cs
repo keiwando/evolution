@@ -5,7 +5,9 @@ public class Settings {
 	private const string DID_MIGRATE_CREATURE_SAVES_KEY = "DID_MIGRATE_CREATURE_SAVES_KEY";
 	private const string DID_MIGRATE_SIMULATION_SAVES_KEY = "DID_MIGRATE_SIMULATION_SAVES_KEY";
 	private const string SHOW_MUSCLE_CONTRACTION_KEY = "showMuscleContraction";
+	private const string SHOW_MUSCLES_KEY = "SHOW_MUSCLES_KEY";
 	private const string SHOW_ONE_AT_ATIME_KEY = "SHOW_ONE_AT_ATIME_KEY";
+	private const string HIDDEN_CREATURE_OPACITY_KEY = "HIDDEN_CREATURE_OPACITY_KEY";
 	private const string DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY = "DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY";
 	private const string GRID_SIZE_KEY = "GRID_SIZE";
 	private const string GRID_ENABLED_KEY = "GRID_ENABLED";
@@ -18,52 +20,62 @@ public class Settings {
 	private const string CURRENT_CREATURE_DESIGN_KEY = "CURRENT_CREATURE_DESIGN_KEY";
 
 	public static bool DidMigrateCreatureSaves {
-		get { return GetBool(DID_MIGRATE_CREATURE_SAVES_KEY); }
+		get { return GetBool(DID_MIGRATE_CREATURE_SAVES_KEY, false); }
 		set { SetBool(DID_MIGRATE_CREATURE_SAVES_KEY, value); }
 	}
 
 	public static bool DidMigrateSimulationSaves {
-		get { return GetBool(DID_MIGRATE_SIMULATION_SAVES_KEY); }
+		get { return GetBool(DID_MIGRATE_SIMULATION_SAVES_KEY, false); }
 		set { SetBool(DID_MIGRATE_SIMULATION_SAVES_KEY, value); }
 	}
 
 	public static bool ShowMuscleContraction {
-		get { return GetBool(SHOW_MUSCLE_CONTRACTION_KEY); }
+		get { return GetBool(SHOW_MUSCLE_CONTRACTION_KEY, false); }
 		set { SetBool(SHOW_MUSCLE_CONTRACTION_KEY, value); }
 	}
 
+	public static bool ShowMuscles {
+		get { return GetBool(SHOW_MUSCLES_KEY, true); }
+		set { SetBool(SHOW_MUSCLES_KEY, value); }
+	}
+
 	public static bool ShowOneAtATime {
-		get { return GetBool(SHOW_ONE_AT_ATIME_KEY); }
+		get { return GetBool(SHOW_ONE_AT_ATIME_KEY, false); }
 		set { SetBool(SHOW_ONE_AT_ATIME_KEY, value); }
 	}
 
+	public static float HiddenCreatureOpacity {
+		get { return PlayerPrefs.GetFloat(HIDDEN_CREATURE_OPACITY_KEY, 0.5f); }
+		set { PlayerPrefs.SetFloat(HIDDEN_CREATURE_OPACITY_KEY, value); Save(); }
+	}
+
 	public static bool DontShowV2SimulationDeprecationOverlayAgain {
-		get { return GetBool(DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY); }
+		get { return GetBool(DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY, false); }
 		set { SetBool(DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY, value); }
 	}
 
 	public static float GridSize {
-		get { return PlayerPrefs.GetFloat(GRID_SIZE_KEY, -1); }
+		get { return PlayerPrefs.GetFloat(GRID_SIZE_KEY, 1.0f); }
 		set { PlayerPrefs.SetFloat(GRID_SIZE_KEY, value); Save(); }
 	}
 
 	public static bool GridEnabled {
-		get { return GetBool(GRID_ENABLED_KEY); }
+		get { return GetBool(GRID_ENABLED_KEY, false); }
 		set { SetBool(GRID_ENABLED_KEY, value); }
 	}
 
 	public static string HelpScreenLanguage {
-		get { return PlayerPrefs.GetString(HELP_SCREEN_LANGUAGE_KEY, ""); }
+		get { return PlayerPrefs.GetString(HELP_SCREEN_LANGUAGE_KEY, "LANGUAGE_ENGLISH"); }
 		set { PlayerPrefs.SetString(HELP_SCREEN_LANGUAGE_KEY, value); Save(); }
 	}
 
 	public static bool HelpIndicatorShown {
-		get { return GetBool(HELP_INDICATOR_SHOWN_KEY); }
+		get { return GetBool(HELP_INDICATOR_SHOWN_KEY, true); }
 		set { SetBool(HELP_INDICATOR_SHOWN_KEY, value); }
 	}
 
 	public static int EditorMode {
-		get { return PlayerPrefs.GetInt(EDITOR_MODE_KEY, -1); }
+		get { return PlayerPrefs.GetInt(EDITOR_MODE_KEY, 0); }
 		set { PlayerPrefs.SetInt(EDITOR_MODE_KEY, value); Save(); }
 	}
 
@@ -98,7 +110,9 @@ public class Settings {
 		DidMigrateCreatureSaves = false;
 		DidMigrateSimulationSaves = false;
 		ShowMuscleContraction = false;
+		ShowMuscles = true;
 		ShowOneAtATime = false;
+		HiddenCreatureOpacity = 0.5f;
 		DontShowV2SimulationDeprecationOverlayAgain = false;
 		GridSize = 1.0f;
 		GridEnabled = false;
@@ -106,8 +120,8 @@ public class Settings {
 		EditorMode = 0;
 	}
 
-	private static bool GetBool(string key) {
-		return PlayerPrefs.GetInt(key, 0) == 1;
+	private static bool GetBool(string key, bool defaultValue = false) {
+		return PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) == 1;
 	}
 
 	private static void SetBool(string key, bool b) {

@@ -44,6 +44,8 @@ public class CameraFollowController: MonoBehaviour {
 
     public void RefreshVisibleCreatures() {
 
+		float hiddenOpacity = Settings.HiddenCreatureOpacity;
+
         var batch = evolution.CurrentCreatureBatch;
 		if (batch == null) { return; }
 

@@ -10,7 +10,8 @@ using Keiwando.Evolution.UI;
 public class SimulationViewController : MonoBehaviour, 
 										IEvolutionOverlayViewDelegate, 
 										ISharedSimulationOverlayViewDelegate,
-										IBestCreaturesOverlayViewDelegate  {
+										IBestCreaturesOverlayViewDelegate,
+										ISimulationVisibilityOptionsViewDelegate  {
 
 	enum VisibleScreen {
 		Simulation,
@@ -26,6 +27,8 @@ public class SimulationViewController : MonoBehaviour,
 	[SerializeField] private EvolutionOverlayView evolutionOverlayView;
 	[SerializeField] private BestCreaturesOverlayView bestCreatureOverlayView;
 	[SerializeField] private SharedSimulationOverlayView sharedOverlayView;
+
+	[SerializeField] private SimulationVisibilityOptionsView visibilityOptionsView;
 
 	[SerializeField] private V2PlaybackNoticeOverlayView v2PlaybackNoticePopup;
 
@@ -43,6 +46,7 @@ public class SimulationViewController : MonoBehaviour,
 		evolutionOverlayView.Delegate = this;
 		bestCreatureOverlayView.Delegate = this;
 		sharedOverlayView.Delegate = this;
+		visibilityOptionsView.Delegate = this;
 
 		evolution.NewBatchDidBegin += delegate () {
 			Refresh();
@@ -71,6 +75,7 @@ public class SimulationViewController : MonoBehaviour,
 
 		if (visibleScreen == VisibleScreen.Simulation) {
 			evolutionOverlayView.Refresh();
+			visibilityOptionsView.Refresh();
 		} else {
 			bestCreatureOverlayView.Refresh();
 		}
@@ -149,20 +154,6 @@ public class SimulationViewController : MonoBehaviour,
 		Refresh();
 	}
 
-    public void ShowOneAtATimeDidChange(EvolutionOverlayView view, bool showOneAtATime) {
-
-        Settings.ShowOneAtATime = showOneAtATime;
-        cameraFollowController.RefreshVisibleCreatures();
-    }
-
-    public void ShowMuscleContractionDidChange(EvolutionOverlayView view, bool showMuscleContraction) {
-        
-        Settings.ShowMuscleContraction = showMuscleContraction;
-        cameraFollowController.RefreshVisibleCreatures();
-        
-        bestCreatureController.RefreshMuscleContractionVisibility(Settings.ShowMuscleContraction);
-    }
-
     public int GetCurrentGenerationNumber(EvolutionOverlayView view) {
 		return evolution.CurrentGenerationNumber;
 	}
@@ -183,15 +174,7 @@ public class SimulationViewController : MonoBehaviour,
 		return evolution.IsSimulatingInBatches;
 	}
 
-    public bool ShouldShowOneAtATime(EvolutionOverlayView view) {
-		
-		return Settings.ShowOneAtATime;
-	}
-
-    public bool ShouldShowMuscleContraction(EvolutionOverlayView view) {
-		
-		return Settings.ShowMuscleContraction;
-	}
+    
 
 	#endregion
 	#region IBestCreaturesOverlayViewDelegate
@@ -258,6 +241,42 @@ public class SimulationViewController : MonoBehaviour,
         // TODO: Improve this implementation
         return 0;
     }
+
+	#endregion
+
+	#region ISimulationVisibilityOptionsViewDelegate 
+
+	public void HiddenCreatureOpacityDidChange(SimulationVisibilityOptionsView view, float opacity) {
+		
+		Settings.HiddenCreatureOpacity = opacity;
+		cameraFollowController.RefreshVisibleCreatures();
+	}
+
+    public void ShowMuscleContractionDidChange(SimulationVisibilityOptionsView view, bool showMuscleContraction) {
+		Settings.ShowMuscleContraction = showMuscleContraction;
+        cameraFollowController.RefreshVisibleCreatures();
+        
+        bestCreatureController.RefreshMuscleContractionVisibility(Settings.ShowMuscleContraction);
+	}
+	
+	public void ShowMusclesDidChange(SimulationVisibilityOptionsView view, bool showMuscles) {
+		Settings.ShowMuscles = showMuscles;
+		// TODO: Maybe create a more specific function for 
+		cameraFollowController.RefreshVisibleCreatures();
+	}
+
+
+	public float GetHiddenCreatureOpacity(SimulationVisibilityOptionsView view) {
+		return Settings.HiddenCreatureOpacity;
+	}
+
+	public bool ShouldShowMuscles(SimulationVisibilityOptionsView view) {
+		return Settings.ShowMuscles;
+ 	}
+
+    public bool ShouldShowMuscleContraction(SimulationVisibilityOptionsView view) {
+		return Settings.ShowMuscleContraction;
+	}
 
 	#endregion
 }

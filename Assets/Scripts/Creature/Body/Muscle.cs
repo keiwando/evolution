@@ -11,6 +11,7 @@ public class Muscle : BodyComponent {
 
 	private const string MATERIAL_PATH = "Materials/MuscleMaterial2";
 	private const string BLUE_MATERIAL_PATH = "Materials/MuscleMaterialBlue";
+	private const string INVISIBLE_MATERIAL_PATH = "Materials/MuscleMaterialInvisible";
 
 	public enum MuscleAction {
 		CONTRACT, EXPAND	
@@ -73,6 +74,7 @@ public class Muscle : BodyComponent {
 	// MARK: contraction visibility
 	private Material redMaterial;
 	private Material blueMaterial;
+	private Material invisibleMaterial;
 
 	private float minLineWidth = 0.5f;
 	private float maxLineWidth = 1.5f;
@@ -84,6 +86,7 @@ public class Muscle : BodyComponent {
 
 		Material muscleMaterial = Resources.Load(MATERIAL_PATH) as Material;
 		Material blueMaterial = Resources.Load(BLUE_MATERIAL_PATH) as Material;
+		Material invisibleMaterial = Resources.Load(INVISIBLE_MATERIAL_PATH) as Material;
 
 		GameObject muscleEmpty = new GameObject();
 		muscleEmpty.name = "Muscle";
@@ -96,6 +99,7 @@ public class Muscle : BodyComponent {
 
 		muscle.redMaterial = muscleMaterial;
 		muscle.blueMaterial = blueMaterial;
+		muscle.invisibleMaterial = invisibleMaterial;
 
 		return muscle;
 	}
@@ -337,6 +341,11 @@ public class Muscle : BodyComponent {
 
 	private void UpdateContractionVisibility() {
 
+		if (_living && !Settings.ShowMuscles) {
+			SetInvisibleMaterial();
+			return;
+		}
+
 		if (!ShouldShowContraction) { return; }
 
 		var alpha = currentForce / MAX_MUSCLE_FORCE;
@@ -366,6 +375,12 @@ public class Muscle : BodyComponent {
 		
 		if (blueMaterial == null) blueMaterial = Resources.Load(BLUE_MATERIAL_PATH) as Material;
 		lineRenderer.material = blueMaterial;
+	}
+
+	private void SetInvisibleMaterial() {
+		
+		if (invisibleMaterial == null) invisibleMaterial = Resources.Load(INVISIBLE_MATERIAL_PATH) as Material;
+		lineRenderer.material = invisibleMaterial;
 	}
 
 	private void SetLineWidth(float width) {

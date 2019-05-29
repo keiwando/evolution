@@ -6,16 +6,12 @@ public interface IEvolutionOverlayViewDelegate {
     void FocusOnNextCreature();
     void FocusOnPreviousCreature();
     void DidClickOnPipView(EvolutionOverlayView view);
-    void ShowOneAtATimeDidChange(EvolutionOverlayView view, bool showOneAtATime);
-    void ShowMuscleContractionDidChange(EvolutionOverlayView view, bool showMuscleContraction); 
 
     int GetCurrentGenerationNumber(EvolutionOverlayView view);
     int GetGurrentBestOfGenerationNumber(EvolutionOverlayView view);
     int GetCurrentBatchNumber(EvolutionOverlayView view);
     int GetTotalBatchCount(EvolutionOverlayView view);
     bool IsSimulatingInBatches(EvolutionOverlayView view);
-    bool ShouldShowOneAtATime(EvolutionOverlayView view);
-    bool ShouldShowMuscleContraction(EvolutionOverlayView view);
 }
 
 public class EvolutionOverlayView: MonoBehaviour {
@@ -24,11 +20,6 @@ public class EvolutionOverlayView: MonoBehaviour {
 
     [SerializeField]
     private Text generationLabel;
-    
-    [SerializeField]
-    private Toggle showOneAtATimeToggle;
-    [SerializeField]
-    private Toggle showMuscleContractionToggle;
 
     [SerializeField]
     private Button focusOnPreviousButton;
@@ -45,13 +36,6 @@ public class EvolutionOverlayView: MonoBehaviour {
     private Button pipButton;
 
     void Start() {
-
-        showOneAtATimeToggle.onValueChanged.AddListener(delegate (bool enabled) {
-            Delegate.ShowOneAtATimeDidChange(this, enabled);
-        });
-        showMuscleContractionToggle.onValueChanged.AddListener(delegate (bool enabled) {
-            Delegate.ShowMuscleContractionDidChange(this, enabled);
-        });
         
         focusOnNextButton.onClick.AddListener(delegate () {
             Delegate.FocusOnNextCreature();
@@ -68,8 +52,6 @@ public class EvolutionOverlayView: MonoBehaviour {
 
         RefreshGenerationLabel();
         RefreshPipGenerationLabel();
-        showOneAtATimeToggle.isOn = Delegate.ShouldShowOneAtATime(this);
-        showMuscleContractionToggle.isOn = Delegate.ShouldShowMuscleContraction(this);
         pipContainer.SetActive(Delegate.GetCurrentGenerationNumber(this) > 1);
     }
 
