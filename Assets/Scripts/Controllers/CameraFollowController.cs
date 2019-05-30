@@ -55,7 +55,7 @@ public class CameraFollowController: MonoBehaviour {
 			creature.RefreshMuscleContractionVisibility(showContraction);
 		}
 
-		bool oneAtATime = Settings.ShowOneAtATime;
+		bool oneAtATime = true; //Settings.ShowOneAtATime;
 
 		// Determine if all or only one creature should be visible
 		if (oneAtATime) {

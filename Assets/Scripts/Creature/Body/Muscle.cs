@@ -285,6 +285,9 @@ public class Muscle : BodyComponent {
 		//lineRenderer.SetWidth(LINE_WIDTH, LINE_WIDTH); // Deprecated
 		lineRenderer.startWidth = LINE_WIDTH;
 		lineRenderer.endWidth = LINE_WIDTH;
+		lineRenderer.receiveShadows = false;
+		lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+		lineRenderer.allowOcclusionWhenDynamic = false;
 
 		lineRenderer.generateLightingData = true;
 	}
@@ -341,7 +344,9 @@ public class Muscle : BodyComponent {
 
 	private void UpdateContractionVisibility() {
 
-		if (_living && !Settings.ShowMuscles) {
+		if (!_living) return;
+
+		if (!Settings.ShowMuscles) {
 			SetInvisibleMaterial();
 			return;
 		}

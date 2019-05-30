@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class Joint : BodyComponent {
 
 	private const string PATH = "Prefabs/Joint";
+	private static Material material = Resources.Load("Materials/Joint Color") as Material;
 
 	public Vector3 center { 
 		get { return transform.position; } 
@@ -29,6 +30,10 @@ public class Joint : BodyComponent {
 	public static Joint CreateFromData(JointData data) {
 		
 		var joint = ((GameObject) Instantiate(Resources.Load(PATH), data.position, Quaternion.identity)).GetComponent<Joint>();
+		var renderer = joint.GetComponent<MeshRenderer>();
+		// TODO: Look into shared materials
+		renderer.material = null;
+		renderer.sharedMaterial = material;
 		joint.JointData = data;
 		return joint;
 	}
