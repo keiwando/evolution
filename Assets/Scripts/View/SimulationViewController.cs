@@ -249,7 +249,6 @@ public class SimulationViewController : MonoBehaviour,
 	public void HiddenCreatureOpacityDidChange(SimulationVisibilityOptionsView view, float opacity) {
 		
 		Settings.HiddenCreatureOpacity = opacity;
-		cameraFollowController.RefreshVisibleCreatures();
 	}
 
     public void ShowMuscleContractionDidChange(SimulationVisibilityOptionsView view, bool showMuscleContraction) {

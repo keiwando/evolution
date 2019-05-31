@@ -288,6 +288,7 @@ public class Muscle : BodyComponent {
 		lineRenderer.receiveShadows = false;
 		lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 		lineRenderer.allowOcclusionWhenDynamic = false;
+		lineRenderer.sortingOrder = -1;
 
 		lineRenderer.generateLightingData = true;
 	}
