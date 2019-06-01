@@ -51,24 +51,13 @@ public class CameraFollowController: MonoBehaviour {
 
 		bool showContraction = Settings.ShowMuscleContraction;
 
-		foreach (var creature in batch) {
-			creature.RefreshMuscleContractionVisibility(showContraction);
-		}
-
-		bool oneAtATime = true; //Settings.ShowOneAtATime;
-
-		// Determine if all or only one creature should be visible
-		if (oneAtATime) {
-
-			foreach (var creature in batch) {
-				creature.SetOnInvisibleLayer();
-			}
-			batch[watchingIndex].SetOnVisibleLayer();
-		
-		} else {
-			foreach (var creature in batch) {
-				creature.SetOnVisibleLayer();
-			}
+		batch[watchingIndex].SetOnVisibleLayer();
+		for (int i = 0; i < batch.Length; i++) {
+			batch[i].RefreshMuscleContractionVisibility(showContraction);
+			if (i == watchingIndex) 
+				batch[i].SetOnVisibleLayer();
+			else 
+				batch[i].SetOnInvisibleLayer();
 		}
 	}
 }

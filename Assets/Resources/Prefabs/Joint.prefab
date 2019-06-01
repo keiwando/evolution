@@ -123,3 +123,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseHoverTexture: {fileID: 2800000, guid: 1703e4f9f62c14e1a981c84899a4c68e, type: 3}
   deleted: 0
+  debugMaterial: {fileID: 0}

@@ -4,7 +4,7 @@ bool DidMigrateSimulationSaves = false
 bool ShowMuscleContraction = false (showMuscleContraction)
 bool ShowMuscles = true
 bool ShowOneAtATime = false
-float HiddenCreatureOpacity = 0.5f
+float HiddenCreatureOpacity = 0.225f
 
 bool DontShowV2SimulationDeprecationOverlayAgain = false
 

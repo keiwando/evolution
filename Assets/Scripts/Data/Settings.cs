@@ -45,7 +45,7 @@ public class Settings {
 	}
 
 	public static float HiddenCreatureOpacity {
-		get { return PlayerPrefs.GetFloat(HIDDEN_CREATURE_OPACITY_KEY, 0.5f); }
+		get { return PlayerPrefs.GetFloat(HIDDEN_CREATURE_OPACITY_KEY, 0.225f); }
 		set { PlayerPrefs.SetFloat(HIDDEN_CREATURE_OPACITY_KEY, value); Save(); }
 	}
 
@@ -112,7 +112,7 @@ public class Settings {
 		ShowMuscleContraction = false;
 		ShowMuscles = true;
 		ShowOneAtATime = false;
-		HiddenCreatureOpacity = 0.5f;
+		HiddenCreatureOpacity = 0.225f;
 		DontShowV2SimulationDeprecationOverlayAgain = false;
 		GridSize = 1.0f;
 		GridEnabled = false;
