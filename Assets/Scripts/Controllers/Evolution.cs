@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System;
 using System.Text;
 using System.Linq;
+using Keiwando.Evolution;
 using Keiwando.Evolution.Scenes;
 
 public class Evolution : MonoBehaviour {
@@ -268,7 +269,7 @@ public class Evolution : MonoBehaviour {
 		foreach (var solution in solutions) {
 			lazyChromosomes.Add(new LazyChromosomeData(solution.Encodable, solution.Stats));
 		}
-		var selection = new Selection<LazyChromosomeData>(Selection<LazyChromosomeData>.Mode.FitnessProportional, lazyChromosomes);
+		var selection = new Selection<LazyChromosomeData>(SelectionAlgorithm.FitnessProportional, lazyChromosomes);
 
 		int start = 0;
 		if (keepBest) {

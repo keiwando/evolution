@@ -1,28 +1,31 @@
 using System;
 
-public interface IRecombinable<T> {
+namespace Keiwando.Evolution {
 
-}
+    public interface IRecombinable<T> {
 
-public static class Recombination<T> where T: IRecombinable<T> {
+    }
 
-    public enum Mode {
+    public enum RecombinationAlgorithm {
         OnePointCrossover,
         MultiPointCrossover,
         UniformCrossover
     }
 
-    public static T[] Recombine(T lhs, T rhs, Mode mode) {
+    public static class Recombination<T> where T: IRecombinable<T> {
 
-        switch (mode) {
-            case Mode.OnePointCrossover: return RecombineOnePoint(lhs, rhs);
-            default: return RecombineOnePoint(lhs, rhs);
+        public static T[] Recombine(T lhs, T rhs, RecombinationAlgorithm algorithm) {
+
+            switch (algorithm) {
+                case RecombinationAlgorithm.OnePointCrossover: return RecombineOnePoint(lhs, rhs);
+                default: return RecombineOnePoint(lhs, rhs);
+            }
         }
-    }
 
-    private static T[] RecombineOnePoint(T lhs, T rhs) {
-        T[] result = new T[2];
-        // TODO: Implement
-        return result;
+        private static T[] RecombineOnePoint(T lhs, T rhs) {
+            T[] result = new T[2];
+            // TODO: Implement
+            return result;
+        }
     }
 }
