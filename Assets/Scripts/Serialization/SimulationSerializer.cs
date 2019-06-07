@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Keiwando.Evolution;
 
 /// <summary>
 /// The SimulationSerializer provides function for saving and loading the state of a simulation in / from a file.

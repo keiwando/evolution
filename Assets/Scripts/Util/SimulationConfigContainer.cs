@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class SimulationConfigContainer: MonoBehaviour {
+namespace Keiwando.Evolution {
 
-    public SimulationData SimulationData { get; set; }
+    public class SimulationConfigContainer: MonoBehaviour {
+
+        public SimulationData SimulationData { get; set; }
+    }
 }

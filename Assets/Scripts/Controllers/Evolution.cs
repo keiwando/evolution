@@ -349,7 +349,7 @@ public class Evolution : MonoBehaviour {
 
 		if (!shouldMutate) return chromosome;
 
-		return Mutation.Mutate<MutableString, char>(new MutableString(chromosome), Mutation.Mode.ChunkFlip).Builder;
+		return Mutation.Mutate<MutableString, char>(new MutableString(chromosome), MutationAlgorithm.ChunkFlip).Builder;
 	}
 
 	private void ApplyBrains(Creature[] creatures, string[] chromosomes) {
