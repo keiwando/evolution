@@ -21,10 +21,6 @@ namespace Keiwando.Evolution.UI {
         MutationAlgorithm GetMutationAlgorithm(GeneralSettingsView view);
         float GetMutationRate(GeneralSettingsView view);
 
-
-        void CloseButtonClicked(GeneralSettingsView view);
-        void BrainButtonClicked(GeneralSettingsView view);
-
         void GridActivationToggled(GeneralSettingsView view, bool enabled);
         void GridSizeChanged(GeneralSettingsView view, float size);
 
@@ -41,9 +37,6 @@ namespace Keiwando.Evolution.UI {
     public class GeneralSettingsView: MonoBehaviour {
 
         public IGeneralSettingsViewDelegate Delegate { get; set; }
-
-        [SerializeField] private Button closeButton;
-        [SerializeField] private Button brainButton;
         
         // MARK: - Editor Settings
 
@@ -127,14 +120,6 @@ namespace Keiwando.Evolution.UI {
         };
 
         void Start() {
-
-            closeButton.onClick.AddListener(delegate () {
-                Delegate.CloseButtonClicked(this);
-            });
-
-            brainButton.onClick.AddListener(delegate () {
-                Delegate.BrainButtonClicked(this);
-            });
 
             gridToggle.onValueChanged.AddListener(delegate (bool enabled) {
                 Delegate.GridActivationToggled(this, enabled);

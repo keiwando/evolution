@@ -1,8 +1,25 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Keiwando.Evolution;
 
 public class EditorStateManager {
+
+    public EditorSettings EditorSettings => _editorSettings;
+    public SimulationSettings SimulationSettings => _simulationSettings;
+    public NeuralNetworkSettings NetworkSettings => _neuralNetworkSettings;
+
+    private static EditorSettings _editorSettings;
+    private static SimulationSettings _simulationSettings;
+    private static NeuralNetworkSettings _neuralNetworkSettings;
+    private static CreatureDesign _creatureDesign;
+
+    static EditorStateManager() {
+        _editorSettings = LoadEditorSettings();
+        _simulationSettings = LoadSimulationSettings();
+        _neuralNetworkSettings = LoadNetworkSettings();
+        _creatureDesign = LoadCreatureDesign();
+    }
 
     public static EditorState Load() {
 
@@ -15,8 +32,12 @@ public class EditorStateManager {
         Settings.CurrentCreatureDesign = state.CreatureDesign.Encode();
     }
 
-    private static SimulationSettings LoadSimulationSettings() {
+    private static EditorSettings LoadEditorSettings() {
+        // TODO: Replace with actual Settings key
+        return EditorSettings.Decode("");
+    }
 
+    private static SimulationSettings LoadSimulationSettings() {
         return SimulationSettings.Decode(Settings.SimulationSettings);
     }
 

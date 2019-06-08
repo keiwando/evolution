@@ -16,6 +16,8 @@ namespace Keiwando.UI {
             set => slideMultiplier = value;
         }
         [SerializeField] private float slideMultiplier = 1f;
+
+        [SerializeField] private AnimationCurve animationCurve = new AnimationCurve();
     
         public Direction LastSlideDirection { get; private set; }
 
@@ -76,7 +78,7 @@ namespace Keiwando.UI {
 
             while (elapsed < duration) {
 
-                var t = elapsed / duration;
+                var t = animationCurve.Evaluate(elapsed / duration);
                 rectTransform.offsetMin = Vector2.Lerp(oldBottomLeft, bottomLeft, t);
                 rectTransform.offsetMax = Vector2.Lerp(oldTopRight, topRight, t);
                 elapsed += Time.deltaTime;

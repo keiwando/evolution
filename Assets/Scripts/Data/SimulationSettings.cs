@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-[Serializable]
 public struct SimulationSettings {
 	
 	/// <summary>
@@ -62,6 +63,36 @@ public struct SimulationSettings {
 		this.BatchSize = 10;
 		this.MutationRate = 50;
 	}
+
+	// #region Encode & Decode
+
+    //     private static class CodingKey {
+    //         public const string GridEnabled = "gridEnabled";
+    //         public const string GridSize = "gridSize";
+    //     }
+
+    //     public string Encode() {
+    //         var json = new JObject();
+
+    //         json[CodingKey.GridEnabled] = this.GridEnabled;
+    //         json[CodingKey.GridSize] = this.GridSize;
+    //         return json.ToString();
+    //     }
+
+    //     public static EditorSettings Decode(string encoded) {
+
+    //         JObject json = JObject.Parse(encoded);
+
+    //         bool gridEnabled = json[CodingKey.GridEnabled].ToObject<bool>();
+    //         float gridSize = json[CodingKey.GridSize].ToObject<float>();
+
+    //         return new EditorSettings() {
+    //             GridEnabled = gridEnabled,
+    //             GridSize = gridSize
+    //         };
+    //     }
+
+    //     #endregion
 
 	#region Encode & Decode
 
