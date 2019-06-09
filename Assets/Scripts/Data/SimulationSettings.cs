@@ -43,7 +43,7 @@ public struct SimulationSettings {
 	/// </summary>
 	public int MutationRate;
 
-	public static SimulationSettings Default = new SimulationSettings() {
+	public static readonly SimulationSettings Default = new SimulationSettings() {
 		Task = EvolutionTask.Running,
 		KeepBestCreatures = true,
 		SimulationTime = 10,

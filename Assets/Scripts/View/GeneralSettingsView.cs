@@ -42,6 +42,7 @@ namespace Keiwando.Evolution.UI {
 
         [SerializeField] private Toggle gridToggle;
         [SerializeField] private Slider gridSizeSlider;
+        [SerializeField] private Text gridSizeLabel;
 
         // MARK: - Simulation Settings
 
@@ -53,6 +54,7 @@ namespace Keiwando.Evolution.UI {
         [SerializeField] private Dropdown recombinationAlgorithmDropdown;
         [SerializeField] private Dropdown mutationAlgorithmDropdown;
         [SerializeField] private Slider mutationRateSlider;
+        [SerializeField] private Text mutationRateLabel;
 
         private struct DropdownData<T> {
             public int Index { get; set; }
@@ -183,6 +185,8 @@ namespace Keiwando.Evolution.UI {
                 Refresh();
             });
 
+            mutationRateSlider.minValue = 0;
+            mutationRateSlider.maxValue = 1;
             mutationRateSlider.onValueChanged.AddListener(delegate (float value) {
                 Delegate.MutationRateChanged(this, value);
                 Refresh();
@@ -195,12 +199,15 @@ namespace Keiwando.Evolution.UI {
 
             gridToggle.isOn = Delegate.IsGridActivated(this);
             gridSizeSlider.value = Delegate.GetGridSize(this);
+            gridSizeLabel.text = gridSizeSlider.value.ToString("0.0");
             gridSizeSlider.minValue = Delegate.GetMinGridSize(this);
             gridSizeSlider.maxValue = Delegate.GetMaxGridSize(this);
 
             keepBestToggle.isOn = Delegate.IsKeepBestCreatureEnabled(this);
             simulateInBatchesToggle.isOn = Delegate.IsSimulateInBatchesEnabled(this);
             batchSizeInputField.text = Delegate.GetBatchSize(this).ToString();
+            // Batch size input field is in a container
+            batchSizeInputField.transform.parent.gameObject.SetActive(simulateInBatchesToggle.isOn);
 
             var selectionAlgorithm = Delegate.GetSelectionAlgorithm(this);
             selectionAlgorithmDropdown.value = selectionAlgorithms.Where(
@@ -218,6 +225,7 @@ namespace Keiwando.Evolution.UI {
             ).FirstOrDefault().Index;
 
             mutationRateSlider.value = Delegate.GetMutationRate(this);
+            mutationRateLabel.text = ((int)(mutationRateSlider.value * 100)).ToString();
         }
     }
 }

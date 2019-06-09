@@ -14,6 +14,11 @@ namespace Keiwando.Evolution {
 
         public float GridSize;
 
+        public static readonly EditorSettings Default = new EditorSettings() {
+            GridEnabled = false,
+            GridSize = 1f
+        };
+
         #region Encode & Decode
 
         private static class CodingKey {
@@ -30,6 +35,9 @@ namespace Keiwando.Evolution {
         }
 
         public static EditorSettings Decode(string encoded) {
+
+            if (string.IsNullOrEmpty(encoded)) 
+                return Default;
 
             JObject json = JObject.Parse(encoded);
 

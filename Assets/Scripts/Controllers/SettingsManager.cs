@@ -4,9 +4,19 @@ namespace Keiwando.Evolution {
 
     public class SettingsManager: ISettingsViewControllerDelegate {
 
-        private EditorSettings editorSettings => EditorStateManager.LoadEditorSettings();
-        private SimulationSettings simulationSettings => EditorStateManager.LoadSimulationSettings();
-        private NeuralNetworkSettings networkSettings => EditorStateManager.LoadNetworkSettings();
+        private EditorSettings editorSettings {
+            get => EditorStateManager.EditorSettings;
+            set => EditorStateManager.EditorSettings = value;
+        }
+        private SimulationSettings simulationSettings {
+            get => EditorStateManager.SimulationSettings;
+            set => EditorStateManager.SimulationSettings = value;
+        }
+
+        private NeuralNetworkSettings networkSettings {
+            get => EditorStateManager.NetworkSettings;
+            set => EditorStateManager.NetworkSettings = value;
+        }
 
         // MARK: - ISettingsViewControllerDelegate
 
@@ -59,39 +69,61 @@ namespace Keiwando.Evolution {
 
 
         public void GridActivationToggled(GeneralSettingsView view, bool enabled) {
-            editorSettings.
+            var settings = editorSettings;
+            settings.GridEnabled = enabled;
+            editorSettings = settings;
         }
 
         public void GridSizeChanged(GeneralSettingsView view, float size) {
-
+            var settings = editorSettings;
+            settings.GridSize = size;
+            editorSettings = settings;
         }
 
         public void KeepBestCreaturesToggled(GeneralSettingsView view, bool enabled) {
-
+            var settings = simulationSettings;
+            settings.KeepBestCreatures = enabled;
+            simulationSettings = settings;
         }
 
         public void SimulateInBatchesToggled(GeneralSettingsView view, bool enabled) {
-
+            var settings = simulationSettings;
+            settings.SimulateInBatches = enabled;
+            simulationSettings = settings;
         }
 
         public void BatchSizeChanged(GeneralSettingsView view, int batchSize) {
-
+            var settings = simulationSettings;
+            settings.BatchSize = batchSize;
+            simulationSettings = settings;
         }
 
         public void SelectionAlgorithmChanged(GeneralSettingsView view, SelectionAlgorithm algorithm) {
-
+            var settings = simulationSettings;
+            // TODO: Implement
+            simulationSettings = settings;
         }
 
         public void RecombinationAlgorithmChanged(GeneralSettingsView view, RecombinationAlgorithm algorithm) {
-
+            var settings = simulationSettings;
+            // TODO: Implement
+            simulationSettings = settings;
         }
 
         public void MutationAlgorithmChanged(GeneralSettingsView view, MutationAlgorithm algorithm) {
-
+            var settings = simulationSettings;
+            // TODO: Implement
+            simulationSettings = settings;
         }
 
         public void MutationRateChanged(GeneralSettingsView view, float mutationRate) {
+            var settings = simulationSettings;
+            settings.MutationRate = (int)(mutationRate * 100f);
+            simulationSettings = settings;
+        }
 
+        public void ResetButtonPressed(NetworkSettingsView view) {
+            networkSettings = NeuralNetworkSettings.Default;
         }
     }
 }

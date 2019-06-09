@@ -5,47 +5,58 @@ using Keiwando.Evolution;
 
 public class EditorStateManager {
 
-    public EditorSettings EditorSettings => _editorSettings;
-    public SimulationSettings SimulationSettings => _simulationSettings;
-    public NeuralNetworkSettings NetworkSettings => _neuralNetworkSettings;
+    public static EditorSettings EditorSettings {
+        get => _editorSettings;
+        set {
+            _editorSettings = value; 
+            Settings.EditorSettings = value.Encode();
+        } 
+    } 
+
+    public static SimulationSettings SimulationSettings {
+        get => _simulationSettings;
+        set {
+            _simulationSettings = value;
+            Settings.SimulationSettings = value.Encode();
+        }
+    }
+
+    public static NeuralNetworkSettings NetworkSettings {
+        get => _networkSettings;
+        set {
+            _networkSettings = value;
+            Settings.NetworkSettings = value.Encode();
+        }
+    }
+
+    public static CreatureDesign CreatureDesign {
+        get => _creatureDesign;
+        set {
+            _creatureDesign = value;
+            Settings.CurrentCreatureDesign = value.Encode();
+        }
+    }
 
     private static EditorSettings _editorSettings;
     private static SimulationSettings _simulationSettings;
-    private static NeuralNetworkSettings _neuralNetworkSettings;
+    private static NeuralNetworkSettings _networkSettings;
     private static CreatureDesign _creatureDesign;
 
     static EditorStateManager() {
-        _editorSettings = LoadEditorSettings();
-        _simulationSettings = LoadSimulationSettings();
-        _neuralNetworkSettings = LoadNetworkSettings();
-        _creatureDesign = LoadCreatureDesign();
+        _editorSettings = EditorSettings.Decode(Settings.EditorSettings);
+        _simulationSettings = SimulationSettings.Decode(Settings.SimulationSettings);
+        _networkSettings = NeuralNetworkSettings.Decode(Settings.NetworkSettings);
+        _creatureDesign = CreatureSerializer.ParseCreatureDesign(Settings.CurrentCreatureDesign);
     }
 
     public static EditorState Load() {
 
-        return new EditorState(LoadCreatureDesign(), LoadSimulationSettings(), LoadNetworkSettings());
+        return new EditorState(_creatureDesign, _simulationSettings, _networkSettings);
     }
 
     public static void Serialize(EditorState state) {
         Settings.SimulationSettings = state.SimulationSettings.Encode();
         Settings.NetworkSettings = state.NeuralNetworkSettings.Encode();
         Settings.CurrentCreatureDesign = state.CreatureDesign.Encode();
-    }
-
-    private static EditorSettings LoadEditorSettings() {
-        // TODO: Replace with actual Settings key
-        return EditorSettings.Decode("");
-    }
-
-    private static SimulationSettings LoadSimulationSettings() {
-        return SimulationSettings.Decode(Settings.SimulationSettings);
-    }
-
-    private static NeuralNetworkSettings LoadNetworkSettings() {
-        return NeuralNetworkSettings.Decode(Settings.NetworkSettings);
-    }
-
-    private static CreatureDesign LoadCreatureDesign() {
-        return CreatureSerializer.ParseCreatureDesign(Settings.CurrentCreatureDesign);
     }
 }

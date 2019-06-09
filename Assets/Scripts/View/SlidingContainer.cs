@@ -17,7 +17,7 @@ namespace Keiwando.UI {
         }
         [SerializeField] private float slideMultiplier = 1f;
 
-        [SerializeField] private AnimationCurve animationCurve = new AnimationCurve();
+        [SerializeField] private AnimationCurve animationCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     
         public Direction LastSlideDirection { get; private set; }
 
@@ -25,8 +25,7 @@ namespace Keiwando.UI {
         
         /// The animation target positions. Needed so that the animation can be finished 
         /// instantly when a running coroutine is stopped.
-        private Vector2 targetMin;
-        private Vector2 targetMax;
+        private Vector2 targetPosition;
         private Coroutine coroutine;
         public float AnimationProgress { get; private set; } = 1f;
 
@@ -46,48 +45,41 @@ namespace Keiwando.UI {
 
             LastSlideDirection = direction;
 
-            var bottomLeft = rectTransform.offsetMin;
-            var topRight = rectTransform.offsetMax;
-            var relativeHeight = topRight.y - bottomLeft.y;
-            var relativeWidth = topRight.x - bottomLeft.x;
+            var localWidth = rectTransform.rect.width;
+            var localHeight = rectTransform.rect.height;
 
             float dX = 0f;
             float dY = 0f;
 
             switch (direction) {
             case Direction.Left:
-                dX = -relativeWidth; break;
+                dX = -localWidth; break;
             case Direction.Right:
-                dX = relativeWidth; break;
+                dX = localWidth; break;
             case Direction.Up: 
-                dY = relativeHeight; break;
+                dY = localHeight; break;
             case Direction.Down:
-                dY = -relativeHeight; break;
+                dY = -localHeight; break;
             }
 
-            bottomLeft.x += dX * slideMultiplier;
-            topRight.x += dX * slideMultiplier;
-            bottomLeft.y += dY * slideMultiplier;
-            topRight.y += dY * slideMultiplier;
+            var startPos = rectTransform.localPosition;
+            var targetPos = startPos;
+            targetPos.x += dX * slideMultiplier;
+            targetPos.y += dY * slideMultiplier;
+            this.targetPosition = targetPos;
 
-            this.targetMin = bottomLeft;
-            this.targetMax = topRight;
-
-            var oldBottomLeft = rectTransform.offsetMin;
-            var oldTopRight = rectTransform.offsetMax;
 
             while (elapsed < duration) {
 
                 var t = animationCurve.Evaluate(elapsed / duration);
-                rectTransform.offsetMin = Vector2.Lerp(oldBottomLeft, bottomLeft, t);
-                rectTransform.offsetMax = Vector2.Lerp(oldTopRight, topRight, t);
+                
+                rectTransform.localPosition = Vector2.Lerp(startPos, targetPos, t);
                 elapsed += Time.deltaTime;
                 this.AnimationProgress = t;
                 yield return new WaitForEndOfFrame();
             }
 
-            rectTransform.offsetMin = bottomLeft;
-            rectTransform.offsetMax = topRight;
+            rectTransform.localPosition = targetPos;
 
             this.AnimationProgress = 1f;
         }
@@ -95,8 +87,7 @@ namespace Keiwando.UI {
         private void FinishAnimation() {
             if (coroutine != null) {
                 StopCoroutine(coroutine);
-                rectTransform.offsetMin = targetMin;
-                rectTransform.offsetMax = targetMax;
+                rectTransform.localPosition = targetPosition;
                 this.AnimationProgress = 1f;
             }
         }

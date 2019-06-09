@@ -9,13 +9,6 @@ namespace Keiwando.Evolution.UI {
 
     public class SettingsViewController: MonoBehaviour {
 
-        public ISettingsViewControllerDelegate Delegate { 
-            set { 
-                generalSettingsView.Delegate = value;
-                networkSettingsView.Delegate = value;
-            } 
-        }
-
         [SerializeField] private GeneralSettingsView generalSettingsView;
         [SerializeField] private NetworkSettingsView networkSettingsView;
 
@@ -26,12 +19,14 @@ namespace Keiwando.Evolution.UI {
         [SerializeField] private SlidingContainer container;
 
         private bool isShowingGeneralSettings {
-            get => container.LastSlideDirection != SlidingContainer.Direction.Down;
+            get => container.LastSlideDirection != SlidingContainer.Direction.Up;
         }
 
         void Start() {
 
-            
+            var settingsManager = new SettingsManager();
+            generalSettingsView.Delegate = settingsManager;
+            networkSettingsView.Delegate = settingsManager;
             
             closeButton.onClick.AddListener(delegate () {
                 Hide();
@@ -39,15 +34,17 @@ namespace Keiwando.Evolution.UI {
 
             brainButton.onClick.AddListener(delegate () {
                 if (isShowingGeneralSettings) {
-                    container.Slide(SlidingContainer.Direction.Down, 0.3f, 1f - container.AnimationProgress);
+                    container.Slide(SlidingContainer.Direction.Up, 0.3f, 1f - container.AnimationProgress);
                 }
             });
 
             backFromNetworkSettingsButton.onClick.AddListener(delegate () {
                 if (!isShowingGeneralSettings) {
-                    container.Slide(SlidingContainer.Direction.Up, 0.3f, 1f - container.AnimationProgress);
+                    container.Slide(SlidingContainer.Direction.Down, 0.3f, 1f - container.AnimationProgress);
                 }
             });
+
+            Refresh();
         }
 
         public void Refresh() {

@@ -47,6 +47,11 @@ public class CreatureEditor: MonoBehaviour {
             Destroy(configContainer);
         }
 
+        // TODO: Update when EditorSettings change
+        var editorSettings = EditorStateManager.EditorSettings;
+        grid.gameObject.SetActive(editorSettings.GridEnabled);
+        grid.Size = editorSettings.GridSize;
+
         // DEBUG:
         // Instantiate(Resources.Load("Prefabs/Structures/Ground"), new Vector3(0, 0, 10f), Quaternion.identity);
     }
