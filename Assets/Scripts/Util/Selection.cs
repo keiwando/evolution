@@ -10,10 +10,10 @@ namespace Keiwando.Evolution {
     }
 
     public enum SelectionAlgorithm {
-        Uniform,
-        FitnessProportional,
-        TournamentSelection,
-        RankProportional
+        Uniform = 0,
+        FitnessProportional = 1,
+        TournamentSelection = 2,
+        RankProportional = 3
     }
 
     public class Selection<T> where T: ISelectable<T> {

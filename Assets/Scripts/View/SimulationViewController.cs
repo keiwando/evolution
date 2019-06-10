@@ -5,13 +5,15 @@ using System.Text;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Keiwando.Evolution;
 using Keiwando.Evolution.UI;
 
 public class SimulationViewController : MonoBehaviour, 
 										IEvolutionOverlayViewDelegate, 
 										ISharedSimulationOverlayViewDelegate,
 										IBestCreaturesOverlayViewDelegate,
-										ISimulationVisibilityOptionsViewDelegate  {
+										ISimulationVisibilityOptionsViewDelegate,
+										IPauseViewControllerDelegate  {
 
 	enum VisibleScreen {
 		Simulation,
@@ -22,7 +24,7 @@ public class SimulationViewController : MonoBehaviour,
 	private CameraFollowController cameraFollowController;
 	private BestCreaturesController bestCreatureController;
 	
-	[SerializeField] private EvolutionPauseMenu pauseView;
+	[SerializeField] private PauseViewController pauseViewController;
 
 	[SerializeField] private EvolutionOverlayView evolutionOverlayView;
 	[SerializeField] private BestCreaturesOverlayView bestCreatureOverlayView;
@@ -96,7 +98,10 @@ public class SimulationViewController : MonoBehaviour,
 	}
 
 	private void Pause() {
-		pauseView.Pause();
+		
+		evolution.Pause();
+		pauseViewController.Delegate = this;
+		pauseViewController.Show();
 	}
 
 	private void SaveSimulation() {
@@ -275,6 +280,14 @@ public class SimulationViewController : MonoBehaviour,
 
     public bool ShouldShowMuscleContraction(SimulationVisibilityOptionsView view) {
 		return Settings.ShowMuscleContraction;
+	}
+
+	#endregion
+
+	#region IPauseViewControllerDelegate
+
+	public void DidDismiss(PauseViewController viewController) {
+		evolution.Resume();
 	}
 
 	#endregion

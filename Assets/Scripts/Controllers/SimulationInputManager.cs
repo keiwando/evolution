@@ -1,38 +1,41 @@
 using UnityEngine;
 
-public class SimulationInputManager: MonoBehaviour {
+namespace Keiwando.Evolution {
 
-    private Evolution evolution;
-    private SimulationViewController viewController;
+    public class SimulationInputManager: MonoBehaviour {
 
-    void Start() {
-        evolution = FindObjectOfType<Evolution>();
-        viewController = FindObjectOfType<SimulationViewController>();
-    }
+        private Evolution evolution;
+        private SimulationViewController viewController;
 
-    void Update () {
+        void Start() {
+            evolution = FindObjectOfType<Evolution>();
+            viewController = FindObjectOfType<SimulationViewController>();
+        }
 
-		HandleKeyboardInput();
-	}
+        void Update () {
 
-    private void HandleKeyboardInput() {
+            HandleKeyboardInput();
+        }
 
-        if (!Input.anyKeyDown) return;
+        private void HandleKeyboardInput() {
 
-        if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+            if (!Input.anyKeyDown) return;
 
-			viewController.FocusOnPreviousCreature();
-		
-		} else if (Input.GetKeyDown(KeyCode.RightArrow)) {
+            if (Input.GetKeyDown(KeyCode.LeftArrow)) {
 
-			viewController.FocusOnNextCreature();
+                viewController.FocusOnPreviousCreature();
+            
+            } else if (Input.GetKeyDown(KeyCode.RightArrow)) {
 
-		} else if (Input.GetKeyDown(KeyCode.Escape)) {
-			viewController.GoBackToEditor();
-		}
+                viewController.FocusOnNextCreature();
 
-		if (Application.platform == RuntimePlatform.Android && Input.GetKeyDown(KeyCode.Backspace)) {
-			viewController.GoBackToEditor();
-		}	
+            } else if (Input.GetKeyDown(KeyCode.Escape)) {
+                viewController.GoBackToEditor();
+            }
+
+            if (Application.platform == RuntimePlatform.Android && Input.GetKeyDown(KeyCode.Backspace)) {
+                viewController.GoBackToEditor();
+            }	
+        }
     }
 }

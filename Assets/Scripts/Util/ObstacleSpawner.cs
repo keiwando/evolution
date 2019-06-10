@@ -2,66 +2,69 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObstacleSpawner : MonoBehaviour {
+namespace Keiwando.Evolution {
 
-	private const string OBSTACLE_PREFAB_PATH = "Prefabs/Obstacle Ball"; 
+	public class ObstacleSpawner : MonoBehaviour {
 
-	/// <summary>
-	/// The force with which the obstacles are accelerated after spawn.
-	/// </summary>
-	private float Obstacle_Force = 5000f;
-	/// <summary>
-	/// The time distance between the spawn of two obstacles in seconds.
-	/// </summary>
-	private float Obstacle_Distance = 5f;
+		private const string OBSTACLE_PREFAB_PATH = "Prefabs/Obstacle Ball"; 
 
-	public Transform spawnPoint;
+		/// <summary>
+		/// The force with which the obstacles are accelerated after spawn.
+		/// </summary>
+		private float Obstacle_Force = 5000f;
+		/// <summary>
+		/// The time distance between the spawn of two obstacles in seconds.
+		/// </summary>
+		private float Obstacle_Distance = 5f;
 
-	public BestCreaturesController BCController;
+		public Transform spawnPoint;
 
-	public GameObject obstacle;
-	private Rigidbody obsRigidbody;
+		public BestCreaturesController BCController;
 
-	public bool BCScene;
+		public GameObject obstacle;
+		private Rigidbody obsRigidbody;
 
-	//private Evolution evolution;
+		public bool BCScene;
 
-	void Start () {
+		//private Evolution evolution;
 
-		//evolution = GameObject.Find("Evolution").GetComponent<Evolution>();
+		void Start () {
 
-		obsRigidbody = obstacle.GetComponent<Rigidbody>();
+			//evolution = GameObject.Find("Evolution").GetComponent<Evolution>();
 
-		StartCoroutine(SpawnObstacle());
-	}
-	
-	// Update is called once per frame
-	void Update () {
+			obsRigidbody = obstacle.GetComponent<Rigidbody>();
+
+			StartCoroutine(SpawnObstacle());
+		}
 		
-	}
-
-	// Spawns a 
-	private IEnumerator SpawnObstacle() {
-
-		while(true) {
-
-			obsRigidbody.velocity = Vector3.zero;
-			obstacle.transform.position = spawnPoint.position;
-			obsRigidbody.AddForce(new Vector3(-Obstacle_Force, 0f, 0f));
-
-			UpdateObstacleKnowledge();
-
-			yield return new WaitForSeconds(Obstacle_Distance);
+		// Update is called once per frame
+		void Update () {
+			
 		}
 
-		//yield return null;
-	} 
+		// Spawns a 
+		private IEnumerator SpawnObstacle() {
 
-	private void UpdateObstacleKnowledge() {
-		if (!BCScene) {
-			GameObject.Find("Evolution").GetComponent<Evolution>().UpdateCreaturesWithObstacle(obstacle);	
-		} else {
-			BCController.CurrentBest.Obstacle = obstacle;
+			while(true) {
+
+				obsRigidbody.velocity = Vector3.zero;
+				obstacle.transform.position = spawnPoint.position;
+				obsRigidbody.AddForce(new Vector3(-Obstacle_Force, 0f, 0f));
+
+				UpdateObstacleKnowledge();
+
+				yield return new WaitForSeconds(Obstacle_Distance);
+			}
+
+			//yield return null;
+		} 
+
+		private void UpdateObstacleKnowledge() {
+			if (!BCScene) {
+				GameObject.Find("Evolution").GetComponent<Evolution>().UpdateCreaturesWithObstacle(obstacle);	
+			} else {
+				BCController.CurrentBest.Obstacle = obstacle;
+			}
 		}
 	}
 }

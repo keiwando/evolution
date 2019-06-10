@@ -1,3 +1,4 @@
+using System;
 using Keiwando.Evolution.UI;
 
 namespace Keiwando.Evolution {
@@ -10,12 +11,23 @@ namespace Keiwando.Evolution {
         }
         private SimulationSettings simulationSettings {
             get => EditorStateManager.SimulationSettings;
-            set => EditorStateManager.SimulationSettings = value;
+            set {
+                EditorStateManager.SimulationSettings = value;
+                if (evolution != null) 
+                    evolution.Settings = value;    
+            }
         }
 
         private NeuralNetworkSettings networkSettings {
             get => EditorStateManager.NetworkSettings;
             set => EditorStateManager.NetworkSettings = value;
+        }
+
+        private Evolution evolution;
+        public Grid grid;
+
+        public SettingsManager(Evolution evolution = null) {
+            this.evolution = evolution;
         }
 
         // MARK: - ISettingsViewControllerDelegate
@@ -49,35 +61,47 @@ namespace Keiwando.Evolution {
         }
 
         public SelectionAlgorithm GetSelectionAlgorithm(GeneralSettingsView view) {
-            // TODO: Load from SimulationSettings
-            return SelectionAlgorithm.FitnessProportional;
+            return simulationSettings.SelectionAlgorithm;
         }
 
         public RecombinationAlgorithm GetRecombinationAlgorithm(GeneralSettingsView view) {
-            // TODO: Load from SimulationSettings
-            return RecombinationAlgorithm.MultiPointCrossover;
+            return simulationSettings.RecombinationAlgorithm;
         }
 
         public MutationAlgorithm GetMutationAlgorithm(GeneralSettingsView view) {
-            // TODO: Load from SimulationSettings
-            return MutationAlgorithm.ChunkFlip;
+            return simulationSettings.MutationAlgorithm;
         }
 
         public float GetMutationRate(GeneralSettingsView view) {
-            return simulationSettings.MutationRate / 100f;
+            return simulationSettings.MutationRate;
         }
 
+        public int GetSimulationTime(PauseViewController view) {
+            return simulationSettings.SimulationTime;
+        }
+
+
+        public void SimulationTimeChanged(PauseViewController view, int time) {
+            var settings = simulationSettings;
+            settings.SimulationTime = Math.Min(Math.Max(time, 1), 100000);
+            simulationSettings = settings;
+        }
 
         public void GridActivationToggled(GeneralSettingsView view, bool enabled) {
             var settings = editorSettings;
             settings.GridEnabled = enabled;
             editorSettings = settings;
+            if (grid != null) grid.gameObject.SetActive(enabled);
         }
 
         public void GridSizeChanged(GeneralSettingsView view, float size) {
             var settings = editorSettings;
             settings.GridSize = size;
             editorSettings = settings;
+            if (grid != null) {
+                grid.Size = size;
+                grid.VisualRefresh();
+            }
         }
 
         public void KeepBestCreaturesToggled(GeneralSettingsView view, bool enabled) {
@@ -100,25 +124,25 @@ namespace Keiwando.Evolution {
 
         public void SelectionAlgorithmChanged(GeneralSettingsView view, SelectionAlgorithm algorithm) {
             var settings = simulationSettings;
-            // TODO: Implement
+            settings.SelectionAlgorithm = algorithm;
             simulationSettings = settings;
         }
 
         public void RecombinationAlgorithmChanged(GeneralSettingsView view, RecombinationAlgorithm algorithm) {
             var settings = simulationSettings;
-            // TODO: Implement
+            settings.RecombinationAlgorithm = algorithm;
             simulationSettings = settings;
         }
 
         public void MutationAlgorithmChanged(GeneralSettingsView view, MutationAlgorithm algorithm) {
             var settings = simulationSettings;
-            // TODO: Implement
+            settings.MutationAlgorithm = algorithm;
             simulationSettings = settings;
         }
 
         public void MutationRateChanged(GeneralSettingsView view, float mutationRate) {
             var settings = simulationSettings;
-            settings.MutationRate = (int)(mutationRate * 100f);
+            settings.MutationRate = Math.Min(Math.Max(mutationRate, 0), 1);
             simulationSettings = settings;
         }
 

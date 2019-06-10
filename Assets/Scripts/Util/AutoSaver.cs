@@ -3,46 +3,49 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AutoSaver {
+namespace Keiwando.Evolution {
 	
-	public bool Enabled {
-		set { this.enabled = value; }
-		get { return this.enabled; }
-	}
-	private bool enabled = false;
+	public class AutoSaver {
+	
+		public bool Enabled {
+			set { this.enabled = value; }
+			get { return this.enabled; }
+		}
+		private bool enabled = false;
 
-	/// <summary>
-	/// The distance between two autosaves in generations.
-	/// </summary>
-	/// // TODO: Make this configurable
-	public int GenerationDistance = 10;
+		/// <summary>
+		/// The distance between two autosaves in generations.
+		/// </summary>
+		/// // TODO: Make this configurable
+		public int GenerationDistance = 10;
 
-	//private int lastSavedGeneration = -100;
+		//private int lastSavedGeneration = -100;
 
-	private string lastSaveFileName = "";
+		private string lastSaveFileName = "";
 
-	public bool Update(int generation, Evolution evolution) {
+		public bool Update(int generation, Evolution evolution) {
 
-		if (!enabled || generation % GenerationDistance != 0 || generation < 2) { 
-			return false; 
+			if (!enabled || generation % GenerationDistance != 0 || generation < 2) { 
+				return false; 
+			}
+
+			// Perform an auto-save
+			Save(generation, evolution);
+
+			return true;
 		}
 
-		// Perform an auto-save
-		Save(generation, evolution);
+		private void Save(int generation, Evolution evolution) {
 
-		return true;
-	}
+			var lastSave = this.lastSaveFileName;
 
-	private void Save(int generation, Evolution evolution) {
+			//this.lastSavedGeneration = generation;
+			this.lastSaveFileName = SimulationSerializer.SaveSimulation(evolution.SimulationData);
 
-		var lastSave = this.lastSaveFileName;
-
-		//this.lastSavedGeneration = generation;
-		this.lastSaveFileName = SimulationSerializer.SaveSimulation(evolution.SimulationData);
-
-		// Delete the last auto-saved file
-		if (lastSave != "") {
-			SimulationSerializer.DeleteSaveFile(lastSave);
+			// Delete the last auto-saved file
+			if (lastSave != "") {
+				SimulationSerializer.DeleteSaveFile(lastSave);
+			}
 		}
 	}
 }

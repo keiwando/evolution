@@ -4,154 +4,157 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EvolutionPauseMenu : MonoBehaviour {
+namespace Keiwando.Evolution.UI {
 
-	private Evolution evolution;
+	public class EvolutionPauseMenu : MonoBehaviour {
 
-	// Keep best creatures
-	[SerializeField] 
-	private Toggle keepBestCreaturesToggle;
+		private Evolution evolution;
 
-	// Batch simulation
-	[SerializeField] 
-	private InputField batchSizeInput;
-	[SerializeField] 
-	private Toggle batchSizeToggle;
+		// Keep best creatures
+		[SerializeField] 
+		private Toggle keepBestCreaturesToggle;
 
-	// Simulation Time
-	[SerializeField] 
-	private InputField simulationTimeInput;
+		// Batch simulation
+		[SerializeField] 
+		private InputField batchSizeInput;
+		[SerializeField] 
+		private Toggle batchSizeToggle;
 
-	// Mutation rate
-	[SerializeField] 
-	private InputField mutationRateInput;
+		// Simulation Time
+		[SerializeField] 
+		private InputField simulationTimeInput;
 
-	// Use this for initialization
-	void Start () {
+		// Mutation rate
+		[SerializeField] 
+		private InputField mutationRateInput;
 
-		evolution = FindObjectOfType<Evolution>();
+		// Use this for initialization
+		void Start () {
 
-		Setup();
-	}
+			evolution = FindObjectOfType<Evolution>();
 
-	private void Setup() {
+			Setup();
+		}
 
-		SetupInputCallbacks();
+		private void Setup() {
 
-		// Evolution settings
-		var settings = evolution.Settings;
+			SetupInputCallbacks();
 
-		keepBestCreaturesToggle.isOn = settings.KeepBestCreatures;
+			// Evolution settings
+			var settings = evolution.Settings;
 
-		BatchSizeToggled(settings.SimulateInBatches);
-		batchSizeToggle.isOn = settings.SimulateInBatches;
+			keepBestCreaturesToggle.isOn = settings.KeepBestCreatures;
 
-		batchSizeInput.text = settings.BatchSize.ToString();
-		simulationTimeInput.text = settings.SimulationTime.ToString();
-		mutationRateInput.text = settings.MutationRate.ToString();
-	}
+			BatchSizeToggled(settings.SimulateInBatches);
+			batchSizeToggle.isOn = settings.SimulateInBatches;
 
-	private void SetupInputCallbacks() {
+			batchSizeInput.text = settings.BatchSize.ToString();
+			simulationTimeInput.text = settings.SimulationTime.ToString();
+			mutationRateInput.text = settings.MutationRate.ToString();
+		}
 
-		simulationTimeInput.onEndEdit.AddListener(delegate {
-			SimulationTimeChanged();
-		});
+		private void SetupInputCallbacks() {
 
-		batchSizeInput.onEndEdit.AddListener(delegate {
-			BatchSizeChanged();
-		});
+			simulationTimeInput.onEndEdit.AddListener(delegate {
+				SimulationTimeChanged();
+			});
 
-		mutationRateInput.onEndEdit.AddListener(delegate {
-			MutationRateChanged();
-		});
+			batchSizeInput.onEndEdit.AddListener(delegate {
+				BatchSizeChanged();
+			});
 
-		keepBestCreaturesToggle.onValueChanged.AddListener(delegate(bool arg0) {
-			KeepBestCreaturesToggled(arg0);	
-		});
+			mutationRateInput.onEndEdit.AddListener(delegate {
+				MutationRateChanged();
+			});
 
-		batchSizeToggle.onValueChanged.AddListener(delegate(bool arg0) {
-			BatchSizeToggled(arg0);	
-		});
-	}
+			keepBestCreaturesToggle.onValueChanged.AddListener(delegate(bool arg0) {
+				KeepBestCreaturesToggled(arg0);	
+			});
 
-	public void Pause() {
-		this.gameObject.SetActive(true);
+			batchSizeToggle.onValueChanged.AddListener(delegate(bool arg0) {
+				BatchSizeToggled(arg0);	
+			});
+		}
 
-		Time.timeScale = 0;
-	}
+		public void Pause() {
+			this.gameObject.SetActive(true);
 
-	public void Continue() {
-		this.gameObject.SetActive(false);
-		Time.timeScale = 1f;
-	}
+			Time.timeScale = 0;
+		}
 
-	public void KeepBestCreaturesToggled(bool value) {
-		
-		var settings = evolution.Settings;
-		settings.KeepBestCreatures = value;
-		evolution.Settings = settings;
-	}
+		public void Continue() {
+			this.gameObject.SetActive(false);
+			Time.timeScale = 1f;
+		}
 
-	private void SimulationTimeChanged() {
-		// Make sure the time is at least 1
-		var time = Mathf.Clamp(Int32.Parse(simulationTimeInput.text), 1, 100000);
-		simulationTimeInput.text = time.ToString();
+		public void KeepBestCreaturesToggled(bool value) {
+			
+			var settings = evolution.Settings;
+			settings.KeepBestCreatures = value;
+			evolution.Settings = settings;
+		}
 
-		/*var settings = LoadSimulationSettings();
-		settings.simulationTime = time;
-		SaveSimulationSettings(settings);*/
-		var settings = evolution.Settings;
-		settings.SimulationTime = time;
-		evolution.Settings = settings;
-	}
+		private void SimulationTimeChanged() {
+			// Make sure the time is at least 1
+			var time = Mathf.Clamp(Int32.Parse(simulationTimeInput.text), 1, 100000);
+			simulationTimeInput.text = time.ToString();
 
-	private void MutationRateChanged() {
-		// Clamp between 1 and 100 %
-		var rate = Mathf.Clamp(int.Parse(mutationRateInput.text), 1, 100);
-		mutationRateInput.text = rate.ToString();
+			/*var settings = LoadSimulationSettings();
+			settings.simulationTime = time;
+			SaveSimulationSettings(settings);*/
+			var settings = evolution.Settings;
+			settings.SimulationTime = time;
+			evolution.Settings = settings;
+		}
 
-		/*var settings = LoadSimulationSettings();
-		settings.mutationRate = rate;
-		SaveSimulationSettings(settings);*/
+		private void MutationRateChanged() {
+			// Clamp between 1 and 100 %
+			var rate = Mathf.Clamp(int.Parse(mutationRateInput.text), 1, 100);
+			mutationRateInput.text = rate.ToString();
 
-		var settings = evolution.Settings;
-		settings.MutationRate = rate;
-		evolution.Settings = settings;
-	}
+			/*var settings = LoadSimulationSettings();
+			settings.mutationRate = rate;
+			SaveSimulationSettings(settings);*/
 
-	private void BatchSizeChanged() {
-		// Make sure the size is between 1 and the population size
-		var batchSize = ClampBatchSize(Int32.Parse(batchSizeInput.text));
-		batchSizeInput.text = batchSize.ToString();
+			var settings = evolution.Settings;
+			settings.MutationRate = rate;
+			evolution.Settings = settings;
+		}
 
-		/*var settings = LoadSimulationSettings();
-		settings.batchSize = batchSize;
-		SaveSimulationSettings(settings);*/
+		private void BatchSizeChanged() {
+			// Make sure the size is between 1 and the population size
+			var batchSize = ClampBatchSize(Int32.Parse(batchSizeInput.text));
+			batchSizeInput.text = batchSize.ToString();
 
-		var settings = evolution.Settings;
-		settings.BatchSize = batchSize;
-		evolution.Settings = settings;
-	}
+			/*var settings = LoadSimulationSettings();
+			settings.batchSize = batchSize;
+			SaveSimulationSettings(settings);*/
 
-	private int ClampBatchSize(int size) {
+			var settings = evolution.Settings;
+			settings.BatchSize = batchSize;
+			evolution.Settings = settings;
+		}
 
-		//var populationSize = Mathf.Clamp(Int32.Parse(populationSizeInput.text), 2, 10000000);
-		var populationSize = evolution.Settings.PopulationSize;
+		private int ClampBatchSize(int size) {
 
-		return Mathf.Clamp(size, 1, populationSize);
-	}
+			//var populationSize = Mathf.Clamp(Int32.Parse(populationSizeInput.text), 2, 10000000);
+			var populationSize = evolution.Settings.PopulationSize;
 
-	public void BatchSizeToggled(bool val) {
+			return Mathf.Clamp(size, 1, populationSize);
+		}
 
-		//PlayerPrefs.SetInt(BATCH_SIMULATION_ENABLED_KEY, val ? 1 : 0);
-		batchSizeInput.gameObject.SetActive(val);
+		public void BatchSizeToggled(bool val) {
 
-		/*var settings = LoadSimulationSettings();
-		settings.simulateInBatches = val;
-		SaveSimulationSettings(settings);*/
+			//PlayerPrefs.SetInt(BATCH_SIMULATION_ENABLED_KEY, val ? 1 : 0);
+			batchSizeInput.gameObject.SetActive(val);
 
-		var settings = evolution.Settings;
-		settings.SimulateInBatches = val;
-		evolution.Settings = settings;
+			/*var settings = LoadSimulationSettings();
+			settings.simulateInBatches = val;
+			SaveSimulationSettings(settings);*/
+
+			var settings = evolution.Settings;
+			settings.SimulateInBatches = val;
+			evolution.Settings = settings;
+		}
 	}
 }

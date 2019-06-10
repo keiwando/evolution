@@ -7,7 +7,7 @@ namespace Keiwando.Evolution {
 
     public struct EditorSettings {
 
-        public const float MIN_GRID_SIZE = 0.3f;
+        public const float MIN_GRID_SIZE = 1f;
         public const float MAX_GRID_SIZE = 3.0f;
 
         public bool GridEnabled;

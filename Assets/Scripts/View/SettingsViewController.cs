@@ -18,6 +18,8 @@ namespace Keiwando.Evolution.UI {
 
         [SerializeField] private SlidingContainer container;
 
+        [SerializeField] private Grid grid;
+
         private bool isShowingGeneralSettings {
             get => container.LastSlideDirection != SlidingContainer.Direction.Up;
         }
@@ -25,6 +27,7 @@ namespace Keiwando.Evolution.UI {
         void Start() {
 
             var settingsManager = new SettingsManager();
+            settingsManager.grid = grid;
             generalSettingsView.Delegate = settingsManager;
             networkSettingsView.Delegate = settingsManager;
             

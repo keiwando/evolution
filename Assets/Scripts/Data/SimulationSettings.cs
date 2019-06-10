@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Keiwando.Evolution;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -41,7 +42,23 @@ public struct SimulationSettings {
 	/// <summary>
 	/// Specifies the probability of chromosome mutation as a percentage between 1 and 100.
 	/// </summary>
-	public int MutationRate;
+	public float MutationRate;
+
+	/// <summary>
+	/// The algorithm to use when selecting for survival and reproduction
+	/// </summary>
+	public SelectionAlgorithm SelectionAlgorithm;
+
+	/// <summary>
+	/// The algorithm to use during recombination
+	/// </summary>
+	public RecombinationAlgorithm RecombinationAlgorithm;
+
+	/// <summary>
+	/// The algorithm to use when mutating chromosomes
+	/// </summary>
+	public MutationAlgorithm MutationAlgorithm;
+
 
 	public static readonly SimulationSettings Default = new SimulationSettings() {
 		Task = EvolutionTask.Running,
@@ -50,67 +67,56 @@ public struct SimulationSettings {
 		PopulationSize = 10,
 		BatchSize = 10,
 		SimulateInBatches = false,
-		MutationRate = 50
+		MutationRate = 0.5f,
+		SelectionAlgorithm = SelectionAlgorithm.RankProportional,
+		RecombinationAlgorithm = RecombinationAlgorithm.OnePointCrossover,
+		MutationAlgorithm = MutationAlgorithm.ChunkFlip
 	};
 
 	public SimulationSettings(EvolutionTask task) {
 
 		this.Task = task;
-		this.KeepBestCreatures = true;
-		this.SimulationTime = 10;
-		this.PopulationSize = 10;
-		this.SimulateInBatches = false;
-		this.BatchSize = 10;
-		this.MutationRate = 50;
+		this.KeepBestCreatures = Default.KeepBestCreatures;
+		this.SimulationTime = Default.SimulationTime;
+		this.PopulationSize = Default.PopulationSize;
+		this.SimulateInBatches = Default.SimulateInBatches;
+		this.BatchSize = Default.BatchSize;
+		this.MutationRate = Default.MutationRate;
+		this.SelectionAlgorithm = Default.SelectionAlgorithm;
+		this.RecombinationAlgorithm = Default.RecombinationAlgorithm;
+		this.MutationAlgorithm = Default.MutationAlgorithm;
 	}
-
-	// #region Encode & Decode
-
-    //     private static class CodingKey {
-    //         public const string GridEnabled = "gridEnabled";
-    //         public const string GridSize = "gridSize";
-    //     }
-
-    //     public string Encode() {
-    //         var json = new JObject();
-
-    //         json[CodingKey.GridEnabled] = this.GridEnabled;
-    //         json[CodingKey.GridSize] = this.GridSize;
-    //         return json.ToString();
-    //     }
-
-    //     public static EditorSettings Decode(string encoded) {
-
-    //         JObject json = JObject.Parse(encoded);
-
-    //         bool gridEnabled = json[CodingKey.GridEnabled].ToObject<bool>();
-    //         float gridSize = json[CodingKey.GridSize].ToObject<float>();
-
-    //         return new EditorSettings() {
-    //             GridEnabled = gridEnabled,
-    //             GridSize = gridSize
-    //         };
-    //     }
-
-    //     #endregion
 
 	#region Encode & Decode
 
-	/// <summary>
-	/// Encodes this instance into a string decodable by the Decode function.
-	/// </summary>
-	// public string Encode() {
-	// 	// Format:
-	// 	// keepBestCreatures # simulationTime # populationSize # simulateInBatches # batchSize # task # mutationRate
-	// 	// ^ without spaces. enum value as string
-
-	// 	return "((#" + keepBestCreatures.ToString() + "#" + simulationTime.ToString() + "#" + populationSize.ToString() + "#" + simulateInBatches.ToString() + "#"
-	// 		+ batchSize.ToString() + "#" + task.StringRepresentation() + "#" + mutationRate.ToString() + "#))";
-
-	// }
+	private static class CodingKey {
+		public const string KeepBestCreatures = "keepBestCreatures";
+		public const string SimulationTime = "simulationTime";
+		public const string PopulationSize = "populationSize";
+		public const string SimulateInBatches = "simulateInBatches";
+		public const string BatchSize = "batchSize";
+		public const string Task = "task";
+		public const string MutationRate = "mutationRate";
+		public const string SelectionAlgorithm = "selectionAlgorithm";
+		public const string RecombinationAlgorithm = "recombinationAlgorithm";
+		public const string MutationAlgorithm = "mutationAlgorithm";
+	}
 
 	public string Encode() {
-		return JsonUtility.ToJson(this, false);
+		var json = new JObject();
+
+		json[CodingKey.KeepBestCreatures] = this.KeepBestCreatures;
+		json[CodingKey.SimulationTime] = this.SimulationTime;
+		json[CodingKey.PopulationSize] = this.PopulationSize;
+		json[CodingKey.SimulateInBatches] = this.SimulateInBatches;
+		json[CodingKey.BatchSize] = this.BatchSize;
+		json[CodingKey.Task] = (int)this.Task;
+		json[CodingKey.MutationRate] = this.MutationRate;
+		json[CodingKey.SelectionAlgorithm] = (int)this.SelectionAlgorithm;
+		json[CodingKey.RecombinationAlgorithm] = (int)this.RecombinationAlgorithm;
+		json[CodingKey.MutationAlgorithm] = (int)this.MutationAlgorithm;
+
+		return json.ToString();
 	}
 
 	public static SimulationSettings Decode(string encoded) {
@@ -118,14 +124,36 @@ public struct SimulationSettings {
 		if (string.IsNullOrEmpty(encoded))
 			return Default;
 		if (encoded.StartsWith("{"))
-			return (SimulationSettings)JsonUtility.FromJson(encoded, typeof(SimulationSettings));
+			return DecodeJSON(encoded);
 		
 		return DecodeV1(encoded);
 	}
 
+	public static SimulationSettings DecodeJSON(string encoded) {
+
+		JObject json = JObject.Parse(encoded);
+
+		var settings = Default;
+
+		// if (json[CodingKey.KeepBestCreatures] == null) return settings;
+
+		settings.KeepBestCreatures = json[CodingKey.KeepBestCreatures].ToObject<bool>();
+		settings.SimulationTime = json[CodingKey.SimulationTime].ToObject<int>();
+		settings.PopulationSize = json[CodingKey.PopulationSize].ToObject<int>();
+		settings.SimulateInBatches = json[CodingKey.SimulateInBatches].ToObject<bool>();
+		settings.BatchSize = json[CodingKey.BatchSize].ToObject<int>();
+		settings.Task = (EvolutionTask)json[CodingKey.Task].ToObject<int>();
+		settings.MutationRate = json[CodingKey.MutationRate].ToObject<float>();
+		settings.SelectionAlgorithm = (SelectionAlgorithm)json[CodingKey.SelectionAlgorithm].ToObject<int>();
+		settings.RecombinationAlgorithm = (RecombinationAlgorithm)json[CodingKey.RecombinationAlgorithm].ToObject<int>();
+		settings.MutationAlgorithm = (MutationAlgorithm)json[CodingKey.MutationAlgorithm].ToObject<int>();
+
+		return settings;
+	}
+
 	private static SimulationSettings DecodeV1(string encoded) {
 		var parts = encoded.Split('#');
-		var settings = new SimulationSettings();
+		var settings = Default;
 
 		settings.KeepBestCreatures = bool.Parse(parts[1]);
 		settings.SimulationTime = int.Parse(parts[2]);
@@ -133,13 +161,9 @@ public struct SimulationSettings {
 		settings.SimulateInBatches = bool.Parse(parts[4]);
 		settings.BatchSize = int.Parse(parts[5]);
 		settings.Task = EvolutionTaskUtil.TaskFromString(parts[6]);
-		settings.MutationRate = int.Parse(parts[7]);
+		settings.MutationRate = Math.Min(Math.Max(((float)int.Parse(parts[7])) / 100f, 0), 1); 
 
 		return settings;
-	}
-	
-	private static SimulationSettings DecodeV2(string encoded) {
-		return (SimulationSettings)JsonUtility.FromJson(encoded, typeof(SimulationSettings));
 	}
 
 	#endregion
