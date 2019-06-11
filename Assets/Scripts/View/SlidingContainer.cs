@@ -8,7 +8,10 @@ namespace Keiwando.UI {
     public class SlidingContainer: MonoBehaviour {
 
         public enum Direction {
-            Left, Right, Up, Down
+            Left = 0, 
+            Right = 1, 
+            Up = 2, 
+            Down = 3
         }
 
         public float SlideMultiplier {
@@ -19,7 +22,7 @@ namespace Keiwando.UI {
 
         [SerializeField] private AnimationCurve animationCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     
-        public Direction LastSlideDirection { get; private set; }
+        public Direction LastSlideDirection { get; protected set; }
 
         private RectTransform rectTransform;
         
@@ -27,9 +30,9 @@ namespace Keiwando.UI {
         /// instantly when a running coroutine is stopped.
         private Vector2 targetPosition;
         private Coroutine coroutine;
-        public float AnimationProgress { get; private set; } = 1f;
+        public float AnimationProgress { get; protected set; } = 1f;
 
-        void Start() {
+        protected virtual void Start() {
             this.rectTransform = GetComponent<RectTransform>();
         }
 
