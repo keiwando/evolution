@@ -37,13 +37,13 @@ namespace Keiwando.Evolution.UI {
 
             brainButton.onClick.AddListener(delegate () {
                 if (isShowingGeneralSettings) {
-                    container.Slide(SlidingContainer.Direction.Up, 0.3f, 1f - container.AnimationProgress);
+                    container.Slide(SlidingContainer.Direction.Up, 0.3f, false);
                 }
             });
 
             backFromNetworkSettingsButton.onClick.AddListener(delegate () {
                 if (!isShowingGeneralSettings) {
-                    container.Slide(SlidingContainer.Direction.Down, 0.3f, 1f - container.AnimationProgress);
+                    container.Slide(SlidingContainer.Direction.Down, 0.3f, false);
                 }
             });
 

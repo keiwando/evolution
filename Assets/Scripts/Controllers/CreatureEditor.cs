@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Keiwando.Evolution.Scenes;
 using Keiwando.Evolution;
+using Keiwando.Evolution.UI;
 
 public class CreatureEditor: MonoBehaviour {
 
@@ -9,9 +10,9 @@ public class CreatureEditor: MonoBehaviour {
         Joint,
         Bone,
         Muscle,
-        Select,
         Move,
-        Delete
+        Delete,
+        Select
     }
 
     public Tool SelectedTool {
@@ -21,7 +22,7 @@ public class CreatureEditor: MonoBehaviour {
             UpdateHoverables();
         }
     }
-    private Tool selectedTool = Tool.Joint;
+    private Tool selectedTool = Tool.Select;
 
     [SerializeField]
     private EditorViewController viewController;
@@ -34,26 +35,28 @@ public class CreatureEditor: MonoBehaviour {
 
     [SerializeField]
 	private Texture2D mouseDeleteTexture;
+    [SerializeField]
+    private UnityEngine.Transform selectionArea;
 
     private CreatureBuilder creatureBuilder;
+
+    private EditorBodySelectionManager selectionManager;
 
     void Start() {
 
         Screen.sleepTimeout = SleepTimeout.SystemSetting;
 
         creatureBuilder = new CreatureBuilder();
+        selectionManager = new EditorBodySelectionManager(this, creatureBuilder, selectionArea);
+
         var simulationConfigs = GameObject.FindGameObjectsWithTag("SimulationConfig");
         foreach (var configContainer in simulationConfigs) {
             Destroy(configContainer);
         }
 
-        // TODO: Update when EditorSettings change
         var editorSettings = EditorStateManager.EditorSettings;
         grid.gameObject.SetActive(editorSettings.GridEnabled);
         grid.Size = editorSettings.GridSize;
-
-        // DEBUG:
-        // Instantiate(Resources.Load("Prefabs/Structures/Ground"), new Vector3(0, 0, 10f), Quaternion.identity);
     }
 
     void Update() {
@@ -179,6 +182,8 @@ public class CreatureEditor: MonoBehaviour {
                 creatureBuilder.TryStartingMuscle(clickWorldPos); break;
             case Tool.Move:
                 creatureBuilder.TryStartComponentMove(); break;
+            case Tool.Select:
+                selectionManager.StartSelection(clickWorldPos); break;
             default: break;
             
             }
@@ -194,6 +199,8 @@ public class CreatureEditor: MonoBehaviour {
                 creatureBuilder.UpdateCurrentMuscleEnd(clickWorldPos); break;
             case Tool.Move:
                 creatureBuilder.MoveCurrentComponent(clickWorldPos); break;
+            case Tool.Select:
+                selectionManager.UpdateSelection(clickWorldPos); break;
             default: break;
             }
         }
@@ -221,6 +228,8 @@ public class CreatureEditor: MonoBehaviour {
                 creatureEdited = creatureBuilder.MoveEnded(); break;
             case Tool.Delete:
                 creatureEdited = creatureBuilder.DeleteHoveringBodyComponent(); break;
+            case Tool.Select:
+                selectionManager.EndSelection(); break;
 
             default: break;
             }

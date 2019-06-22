@@ -55,11 +55,10 @@ namespace Keiwando.Evolution.UI {
 
             slideInOutButton.onClick.AddListener(delegate () {
                 // Slide the container in and out.
-                float animationProgress = 1f - slidingContainer.AnimationProgress;
                 if (slidingContainer.LastSlideDirection == SlidingContainer.Direction.Up) {
-                    slidingContainer.Slide(SlidingContainer.Direction.Down, Constants.slidingDuration, animationProgress);
+                    slidingContainer.Slide(SlidingContainer.Direction.Down, Constants.slidingDuration, false);
                 } else {
-                    slidingContainer.Slide(SlidingContainer.Direction.Up, Constants.slidingDuration, animationProgress);
+                    slidingContainer.Slide(SlidingContainer.Direction.Up, Constants.slidingDuration, false);
                 }
                 RefreshEjectImages();
             });

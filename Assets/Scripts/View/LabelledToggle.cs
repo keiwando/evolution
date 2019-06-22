@@ -3,13 +3,12 @@ using UnityEngine.UI;
 
 namespace Keiwando.UI {
 
-    public class LabelledSlider: MonoBehaviour {
+    public class LabelledToggle: MonoBehaviour {
 
-        public event System.Action<float> onValueChanged;
+        public event System.Action<bool> onValueChanged;
 
-        [SerializeField] private Slider slider;
+        [SerializeField] private Toggle toggle;
         [SerializeField] private Text descriptionLabel;
-        [SerializeField] private Text valueLabel;
 
         public string Description {
             get { return descriptionLabel?.text ?? ""; }
@@ -17,16 +16,15 @@ namespace Keiwando.UI {
         }
 
         void Start() {
-
-            this.slider.onValueChanged.AddListener(delegate (float value) {
+            this.toggle.onValueChanged.AddListener(delegate (bool enabled) {
                 if (this.onValueChanged != null) {
-                    onValueChanged(value);
+                    onValueChanged(enabled);
                 }
             });
         }
 
-        public void Refresh(float value) {
-            slider.value = value;
+        public void Refresh(bool enabled) {
+            toggle.enabled = enabled;
         }
     }
 }

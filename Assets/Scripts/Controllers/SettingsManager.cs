@@ -3,7 +3,9 @@ using Keiwando.Evolution.UI;
 
 namespace Keiwando.Evolution {
 
-    public class SettingsManager: ISettingsViewControllerDelegate {
+    public class SettingsManager: 
+        ISettingsViewControllerDelegate,
+        IBasicSettingsViewDelegate {
 
         private EditorSettings editorSettings {
             get => EditorStateManager.EditorSettings;
@@ -148,6 +150,38 @@ namespace Keiwando.Evolution {
 
         public void ResetButtonPressed(NetworkSettingsView view) {
             networkSettings = NeuralNetworkSettings.Default;
+        }
+
+        // MARK: - IBasicSettingsViewDelegate
+
+        public int GetPopulationSize(BasicSettingsView view) {
+            return simulationSettings.PopulationSize;
+        }
+
+        public int GetGenerationDuration(BasicSettingsView view) {
+            return simulationSettings.SimulationTime;
+        }
+
+        public EvolutionTask GetEvolutionTask(BasicSettingsView view) {
+            return simulationSettings.Task;
+        }
+
+        public void PopulationSizeDidChange(BasicSettingsView view, int value) {
+            var settings = simulationSettings;
+            settings.PopulationSize = value;
+            simulationSettings = settings;
+        }
+
+        public void GenerationDurationDidChange(BasicSettingsView view, int value) {
+            var settings = simulationSettings;
+            settings.SimulationTime = value;
+            simulationSettings = settings;
+        }
+
+        public void EvolutionTaskDidChange(BasicSettingsView view, EvolutionTask task) {
+            var settings = simulationSettings;
+            settings.Task = task;
+            simulationSettings = settings;
         }
     }
 }

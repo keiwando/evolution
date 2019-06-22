@@ -414,6 +414,13 @@ public class CreatureBuilder {
 	}
 
 	#endregion
+	#region Selection
+
+	public void TrySelectingBodyComponent(Vector3 position) {
+
+	}
+
+	#endregion
 
 
 	public void Reset() {

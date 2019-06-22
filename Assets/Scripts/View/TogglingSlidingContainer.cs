@@ -15,7 +15,7 @@ namespace Keiwando.UI {
 
         public void Slide(float duration = 0f) {
 
-            base.Slide(Opposite(LastSlideDirection), duration, 1f - AnimationProgress);
+            base.Slide(Opposite(LastSlideDirection), duration, false);
         }
 
         private Direction Opposite(Direction dir) {

@@ -37,10 +37,6 @@ public class ButtonManager : MonoBehaviour {
 
 	public void Refresh() {
 
-		var advancedMode = ((EditorMode)Settings.EditorMode) == EditorMode.Advanced;
-		selectButton.gameObject.SetActive(advancedMode);
-		deleteButton.gameObject.SetActive(!advancedMode);
-
 		foreach (KeyValuePair<SelectableButton, CreatureEditor.Tool> entry in buttonMap) {
 			if (entry.Value == editor.SelectedTool) {
 				entry.Key.Selected = true;

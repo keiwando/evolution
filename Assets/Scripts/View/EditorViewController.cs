@@ -1,90 +1,86 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Keiwando.UI;
 
-enum EditorMode {
-    Basic = 0,
-    Advanced = 1
-}
+namespace Keiwando.Evolution.UI {
 
-public class EditorViewController: MonoBehaviour {
-
-    [SerializeField]
-    private GameObject basicControls;
-    [SerializeField]
-    private GameObject advancedControls;
-    [SerializeField]
-    private Button editorModeToggle;
-    [SerializeField]
-    private ButtonManager buttonManager;
-    [SerializeField]
-    private CreatureDesignControlsView creatureDesignControlsView;
-
-    [SerializeField]
-    private Button undoButton;
-    [SerializeField]
-    private Button redoButton;
-    [SerializeField]
-    private HistoryManager historyManager;
-
-    private EditorMode editorMode {
-        get { return (EditorMode)Settings.EditorMode; }
-        set { Settings.EditorMode = (int)value; }
+    enum EditorMode {
+        Basic = 0,
+        Advanced = 1
     }
 
-    void Start() {
-        Refresh();
-        SetupActions();
-    }
+    public class EditorViewController: MonoBehaviour {
 
-    public void Refresh() {
-        RefreshEditorViews();
-        RefreshUndoButtons();
-    }
+        [SerializeField]
+        private TogglingSlidingContainer settingsControlsContainer;
+        [SerializeField]
+        private TogglingSlidingContainer advancedBodyControlsContainer;
 
-    private void SetupActions() {
+        [SerializeField]
+        private BasicSettingsView basicSettingsView;
+        [SerializeField]
+        private AdvancedBodyControlsViewController advancedBodyControlsViewController;
         
-        editorModeToggle.onClick.AddListener(delegate () {
-            if (editorMode == EditorMode.Basic) {
-                editorMode = EditorMode.Advanced;
-            } else {
-                editorMode = EditorMode.Basic;
-            }
-            RefreshEditorViews();
-        });
-    }
+        [SerializeField]
+        private ButtonManager buttonManager;
+        [SerializeField]
+        private CreatureDesignControlsView creatureDesignControlsView;
 
-    private void RefreshEditorViews() {
+        [SerializeField]
+        private Button undoButton;
+        [SerializeField]
+        private Button redoButton;
+        [SerializeField]
+        private HistoryManager historyManager;
 
-        var advancedMode = editorMode == EditorMode.Advanced;
-
-        var buttonAlpha = advancedMode ? 1f : 0.5f;
-        var modeToggleImage = editorModeToggle.GetComponent<Image>();
-        var oldColor = modeToggleImage.color;
-        oldColor.a = buttonAlpha;
-        modeToggleImage.color = oldColor;
-
-        basicControls.SetActive(!advancedMode);
-        advancedControls.SetActive(advancedMode);
-        buttonManager.Refresh();
-        // TODO: Refresh Creature Design Controls View
-    }
-
-    private void RefreshUndoButtons() {
-
-        float disabledAlpha = 0.5f;
-        var undoEnabled = historyManager.CanUndo();
-        undoButton.interactable = undoEnabled;
-        var undoCanvasGroup = undoButton.GetComponent<CanvasGroup>();
-        // For some reason the CanvasGroups end up getting destroyed sometimes
-        if (undoCanvasGroup) {
-            undoCanvasGroup.alpha = undoEnabled ? 1f : disabledAlpha;
+        void Start() {
+            basicSettingsView.Delegate = new SettingsManager();
+            Refresh();
         }
 
-        var redoEnabled = historyManager.CanRedo();
-        redoButton.interactable = redoEnabled;
-        var redoCanvasGroup = redoButton.GetComponent<CanvasGroup>();
-        if (redoCanvasGroup) {
-            redoCanvasGroup.alpha = redoEnabled ? 1f : disabledAlpha;
+        public void ShowBasicSettingsControls() {
+
+            if (settingsControlsContainer.LastSlideDirection == SlidingContainer.Direction.Right) {
+                settingsControlsContainer.Slide(SlidingContainer.Direction.Left, 0.3f, false);
+            }
+            if (advancedBodyControlsContainer.LastSlideDirection == SlidingContainer.Direction.Left) {
+                advancedBodyControlsContainer.Slide(SlidingContainer.Direction.Right, 0.3f, false);
+            }
+        }
+
+        public AdvancedBodyControlsViewController ShowAdvancedSettingsControls() {
+
+            if (advancedBodyControlsContainer.LastSlideDirection == SlidingContainer.Direction.Right) {
+                advancedBodyControlsContainer.Slide(SlidingContainer.Direction.Left, 0.3f, false);
+            }
+            if (settingsControlsContainer.LastSlideDirection == SlidingContainer.Direction.Left) {
+                settingsControlsContainer.Slide(SlidingContainer.Direction.Right, 0.3f, false);
+            }
+            return advancedBodyControlsViewController;
+        }
+
+        public void Refresh() {
+            RefreshUndoButtons();
+            basicSettingsView.Refresh();
+        }
+
+        private void RefreshUndoButtons() {
+
+            float disabledAlpha = 0.5f;
+            var undoEnabled = historyManager.CanUndo();
+            undoButton.interactable = undoEnabled;
+            var undoCanvasGroup = undoButton.GetComponent<CanvasGroup>();
+            // For some reason the CanvasGroups end up getting destroyed sometimes
+            if (undoCanvasGroup) {
+                undoCanvasGroup.alpha = undoEnabled ? 1f : disabledAlpha;
+            }
+
+            var redoEnabled = historyManager.CanRedo();
+            redoButton.interactable = redoEnabled;
+            var redoCanvasGroup = redoButton.GetComponent<CanvasGroup>();
+            if (redoCanvasGroup) {
+                redoCanvasGroup.alpha = redoEnabled ? 1f : disabledAlpha;
+            }
         }
     }
 }

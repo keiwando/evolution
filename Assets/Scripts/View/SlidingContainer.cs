@@ -36,10 +36,11 @@ namespace Keiwando.UI {
             this.rectTransform = GetComponent<RectTransform>();
         }
 
-        public void Slide(Direction direction, float duration = 0f, float startProgress = 0f) {
+        public void Slide(Direction direction, float duration = 0f, bool ignoreProgress = true) {
 
             FinishAnimation();
-            this.coroutine = StartCoroutine(SlideAnimation(direction, duration, startProgress));
+            float startProgress = ignoreProgress ? 0f : 1f - AnimationProgress;
+            this.coroutine = StartCoroutine(SlideAnimation(direction, duration,  startProgress));
         }
 
         private IEnumerator SlideAnimation(Direction direction, float duration, float startProgress) {
