@@ -5,18 +5,20 @@ namespace Keiwando.Evolution {
 
     public class EditorBodySelectionManager {
 
+        /// <summary>
+        /// The treshold distance used to distinguish between a click/touch and a drag
+        /// </summary>
+        private const float TAP_THRESHOLD = 0.005f;
+
         private CreatureEditor editor;
-        private CreatureBuilder builder;
 
         private Transform selectionArea;
 
         private Vector3 areaStart;
         private Vector3 currentAreaEnd;
 
-        public EditorBodySelectionManager(CreatureEditor editor, 
-                                          CreatureBuilder creatureBuilder,
+        public EditorBodySelectionManager(CreatureEditor editor,
                                           Transform selectionArea) {
-            this.builder = creatureBuilder;
             this.editor = editor;
             this.selectionArea = selectionArea;
             selectionArea.gameObject.SetActive(false);
@@ -30,17 +32,40 @@ namespace Keiwando.Evolution {
         }
 
         public void UpdateSelection(Vector3 currentEndPosition) {
+
             this.currentAreaEnd = currentEndPosition;
             UpdateVisualSelectionArea();
+
+            // Don't prematurely highlight when it could still be counted as a 
+            // touch instead of a drag (prevents flickering)
+            if (Vector3.Distance(areaStart, currentAreaEnd) >= TAP_THRESHOLD) {
+                editor.creatureBuilder.SelectInArea<BodyComponent>(GetSelectionRect());
+            }
         }
 
         public void EndSelection() {
             // TODO: Implement
             selectionArea.gameObject.SetActive(false);
+
+            // Check if this was actually a touch/click instead of a drag
+            // and adjust the selection algorithm accordingly if necessary
+            if (Vector3.Distance(areaStart, currentAreaEnd) < TAP_THRESHOLD) {
+                var selectionRect = new Rect(areaStart.x, areaStart.y, TAP_THRESHOLD, TAP_THRESHOLD);
+                bool jointSelected = editor.creatureBuilder.SelectInArea<Joint>(selectionRect);
+                if (!jointSelected) {
+                    bool boneSelected = editor.creatureBuilder.SelectInArea<Bone>(selectionRect);
+                    if (!boneSelected) {
+                        editor.creatureBuilder.SelectInArea<Muscle>(selectionRect);
+                    }
+                }
+            } else {
+                editor.creatureBuilder.SelectInArea<BodyComponent>(GetSelectionRect());
+            }
         } 
 
         public void DeselectAll() {
             // TODO: Implement
+            editor.creatureBuilder.DeselectAll();
         }
 
         private void UpdateVisualSelectionArea() {
@@ -58,6 +83,15 @@ namespace Keiwando.Evolution {
 
             selectionArea.localScale = scale;
             selectionArea.position = center;
+        }
+
+        private Rect GetSelectionRect() {
+            var pos = selectionArea.position;
+            var size = selectionArea.localScale;
+            return new Rect(
+                pos - 0.5f * size,
+                size
+            );
         }
     }
 }

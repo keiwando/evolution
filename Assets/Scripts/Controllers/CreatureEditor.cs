@@ -38,7 +38,7 @@ public class CreatureEditor: MonoBehaviour {
     [SerializeField]
     private UnityEngine.Transform selectionArea;
 
-    private CreatureBuilder creatureBuilder;
+    public CreatureBuilder creatureBuilder { get; private set; }
 
     private EditorBodySelectionManager selectionManager;
 
@@ -47,7 +47,7 @@ public class CreatureEditor: MonoBehaviour {
         Screen.sleepTimeout = SleepTimeout.SystemSetting;
 
         creatureBuilder = new CreatureBuilder();
-        selectionManager = new EditorBodySelectionManager(this, creatureBuilder, selectionArea);
+        selectionManager = new EditorBodySelectionManager(this, selectionArea);
 
         var simulationConfigs = GameObject.FindGameObjectsWithTag("SimulationConfig");
         foreach (var configContainer in simulationConfigs) {
@@ -183,7 +183,9 @@ public class CreatureEditor: MonoBehaviour {
             case Tool.Move:
                 creatureBuilder.TryStartComponentMove(); break;
             case Tool.Select:
-                selectionManager.StartSelection(clickWorldPos); break;
+                selectionManager.DeselectAll();
+                selectionManager.StartSelection(clickWorldPos); 
+                break;
             default: break;
             
             }

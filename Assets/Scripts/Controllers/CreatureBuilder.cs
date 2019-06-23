@@ -53,8 +53,11 @@ public class CreatureBuilder {
 
 	/// <summary>
 	/// The joint that is currently being moved.
+	/// TODO: Replace this with current selection
 	/// </summary>
 	private Joint currentMovingJoint;
+
+	private List<BodyComponent> selection = new List<BodyComponent>();
 
 	/// <summary>
 	/// The minimum distance between two joints when they are placed 
@@ -416,8 +419,77 @@ public class CreatureBuilder {
 	#endregion
 	#region Selection
 
-	public void TrySelectingBodyComponent(Vector3 position) {
+	// public bool TrySelectingJoint(Vector3 position, bool deselectOthers = true) {
+		
+	// 	if (deselectOthers) {
+	// 		DisableHighlightsOnNonSelected();
+	// 	}
 
+	// 	Collider[] colliders = Physics.OverlapSphere(position, 0.5f);
+	// 	bool jointSelected = false;
+	// 	for (int i = 0; i < colliders.Length; i++) {
+	// 		var joint = colliders[i].GetComponent<Joint>();
+	// 		if (joint != null) {
+	// 			this.selection.Add(joint);
+	// 			joint.Highlight();
+	// 			jointSelected = true;
+	// 		}
+	// 	}
+	// 	return jointSelected;
+	// }
+
+	public bool SelectInArea<T>(Rect selectionArea)
+		where T: BodyComponent {
+
+		GetComponentsInRect<T>(selectionArea, this.selection);
+		foreach (var item in this.selection) {
+			item.Highlight();
+		}
+
+		DisableHighlightsOnNonSelected();
+		
+		return this.selection.Count > 0;
+	}
+
+	public void DeselectAll() {
+		foreach (var item in selection) {
+			item.DisableHighlight();
+		}
+		selection.Clear();
+	}
+
+	private void DisableHighlightsOnNonSelected() {
+		// TODO: Make this more efficient
+			foreach (var joint in joints) {
+				if (!this.selection.Contains(joint)) {
+					joint.DisableHighlight();
+				}
+			}
+			foreach (var bone in bones) {
+				if (!this.selection.Contains(bone)) {
+					bone.DisableHighlight();
+				}
+			}
+			foreach (var muscle in muscles) {
+				if (!this.selection.Contains(muscle)) {
+					muscle.DisableHighlight();
+				}
+			}
+	}
+
+	private void GetComponentsInRect<T>(Rect rect, List<BodyComponent> result) 
+		where T: BodyComponent {
+
+		Collider[] colliders = Physics.OverlapBox(rect.center, rect.size * 0.5f);
+		
+		result.Clear();
+
+		for (int i = 0; i < colliders.Length; i++) {
+			var bodyComponent = colliders[i].GetComponent<T>();
+			if (bodyComponent != null) {
+				result.Add(bodyComponent);
+			}
+		}
 	}
 
 	#endregion
