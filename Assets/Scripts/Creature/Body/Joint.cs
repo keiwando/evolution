@@ -87,6 +87,8 @@ public class Joint : BodyComponent {
 	/** Disconnects the bone from the joint. */
 	public void Disconnect(Bone bone) {
 
+		if (!joints.ContainsKey(bone)) return;
+		
 		UnityEngine.Joint joint = joints[bone];
 		Destroy(joint);
 		if (!iterating)

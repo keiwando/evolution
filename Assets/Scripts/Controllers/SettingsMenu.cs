@@ -228,7 +228,7 @@ public class SettingsMenu : MonoBehaviour {
 	}
 
 	public SimulationSettings GetSimulationSettings() {
-		return EditorStateManager.Load().SimulationSettings;
+		return EditorStateManager.SimulationSettings;
 	}
 
 	private void SaveSimulationSettings(SimulationSettings settings) {

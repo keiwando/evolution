@@ -52,14 +52,6 @@ public class CreatureBuilder {
 	private Muscle currentMuscle;
 
 	/// <summary>
-	/// The joint that is currently being moved.
-	/// TODO: Replace this with current selection
-	/// </summary>
-	private Joint currentMovingJoint;
-
-	private List<BodyComponent> selection = new List<BodyComponent>();
-
-	/// <summary>
 	/// The minimum distance between two joints when they are placed 
 	/// (Can be moved closer together using "Move").
 	/// </summary>
@@ -127,14 +119,14 @@ public class CreatureBuilder {
 	/// <summary>
 	/// Attempts to place a bone beginning at the current position.
 	/// </summary>
-	public void TryStartingBone(Vector3 startPos) {
+	public void TryStartingBone(Joint joint) {
 		// find the selected joint
-		Joint joint = HoveringUtil.GetHoveringObject<Joint>(joints);
+		// Joint joint = HoveringUtil.GetHoveringObject<Joint>(joints);
 
 		if (joint != null) {
 
 			CreateBoneFromJoint(joint);
-			PlaceConnectionBetweenPoints(currentBone.gameObject, joint.center, startPos, CONNECTION_WIDTH);
+			PlaceConnectionBetweenPoints(currentBone.gameObject, joint.center, joint.center, CONNECTION_WIDTH);
 		}
 	}
 
@@ -175,19 +167,18 @@ public class CreatureBuilder {
 	/// Updates the bone that is currently being placed to end at the 
 	/// current mouse/touch position.
 	/// </summary>
-	public void UpdateCurrentBoneEnd(Vector3 position) {
+	public void UpdateCurrentBoneEnd(Vector3 position, Joint hoveringJoint) {
 
 		if (currentBone != null) {
 			// check if user is hovering over an ending joint which is not the same as the starting
 			// joint of the currentBone
-			Joint joint = HoveringUtil.GetHoveringObject<Joint>(joints);
 			var endPoint = position;
 
-			if (joint != null && !joint.Equals(currentBone.startingJoint)) {
-				endPoint = joint.center;
-				currentBone.endingJoint = joint;
+			if (hoveringJoint != null && !hoveringJoint.Equals(currentBone.startingJoint)) {
+				endPoint = hoveringJoint.center;
+				currentBone.endingJoint = hoveringJoint;
 				var oldData = currentBone.BoneData;
-				var newData = new BoneData(oldData.id, oldData.startJointID, joint.JointData.id, oldData.weight);
+				var newData = new BoneData(oldData.id, oldData.startJointID, hoveringJoint.JointData.id, oldData.weight);
 				currentBone.BoneData = newData;
 			} 
 
@@ -226,7 +217,6 @@ public class CreatureBuilder {
 		if (currentBone == null) return false;
 
 		if (currentBone.endingJoint == null || 
-		    HoveringUtil.GetHoveringObject<Joint>(joints) == null || 
 			currentBone.endingJoint.Equals(currentBone.startingJoint)) {
 			// The connection has no connected ending -> Destroy
 			UnityEngine.Object.Destroy(currentBone.gameObject);
@@ -247,14 +237,15 @@ public class CreatureBuilder {
 	/// <summary>
 	/// Attempts to place a muscle starting at the specified position.
 	/// </summary>
-	public void TryStartingMuscle(Vector3 startPos) {
+	public void TryStartingMuscle(Bone bone) {
 
 		// find the selected bone
-		Bone bone = HoveringUtil.GetHoveringObject<Bone>(bones);
+		// Bone bone = HoveringUtil.GetHoveringObject<Bone>(bones);
 
 		if (bone != null) {
 			CreateMuscleFromBone(bone);
-			currentMuscle.SetLinePoints(bone.muscleJoint.transform.position, startPos);
+			var startPos = bone.muscleJoint.transform.position;
+			currentMuscle.SetLinePoints(startPos, startPos);
 		}
 	}
 
@@ -274,23 +265,22 @@ public class CreatureBuilder {
 	/// Updates the muscle that is currently being placed to end at the 
 	/// specified position
 	/// </summary>
-	public void UpdateCurrentMuscleEnd(Vector3 endPoint) {
+	public void UpdateCurrentMuscleEnd(Vector3 endPoint, Bone hoveringBone) {
 
 		if (currentMuscle != null) {
 			// Check if user is hovering over an ending joint which is not the same as the starting
 			// joint of the currentMuscle
-			Bone bone = HoveringUtil.GetHoveringObject<Bone>(bones);
 			var endingPoint = endPoint;
 
-			if (bone != null) {
+			if (hoveringBone != null) {
 				
-				MuscleJoint joint = bone.muscleJoint;
+				MuscleJoint joint = hoveringBone.muscleJoint;
 
 				if (!joint.Equals(currentMuscle.startingJoint)) {
 					endingPoint = joint.transform.position;
 					currentMuscle.endingJoint = joint;	
 					var oldData = currentMuscle.MuscleData;
-					var newData = new MuscleData(oldData.id, oldData.startBoneID, bone.BoneData.id, 
+					var newData = new MuscleData(oldData.id, oldData.startBoneID, hoveringBone.BoneData.id, 
 												 oldData.strength, oldData.canExpand); 
 					currentMuscle.MuscleData = newData;
 				} else {
@@ -313,8 +303,7 @@ public class CreatureBuilder {
 			
 		if (currentMuscle == null) return false;
 
-		if (currentMuscle.endingJoint == null || 
-		    HoveringUtil.GetHoveringObject<Bone>(bones) == null) {
+		if (currentMuscle.endingJoint == null) {
 			// The connection has no connected ending -> Destroy
 			UnityEngine.Object.Destroy(currentMuscle.gameObject);
 			currentMuscle = null;
@@ -371,31 +360,13 @@ public class CreatureBuilder {
 	#region Move
 
 	/// <summary>
-	/// Attempts to start moving the body component that is currently being
-	/// hovered over.
-	/// </summary>
-	public void TryStartComponentMove() {
-		// TODO: Add the option to move bones
-		// Make sure the user is hovering over a joint
-		Joint joint = HoveringUtil.GetHoveringObject<Joint>(joints);
-
-		if (joint != null) {
-			currentMovingJoint = joint;
-			// The creature was modified
-			// TODO: Notify delegate about creature change
-		}
-	}
-
-	/// <summary>
 	/// Moves the currently selected components to the specified position.
 	/// </summary>
-	public void MoveCurrentComponent(Vector3 position) {
+	public void MoveSelection(ICollection<Joint> jointsToMove, Vector3 movement) {
 
-		if (currentMovingJoint != null) {
-			// Move the joint to the mouse position.
-			currentMovingJoint.MoveTo(position);
-			// The creature was modified
-			// TODO: Notify delegate about creature change
+		foreach (var joint in jointsToMove) {
+			var newPosition = joint.transform.position + movement;
+			joint.MoveTo(newPosition);		
 		}
 	}
 
@@ -403,97 +374,22 @@ public class CreatureBuilder {
 	/// Resets all properties used while moving a body component.
 	/// </summary>
 	/// <returns>Returns whether the creature design was changed.</returns>
-	public bool MoveEnded() {
+	public bool MoveEnded(ICollection<Joint> jointsToMove) {
 
-		// TODO: Check old position
-		var didChange = currentMovingJoint != null;
+		if (jointsToMove == null) return false;
+
+		var didChange = jointsToMove.Count > 0;
 		if (didChange) {
-			var oldData = currentMovingJoint.JointData;
-			var newData = new JointData(oldData.id, currentMovingJoint.center, oldData.weight);
-			currentMovingJoint.JointData = newData;
+			foreach (var joint in jointsToMove) {
+				var oldData = joint.JointData;
+				var newData = new JointData(oldData.id, joint.center, oldData.weight);
+				joint.JointData = newData;
+			}
 		}
-		currentMovingJoint = null;
 		return didChange;
 	}
 
 	#endregion
-	#region Selection
-
-	// public bool TrySelectingJoint(Vector3 position, bool deselectOthers = true) {
-		
-	// 	if (deselectOthers) {
-	// 		DisableHighlightsOnNonSelected();
-	// 	}
-
-	// 	Collider[] colliders = Physics.OverlapSphere(position, 0.5f);
-	// 	bool jointSelected = false;
-	// 	for (int i = 0; i < colliders.Length; i++) {
-	// 		var joint = colliders[i].GetComponent<Joint>();
-	// 		if (joint != null) {
-	// 			this.selection.Add(joint);
-	// 			joint.Highlight();
-	// 			jointSelected = true;
-	// 		}
-	// 	}
-	// 	return jointSelected;
-	// }
-
-	public bool SelectInArea<T>(Rect selectionArea)
-		where T: BodyComponent {
-
-		GetComponentsInRect<T>(selectionArea, this.selection);
-		foreach (var item in this.selection) {
-			item.Highlight();
-		}
-
-		DisableHighlightsOnNonSelected();
-		
-		return this.selection.Count > 0;
-	}
-
-	public void DeselectAll() {
-		foreach (var item in selection) {
-			item.DisableHighlight();
-		}
-		selection.Clear();
-	}
-
-	private void DisableHighlightsOnNonSelected() {
-		// TODO: Make this more efficient
-			foreach (var joint in joints) {
-				if (!this.selection.Contains(joint)) {
-					joint.DisableHighlight();
-				}
-			}
-			foreach (var bone in bones) {
-				if (!this.selection.Contains(bone)) {
-					bone.DisableHighlight();
-				}
-			}
-			foreach (var muscle in muscles) {
-				if (!this.selection.Contains(muscle)) {
-					muscle.DisableHighlight();
-				}
-			}
-	}
-
-	private void GetComponentsInRect<T>(Rect rect, List<BodyComponent> result) 
-		where T: BodyComponent {
-
-		Collider[] colliders = Physics.OverlapBox(rect.center, rect.size * 0.5f);
-		
-		result.Clear();
-
-		for (int i = 0; i < colliders.Length; i++) {
-			var bodyComponent = colliders[i].GetComponent<T>();
-			if (bodyComponent != null) {
-				result.Add(bodyComponent);
-			}
-		}
-	}
-
-	#endregion
-
 
 	public void Reset() {
 		DeleteAll();
@@ -513,6 +409,18 @@ public class CreatureBuilder {
 
 		RemoveDeletedObjects();
 		idCounter = 0;
+	}
+
+	public void Delete(List<BodyComponent> selection) {
+
+		for (int i = 0; i < selection.Count; i++) {
+			var item = selection[i];
+			if (item == null) continue;
+
+			item.Delete();
+			
+		}
+		RemoveDeletedObjects();
 	}
 
 	/// <summary>
@@ -647,30 +555,10 @@ public class CreatureBuilder {
 	/// </summary>
 	private void RemoveDeletedObjects() {
 
-		bones = RemoveDeletedObjects<Bone>(bones);
-		joints = RemoveDeletedObjects<Joint>(joints);
-		muscles = RemoveDeletedObjects<Muscle>(muscles);
+		bones = BodyComponent.RemoveDeletedObjects<Bone>(bones);
+		joints = BodyComponent.RemoveDeletedObjects<Joint>(joints);
+		muscles = BodyComponent.RemoveDeletedObjects<Muscle>(muscles);
 	}
 
-	/// <summary>
-	/// Removes the already destroyed object that are still left in the list.
-	/// This operation doesn't change the original list.
-	/// </summary>
-	/// <param name="objects">A list of BodyComponents</param>
-	/// <typeparam name="T">A BodyComponent subtype.</typeparam>
-	/// <returns>A list without the already destroyed objects of the input list.</returns>
-	private static List<T> RemoveDeletedObjects<T>(List<T> objects) where T: BodyComponent {
-
-		List<T> removed = new List<T>(objects);
-		foreach (T obj in objects) {
-			if (obj == null || obj.Equals(null) || obj.gameObject == null 
-				|| obj.gameObject.Equals(null) || obj.deleted) {
-	
-				removed.Remove(obj);
-			}
-		}
-		return removed;
-	}
-	
 	#endregion
 }

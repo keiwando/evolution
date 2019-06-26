@@ -49,37 +49,37 @@ abstract public class Hoverable: MonoBehaviour {
 		// defaultEmissionColor = GetComponent<Renderer>().sharedMaterial.GetColor("_EmissionColor");		
 	}
 
-	void OnHover() {
+	// void OnHover() {
 
-		hovering = true;
+	// 	hovering = true;
 
-		// TODO: Replace this with changing out the material completely 
-		// instead of altering material properties
+	// 	// TODO: Replace this with changing out the material completely 
+	// 	// instead of altering material properties
 
-		hotSpot = mouseHoverTexture == null ? Vector2.zero : new Vector2(mouseHoverTexture.width / 2, mouseHoverTexture.height / 2);
+	// 	hotSpot = mouseHoverTexture == null ? Vector2.zero : new Vector2(mouseHoverTexture.width / 2, mouseHoverTexture.height / 2);
 
-		if (shouldHighlight) {
+	// 	if (shouldHighlight) {
 
-			Highlight();
-			Cursor.SetCursor(mouseHoverTexture, hotSpot, cursorMode);
-		}
-	}
+	// 		EnableHighlight();
+	// 		Cursor.SetCursor(mouseHoverTexture, hotSpot, cursorMode);
+	// 	}
+	// }
 
-	void OnHoverExit() {
+	// void OnHoverExit() {
 
-		hovering = false;
+	// 	hovering = false;
 
-		if (shouldHighlight)
+	// 	if (shouldHighlight)
 
-		DisableHighlight();
-		Cursor.SetCursor(null, Vector2.zero, cursorMode);
-	}
+	// 	DisableHighlight();
+	// 	Cursor.SetCursor(null, Vector2.zero, cursorMode);
+	// }
 
 	void OnDestroy() {
 		Cursor.SetCursor(null, Vector2.zero, cursorMode);
 	}
 
-	public void Highlight() {
+	public void EnableHighlight() {
 		// GetComponent<Renderer>().material.SetColor("_EmissionColor", highlightEmissionColor);
 		if (_renderer == null) return;
 		_renderer.sharedMaterial = highlightMaterial;

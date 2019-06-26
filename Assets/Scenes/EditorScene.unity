@@ -908,55 +908,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c378118c0f83e426783a5bfea790b9d6, type: 3}
---- !u!1 &32436347
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 32436349}
-  - component: {fileID: 32436348}
-  m_Layer: 5
-  m_Name: History Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &32436348
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 32436347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6646ac5233cb41618b971040688ab3a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  editor: {fileID: 2044445779}
---- !u!224 &32436349
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 32436347}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2032077313}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &38666063
 GameObject:
   m_ObjectHideFlags: 0
@@ -7786,7 +7737,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 32436348}
+      - m_Target: {fileID: 0}
         m_MethodName: Undo
         m_Mode: 1
         m_Arguments:
@@ -20737,7 +20688,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 32436348}
+      - m_Target: {fileID: 0}
         m_MethodName: Redo
         m_Mode: 1
         m_Arguments:
@@ -22231,7 +22182,6 @@ MonoBehaviour:
   creatureDesignControlsView: {fileID: 734932336}
   undoButton: {fileID: 574253970}
   redoButton: {fileID: 1754948857}
-  historyManager: {fileID: 32436348}
 --- !u!1 &1906106733
 GameObject:
   m_ObjectHideFlags: 0
@@ -24174,7 +24124,6 @@ RectTransform:
   - {fileID: 1890284779}
   - {fileID: 1379794056}
   - {fileID: 2044445778}
-  - {fileID: 32436349}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -24458,9 +24407,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   viewController: {fileID: 1891045104}
   cameraController: {fileID: 1379794057}
-  historyManager: {fileID: 32436348}
   grid: {fileID: 1469868451}
-  mouseDeleteTexture: {fileID: 2800000, guid: 0f0df806c1f994a349a8d50bb06c1b0f, type: 3}
+  mouseDeleteTexture: {fileID: 2800000, guid: abbc25bfa563045ef939f8dd30080ee6, type: 3}
   selectionArea: {fileID: 1774888103}
 --- !u!1 &2060201016
 GameObject:

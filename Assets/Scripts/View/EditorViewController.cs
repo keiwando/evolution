@@ -9,7 +9,16 @@ namespace Keiwando.Evolution.UI {
         Advanced = 1
     }
 
+    public interface IEditorViewControllerDelegate {
+        bool CanUndo(EditorViewController viewController);
+        bool CanRedo(EditorViewController viewController);
+        void Undo();
+        void Redo();
+    }
+
     public class EditorViewController: MonoBehaviour {
+
+        public IEditorViewControllerDelegate Delegate { get; set; }
 
         [SerializeField]
         private TogglingSlidingContainer settingsControlsContainer;
@@ -30,12 +39,19 @@ namespace Keiwando.Evolution.UI {
         private Button undoButton;
         [SerializeField]
         private Button redoButton;
-        [SerializeField]
-        private HistoryManager historyManager;
 
         void Start() {
             basicSettingsView.Delegate = new SettingsManager();
-            Refresh();
+
+            undoButton.onClick.AddListener(delegate () {
+                Delegate.Undo();
+                RefreshUndoButtons();
+            });
+
+            redoButton.onClick.AddListener(delegate () {
+                Delegate.Redo();
+                RefreshUndoButtons();
+            });
         }
 
         public void ShowBasicSettingsControls() {
@@ -67,7 +83,7 @@ namespace Keiwando.Evolution.UI {
         private void RefreshUndoButtons() {
 
             float disabledAlpha = 0.5f;
-            var undoEnabled = historyManager.CanUndo();
+            var undoEnabled = Delegate.CanUndo(this);
             undoButton.interactable = undoEnabled;
             var undoCanvasGroup = undoButton.GetComponent<CanvasGroup>();
             // For some reason the CanvasGroups end up getting destroyed sometimes
@@ -75,7 +91,7 @@ namespace Keiwando.Evolution.UI {
                 undoCanvasGroup.alpha = undoEnabled ? 1f : disabledAlpha;
             }
 
-            var redoEnabled = historyManager.CanRedo();
+            var redoEnabled = Delegate.CanRedo(this);
             redoButton.interactable = redoEnabled;
             var redoCanvasGroup = redoButton.GetComponent<CanvasGroup>();
             if (redoCanvasGroup) {

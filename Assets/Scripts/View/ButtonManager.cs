@@ -32,6 +32,9 @@ public class ButtonManager : MonoBehaviour {
 			button.manager = this;
 		}
 
+		editor.onToolChanged += delegate (CreatureEditor.Tool tool) {
+			Refresh();
+		};
 		Refresh();
 	}
 
@@ -49,7 +52,6 @@ public class ButtonManager : MonoBehaviour {
 	public void SelectButton(SelectableButton button) {
 
 		editor.SelectedTool = buttonMap[button];
-		Refresh();
 	}
 }
 

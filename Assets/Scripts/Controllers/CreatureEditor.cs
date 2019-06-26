@@ -1,10 +1,15 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Keiwando.Evolution.Scenes;
 using Keiwando.Evolution;
 using Keiwando.Evolution.UI;
 
-public class CreatureEditor: MonoBehaviour {
+public class CreatureEditor: MonoBehaviour, 
+                             HistoryManager<CreatureDesign>.IStateProvider,
+                             IEditorViewControllerDelegate {
+
+    public event System.Action<Tool> onToolChanged;
 
     public enum Tool {
         Joint,
@@ -18,18 +23,16 @@ public class CreatureEditor: MonoBehaviour {
     public Tool SelectedTool {
         get { return selectedTool; }
         set { 
-            selectedTool = value; 
-            UpdateHoverables();
+            selectedTool = value;
+            OnToolChanged(value);
         }
     }
-    private Tool selectedTool = Tool.Select;
+    private Tool selectedTool = Tool.Joint;
 
     [SerializeField]
     private EditorViewController viewController;
     [SerializeField]
     private CameraController cameraController;
-    [SerializeField]
-    private HistoryManager historyManager;
     [SerializeField]
     private Grid grid;
 
@@ -39,15 +42,23 @@ public class CreatureEditor: MonoBehaviour {
     private UnityEngine.Transform selectionArea;
 
     public CreatureBuilder creatureBuilder { get; private set; }
+    private HistoryManager<CreatureDesign> historyManager;
 
-    private EditorBodySelectionManager selectionManager;
+    private EditorSelectionManager selectionManager;
+
+    // MARK: - Movement
+    private Vector3 lastDragPosition;
+    private HashSet<Joint> jointsToMove;
 
     void Start() {
+
+        viewController.Delegate = this;
+        historyManager = new HistoryManager<CreatureDesign>(this);
 
         Screen.sleepTimeout = SleepTimeout.SystemSetting;
 
         creatureBuilder = new CreatureBuilder();
-        selectionManager = new EditorBodySelectionManager(this, selectionArea);
+        selectionManager = new EditorSelectionManager(this, selectionArea, mouseDeleteTexture);
 
         var simulationConfigs = GameObject.FindGameObjectsWithTag("SimulationConfig");
         foreach (var configContainer in simulationConfigs) {
@@ -57,10 +68,13 @@ public class CreatureEditor: MonoBehaviour {
         var editorSettings = EditorStateManager.EditorSettings;
         grid.gameObject.SetActive(editorSettings.GridEnabled);
         grid.Size = editorSettings.GridSize;
+
+        viewController.Refresh();
     }
 
     void Update() {
 
+        selectionManager.Update(Input.mousePosition);
         HandleClicks();
         HandleKeyboardInput();
     }
@@ -70,7 +84,7 @@ public class CreatureEditor: MonoBehaviour {
     /// </summary>
     public void Clear() {
         
-        historyManager.Push(GetState());
+        historyManager.Push(GetState(historyManager));
         creatureBuilder.Reset();
     }
 
@@ -100,6 +114,14 @@ public class CreatureEditor: MonoBehaviour {
     public void SaveDesign(CreatureDesign design) {
         // TODO: Implement
     }
+
+    public void Undo() {
+        historyManager.Undo();
+    }
+
+    public void Redo() {
+        historyManager.Redo();
+    }
     
 
     /// <summary>
@@ -107,16 +129,17 @@ public class CreatureEditor: MonoBehaviour {
     /// </summary>
     public void StartSimulation () {
 
-        var editorState = GetState();
+        var simulationSettings = EditorStateManager.SimulationSettings;
+        var networkSettings = EditorStateManager.NetworkSettings;
         var creatureDesign = creatureBuilder.GetDesign();
 
         // Don't start the simulation if the creature design is empty
         if (creatureDesign.IsEmpty) return;
 
-        var sceneDescription = DefaultSimulationScenes.DefaultSceneForTask(editorState.SimulationSettings.Task);
+        var sceneDescription = DefaultSimulationScenes.DefaultSceneForTask(simulationSettings.Task);
         
-        var simulationData = new SimulationData(editorState.SimulationSettings, 
-                                                editorState.NeuralNetworkSettings,
+        var simulationData = new SimulationData(simulationSettings, 
+                                                networkSettings,
                                                 creatureDesign,
                                                 sceneDescription);
         StartSimulation(simulationData);
@@ -132,19 +155,19 @@ public class CreatureEditor: MonoBehaviour {
         
         // Load simulation scene
         SceneController.LoadSync(SceneController.Scene.SimulationContainer);
-    }   
+    }
 
     #region State Management
 
-    public void Refresh(EditorState state) {
+    public void SetState(CreatureDesign design) {
 
         creatureBuilder.Reset();
-        creatureBuilder = new CreatureBuilder(state.CreatureDesign);
+        creatureBuilder = new CreatureBuilder(design);
         // TODO: Implement non creature building related state changes
     }
 
-    public EditorState GetState() {
-        return EditorStateManager.Load();
+    public CreatureDesign GetState(HistoryManager<CreatureDesign> manager) {
+        return creatureBuilder.GetDesign();
     }
 
     #endregion
@@ -157,6 +180,7 @@ public class CreatureEditor: MonoBehaviour {
     private void HandleClicks() {
 
         if (cameraController.IsAdjustingCamera) return;
+        if (EventSystem.current.IsPointerOverGameObject()) return;
 
         var clickWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         clickWorldPos.z = 0;
@@ -177,11 +201,19 @@ public class CreatureEditor: MonoBehaviour {
             switch (selectedTool) {
 
             case Tool.Bone:
-                creatureBuilder.TryStartingBone(clickWorldPos); break;
+                var joint = selectionManager.GetSingleSelected<Joint>();
+                if (joint != null)
+                    creatureBuilder.TryStartingBone(joint); 
+                break;
             case Tool.Muscle:
-                creatureBuilder.TryStartingMuscle(clickWorldPos); break;
+                var bone = selectionManager.GetSingleSelected<Bone>();
+                if (bone != null)
+                    creatureBuilder.TryStartingMuscle(bone); break;
             case Tool.Move:
-                creatureBuilder.TryStartComponentMove(); break;
+                selectionManager.AddCurrentHoveringToSelection();
+                jointsToMove = selectionManager.GetJointsToMoveFromSelection(); 
+                lastDragPosition = clickWorldPos;
+                break;
             case Tool.Select:
                 selectionManager.DeselectAll();
                 selectionManager.StartSelection(clickWorldPos); 
@@ -196,11 +228,17 @@ public class CreatureEditor: MonoBehaviour {
 
             switch (selectedTool) {
             case Tool.Bone:
-                creatureBuilder.UpdateCurrentBoneEnd(clickWorldPos); break;
+                var hoveringJoint = selectionManager.GetSingleSelected<Joint>();
+                creatureBuilder.UpdateCurrentBoneEnd(clickWorldPos, hoveringJoint); break;
             case Tool.Muscle:
-                creatureBuilder.UpdateCurrentMuscleEnd(clickWorldPos); break;
+                var hoveringBone = selectionManager.GetSingleSelected<Bone>();
+                creatureBuilder.UpdateCurrentMuscleEnd(clickWorldPos, hoveringBone); break;
             case Tool.Move:
-                creatureBuilder.MoveCurrentComponent(clickWorldPos); break;
+                if (jointsToMove.Count > 0) {
+                    creatureBuilder.MoveSelection(jointsToMove, clickWorldPos - lastDragPosition);
+                    lastDragPosition = clickWorldPos;
+                }    
+                break;
             case Tool.Select:
                 selectionManager.UpdateSelection(clickWorldPos); break;
             default: break;
@@ -222,12 +260,14 @@ public class CreatureEditor: MonoBehaviour {
                 creatureEdited = creatureBuilder.TryPlacingJoint(clickWorldPos); 
                 break;
 
-            case Tool.Bone: 
+            case Tool.Bone:
                 creatureEdited = creatureBuilder.PlaceCurrentBone(); break;
             case Tool.Muscle:
                 creatureEdited = creatureBuilder.PlaceCurrentMuscle(); break;
             case Tool.Move: 
-                creatureEdited = creatureBuilder.MoveEnded(); break;
+                creatureEdited = creatureBuilder.MoveEnded(jointsToMove); 
+                selectionManager.DeselectAll();
+                break;
             case Tool.Delete:
                 creatureEdited = creatureBuilder.DeleteHoveringBodyComponent(); break;
             case Tool.Select:
@@ -237,10 +277,7 @@ public class CreatureEditor: MonoBehaviour {
             }
 
             if (creatureEdited) {
-                var state = new EditorState() {
-                    CreatureDesign = oldDesign
-                };
-                historyManager.Push(state);
+                historyManager.Push(oldDesign);
             }
         }
 
@@ -258,24 +295,37 @@ public class CreatureEditor: MonoBehaviour {
         var input = KeyInputManager.shared;
         // J = place Joint
 		if (input.GetKeyDown(KeyCode.J)) {
-			selectedTool = Tool.Joint;
+			SelectedTool = Tool.Joint;
 		}
 		// B = place body connection
 		else if (input.GetKeyDown(KeyCode.B)) {
-			selectedTool = Tool.Bone;
+			SelectedTool = Tool.Bone;
 		}
+        // V = move
+        else if (input.GetKeyDown(KeyCode.V)) {
+            SelectedTool = Tool.Move;   
+        }
 		// M = place muscle
 		else if (input.GetKeyDown(KeyCode.M)) {
-			selectedTool = Tool.Muscle;
+			SelectedTool = Tool.Muscle;
 		}
+        // S = select
+        else if (input.GetKeyDown(KeyCode.S)) {
+            SelectedTool = Tool.Select;
+        }
+
 		// D = Delete component
 		else if (input.GetKeyDown(KeyCode.D)) {
-			selectedTool = Tool.Delete;
+			SelectedTool = Tool.Delete;
 		}
 		// E = Go to Evolution Scene
 		else if (input.GetKeyDown(KeyCode.E)) {
 			StartSimulation();
 		}
+
+        else if (input.GetKeyDown(KeyCode.Escape)) {
+            selectionManager.DeselectAll();
+        }
 
         
         else if (Input.GetKey(KeyCode.LeftCommand) || Input.GetKey(KeyCode.RightCommand) ||
@@ -310,6 +360,28 @@ public class CreatureEditor: MonoBehaviour {
         viewController.Refresh();
     }
 
+    private void OnToolChanged(Tool tool) {
+        if (tool == Tool.Delete) {
+            DeleteCurrentSelection();
+        }
+        UpdateHoverables();
+        if (onToolChanged != null) {
+            onToolChanged(tool);
+        }
+    }
+
+    private void DeleteCurrentSelection() {
+
+        if (selectionManager.IsAnythingSelected()) {
+            var oldDesign = creatureBuilder.GetDesign();
+            var deleted = selectionManager.DeleteSelection();
+            if (deleted) {
+                historyManager.Push(oldDesign);
+                viewController.Refresh();
+            }
+        }
+    }
+
     // MARK: - Highlighting on Hover
 
     /// <summary>
@@ -330,12 +402,24 @@ public class CreatureEditor: MonoBehaviour {
         case Tool.Move:
             creatureBuilder.EnableHighlighting(true, true, false); break;
         case Tool.Select:
-            creatureBuilder.EnableHighlighting(true, true, true); break;
+            // creatureBuilder.EnableHighlighting(true, true, true); break;
+            break;
         case Tool.Delete:
             creatureBuilder.SetMouseHoverTextures(mouseDeleteTexture);
             creatureBuilder.EnableHighlighting(true, true, true);
             break;
         }
+    }
+
+    #endregion
+    #region IEditorViewControllerDelegate 
+
+    public bool CanUndo(EditorViewController viewController) {
+        return historyManager.CanUndo();
+    }
+
+    public bool CanRedo(EditorViewController viewController) {
+        return historyManager.CanRedo();
     }
 
     #endregion

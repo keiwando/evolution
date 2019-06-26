@@ -1,23 +1,30 @@
 using System.Collections.Generic;
 using System.Text;
-using UnityEngine;
 
-public class HistoryManager: MonoBehaviour {
+public class HistoryManager<State> {
+
+    public interface IStateProvider {
+        State GetState(HistoryManager<State> historyManager);
+        void SetState(State state);
+    }
 
     /// <summary>
     /// The stack of previous states that can be restored with a call to <see cref="HistoryManager.Undo()"/>.
     /// </summary>
-    private Stack<EditorState> undoStack = new Stack<EditorState>();
+    private Stack<State> undoStack = new Stack<State>();
     
     /// <summary>
     /// The stack of future states that can be restored with a call to <see cref="HistoryManager.Redo()"/>.
     /// </summary>
-    private Stack<EditorState> redoStack = new Stack<EditorState>();
+    private Stack<State> redoStack = new Stack<State>();
 
-    [SerializeField]
-    private CreatureEditor editor;
+    private IStateProvider stateProvider; 
 
-    public void Push(EditorState state) {
+    public HistoryManager(IStateProvider provider) {
+        this.stateProvider = provider;
+    }
+
+    public void Push(State state) {
 
         undoStack.Push(state);
         redoStack.Clear();
@@ -35,40 +42,40 @@ public class HistoryManager: MonoBehaviour {
 
         if (undoStack.Count == 0) return;
         var state = undoStack.Pop();
-        redoStack.Push(editor.GetState());
-        editor.Refresh(state);
+        redoStack.Push(stateProvider.GetState(this));
+        stateProvider.SetState(state);
     }
 
     public void Redo() {
 
         if (redoStack.Count == 0) return;
         var state = redoStack.Pop();
-        undoStack.Push(editor.GetState());
-        editor.Refresh(state);
+        undoStack.Push(stateProvider.GetState(this));
+        stateProvider.SetState(state);
     }
 
-    public string GetDebugState() {
-        var stringBuilder = new StringBuilder();
-        var tempStack = new Stack<EditorState>();
+    // public string GetDebugState() {
+    //     var stringBuilder = new StringBuilder();
+    //     var tempStack = new Stack<State>();
 
-        stringBuilder.AppendLine("Undo Stack:");
-        while (undoStack.Count > 0) {
-            var state = undoStack.Pop();
-            stringBuilder.AppendLine(state.CreatureDesign.GetDebugDescription());
-            tempStack.Push(state);
-        }
-        while (tempStack.Count > 0) 
-            undoStack.Push(tempStack.Pop());
+    //     stringBuilder.AppendLine("Undo Stack:");
+    //     while (undoStack.Count > 0) {
+    //         var state = undoStack.Pop();
+    //         stringBuilder.AppendLine(state.CreatureDesign.GetDebugDescription());
+    //         tempStack.Push(state);
+    //     }
+    //     while (tempStack.Count > 0) 
+    //         undoStack.Push(tempStack.Pop());
 
-        stringBuilder.AppendLine("Redo Stack:");
-        while (redoStack.Count > 0) {
-            var state = redoStack.Pop();
-            stringBuilder.AppendLine(state.CreatureDesign.GetDebugDescription());
-            tempStack.Push(state);
-        }
-        while (tempStack.Count > 0) 
-            redoStack.Push(tempStack.Pop());
+    //     stringBuilder.AppendLine("Redo Stack:");
+    //     while (redoStack.Count > 0) {
+    //         var state = redoStack.Pop();
+    //         stringBuilder.AppendLine(state.CreatureDesign.GetDebugDescription());
+    //         tempStack.Push(state);
+    //     }
+    //     while (tempStack.Count > 0) 
+    //         redoStack.Push(tempStack.Pop());
 
-        return stringBuilder.ToString();
-    }
+    //     return stringBuilder.ToString();
+    // }
 }
