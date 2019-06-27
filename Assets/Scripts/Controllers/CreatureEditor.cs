@@ -269,7 +269,12 @@ public class CreatureEditor: MonoBehaviour,
                 selectionManager.DeselectAll();
                 break;
             case Tool.Delete:
-                creatureEdited = creatureBuilder.DeleteHoveringBodyComponent(); break;
+                selectionManager.AddCurrentHoveringToSelection();
+                var selection = selectionManager.GetSelection();
+                creatureEdited = selection.Count > 0;
+                creatureBuilder.Delete(selection);
+                selectionManager.DeselectAll();
+                break;
             case Tool.Select:
                 selectionManager.EndSelection(); break;
 
@@ -383,6 +388,8 @@ public class CreatureEditor: MonoBehaviour,
     }
 
     // MARK: - Highlighting on Hover
+
+    // TODO: Remove this
 
     /// <summary>
 	/// Sets the shouldHighlight variable appropiately on every hoverable object
