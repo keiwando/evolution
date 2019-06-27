@@ -52,14 +52,19 @@ namespace Keiwando.Evolution {
             switch (editor.SelectedTool) {
 
             case CreatureEditor.Tool.Bone: 
-                hovering = GetComponentAtScreenPoint<Joint>(mouseScreenPos); break;
+                hovering = GetComponentAtScreenPoint<Joint>(mouseScreenPos); 
+                break;
+
             case CreatureEditor.Tool.Muscle:
-                hovering = GetComponentAtScreenPoint<Bone>(mouseScreenPos); break;
+                hovering = GetComponentAtScreenPoint<Bone>(mouseScreenPos); 
+                break;
+
             case CreatureEditor.Tool.Move:
                 hovering = GetComponentAtScreenPoint<Joint>(mouseScreenPos);
                 if (hovering == null)
                     hovering = CheckCachedCollisionsFor<Bone>();
                 break;
+
             case CreatureEditor.Tool.Delete:
                 hovering = GetComponentAtScreenPoint<Joint>(mouseScreenPos);
                 if (hovering == null)
@@ -178,6 +183,16 @@ namespace Keiwando.Evolution {
 
         public List<BodyComponent> GetSelection() {
             return this.selection;
+        }
+
+        public List<T> GetSelectedParts<T>() 
+            where T: BodyComponent {
+                
+            var result = new List<T>();
+            for (int i = 0; i < selection.Count; i++)
+                if (selection[i] is T)
+                    result.Add(selection[i] as T);
+            return result;
         }
 
         public bool DeleteSelection() {

@@ -45,6 +45,8 @@ public class CreatureEditor: MonoBehaviour,
     private HistoryManager<CreatureDesign> historyManager;
 
     private EditorSelectionManager selectionManager;
+    private JointSettingsManager jointSettingsManager;
+    
 
     // MARK: - Movement
     private Vector3 lastDragPosition;
@@ -191,7 +193,6 @@ public class CreatureEditor: MonoBehaviour,
         }
 
         // TODO: Implement
-        // TODO: Add select tool
         // Mouse Down
         if (Input.GetMouseButtonDown(0)) { 
 
@@ -205,15 +206,19 @@ public class CreatureEditor: MonoBehaviour,
                 if (joint != null)
                     creatureBuilder.TryStartingBone(joint); 
                 break;
+
             case Tool.Muscle:
                 var bone = selectionManager.GetSingleSelected<Bone>();
                 if (bone != null)
-                    creatureBuilder.TryStartingMuscle(bone); break;
+                    creatureBuilder.TryStartingMuscle(bone); 
+                break;
+
             case Tool.Move:
                 selectionManager.AddCurrentHoveringToSelection();
                 jointsToMove = selectionManager.GetJointsToMoveFromSelection(); 
                 lastDragPosition = clickWorldPos;
                 break;
+
             case Tool.Select:
                 selectionManager.DeselectAll();
                 selectionManager.StartSelection(clickWorldPos); 
@@ -223,22 +228,27 @@ public class CreatureEditor: MonoBehaviour,
             }
         }
         // Mouse Move
-        // TODO: Inject mouse position into creatureBuilder function calls
         else if (InputUtils.MouseHeld()) {
 
             switch (selectedTool) {
+
             case Tool.Bone:
                 var hoveringJoint = selectionManager.GetSingleSelected<Joint>();
-                creatureBuilder.UpdateCurrentBoneEnd(clickWorldPos, hoveringJoint); break;
+                creatureBuilder.UpdateCurrentBoneEnd(clickWorldPos, hoveringJoint); 
+                break;
+
             case Tool.Muscle:
                 var hoveringBone = selectionManager.GetSingleSelected<Bone>();
-                creatureBuilder.UpdateCurrentMuscleEnd(clickWorldPos, hoveringBone); break;
+                creatureBuilder.UpdateCurrentMuscleEnd(clickWorldPos, hoveringBone); 
+                break;
+
             case Tool.Move:
                 if (jointsToMove.Count > 0) {
                     creatureBuilder.MoveSelection(jointsToMove, clickWorldPos - lastDragPosition);
                     lastDragPosition = clickWorldPos;
                 }    
                 break;
+
             case Tool.Select:
                 selectionManager.UpdateSelection(clickWorldPos); break;
             default: break;
@@ -262,12 +272,15 @@ public class CreatureEditor: MonoBehaviour,
 
             case Tool.Bone:
                 creatureEdited = creatureBuilder.PlaceCurrentBone(); break;
+
             case Tool.Muscle:
                 creatureEdited = creatureBuilder.PlaceCurrentMuscle(); break;
+
             case Tool.Move: 
                 creatureEdited = creatureBuilder.MoveEnded(jointsToMove); 
                 selectionManager.DeselectAll();
                 break;
+
             case Tool.Delete:
                 selectionManager.AddCurrentHoveringToSelection();
                 var selection = selectionManager.GetSelection();
@@ -275,8 +288,11 @@ public class CreatureEditor: MonoBehaviour,
                 creatureBuilder.Delete(selection);
                 selectionManager.DeselectAll();
                 break;
+
             case Tool.Select:
-                selectionManager.EndSelection(); break;
+                selectionManager.EndSelection(); 
+                OnSelectionEnded();
+                break;
 
             default: break;
             }
@@ -372,6 +388,28 @@ public class CreatureEditor: MonoBehaviour,
         UpdateHoverables();
         if (onToolChanged != null) {
             onToolChanged(tool);
+        }
+    }
+
+    private void OnSelectionEnded() {
+        // Check if we need to show the advanced body settings UI
+        var selection = selectionManager.GetSelection();
+        if (selection.Count != 1) {
+            viewController.ShowBasicSettingsControls();
+            return;
+        };
+
+        var part = selection[0];
+
+        if (part is Joint) {
+            var manager = new JointSettingsManager(part as Joint, viewController.ShowAdvancedSettingsControls());
+            jointSettingsManager = manager;
+        }
+        else if (part is Bone) {
+
+        }
+        else if (part is Muscle) {
+
         }
     }
 

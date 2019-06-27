@@ -25,8 +25,13 @@ namespace Keiwando.UI {
             });
         }
 
-        public void Refresh(float value) {
+        public void Refresh(float value, string valueText = null) {
             slider.value = value;
+            if (valueText == null) {
+                valueLabel.text = value.ToString();
+            } else {
+                valueLabel.text = valueText;
+            }
         }
     }
 }

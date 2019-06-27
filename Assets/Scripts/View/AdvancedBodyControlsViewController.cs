@@ -12,7 +12,7 @@ namespace Keiwando.Evolution.UI {
         [SerializeField] private LabelledSlider sliderTemplate;
         [SerializeField] private LabelledToggle toggleTemplate;
 
-        private List<GameObject> listItems;
+        private List<GameObject> listItems = new List<GameObject>();
 
         void Start() {
             sliderTemplate.gameObject.SetActive(false);
@@ -21,7 +21,8 @@ namespace Keiwando.Evolution.UI {
 
         public LabelledSlider AddSlider(string title) {
             
-            var slider = Instantiate(sliderTemplate);
+            var slider = Instantiate(sliderTemplate, sliderTemplate.transform.position, Quaternion.identity, transform);
+            listItems.Add(slider.gameObject);
             slider.gameObject.SetActive(true);
             slider.Description = title;
             return slider;
