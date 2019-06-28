@@ -10,6 +10,7 @@ public class SimulationSceneSetup: MonoBehaviour {
     public Creature[] SpawnBatch(CreatureDesign design, int batchSize, PhysicsScene physicsScene) {
 
         var template = new CreatureBuilder(design).Build();
+        // SetupCreature(template, physicsScene);
         template.PhysicsScene = physicsScene;
         template.RemoveMuscleColliders();
 		template.Alive = false;
@@ -30,7 +31,13 @@ public class SimulationSceneSetup: MonoBehaviour {
 
         var batch = new Creature[batchSize];        
         for (int i = 0; i < batchSize; i++) {
-            batch[i] = Instantiate(template, spawnPosition, Quaternion.identity);
+
+            var builder = new CreatureBuilder(design);
+            batch[i] = builder.Build();
+            batch[i].transform.position = spawnPosition;
+            // SetupCreature(batch[i], physicsScene);
+
+            // batch[i] = Instantiate(template, spawnPosition, Quaternion.identity);
             batch[i].RefreshLineRenderers();
             batch[i].PhysicsScene = physicsScene;
             // TODO: Connect Obstacle
@@ -40,4 +47,12 @@ public class SimulationSceneSetup: MonoBehaviour {
         Destroy(this.gameObject);
         return batch;
     }
+
+    // private void SetupCreature(Creature creature, PhysicsScene physicsScene) {
+
+    //     creature.PhysicsScene = physicsScene;
+    //     creature.RemoveMuscleColliders();
+	// 	creature.Alive = false;
+    //     creature.gameObject.SetActive(true);
+    // }
 }

@@ -3,37 +3,40 @@ using Keiwando.UI;
 
 namespace Keiwando.Evolution {
 
-    public class JointSettingsManager: BodyComponentSettingsManager {
+    public class BoneSettingsManager: BodyComponentSettingsManager {
 
-        private const float MIN_WEIGHT = 0.2f;
+        private const float MIN_WEIGHT = 1f;
         private const float MAX_WEIGHT = 5f;
 
-        private Joint joint;
+        private Bone bone;
         private AdvancedBodyControlsViewController viewController;
         private LabelledSlider weightSlider;
 
-        public JointSettingsManager(Joint joint, AdvancedBodyControlsViewController viewController): base() {
-            this.joint = joint;
+        public BoneSettingsManager(Bone bone, AdvancedBodyControlsViewController viewController): base() {
+            this.bone = bone;
             this.viewController = viewController;
 
             viewController.Reset();
-            viewController.SetTitle("Joint Settings");
+            viewController.SetTitle("Bone Settings");
             weightSlider = viewController.AddSlider("Weight");
             weightSlider.onValueChanged += delegate (float value) {
-                var oldData = joint.JointData;
+                var oldData = bone.BoneData;
                 var weight = SliderToWeight(value);
                 if (weight != oldData.weight) {
                     DataWillChange();
                 }
-                var data = new JointData(oldData.id, oldData.position, weight);
-                joint.JointData = data;
+                var data = new BoneData(
+                    oldData.id, oldData.startJointID, oldData.endJointID,
+                    weight
+                );
+                bone.BoneData = data;
                 Refresh();
             };
             Refresh();
         }
 
         private void Refresh() {
-            var weight = joint.JointData.weight;
+            var weight = bone.BoneData.weight;
             weightSlider.Refresh(WeightToSlider(weight), string.Format("{0}x", weight.ToString("0.0")));
         }
 

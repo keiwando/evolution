@@ -44,6 +44,8 @@ public class Bone : BodyComponent {
 		resetRotation = transform.rotation;
 
 		body = GetComponent<Rigidbody>();
+
+		body.mass = 2 * BoneData.weight - 1;
 	}
 
 	public void Reset() {

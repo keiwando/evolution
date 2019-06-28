@@ -24,7 +24,7 @@ namespace Keiwando.UI {
         }
 
         public void Refresh(bool enabled) {
-            toggle.enabled = enabled;
+            toggle.isOn = enabled;
         }
     }
 }

@@ -45,8 +45,7 @@ public class CreatureEditor: MonoBehaviour,
     private HistoryManager<CreatureDesign> historyManager;
 
     private EditorSelectionManager selectionManager;
-    private JointSettingsManager jointSettingsManager;
-    
+    private BodyComponentSettingsManager advancedSettingsManager;
 
     // MARK: - Movement
     private Vector3 lastDragPosition;
@@ -91,6 +90,7 @@ public class CreatureEditor: MonoBehaviour,
     }
 
     public void LoadDesign(CreatureDesign design) {
+        historyManager.Push(GetState(historyManager));
         creatureBuilder.Reset();
         creatureBuilder = new CreatureBuilder(design);
     }
@@ -385,6 +385,9 @@ public class CreatureEditor: MonoBehaviour,
         if (tool == Tool.Delete) {
             DeleteCurrentSelection();
         }
+        if (tool != Tool.Select) {
+            viewController.ShowBasicSettingsControls();
+        }
         UpdateHoverables();
         if (onToolChanged != null) {
             onToolChanged(tool);
@@ -402,15 +405,17 @@ public class CreatureEditor: MonoBehaviour,
         var part = selection[0];
 
         if (part is Joint) {
-            var manager = new JointSettingsManager(part as Joint, viewController.ShowAdvancedSettingsControls());
-            jointSettingsManager = manager;
+            advancedSettingsManager = new JointSettingsManager(part as Joint, viewController.ShowAdvancedSettingsControls());
         }
         else if (part is Bone) {
-
+            advancedSettingsManager = new BoneSettingsManager(part as Bone, viewController.ShowAdvancedSettingsControls());
         }
         else if (part is Muscle) {
-
+            advancedSettingsManager = new MuscleSettingsManager(part as Muscle, viewController.ShowAdvancedSettingsControls());
         }
+        advancedSettingsManager.dataWillChange += delegate () {
+            historyManager.Push(creatureBuilder.GetDesign());
+        };
     }
 
     private void DeleteCurrentSelection() {

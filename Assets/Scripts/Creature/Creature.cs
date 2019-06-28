@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public struct BasicBrainInputs {
 
@@ -382,7 +383,7 @@ public class Creature : MonoBehaviour {
 		stats.numberOfBones = bones.Count;
 		stats.numberOfMuscles = muscles.Count;
 		stats.simulationTime = Mathf.RoundToInt(brain.SimulationTime);
-		stats.weight = joints.Count + 2 * bones.Count;
+		stats.weight = joints.Select(x => x.JointData.weight).Sum() + 2 * bones.Select(x => x.BoneData.weight).Sum();
 		stats.maxJumpingHeight = maxJumpingHeight;
 
 		return stats;

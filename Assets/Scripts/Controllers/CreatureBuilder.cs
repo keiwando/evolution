@@ -280,8 +280,10 @@ public class CreatureBuilder {
 					endingPoint = joint.transform.position;
 					currentMuscle.endingJoint = joint;	
 					var oldData = currentMuscle.MuscleData;
-					var newData = new MuscleData(oldData.id, oldData.startBoneID, hoveringBone.BoneData.id, 
-												 oldData.strength, oldData.canExpand); 
+					var newData = new MuscleData(
+						oldData.id, oldData.startBoneID, hoveringBone.BoneData.id, 
+						oldData.strength, oldData.canExpand
+					); 
 					currentMuscle.MuscleData = newData;
 				} else {
 					currentMuscle.endingJoint = null;

@@ -42,6 +42,8 @@ public class Joint : BodyComponent {
 		resetRotation = transform.rotation;
 
 		body = GetComponent<Rigidbody>();
+
+		body.mass = JointData.weight;
 	}
 
 	public void Reset() {

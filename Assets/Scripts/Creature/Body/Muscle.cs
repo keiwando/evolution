@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.Assertions;
+using System;
 using System.Collections;
-using System.Collections.Generic;
 
 public class Muscle : BodyComponent {
 
@@ -65,9 +64,9 @@ public class Muscle : BodyComponent {
 
 	//private float CONTRACTION_FACTOR = 0.2f;
 
-	private float SPRING_STRENGTH = 1000; //30000;
+	private const float SPRING_STRENGTH = 1000; //30000;
 
-	private float MAX_MUSCLE_FORCE = 1500; //5000;
+	// private float MAX_MUSCLE_FORCE = 1500; //5000;
 
 	public float currentForce = 0;
 
@@ -103,11 +102,9 @@ public class Muscle : BodyComponent {
 
 		return muscle;
 	}
-		
+
 	public override void Start () {
 		base.Start();
-
-		//highlightingShader = Shader.Find("Standard");
 
 		resetPosition = transform.position;
 		resetRotation = transform.rotation;
@@ -199,7 +196,9 @@ public class Muscle : BodyComponent {
 	/** Set the muscle contraction. O = no contraction/expansion, 1 = fully contracted. */
 	public void SetContractionForce(float percent) {
 
-		currentForce = Mathf.Max(0.01f, Mathf.Min(MAX_MUSCLE_FORCE, percent * MAX_MUSCLE_FORCE));
+		// float maxForce = 1500f;
+		float maxForce = MuscleData.strength;
+		currentForce = Mathf.Max(0.01f, Mathf.Min(maxForce, percent * maxForce));
 		//Assert.IsFalse(float.IsNaN(currentForce));
 	}
 
@@ -228,12 +227,14 @@ public class Muscle : BodyComponent {
 	/** Expands the muscle. */
 	public void Expand() {
 
-		if (living) {
+		if (living && MuscleData.canExpand) {
 			Expand(currentForce);
 		}
 	}
 
 	public void Expand(float force) {
+
+		if (!MuscleData.canExpand) return;
 
 		var startingPoint = startingJoint.transform.position;
 		var endingPoint = endingJoint.transform.position;
@@ -354,16 +355,19 @@ public class Muscle : BodyComponent {
 
 		if (!ShouldShowContraction) { return; }
 
-		var alpha = currentForce / MAX_MUSCLE_FORCE;
-		//print("Alpha = " + alpha);
+		var alpha = (float)Math.Min(1f, currentForce / Math.Max(MuscleData.strength, 0.000001));
 
 		if (muscleAction == MuscleAction.CONTRACT) {
 			SetRedMaterial();
-		} else if (muscleAction == MuscleAction.EXPAND) {
+		} else if (muscleAction == MuscleAction.EXPAND && MuscleData.canExpand) {
 			SetBlueMaterial();
 		}
 
-		SetLineWidth(minLineWidth + alpha * (maxLineWidth - minLineWidth));
+		if (!MuscleData.canExpand && muscleAction == MuscleAction.EXPAND) {
+			SetLineWidth(minLineWidth);
+		} else {
+			SetLineWidth(minLineWidth + alpha * (maxLineWidth - minLineWidth));
+		}
 	}
 
 	/** Sets the material for the attached lineRenderer. */

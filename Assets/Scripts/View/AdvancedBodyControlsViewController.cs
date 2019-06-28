@@ -12,6 +12,8 @@ namespace Keiwando.Evolution.UI {
         [SerializeField] private LabelledSlider sliderTemplate;
         [SerializeField] private LabelledToggle toggleTemplate;
 
+        [SerializeField] private GridLayoutGroup grid;
+
         private List<GameObject> listItems = new List<GameObject>();
 
         void Start() {
@@ -21,7 +23,7 @@ namespace Keiwando.Evolution.UI {
 
         public LabelledSlider AddSlider(string title) {
             
-            var slider = Instantiate(sliderTemplate, sliderTemplate.transform.position, Quaternion.identity, transform);
+            var slider = Instantiate(sliderTemplate, grid.transform);
             listItems.Add(slider.gameObject);
             slider.gameObject.SetActive(true);
             slider.Description = title;
@@ -30,7 +32,8 @@ namespace Keiwando.Evolution.UI {
 
         public LabelledToggle AddToggle(string title) {
             
-            var toggle = Instantiate(toggleTemplate);
+            var toggle = Instantiate(toggleTemplate, grid.transform);
+            listItems.Add(toggle.gameObject);
             toggle.gameObject.SetActive(true);
             toggle.Description = title;
             return toggle;
