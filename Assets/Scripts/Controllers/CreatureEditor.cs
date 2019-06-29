@@ -72,8 +72,8 @@ public class CreatureEditor: MonoBehaviour,
         }
 
         var editorSettings = EditorStateManager.EditorSettings;
-        grid.gameObject.SetActive(editorSettings.GridEnabled);
         grid.Size = editorSettings.GridSize;
+        grid.gameObject.SetActive(editorSettings.GridEnabled);
 
         viewController.Refresh();
     }

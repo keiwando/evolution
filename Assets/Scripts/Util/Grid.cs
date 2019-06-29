@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour {
 
-	private const float gridAreaSize = 75f; 
+	private const float gridAreaSize = 85f; 
 
 	public float Size {
 		get { return gridSize; }
-		set { gridSize = value; }
+		set { 
+			var didChange = gridSize != value;
+			gridSize = value; 
+			if (didChange) VisualRefresh();
+		}
 	}
 	private float gridSize = 2f;
 
@@ -35,7 +39,7 @@ public class Grid : MonoBehaviour {
 
 	void Start () {
 
-		SetupGrid();	
+		VisualRefresh();
 	}
 
 	public void VisualRefresh() {
@@ -70,7 +74,6 @@ public class Grid : MonoBehaviour {
 
 	private void SetupGrid() {
 
-		// Create a bunch of lines
 		lineRenderer = gameObject.GetComponent<LineRenderer>();
 		lineRenderer.startWidth = 0.11f;
 		lineRenderer.endWidth = 0.11f;
