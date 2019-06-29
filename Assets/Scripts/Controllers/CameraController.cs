@@ -117,6 +117,23 @@ public class CameraController : MonoBehaviour {
 
         var initialZoom = camera.orthographicSize;
 		minZoom = initialZoom - zoomInLength;
+
+        // Prioritize movement bounds over zoom out length
+        if (zoomEnabled && movementEnabled) {
+            if (camera.aspect > (movementBounds.width / movementBounds.height)) {
+                // Check for violation of horizontal movement bounds
+                if (minX != float.MinValue && maxX != float.MaxValue) {
+                    var maxOrthoSize = 0.5f * size.y * movementBounds.width / size.x;
+                    zoomOutLength = Math.Min(zoomOutLength, maxOrthoSize - initialZoom);
+                }
+            } else {
+                // Check for violation of vertical movement bounds
+                if (minY != float.MinValue && maxY != float.MaxValue) {
+                    var maxOrthoSize = 0.5f * movementBounds.height;
+                    zoomOutLength = Math.Min(zoomOutLength, maxOrthoSize - initialZoom);
+                }
+            }
+        }
     }
 
     void Update() {

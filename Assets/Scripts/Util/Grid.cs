@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour {
 
-	private const float gridAreaSize = 85f; 
+	private const float gridAreaSize = 120f; 
 
 	public float Size {
 		get { return gridSize; }
