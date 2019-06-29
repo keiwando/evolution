@@ -57,8 +57,13 @@ public class CreatureEditor: MonoBehaviour,
         historyManager = new HistoryManager<CreatureDesign>(this);
 
         Screen.sleepTimeout = SleepTimeout.SystemSetting;
-
-        creatureBuilder = new CreatureBuilder();
+        
+        var lastDesign = EditorStateManager.LastCreatureDesign;
+        if (!lastDesign.IsEmpty) {
+            creatureBuilder = new CreatureBuilder(lastDesign);
+        } else {
+            creatureBuilder = new CreatureBuilder();
+        }
         selectionManager = new EditorSelectionManager(this, selectionArea, mouseDeleteTexture);
 
         var simulationConfigs = GameObject.FindGameObjectsWithTag("SimulationConfig");
@@ -137,6 +142,8 @@ public class CreatureEditor: MonoBehaviour,
 
         // Don't start the simulation if the creature design is empty
         if (creatureDesign.IsEmpty) return;
+
+        EditorStateManager.LastCreatureDesign = creatureDesign;
 
         var sceneDescription = DefaultSimulationScenes.DefaultSceneForTask(simulationSettings.Task);
         

@@ -20,4 +20,4 @@ string CreatureNames (_CreatureNames)
 string SimulationSettings (EVOLUTION_SETTINGS)
 string NetworkSettings (NEURAL NETWORK SETTINGS)
 string EditorSettings
-string CurrentCreatureDesign
+string LastCreatureDesign

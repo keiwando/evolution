@@ -18,7 +18,7 @@ public class Settings {
 	private const string SIMULATION_SETTINGS_KEY = "EVOLUTION_SETTINGS";
 	private const string NETWORK_SETTINGS_KEY = "NEURAL NETWORK SETTINGS";
 	private const string EDITOR_SETTINGS_KEY = "EDITOR_SETTINGS_KEY";
-	private const string CURRENT_CREATURE_DESIGN_KEY = "CURRENT_CREATURE_DESIGN_KEY";
+	private const string LAST_CREATURE_DESIGN_KEY = "LAST_CREATURE_DESIGN_KEY";
 
 	public static bool DidMigrateCreatureSaves {
 		get { return GetBool(DID_MIGRATE_CREATURE_SAVES_KEY, false); }
@@ -100,9 +100,9 @@ public class Settings {
 		set { PlayerPrefs.SetString(EDITOR_SETTINGS_KEY, value); Save(); }
 	}
 
-	public static string CurrentCreatureDesign {
-		get { return PlayerPrefs.GetString(CURRENT_CREATURE_DESIGN_KEY, ""); }
-		set { PlayerPrefs.SetString(CURRENT_CREATURE_DESIGN_KEY, value); Save(); }
+	public static string LastCreatureDesign {
+		get { return PlayerPrefs.GetString(LAST_CREATURE_DESIGN_KEY, ""); }
+		set { PlayerPrefs.SetString(LAST_CREATURE_DESIGN_KEY, value); Save(); }
 	}
 
 	static Settings() {

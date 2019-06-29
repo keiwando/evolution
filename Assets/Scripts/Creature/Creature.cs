@@ -187,7 +187,7 @@ public class Creature : MonoBehaviour {
 			return hit.distance;
 		}
 
-		Debug.Log(hit.distance);
+		// Debug.Log(hit.distance);
 
 		return 0f;
 	}
@@ -392,15 +392,18 @@ public class Creature : MonoBehaviour {
 	public void SetOnVisibleLayer() {
 
 		foreach (var bone in bones) {
+			if (bone == null) continue;
 			bone.gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
 			bone.muscleJoint.gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
 		}
 
 		foreach (var joint in joints) {
+			if (joint == null) continue;
 			joint.gameObject.layer = LayerMask.NameToLayer("VisibleJoint");
 		}
 
 		foreach (var muscle in muscles) {
+			if (muscle == null) continue;
 			muscle.gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
 		}
 

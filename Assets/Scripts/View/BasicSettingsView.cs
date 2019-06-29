@@ -50,9 +50,23 @@ namespace Keiwando.Evolution.UI {
             var taskDropdown = new Dropdown<int>(this.taskDropdown, dropdownData);
             taskDropdown.onValueChanged += delegate (int value) {
                 var task = (EvolutionTask)value;
-                Delegate.EvolutionTaskDidChange(this, task);
+                Delegate?.EvolutionTaskDidChange(this, task);
             };
             this.dropdownWrapper = taskDropdown;
+
+            populationSizeInput.onValueChanged.AddListener(delegate (string value) {
+                int populationSize = 0;
+                if (int.TryParse(value, out populationSize)) {
+                    Delegate?.PopulationSizeDidChange(this, populationSize);
+                }
+            });
+
+            generationDurationInput.onValueChanged.AddListener(delegate (string value) {
+                int duration = 0;
+                if (int.TryParse(value, out duration)) {
+                    Delegate?.GenerationDurationDidChange(this, duration);
+                }
+            });
         }
 
         public void Refresh() {

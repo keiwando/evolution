@@ -29,34 +29,23 @@ public class EditorStateManager {
         }
     }
 
-    // public static CreatureDesign CreatureDesign {
-    //     get => _creatureDesign;
-    //     set {
-    //         _creatureDesign = value;
-    //         Settings.CurrentCreatureDesign = value.Encode();
-    //     }
-    // }
+    public static CreatureDesign LastCreatureDesign {
+        get => _lastCreatureDesign;
+        set {
+            _lastCreatureDesign = value;
+            Settings.LastCreatureDesign = value.Encode();
+        }
+    }
 
     private static EditorSettings _editorSettings;
     private static SimulationSettings _simulationSettings;
     private static NeuralNetworkSettings _networkSettings;
-    // private static CreatureDesign _creatureDesign;
+    private static CreatureDesign _lastCreatureDesign;
 
     static EditorStateManager() {
         _editorSettings = EditorSettings.Decode(Settings.EditorSettings);
         _simulationSettings = SimulationSettings.Decode(Settings.SimulationSettings);
         _networkSettings = NeuralNetworkSettings.Decode(Settings.NetworkSettings);
-        // _creatureDesign = CreatureSerializer.ParseCreatureDesign(Settings.CurrentCreatureDesign);
+        _lastCreatureDesign = CreatureSerializer.ParseCreatureDesign(Settings.LastCreatureDesign);
     }
-
-    // public static EditorState Load() {
-
-    //     return new EditorState(_creatureDesign, _simulationSettings, _networkSettings);
-    // }
-
-    // public static void Serialize(EditorState state) {
-    //     Settings.SimulationSettings = state.SimulationSettings.Encode();
-    //     Settings.NetworkSettings = state.NeuralNetworkSettings.Encode();
-    //     Settings.CurrentCreatureDesign = state.CreatureDesign.Encode();
-    // }
 }
