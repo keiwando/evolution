@@ -153,6 +153,8 @@ namespace Keiwando.Evolution {
             
             selectionArea.gameObject.SetActive(false);
 
+            if (selectionArea.localScale == Vector3.zero) return;
+
             // Check if this was actually a touch/click instead of a drag
             // and adjust the selection algorithm accordingly if necessary
             if (Vector3.Distance(areaStart, currentAreaEnd) < TAP_THRESHOLD) {
@@ -167,6 +169,8 @@ namespace Keiwando.Evolution {
             } else {
                 SelectInArea<BodyComponent>(GetSelectionRect(), this.selection);
             }
+
+            selectionArea.localScale = Vector3.zero;
         } 
 
         public void DeselectAll() {
