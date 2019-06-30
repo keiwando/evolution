@@ -189,7 +189,15 @@ public class CreatureEditor: MonoBehaviour,
     private void HandleClicks() {
 
         if (cameraController.IsAdjustingCamera) return;
-        if (EventSystem.current.IsPointerOverGameObject()) return;
+
+        bool isPointerOverUI = false;
+        isPointerOverUI |= EventSystem.current.IsPointerOverGameObject();
+        if (Input.touchCount > 0) {
+            for (int i = 0; i < Input.touchCount; i++) {
+                isPointerOverUI |= EventSystem.current.IsPointerOverGameObject(Input.GetTouch(i).fingerId);
+            }
+        }
+        // if (EventSystem.current.IsPointerOverGameObject()) return;
 
         var clickWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         clickWorldPos.z = 0;
@@ -203,8 +211,9 @@ public class CreatureEditor: MonoBehaviour,
         // Mouse Down
         if (Input.GetMouseButtonDown(0)) { 
 
-            if (EventSystem.current.IsPointerOverGameObject()) return;
-            if (InputUtils.IsPointerOverUIObject()) return;
+            // if (EventSystem.current.IsPointerOverGameObject()) return;
+            // if (InputUtils.IsPointerOverUIObject()) return;
+            if (isPointerOverUI) return;
             
             switch (selectedTool) {
 
@@ -271,8 +280,9 @@ public class CreatureEditor: MonoBehaviour,
             switch (selectedTool) {
 
             case Tool.Joint:
-                if (EventSystem.current.IsPointerOverGameObject()) return;
-                if (InputUtils.IsPointerOverUIObject()) return;
+                // if (EventSystem.current.IsPointerOverGameObject()) return;
+                // if (InputUtils.IsPointerOverUIObject()) return;
+                if (isPointerOverUI) return;
                 if (Input.touchCount > 1) return;
                 creatureEdited = creatureBuilder.TryPlacingJoint(clickWorldPos); 
                 break;
@@ -289,6 +299,7 @@ public class CreatureEditor: MonoBehaviour,
                 break;
 
             case Tool.Delete:
+                if (isPointerOverUI) return;
                 selectionManager.AddCurrentHoveringToSelection();
                 var selection = selectionManager.GetSelection();
                 creatureEdited = selection.Count > 0;
