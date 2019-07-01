@@ -24,11 +24,6 @@ abstract public class BodyComponent: Hoverable {
 	abstract public void PrepareForEvolution();
 
 	/// <summary>
-	/// Generates a strings that holds all the information needed to save and rebuild this BodyComponent.
-	/// </summary>
-	abstract public string GetSaveString();
-
-	/// <summary>
 	/// Removes the already destroyed object that are still left in the list.
 	/// This operation doesn't change the original list.
 	/// </summary>

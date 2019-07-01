@@ -26,7 +26,6 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 			foreach (var file in files) { 
 				var extension = file.Extension.ToLower();
 				if (extension.Equals(".evol")) {
-					// TODO: Validate file contents
 					var encoded = file.ToUTF8String();
 					try {
 						var simulationData = SimulationSerializer.ParseSimulationData(encoded);

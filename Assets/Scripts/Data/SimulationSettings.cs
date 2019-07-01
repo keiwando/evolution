@@ -116,7 +116,7 @@ public struct SimulationSettings {
 		json[CodingKey.RecombinationAlgorithm] = (int)this.RecombinationAlgorithm;
 		json[CodingKey.MutationAlgorithm] = (int)this.MutationAlgorithm;
 
-		return json.ToString();
+		return json.ToString(Formatting.None);
 	}
 
 	public static SimulationSettings Decode(string encoded) {

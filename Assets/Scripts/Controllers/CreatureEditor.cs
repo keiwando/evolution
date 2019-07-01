@@ -64,6 +64,7 @@ public class CreatureEditor: MonoBehaviour,
         } else {
             creatureBuilder = new CreatureBuilder();
         }
+            // creatureBuilder = new CreatureBuilder();
         selectionManager = new EditorSelectionManager(this, selectionArea, mouseDeleteTexture);
 
         var simulationConfigs = GameObject.FindGameObjectsWithTag("SimulationConfig");
@@ -120,7 +121,7 @@ public class CreatureEditor: MonoBehaviour,
 
     
     public void SaveDesign(CreatureDesign design) {
-        // TODO: Implement
+        CreatureSerializer.SaveCreatureDesign(design);
     }
 
     public void Undo() {
@@ -173,7 +174,6 @@ public class CreatureEditor: MonoBehaviour,
 
         creatureBuilder.Reset();
         creatureBuilder = new CreatureBuilder(design);
-        // TODO: Implement non creature building related state changes
     }
 
     public CreatureDesign GetState(HistoryManager<CreatureDesign> manager) {
@@ -206,12 +206,9 @@ public class CreatureEditor: MonoBehaviour,
             clickWorldPos = grid.ClosestPointOnGrid(clickWorldPos);
         }
 
-        // TODO: Implement
         // Mouse Down
         if (Input.GetMouseButtonDown(0)) { 
 
-            // if (EventSystem.current.IsPointerOverGameObject()) return;
-            // if (InputUtils.IsPointerOverUIObject()) return;
             if (isPointerOverUI) return;
             
             switch (selectedTool) {
@@ -280,8 +277,6 @@ public class CreatureEditor: MonoBehaviour,
             switch (selectedTool) {
 
             case Tool.Joint:
-                // if (EventSystem.current.IsPointerOverGameObject()) return;
-                // if (InputUtils.IsPointerOverUIObject()) return;
                 if (isPointerOverUI) return;
                 if (Input.touchCount > 1) return;
                 creatureEdited = creatureBuilder.TryPlacingJoint(clickWorldPos); 
@@ -390,14 +385,6 @@ public class CreatureEditor: MonoBehaviour,
             }
             
         } 
-
-        // TODO: Remove
-        // else if (input.GetKeyDown(KeyCode.P)) {
-        //     Debug.Log(historyManager.GetDebugState());
-        // }
-        // else if (input.GetKeyDown(KeyCode.Q)) {
-        //     Debug.Log(GetState().CreatureDesign.GetDebugDescription());
-        // }
 
         viewController.Refresh();
     }

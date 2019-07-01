@@ -1,12 +1,6 @@
-﻿using UnityEngine.SceneManagement;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
 using System.Linq;
-using System.IO;
-using System;
 
 
 public class CreatureBuilder {
@@ -14,19 +8,9 @@ public class CreatureBuilder {
 	/// <summary>
 	/// A counter used to assign a unique id to each body component created with this CreatureBuilder.
 	/// Needs to be incremented after each use. Can be reset if needed. Starts at 0.
+	/// This needs to be updated when a creature design is loaded!
 	/// </summary>
-	/// TODO: Ensure that this counter is updated when a creature is created from a Creature Design
 	private int idCounter = 0;
-
-	/// <summary>
-	/// The current creature design state created by this builder.
-	/// </summary>
-	/// <remarks>
-	/// This needs to be kept consistent with the body components that
-	/// have been placed in the scene.
-	/// </remarks>
-	/// // TODO: Figure out if this is needed
-	// private CreatureDesign design;
 
 	/// <summary>
 	/// The joints of the creature that have been placed in the scene.
@@ -77,6 +61,12 @@ public class CreatureBuilder {
 		foreach (var muscleData in design.Muscles) {
 			CreateMuscleFromData(muscleData);
 		}
+
+		// Update the idCounter
+		int maxJointID = design.Joints.Max(data => data.id);
+		int maxBoneID = design.Bones.Max(data => data.id);
+		int maxMuscleID = design.Muscles.Max(data => data.id);
+		idCounter = Mathf.Max(Mathf.Max(maxJointID, maxBoneID), maxMuscleID) + 1;
 	}
 
 	
@@ -120,9 +110,7 @@ public class CreatureBuilder {
 	/// Attempts to place a bone beginning at the current position.
 	/// </summary>
 	public void TryStartingBone(Joint joint) {
-		// find the selected joint
-		// Joint joint = HoveringUtil.GetHoveringObject<Joint>(joints);
-
+		
 		if (joint != null) {
 
 			CreateBoneFromJoint(joint);

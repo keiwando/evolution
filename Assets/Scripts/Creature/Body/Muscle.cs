@@ -434,12 +434,6 @@ public class Muscle : BodyComponent {
 		living = true;
 	}
 
-	// TODO: Remove this
-	public override string GetSaveString () {
-		
-		return string.Format("{0}%{1}%{2}", MuscleData.id, MuscleData.startBoneID, MuscleData.endBoneID);
-	}
-
 	/** Deletes the muscle gameobject and the springjoint. */
 	public override void Delete() {
 		base.Delete();

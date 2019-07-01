@@ -127,18 +127,6 @@ public class Joint : BodyComponent {
 		body = GetComponent<Rigidbody>();
 		body.isKinematic = false;
 	}
-
-	/// <summary>
-	/// Generates a string that holds all the information needed to save and rebuild this BodyComponent.
-	/// Format: Own ID % pos.x % pos.y % pos.z
-	/// </summary>
-	/// <returns>The save string.</returns>
-	public override string GetSaveString() {
-		// TODO: Fix
-		var pos = transform.position;
-		return string.Format("{0}%{1}%{2}%{3}", JointData.id, pos.x, pos.y, pos.z);
-	}
-
 		
 	void OnTriggerEnter(Collider collider) {
 

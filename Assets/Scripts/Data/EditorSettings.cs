@@ -1,6 +1,3 @@
-using System;
-using UnityEngine;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Keiwando.Evolution {
@@ -31,7 +28,7 @@ namespace Keiwando.Evolution {
 
             json[CodingKey.GridEnabled] = this.GridEnabled;
             json[CodingKey.GridSize] = this.GridSize;
-            return json.ToString();
+            return json.ToString(Newtonsoft.Json.Formatting.None);
         }
 
         public static EditorSettings Decode(string encoded) {

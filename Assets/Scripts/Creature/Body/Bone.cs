@@ -134,11 +134,4 @@ public class Bone : BodyComponent {
 
 		body.isKinematic = false;
 	}
-
-	// TODO: Remove
-	public override string GetSaveString () {
-		
-		return string.Format("{0}%{1}%{2}", BoneData.id, BoneData.startJointID, BoneData.endJointID);
-	}
-
 }

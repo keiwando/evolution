@@ -1,7 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 [Serializable]
 public class CreatureDesign {
@@ -17,6 +20,10 @@ public class CreatureDesign {
     public readonly List<BoneData> Bones;
     public readonly List<MuscleData> Muscles;
 
+    public static readonly CreatureDesign Empty = new CreatureDesign(
+        "", new List<JointData>(), new List<BoneData>(), new List<MuscleData>()
+    );
+
     public CreatureDesign(string name, List<JointData> joints, 
                           List<BoneData> bones, List<MuscleData> muscles) {
         this.Name = name;
@@ -28,9 +35,47 @@ public class CreatureDesign {
     public CreatureDesign() : 
         this("Unnamed", new List<JointData>(), new List<BoneData>(), new List<MuscleData>()) {}
 
-    public string Encode() {
-        return JsonUtility.ToJson(this, false);
+    #region Encode & Decode
+
+    private static class CodingKey {
+        public const string Name = "name";
+        public const string Joints = "joints";
+        public const string Bones = "bones";
+        public const string Muscles = "muscles";
     }
+
+    public string Encode() {
+        
+        var json = new JObject();
+
+        json[CodingKey.Name] = this.Name;
+        json[CodingKey.Joints] = JToken.FromObject(this.Joints.Select(joint => joint.ToJSON()).ToList());
+        json[CodingKey.Bones] = JToken.FromObject(this.Bones.Select(bone => bone.ToJSON()).ToList());
+        json[CodingKey.Muscles] = JToken.FromObject(this.Muscles.Select(muscle => muscle.ToJSON()).ToList());
+
+        return json.ToString(Formatting.None);
+    }
+
+    public static CreatureDesign Decode(string encoded) {
+
+        if (string.IsNullOrEmpty(encoded))
+            return Empty;
+
+        JObject json = JObject.Parse(encoded);
+
+        string name = json[CodingKey.Name].ToObject<string>();
+        var encodedJoints = json[CodingKey.Joints].ToObject<List<JObject>>();
+        var encodedBones = json[CodingKey.Bones].ToObject<List<JObject>>();
+        var encodedMuscles = json[CodingKey.Muscles].ToObject<List<JObject>>();
+
+        var joints = encodedJoints.Select(jointJson => JointData.Decode(jointJson)).ToList();
+        var bones = encodedBones.Select(boneJson => BoneData.Decode(boneJson)).ToList();
+        var muscles = encodedMuscles.Select(muscleJson => MuscleData.Decode(muscleJson)).ToList();
+
+        return new CreatureDesign(name, joints, bones, muscles);
+    }
+
+    #endregion
 
     #region DEBUG
 

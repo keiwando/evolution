@@ -36,7 +36,9 @@ public class CreatureSerializer {
 	}
 
 	public static void SaveCreatureDesign(CreatureDesign design) {
-		// TODO: Implement
+		
+		var encoded = design.Encode();
+		SaveCreatureDesign(design.Name, encoded, true);
 	}
 
 	/// <summary>
@@ -84,26 +86,11 @@ public class CreatureSerializer {
 
 		// Distinguish between JSON and legacy custom encodings
 		if (encoded.StartsWith("{")) {
-			return (CreatureDesign)JsonUtility.FromJson(encoded, typeof(CreatureDesign));
+			return CreatureDesign.Decode(encoded);
 		}
 
 		return LegacyCreatureParser.ParseCreatureDesign(name, encoded);
 	}
-
-	/// <summary>
-	/// Saves the joints, bones and muscles of a creature with a given name to a file (/Playerprefs)
-	/// The name cannot contain a dot (.)
-	/// </summary>
-	/// <exception cref="IllegalFilenameException"></exception>
-	// public static void WriteSaveFile(string name, List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
-
-	// 	if ( INVALID_NAME_REGEX.IsMatch(name) || string.IsNullOrEmpty(name) ) 
-	// 		throw new IllegalFilenameException();
-
-	// 	var content = CreateSaveInfoFromCreature(joints, bones, muscles);
-	// 	name = EXTENSION_PATTERN.Replace(name, "");
-	// 	SaveCreatureDesign(name, content);
-	// }
 
 	/// <summary>
 	/// Returns the path to the save location for the creature design with the specified name.
@@ -166,8 +153,6 @@ public class CreatureSerializer {
 		if (File.Exists(path))
 			File.Delete(path);
 	}
-
-	
 
 	/// <summary>
 	/// Returns a creature design name that is still available based on the 
