@@ -95,6 +95,10 @@ public class CreatureFileManager : MonoBehaviour,
 		}
 	}
 
+	public string GetSuggestedName(SaveDialog dialog) {
+		return editor.GetCreatureName();
+	}
+
 	// MARK: - FileSelectionViewControllerDelegate
 
 	public string GetTitle(FileSelectionViewController controller) {

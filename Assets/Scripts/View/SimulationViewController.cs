@@ -54,6 +54,10 @@ public class SimulationViewController : MonoBehaviour,
 			Refresh();
 		};
 
+		evolution.SimulationWasSaved += delegate () {
+			sharedOverlayView.ShowSuccessfulSaveAlert();
+		};
+
 		bestCreatureController.PlaybackDidBegin += delegate () {
 			Refresh();
 		};
@@ -105,7 +109,7 @@ public class SimulationViewController : MonoBehaviour,
 	}
 
 	private void SaveSimulation() {
-		// TODO: Implement
+		evolution.SaveSimulation();
 	}
 
     private void ConnectCameraOutputs() {

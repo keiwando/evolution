@@ -4,15 +4,10 @@ using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
 
+    [RegisterInScene(ENCODING_ID)]
     public class RollingObstacleSpawner: BaseStructure {
 
-        private static readonly string ENCODING_ID = "evolution::structure::rollingobstaclespawner";
-
-        static RollingObstacleSpawner() {
-            SimulationScene.RegisterStructure(ENCODING_ID, delegate(JObject json) {
-                return Decode(json);
-            });
-        }
+        private const string ENCODING_ID = "evolution::structure::rollingobstaclespawner";
 
         public RollingObstacleSpawner(Transform transform): base(transform) {} 
 

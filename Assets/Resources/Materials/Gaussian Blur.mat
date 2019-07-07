@@ -5,7 +5,8 @@ Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: Gaussian Blur
   m_Shader: {fileID: 4800000, guid: eb0ceb58c50894c098b9e9821cfcc160, type: 3}
   m_ShaderKeywords: 
@@ -66,10 +67,11 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Radius: 14.8
+    - _Radius: 17.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _TapCount: 10
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:

@@ -1,31 +1,25 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace Keiwando.Evolution {
+﻿namespace Keiwando.Evolution {
 	
 	public class AutoSaver {
 	
 		public bool Enabled {
-			set { this.enabled = value; }
-			get { return this.enabled; }
+			get => Settings.AutoSaveEnabled;
+			set => Settings.AutoSaveEnabled = value;
 		}
-		private bool enabled = false;
 
 		/// <summary>
 		/// The distance between two autosaves in generations.
 		/// </summary>
-		/// // TODO: Make this configurable
-		public int GenerationDistance = 10;
-
-		//private int lastSavedGeneration = -100;
+		public int GenerationDistance {
+			get => Settings.AutoSaveDistance;
+			set => Settings.AutoSaveDistance = value;
+		}
 
 		private string lastSaveFileName = "";
 
 		public bool Update(int generation, Evolution evolution) {
 
-			if (!enabled || generation % GenerationDistance != 0 || generation < 2) { 
+			if (!Enabled || generation % GenerationDistance != 0 || generation < 2) { 
 				return false; 
 			}
 
@@ -39,7 +33,6 @@ namespace Keiwando.Evolution {
 
 			var lastSave = this.lastSaveFileName;
 
-			//this.lastSavedGeneration = generation;
 			this.lastSaveFileName = SimulationSerializer.SaveSimulation(evolution.SimulationData);
 
 			// Delete the last auto-saved file

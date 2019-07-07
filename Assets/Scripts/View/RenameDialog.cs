@@ -1,6 +1,6 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using Keiwando;
 
 public interface RenameDialogDelegate {
 	void DidConfirmRename(RenameDialog dialog, string newName);
@@ -20,6 +20,10 @@ public class RenameDialog : MonoBehaviour {
 	[SerializeField]
 	private Text errorMessage;
 
+	[SerializeField]
+	private Button confirmButton;
+	private CanvasGroup confirmCanvasGroup;
+
 	void Awake() {
 		if (shared == null || shared == this) {
 			shared = this;
@@ -31,8 +35,10 @@ public class RenameDialog : MonoBehaviour {
 	public void Show(RenameDialogDelegate Delegate) {
 		gameObject.SetActive(true);
 		this.Delegate = Delegate;
-		ResetErrors();
+
+		this.confirmCanvasGroup = confirmButton.GetComponentInChildren<CanvasGroup>();
 		KeyInputManager.shared.Register();
+		InputRegistry.shared.Register(InputType.All, delegate (InputType types) {});
 
 		inputField.onValidateInput += delegate (string input, int charIndex, char addedChar) {
 			if (Delegate.CanEnterCharacter(this, charIndex, addedChar)) {
@@ -47,15 +53,25 @@ public class RenameDialog : MonoBehaviour {
 		});
 
 		inputField.text = Delegate.GetOriginalName(this);
+
+		confirmButton.onClick.AddListener(delegate () {
+			OnRenameClicked();
+		});
+
+		ResetErrors();
 	}
 
 	public void Close() {
 		Delegate = null;
 		KeyInputManager.shared.Deregister();
+		InputRegistry.shared.Deregister();
+		inputField.onValidateInput = null;
+		inputField.onValueChanged.RemoveAllListeners();
+		confirmButton.onClick.RemoveAllListeners();
 		gameObject.SetActive(false);
 	}
 
-	public void OnRenameClicked() {
+	private void OnRenameClicked() {
 		errorMessage.enabled = false;
 
 		Delegate.DidConfirmRename(this, inputField.text);
@@ -70,9 +86,13 @@ public class RenameDialog : MonoBehaviour {
 	public void ShowErrorMessage(string message) {
 		errorMessage.text = message;
 		errorMessage.enabled = true;
+		confirmCanvasGroup.alpha = 0.2f;
+		confirmButton.enabled = false;
 	}
 
 	public void ResetErrors() {
 		errorMessage.enabled = false;
+		confirmCanvasGroup.alpha = 1f;
+		confirmButton.enabled = true;
 	}
 }

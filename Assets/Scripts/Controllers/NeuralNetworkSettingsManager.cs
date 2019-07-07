@@ -136,7 +136,7 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 	}
 
 	private void SaveNewSettings(NeuralNetworkSettings settings) {
-		Settings.NetworkSettings = settings.Encode();
+		Settings.NetworkSettings = settings.Encode().ToString(Newtonsoft.Json.Formatting.None);;
 	}
 
 	public void Reset() {

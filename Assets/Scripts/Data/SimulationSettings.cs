@@ -102,7 +102,7 @@ public struct SimulationSettings {
 		public const string MutationAlgorithm = "mutationAlgorithm";
 	}
 
-	public string Encode() {
+	public JObject Encode() {
 		var json = new JObject();
 
 		json[CodingKey.KeepBestCreatures] = this.KeepBestCreatures;
@@ -116,7 +116,7 @@ public struct SimulationSettings {
 		json[CodingKey.RecombinationAlgorithm] = (int)this.RecombinationAlgorithm;
 		json[CodingKey.MutationAlgorithm] = (int)this.MutationAlgorithm;
 
-		return json.ToString(Formatting.None);
+		return json;
 	}
 
 	public static SimulationSettings Decode(string encoded) {
@@ -124,14 +124,12 @@ public struct SimulationSettings {
 		if (string.IsNullOrEmpty(encoded))
 			return Default;
 		if (encoded.StartsWith("{"))
-			return DecodeJSON(encoded);
+			return Decode(JObject.Parse(encoded));
 		
 		return DecodeV1(encoded);
 	}
 
-	public static SimulationSettings DecodeJSON(string encoded) {
-
-		JObject json = JObject.Parse(encoded);
+	public static SimulationSettings Decode(JObject json) {
 
 		var settings = Default;
 

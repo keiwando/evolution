@@ -4,12 +4,8 @@ using Keiwando.UI;
 
 namespace Keiwando.Evolution.UI {
 
-    enum EditorMode {
-        Basic = 0,
-        Advanced = 1
-    }
-
     public interface IEditorViewControllerDelegate {
+        string GetCreatureName();
         bool CanUndo(EditorViewController viewController);
         bool CanRedo(EditorViewController viewController);
         void Undo();
@@ -78,6 +74,7 @@ namespace Keiwando.Evolution.UI {
         public void Refresh() {
             RefreshUndoButtons();
             basicSettingsView.Refresh();
+            creatureDesignControlsView.SetCurrentCreatureName(Delegate?.GetCreatureName() ?? "Unnamed");
         }
 
         private void RefreshUndoButtons() {

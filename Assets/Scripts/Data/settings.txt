@@ -10,11 +10,11 @@ bool DontShowV2SimulationDeprecationOverlayAgain = false
 
 float GridSize = 1.0f (GRID_SIZE)
 bool GridEnabled = false (GRID_ENABLED)
+bool AutoSaveEnabled = false
+int AutoSaveDistance = 5
 
 string HelpScreenLanguage = "LANGUAGE_ENGLISH" (HELP_SCREEN_LANGUAGE)
 bool HelpIndicatorShown (FIRST_TIME)
-
-int EditorMode = 0
 
 string CreatureNames (_CreatureNames)
 string SimulationSettings (EVOLUTION_SETTINGS)

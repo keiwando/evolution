@@ -199,10 +199,10 @@ namespace Keiwando.Evolution {
             return result;
         }
 
-        public bool DeleteSelection() {
+        public bool DeleteSelection(CreatureBuilder builder) {
 
             bool creatureChanged = this.selection.Count > 0;
-            editor.creatureBuilder.Delete(this.selection);
+            builder.Delete(this.selection);
             BodyComponent.RemoveDeletedObjects(this.selection);
             return creatureChanged;
         }

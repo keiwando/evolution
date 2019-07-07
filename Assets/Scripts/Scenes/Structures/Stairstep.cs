@@ -4,15 +4,10 @@ using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
 
+    [RegisterInScene(ENCODING_ID)]
     public class Stairstep: BaseStructure {
 
-        private static readonly string ENCODING_ID = "evolution::structure::stairstep";
-
-        static Stairstep() {
-            SimulationScene.RegisterStructure(ENCODING_ID, delegate(JObject json) {
-                return Decode(json);
-            });
-        }
+        private const string ENCODING_ID = "evolution::structure::stairstep";
 
         public Stairstep(Transform transform): base(transform) {}
 

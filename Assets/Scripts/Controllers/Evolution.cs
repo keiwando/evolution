@@ -25,7 +25,6 @@ namespace Keiwando.Evolution {
 		public event Action NewBatchDidBegin;
 		public event Action SimulationWasSaved;
 		public event Action InitializationDidEnd;
-		
 
 		#endregion
 		#region Settings
@@ -415,6 +414,11 @@ namespace Keiwando.Evolution {
 			// foreach (var creature in currentGeneration) {
 			// 	creature.Obstacle = obstacle;
 			// }
+		}
+
+		public void SaveSimulation() {
+			SimulationSerializer.SaveSimulation(SimulationData);
+			if (SimulationWasSaved != null) SimulationWasSaved();
 		}
 
 		// public Vector3 GetSpawnPosition() {

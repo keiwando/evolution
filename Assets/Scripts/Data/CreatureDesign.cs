@@ -44,16 +44,16 @@ public class CreatureDesign {
         public const string Muscles = "muscles";
     }
 
-    public string Encode() {
+    public JObject Encode() {
         
         var json = new JObject();
 
         json[CodingKey.Name] = this.Name;
-        json[CodingKey.Joints] = JToken.FromObject(this.Joints.Select(joint => joint.ToJSON()).ToList());
-        json[CodingKey.Bones] = JToken.FromObject(this.Bones.Select(bone => bone.ToJSON()).ToList());
-        json[CodingKey.Muscles] = JToken.FromObject(this.Muscles.Select(muscle => muscle.ToJSON()).ToList());
+        json[CodingKey.Joints] = JToken.FromObject(this.Joints.Select(joint => joint.Encode()).ToList());
+        json[CodingKey.Bones] = JToken.FromObject(this.Bones.Select(bone => bone.Encode()).ToList());
+        json[CodingKey.Muscles] = JToken.FromObject(this.Muscles.Select(muscle => muscle.Encode()).ToList());
 
-        return json.ToString(Formatting.None);
+        return json;
     }
 
     public static CreatureDesign Decode(string encoded) {
@@ -62,7 +62,11 @@ public class CreatureDesign {
             return Empty;
 
         JObject json = JObject.Parse(encoded);
+        return Decode(json);        
+    }
 
+    public static CreatureDesign Decode(JObject json) {
+        
         string name = json[CodingKey.Name].ToObject<string>();
         var encodedJoints = json[CodingKey.Joints].ToObject<List<JObject>>();
         var encodedBones = json[CodingKey.Bones].ToObject<List<JObject>>();

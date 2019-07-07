@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 [SerializeField]
 public struct NeuralNetworkSettings {
@@ -23,8 +22,21 @@ public struct NeuralNetworkSettings {
 
 	#region Encode & Decode
 
-	public string Encode() {
-		return JsonUtility.ToJson(this, false);
+	private static class CodingKey {
+		public const string NodesPerIntermediateLayer = "NodesPerIntermediateLayer";
+	}
+
+	public JObject Encode() {
+
+		JObject json = new JObject();
+		json[CodingKey.NodesPerIntermediateLayer] = JToken.FromObject(this.NodesPerIntermediateLayer);
+		return json;
+	}
+
+	public static NeuralNetworkSettings Decode(JObject json) {
+
+		int[] nodesPerLayer = json[CodingKey.NodesPerIntermediateLayer].ToObject<int[]>();
+		return new NeuralNetworkSettings(nodesPerLayer);
 	}
 
 	public static NeuralNetworkSettings Decode(string encoded) {
@@ -33,7 +45,7 @@ public struct NeuralNetworkSettings {
 			return Default;
 		}
 		if (encoded.StartsWith("{")) {
-			return (NeuralNetworkSettings)JsonUtility.FromJson(encoded, typeof(NeuralNetworkSettings));
+			return Decode(JObject.Parse(encoded));
 		}
 		return DecodeV1(encoded);
 	}

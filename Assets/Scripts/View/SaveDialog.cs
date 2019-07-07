@@ -1,8 +1,12 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Keiwando;
+
+
 
 public interface SaveDialogDelegate {
+	string GetSuggestedName(SaveDialog dialog);
 	void DidConfirmSave(SaveDialog dialog, string name);
 	bool CanEnterCharacter(SaveDialog dialog, int index, char c);
 	void DidChangeValue(SaveDialog dialog, string value);
@@ -31,6 +35,7 @@ public class SaveDialog : MonoBehaviour {
 		this.Delegate = Delegate;
 		ResetErrors();
 		KeyInputManager.shared.Register();
+		InputRegistry.shared.Register(InputType.All, delegate (InputType type) {});
 
 		inputField.onValidateInput += delegate (string input, int charIndex, char addedChar) {
 			if (Delegate.CanEnterCharacter(this, charIndex, addedChar)) {
@@ -41,20 +46,21 @@ public class SaveDialog : MonoBehaviour {
 		};
 
 		inputField.onValueChanged.AddListener(delegate {
-			
 			Delegate.DidChangeValue(this, inputField.text);
 		});
+
+		inputField.text = Delegate.GetSuggestedName(this);
 	}
 
 	public void Close() {
 		Delegate = null;
 		KeyInputManager.shared.Deregister();
+		InputRegistry.shared.Deregister();
 		gameObject.SetActive(false);
 	}
 
 	public void OnSaveClicked() {
 		errorMessage.enabled = false;
-
 		Delegate.DidConfirmSave(this, inputField.text);
 	}
 

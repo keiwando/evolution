@@ -27,18 +27,13 @@ public struct BoneData {
         public const string Weight = "weight";
     }
 
-    public JObject ToJSON() {
+    public JObject Encode() {
         var json = new JObject();
         json[CodingKey.ID] = this.id;
         json[CodingKey.StartJointID] = this.startJointID;
         json[CodingKey.EndJointID] = this.endJointID;
         json[CodingKey.Weight] = this.weight;
         return json;
-    }
-
-    public string Encode() {
-        
-        return ToJSON().ToString(Formatting.None);
     }
 
     public static BoneData Decode(string encoded) {

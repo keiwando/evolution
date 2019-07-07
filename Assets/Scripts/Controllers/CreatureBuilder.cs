@@ -12,6 +12,8 @@ public class CreatureBuilder {
 	/// </summary>
 	private int idCounter = 0;
 
+	public string Name { get; set; } = "Unnamed";
+
 	/// <summary>
 	/// The joints of the creature that have been placed in the scene.
 	/// </summary>
@@ -49,6 +51,8 @@ public class CreatureBuilder {
 	public CreatureBuilder() {}
 
 	public CreatureBuilder(CreatureDesign design) {
+
+		this.Name = design.Name;
 
 		foreach (var jointData in design.Joints) {
 			this.joints.Add(Joint.CreateFromData(jointData));
@@ -478,8 +482,8 @@ public class CreatureBuilder {
 	/// body parts 
 	/// </summary>
 	public CreatureDesign GetDesign() {
-		// TODO: Get name of this.design
-		var name = "Unnamed";
+		
+		var name = this.Name;
 		var jointData = this.joints.Select(j => j.JointData).ToList();
 		var boneData = this.bones.Select(b => b.BoneData).ToList();
 		var muscleData = this.muscles.Select(m => m.MuscleData).ToList();

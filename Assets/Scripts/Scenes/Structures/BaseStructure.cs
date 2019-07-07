@@ -15,19 +15,22 @@ namespace Keiwando.Evolution.Scenes {
         abstract public string GetEncodingKey();
         public abstract IStructureBuilder GetBuilder();
 
-        
-        public virtual JObject Encode() {
-            var json = new JObject();
-            json[CodingKey.Transform] = JToken.FromObject(this.Transform);
-            return json;
-        }
-
-        protected static Transform DecodeTransform(JObject json) {
-            return json[CodingKey.Transform].ToObject<Transform>();
-        }
+        #region Encode & Decode
 
         private static class CodingKey {
             public const string Transform = "transform";
         }
+
+        public virtual JObject Encode() {
+            var json = new JObject();
+            json[CodingKey.Transform] = this.Transform.Encode();
+            return json;
+        }
+
+        protected static Transform DecodeTransform(JObject json) {
+            return Transform.Decode(json[CodingKey.Transform] as JObject);
+        }
+
+        #endregion
     }
 }

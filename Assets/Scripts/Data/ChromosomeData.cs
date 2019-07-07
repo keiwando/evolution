@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace Keiwando.Evolution {
 
@@ -34,6 +35,33 @@ namespace Keiwando.Evolution {
 
         public IComparer<ChromosomeData> GetAscendingComparer() {
             return new AscendingComparer();
+        }
+
+        #endregion
+        #region Encode & Decode
+
+        private static class CodingKey {
+            public const string Chromosome = "chromosome";
+            public const string CreatureStats = "stats";
+        }
+
+        public JObject Encode() {
+            JObject json = new JObject();
+            json[CodingKey.Chromosome] = this.Chromosome;
+            json[CodingKey.CreatureStats] = this.Stats.Encode();
+            return json;
+        }
+
+        public static ChromosomeData Decode(string encoded) {
+            return Decode(JObject.Parse(encoded));
+        }
+
+        public static ChromosomeData Decode(JObject json) {
+
+            string chromosome = json[CodingKey.Chromosome].ToObject<string>();
+            var statsJSON = json[CodingKey.CreatureStats].ToObject<JObject>();
+            var stats = CreatureStats.Decode(statsJSON);
+            return new ChromosomeData(chromosome, stats);
         }
 
         #endregion

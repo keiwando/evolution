@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Keiwando.Evolution;
+using Newtonsoft.Json;
 
 public class EditorStateManager {
 
@@ -9,7 +10,7 @@ public class EditorStateManager {
         get => _editorSettings;
         set {
             _editorSettings = value; 
-            Settings.EditorSettings = value.Encode();
+            Settings.EditorSettings = value.Encode().ToString(Formatting.None);
         } 
     } 
 
@@ -17,7 +18,7 @@ public class EditorStateManager {
         get => _simulationSettings;
         set {
             _simulationSettings = value;
-            Settings.SimulationSettings = value.Encode();
+            Settings.SimulationSettings = value.Encode().ToString(Formatting.None);;
         }
     }
 
@@ -25,7 +26,7 @@ public class EditorStateManager {
         get => _networkSettings;
         set {
             _networkSettings = value;
-            Settings.NetworkSettings = value.Encode();
+            Settings.NetworkSettings = value.Encode().ToString(Formatting.None);;
         }
     }
 
@@ -33,7 +34,7 @@ public class EditorStateManager {
         get => _lastCreatureDesign;
         set {
             _lastCreatureDesign = value;
-            Settings.LastCreatureDesign = value.Encode();
+            Settings.LastCreatureDesign = value.Encode().ToString(Formatting.None);;
         }
     }
 

@@ -11,9 +11,10 @@ public class Settings {
 	private const string DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY = "DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY";
 	private const string GRID_SIZE_KEY = "GRID_SIZE";
 	private const string GRID_ENABLED_KEY = "GRID_ENABLED";
+	private const string AUTO_SAVE_ENABLED_KEY = "AUTO_SAVE_ENABLED_KEY";
+	private const string AUTO_SAVE_DISTANCE_KEY = "AUTO_SAVE_DISTANCE_KEY";
 	private const string HELP_SCREEN_LANGUAGE_KEY = "HELP_SCREEN_LANGUAGE";
 	private const string HELP_INDICATOR_SHOWN_KEY = "FIRST_TIME";
-	private const string EDITOR_MODE_KEY = "EDITOR_MODE_KEY";
 	private const string CREATURE_NAMES_KEY = "_CreatureNames";
 	private const string SIMULATION_SETTINGS_KEY = "EVOLUTION_SETTINGS";
 	private const string NETWORK_SETTINGS_KEY = "NEURAL NETWORK SETTINGS";
@@ -65,6 +66,16 @@ public class Settings {
 		set { SetBool(GRID_ENABLED_KEY, value); }
 	}
 
+	public static bool AutoSaveEnabled {
+		get { return GetBool(AUTO_SAVE_ENABLED_KEY, false); }
+		set { SetBool(AUTO_SAVE_ENABLED_KEY, value); }
+	}
+
+	public static int AutoSaveDistance {
+		get { return PlayerPrefs.GetInt(AUTO_SAVE_DISTANCE_KEY, 5); }
+		set { PlayerPrefs.SetInt(AUTO_SAVE_DISTANCE_KEY, value); Save(); }
+	}
+
 	public static string HelpScreenLanguage {
 		get { return PlayerPrefs.GetString(HELP_SCREEN_LANGUAGE_KEY, "LANGUAGE_ENGLISH"); }
 		set { PlayerPrefs.SetString(HELP_SCREEN_LANGUAGE_KEY, value); Save(); }
@@ -73,11 +84,6 @@ public class Settings {
 	public static bool HelpIndicatorShown {
 		get { return GetBool(HELP_INDICATOR_SHOWN_KEY, true); }
 		set { SetBool(HELP_INDICATOR_SHOWN_KEY, value); }
-	}
-
-	public static int EditorMode {
-		get { return PlayerPrefs.GetInt(EDITOR_MODE_KEY, 0); }
-		set { PlayerPrefs.SetInt(EDITOR_MODE_KEY, value); Save(); }
 	}
 
 	public static string CreatureNames {
@@ -122,8 +128,9 @@ public class Settings {
 		DontShowV2SimulationDeprecationOverlayAgain = false;
 		GridSize = 1.0f;
 		GridEnabled = false;
+		AutoSaveEnabled = false;
+		AutoSaveDistance = 5;
 		HelpScreenLanguage = "LANGUAGE_ENGLISH";
-		EditorMode = 0;
 	}
 
 	private static bool GetBool(string key, bool defaultValue = false) {

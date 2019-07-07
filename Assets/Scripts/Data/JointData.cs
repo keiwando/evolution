@@ -26,18 +26,13 @@ public struct JointData {
         public const string Weight = "weight";
     }
 
-    public JObject ToJSON() {
+    public JObject Encode() {
         var json = new JObject();
         json[CodingKey.ID] = this.id;
         json[CodingKey.X] = this.position.x;
         json[CodingKey.Y] = this.position.y;
         json[CodingKey.Weight] = this.weight;
         return json;
-    }
-
-    public string Encode() {
-
-        return ToJSON().ToString(Formatting.None);
     }
 
     public static JointData Decode(string encoded) {

@@ -98,6 +98,13 @@ public class SettingsMenu : MonoBehaviour {
 		});
 	}
 
+	private void DeregisterCallbacks() {
+		populationSizeInput.onEndEdit.RemoveAllListeners();
+		simulationTimeInput.onEndEdit.RemoveAllListeners();
+		batchSizeInput.onEndEdit.RemoveAllListeners();
+		mutationRateInput.onEndEdit.RemoveAllListeners();
+	}
+
 	private void SetupTaskDropDown() {
 
 		var settings = LoadSimulationSettings();
@@ -120,6 +127,7 @@ public class SettingsMenu : MonoBehaviour {
 	}
 
 	public void Hide() {
+		DeregisterCallbacks();
 		contentContainer.gameObject.SetActive(false);
 	}
 
@@ -230,7 +238,7 @@ public class SettingsMenu : MonoBehaviour {
 	}
 
 	private void SaveSimulationSettings(SimulationSettings settings) {
-		Settings.SimulationSettings = settings.Encode();
+		Settings.SimulationSettings = settings.Encode().ToString(Newtonsoft.Json.Formatting.None);;
 	}
 
 	/// <summary>

@@ -4,15 +4,10 @@ using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
 
+    [RegisterInScene(ENCODING_ID)]
     public class Wall: BaseStructure {
 
-        private static readonly string ENCODING_ID = "evolution::structure::wall";
-
-        static Wall() {
-            SimulationScene.RegisterStructure(ENCODING_ID, delegate(JObject json) {
-                return Decode(json);
-            });
-        }
+        private const string ENCODING_ID = "evolution::structure::wall";
 
         public Wall(Transform transform): base(transform) {}
 

@@ -23,7 +23,8 @@ namespace Keiwando.Experiments {
             // TestDefaultValuesWhenMissing();
             // TestRenamedPropertyDeserialization();
             // TestPartialDecode();
-            TestDetailedEncoding();
+            // TestDetailedEncoding();
+            TestNestedObjects();
         }
 
         private void TestDetailedEncoding() {
@@ -38,6 +39,20 @@ namespace Keiwando.Experiments {
             json["items"] = JToken.FromObject(items);
 
             Debug.Log(json.ToString());
+        }
+
+        private void TestNestedObjects() {
+
+            var item = new JObject();
+            item["ID"] = 5;
+            item["Name"] = "Keiwan";
+
+            var child = new JObject();
+            child["X"] = JToken.FromObject(new string[] { "A", "B", "C" });
+            child["Y"] = 10;
+            item["child"] = child;
+
+            Debug.Log(item.ToString());
         }
 
         private void TestPartialDecode() {

@@ -23,12 +23,12 @@ namespace Keiwando.Evolution {
             public const string GridSize = "gridSize";
         }
 
-        public string Encode() {
+        public JObject Encode() {
             var json = new JObject();
 
             json[CodingKey.GridEnabled] = this.GridEnabled;
             json[CodingKey.GridSize] = this.GridSize;
-            return json.ToString(Newtonsoft.Json.Formatting.None);
+            return json;
         }
 
         public static EditorSettings Decode(string encoded) {

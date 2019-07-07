@@ -37,7 +37,7 @@ public class CreatureSerializer {
 
 	public static void SaveCreatureDesign(CreatureDesign design) {
 		
-		var encoded = design.Encode();
+		var encoded = design.Encode().ToString(Newtonsoft.Json.Formatting.None);
 		SaveCreatureDesign(design.Name, encoded, true);
 	}
 
@@ -129,13 +129,6 @@ public class CreatureSerializer {
 		
 		if (IsWebGL()) return GetDefaultCreatureNames();
 
-		// CreateSaveFolder();
-
-		// var info = new DirectoryInfo(RESOURCE_PATH);
-		// var fileInfo = info.GetFiles();
-
-		// var creatureNames = fileInfo.Where(f => f.Name.EndsWith(".creat"))
-		// .Select(f => EXTENSION_PATTERN.Replace(f.Name, "")).ToList();
 		var creatureNames = FileUtil.GetFilenamesInDirectory(RESOURCE_PATH, FILE_EXTENSION)
 			.Select(filename => EXTENSION_PATTERN.Replace(filename, "")).ToList();
 		

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Keiwando;
 using Keiwando.Evolution.Scenes;
 using Keiwando.Evolution;
 using Keiwando.Evolution.UI;
@@ -41,7 +42,7 @@ public class CreatureEditor: MonoBehaviour,
     [SerializeField]
     private UnityEngine.Transform selectionArea;
 
-    public CreatureBuilder creatureBuilder { get; private set; }
+    private CreatureBuilder creatureBuilder;
     private HistoryManager<CreatureDesign> historyManager;
 
     private EditorSelectionManager selectionManager;
@@ -77,14 +78,17 @@ public class CreatureEditor: MonoBehaviour,
         grid.gameObject.SetActive(editorSettings.GridEnabled);
 
         viewController.Refresh();
+
+        InputRegistry.shared.Register(InputType.Click | InputType.Key | InputType.Touch, delegate (InputType type) {
+            selectionManager.Update(Input.mousePosition);
+            HandleClicks();
+            HandleKeyboardInput();
+        });
     }
 
     void Update() {
 
-        selectionManager.Update(Input.mousePosition);
         InputUtils.UpdateTouches();
-        HandleClicks();
-        HandleKeyboardInput();
     }
 
     /// <summary>
@@ -114,8 +118,8 @@ public class CreatureEditor: MonoBehaviour,
     /// Saves the current creature design to a local file with the given name.
     /// </summary>
     public void SaveCurrentDesign(string name) {
+        creatureBuilder.Name = name;
         var design = creatureBuilder.GetDesign();
-        design.Name = name;
         SaveDesign(design);
     }
 
@@ -132,6 +136,10 @@ public class CreatureEditor: MonoBehaviour,
         historyManager.Redo();
     }
     
+    public string GetCreatureName() {
+        return creatureBuilder.Name;
+    }
+
 
     /// <summary>
     /// Prepares the simulation state and loads the simulation scene
@@ -163,6 +171,8 @@ public class CreatureEditor: MonoBehaviour,
         var configContainer = containerObject.AddComponent<SimulationConfigContainer>();
         configContainer.SimulationData = simulationData;
         DontDestroyOnLoad(containerObject);
+
+        InputRegistry.shared.Deregister();
         
         // Load simulation scene
         SceneController.LoadSync(SceneController.Scene.SimulationContainer);
@@ -383,7 +393,6 @@ public class CreatureEditor: MonoBehaviour,
             else if (input.GetKeyDown(KeyCode.Y)) {
                 historyManager.Redo();
             }
-            
         } 
 
         viewController.Refresh();
@@ -430,7 +439,7 @@ public class CreatureEditor: MonoBehaviour,
 
         if (selectionManager.IsAnythingSelected()) {
             var oldDesign = creatureBuilder.GetDesign();
-            var deleted = selectionManager.DeleteSelection();
+            var deleted = selectionManager.DeleteSelection(this.creatureBuilder);
             if (deleted) {
                 historyManager.Push(oldDesign);
                 viewController.Refresh();

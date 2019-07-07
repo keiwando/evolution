@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Keiwando;
 
 public class CameraController : MonoBehaviour {
 
@@ -134,9 +135,13 @@ public class CameraController : MonoBehaviour {
                 }
             }
         }
+
+        InputRegistry.shared.Register(InputType.Scroll, delegate (InputType type) {
+            UpdateInputs();
+        });
     }
 
-    void Update() {
+    private void UpdateInputs() {
 
         if (!zoomEnabled && !movementEnabled) { return; }
 

@@ -30,7 +30,7 @@ public struct MuscleData {
         public const string CanExpand = "canExpand";
     }
 
-    public JObject ToJSON() {
+    public JObject Encode() {
         var json = new JObject();
         json[CodingKey.ID] = this.id;
         json[CodingKey.StartBoneID] = this.startBoneID;
@@ -38,11 +38,6 @@ public struct MuscleData {
         json[CodingKey.Strength] = this.strength;
         json[CodingKey.CanExpand] = this.canExpand;
         return json;
-    }
-
-    public string Encode() {
-
-        return ToJSON().ToString(Formatting.None);
     }
 
     public static MuscleData Decode(string encoded) {

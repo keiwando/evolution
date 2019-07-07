@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using Keiwando.UI;
-using Keiwando.NativeFileSO;
+using Keiwando;
 
 public interface FileSelectionViewControllerDelegate {
 
@@ -55,6 +55,8 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
 
     public void Show(FileSelectionViewControllerDelegate Delegate) {
         this.controllerDelegate = Delegate;
+
+		InputRegistry.shared.Register(InputType.All, delegate(InputType type) {});
 
 		DeleteAllItemViews();
 		gameObject.SetActive(true);
@@ -120,6 +122,7 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
 
     public void Close() {
 		controllerDelegate = null;
+		InputRegistry.shared.Deregister();
 		gameObject.SetActive(false);
     }
 
@@ -195,7 +198,9 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
 
 	public void DidChangeValue(RenameDialog dialog, string value) {
 		if (controllerDelegate != null) {
-			if (!controllerDelegate.IsNameAvailable(this, value)) {
+			int selectedIndex = controllerDelegate.GetIndexOfSelectedItem(this);
+			string originalValue = controllerDelegate.GetTitleForItemAtIndex(this, selectedIndex);
+			if (!controllerDelegate.IsNameAvailable(this, value) && value != originalValue) {
 				dialog.ShowErrorMessage("This name is already used.");
 			} else {
 				dialog.ResetErrors();

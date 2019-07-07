@@ -6,6 +6,13 @@ using Newtonsoft.Json.Linq;
 
 namespace Keiwando.Evolution.Scenes {
 
+    public class RegisterInSceneAttribute: Attribute {
+        public readonly string id;
+        public RegisterInSceneAttribute(string id) {
+            this.id = id;
+        }
+    }
+
     public class SimulationScene {
 
         public delegate IStructure DecodeStructure(JObject encoded);
@@ -20,6 +27,25 @@ namespace Keiwando.Evolution.Scenes {
             registeredStructures[encodingID] = decode;
         }
 
+        static SimulationScene() {
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+                foreach (Type type in assembly.GetTypes()) {
+                    var attributes = type.GetCustomAttributes(typeof(RegisterInSceneAttribute), true);
+                    if (type.GetCustomAttributes(typeof(RegisterInSceneAttribute), true).Length > 0) {
+                    var attribute = attributes[0] as RegisterInSceneAttribute;
+                        RegisterStructure(
+                            attribute.id, 
+                            Delegate.CreateDelegate(
+                                typeof(DecodeStructure),
+                                type.GetMethod("Decode"),
+                                true
+                            ) as DecodeStructure
+                        ); 
+                    }
+                }
+            }
+        }
+
         public IStructure[] Structures;
 
         #region Encode & Decode
@@ -30,7 +56,7 @@ namespace Keiwando.Evolution.Scenes {
             public const string StructureData = "structureData";
         }
 
-        public string Encode() {
+        public JObject Encode() {
 
             var sceneJSON = new JObject();
 
@@ -43,20 +69,24 @@ namespace Keiwando.Evolution.Scenes {
             }
 
             sceneJSON[CodingKey.Structures] = JToken.FromObject(structures);
-            return sceneJSON.ToString();
+            return sceneJSON;
         }
 
         public static SimulationScene Decode(string encoded) {
 
             JObject json = JObject.Parse(encoded);
-            
+            return Decode(json);
+        }
+
+        public static SimulationScene Decode(JObject json) {
+
             var encodedStructures = json[CodingKey.Structures].ToObject<List<JObject>>();
             var structures = new IStructure[encodedStructures.Count];
             
             for (int i = 0; i < encodedStructures.Count; i++) {
                 var structureContainer = encodedStructures[i];
                 var encodingID = structureContainer[CodingKey.EncodingID].ToString();
-                if (registeredStructures.ContainsKey(encodingID)) {
+                if (!registeredStructures.ContainsKey(encodingID)) {
                     Debug.LogError(string.Format("Structure with encodingID {0} cannot be decoded!", encodingID));
                     continue;
                 }

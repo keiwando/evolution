@@ -3,6 +3,7 @@
 	Properties
 	{
 		_Radius("Radius", Range(1, 255)) = 1
+		_TapCount("TapCount", Range(2, 100)) = 10
 	}
 
 	SubShader
@@ -24,6 +25,7 @@
 		sampler2D _GrabTexture;
 		float4 _GrabTexture_TexelSize;
 		float _Radius;
+		float _TapCount;
 			
 		v2f vert (appdata_base v)
 		{
@@ -37,15 +39,18 @@
 
 		half4 blur(v2f inData, float2 direction)
 		{
-			float indexStep = weightCount / _Radius;
+			int tapCount = min(_TapCount, _Radius);
+			// float indexStep = weightCount / _Radius;
+			float pixelStep = _Radius / tapCount;
+			float indexStep = weightCount / tapCount;
 			float4 sum = weights[0] * pixel(inData, float2(0.0, 0.0));
 			float totalWeight = weights[0];
 
-			for (float i = 1; i < _Radius; i++)
+			for (float i = 1; i < tapCount; i++)
 			{	
 				int weightIndex = int(min(weightCount - 1, i * indexStep));
 				float weight = weights[weightIndex];
-				float2 offset = i * direction;
+				float2 offset = i * direction * pixelStep;
 
 				sum += weight * (pixel(inData, -offset) + pixel(inData, offset));
 				totalWeight += 2.0 * weight;

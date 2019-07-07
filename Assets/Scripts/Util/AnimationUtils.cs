@@ -18,7 +18,7 @@ public static class AnimationUtils {
 
         while (elapsed < fadeOutDuration) {
             elapsed += Time.deltaTime;
-            canvasGroup.alpha = elapsed / fadeOutDuration;
+            canvasGroup.alpha = 1f - (elapsed / fadeOutDuration);
             yield return new WaitForEndOfFrame();
         } 
 

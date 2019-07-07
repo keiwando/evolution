@@ -4,15 +4,10 @@ using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
 
+    [RegisterInScene(ENCODING_ID)]
     public class Ground: BaseStructure {
 
-        private static readonly string ENCODING_ID = "evolution::structure::ground";
-
-        static Ground() {
-            SimulationScene.RegisterStructure(ENCODING_ID, delegate(JObject json) {
-                return Decode(json);
-            });
-        }
+        private const string ENCODING_ID = "evolution::structure::ground";
 
         public Ground(Transform transform): base(transform) {}
 

@@ -57,12 +57,12 @@ public class SimulationSerializer {
 	/// <returns>The filename of the save file without the extensions</returns>
 	public static string SaveSimulation(SimulationData data) {
 
-		string contents = data.Encode();
+		string contents = data.Encode().ToString(Newtonsoft.Json.Formatting.None);
 		string creatureName = data.CreatureDesign.Name;
 		string dateString = System.DateTime.Now.ToString("MMM dd, yyyy");
 		string taskString = EvolutionTaskUtil.StringRepresentation(data.Settings.Task);
 		int generation = data.BestCreatures.Count + 1;
-		string filename = string.Format("{0} - {1} - {2} - Gen({3})", creatureName, taskString, dateString, generation);
+		string filename = string.Format("{0} - {1} - {2} - Gen {3}", creatureName, taskString, dateString, generation);
 
 		// Save without overwriting existing saves
 		return SaveSimulationFile(filename, contents, false);
@@ -99,7 +99,7 @@ public class SimulationSerializer {
 		int counter = 2;
 		var finalName = suggestedName;
 		while (existingNames.Contains(finalName)) {
-			finalName = string.Format("{0} {1}", suggestedName, counter);
+			finalName = string.Format("{0} ({1})", suggestedName, counter);
 			counter++;
 		}
 		return finalName;
@@ -128,7 +128,7 @@ public class SimulationSerializer {
 
 		// Distinguish between JSON and legacy custom encodings
 		if (encoded.StartsWith("{")) {
-			return (SimulationData)JsonUtility.FromJson(encoded, typeof(SimulationData));
+			return SimulationData.Decode(encoded);
 		}
 
 		return LegacySimulationLoader.ParseSimulationData(filename, encoded);
@@ -141,17 +141,6 @@ public class SimulationSerializer {
 	public static List<string> GetEvolutionSaveFilenames() {
 
 		return FileUtil.GetFilenamesInDirectory(RESOURCE_PATH, FILE_EXTENSION);
-
-		// CreateSaveFolder();
-
-		// var info = new DirectoryInfo(RESOURCE_PATH);
-		// var fileInfo = info.GetFiles();
-		
-		// var files = fileInfo.Where(f => f.Name.EndsWith(".evol")).ToList();
-
-		// files.Sort((f1,f2) => f2.LastAccessTime.CompareTo(f1.LastAccessTime)); // Sort descending
-
-		// return files.Select(f => EXTENSION_PATTERN.Replace(f.Name, "")).ToList();
 	}
 
 	/// <summary>
@@ -167,12 +156,12 @@ public class SimulationSerializer {
 	}
 
 	/// <summary>
-	/// Returns true if a simulation save with the specified name (without extension) 
+	/// Returns true if a simulation save with the specified name (without extension)
 	/// already exists.
 	/// </summary>
 	/// <param name="name"></param>
 	public static bool SimulationSaveExists(string name) {
-		return GetEvolutionSaveFilenames().Contains(name);
+		return GetEvolutionSaveFilenames().Contains(name + FILE_EXTENSION);
 	}
 
 	/// <summary>
