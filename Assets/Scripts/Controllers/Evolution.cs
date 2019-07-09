@@ -98,6 +98,7 @@ namespace Keiwando.Evolution {
 		#endregion
 
 		public AutoSaver AutoSaver { get; private set; }
+		public int LastSavedGeneration { get; private set; }
 
 		private Coroutine simulationRoutine;
 		
@@ -139,6 +140,7 @@ namespace Keiwando.Evolution {
 
 			this.SimulationData = data;
 			this.cachedSettings = Settings;
+			this.LastSavedGeneration = data.BestCreatures.Count;
 
 			Debug.Log("Task " + EvolutionTaskUtil.StringRepresentation(data.Settings.Task));
 
@@ -416,13 +418,11 @@ namespace Keiwando.Evolution {
 			// }
 		}
 
-		public void SaveSimulation() {
-			SimulationSerializer.SaveSimulation(SimulationData);
+		public string SaveSimulation() {
+			var savefileName = SimulationSerializer.SaveSimulation(SimulationData);
+			this.LastSavedGeneration = currentGenerationNumber;
 			if (SimulationWasSaved != null) SimulationWasSaved();
+			return savefileName;
 		}
-
-		// public Vector3 GetSpawnPosition() {
-		// 	return this.spawnPosition;
-		// }
 	}
 }

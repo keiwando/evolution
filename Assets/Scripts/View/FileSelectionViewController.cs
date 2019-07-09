@@ -36,6 +36,8 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
     private Text titleLabel;
 
 	[SerializeField]
+	private ScrollRect scrollRect;
+	[SerializeField]
 	private ListLayoutGroup itemList;
 
 	[SerializeField]
@@ -61,6 +63,7 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
 		DeleteAllItemViews();
 		gameObject.SetActive(true);
 		Refresh();
+		ScrollSelectedItemToTop();
     }
 
 	public void Refresh() {
@@ -118,6 +121,15 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
 		int selectedIndex = controllerDelegate.GetIndexOfSelectedItem(this);
 		string title = controllerDelegate.GetTitleForItemAtIndex(this, selectedIndex);
 		currentSelectionLabel.text = title;
+	}
+
+	private void ScrollSelectedItemToTop() {
+		// var containerRect = itemTemplate.transform.parent.GetComponent<RectTransform>();
+		// float containerHeight = containerRect.sizeDelta.y;
+		float itemCount = controllerDelegate.GetNumberOfItems(this);
+		float currentSelected = controllerDelegate.GetIndexOfSelectedItem(this);
+		// float viewportHeight = scrollRect.viewport.sizeDelta.y;
+		scrollRect.verticalNormalizedPosition = itemCount == 0 ? 1f : 1f - currentSelected / itemCount;
 	}
 
     public void Close() {

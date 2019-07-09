@@ -9,6 +9,7 @@ public class Settings {
 	private const string SHOW_ONE_AT_ATIME_KEY = "SHOW_ONE_AT_ATIME_KEY";
 	private const string HIDDEN_CREATURE_OPACITY_KEY = "HIDDEN_CREATURE_OPACITY_KEY";
 	private const string DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY = "DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY";
+	private const string DONT_SHOW_EXIT_CONFIRMATION_OVERLAY_AGAIN_KEY = "DONT_SHOW_EXIT_CONFIRMATION_OVERLAY_AGAIN_KEY";
 	private const string GRID_SIZE_KEY = "GRID_SIZE";
 	private const string GRID_ENABLED_KEY = "GRID_ENABLED";
 	private const string AUTO_SAVE_ENABLED_KEY = "AUTO_SAVE_ENABLED_KEY";
@@ -54,6 +55,11 @@ public class Settings {
 	public static bool DontShowV2SimulationDeprecationOverlayAgain {
 		get { return GetBool(DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY, false); }
 		set { SetBool(DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY, value); }
+	}
+
+	public static bool DontShowExitConfirmationOverlayAgain {
+		get { return GetBool(DONT_SHOW_EXIT_CONFIRMATION_OVERLAY_AGAIN_KEY, false); }
+		set { SetBool(DONT_SHOW_EXIT_CONFIRMATION_OVERLAY_AGAIN_KEY, value); }
 	}
 
 	public static float GridSize {
@@ -126,6 +132,7 @@ public class Settings {
 		ShowOneAtATime = false;
 		HiddenCreatureOpacity = 0.225f;
 		DontShowV2SimulationDeprecationOverlayAgain = false;
+		DontShowExitConfirmationOverlayAgain = false;
 		GridSize = 1.0f;
 		GridEnabled = false;
 		AutoSaveEnabled = false;

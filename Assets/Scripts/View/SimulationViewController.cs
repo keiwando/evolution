@@ -20,6 +20,8 @@ public class SimulationViewController : MonoBehaviour,
 		BestCreatures
 	}
 
+	const int EXIT_CONFIRMATION_SAVE_DISTANCE = 15;
+
 	private Evolution evolution;
 	private CameraFollowController cameraFollowController;
 	private BestCreaturesController bestCreatureController;
@@ -33,6 +35,7 @@ public class SimulationViewController : MonoBehaviour,
 	[SerializeField] private SimulationVisibilityOptionsView visibilityOptionsView;
 
 	[SerializeField] private V2PlaybackNoticeOverlayView v2PlaybackNoticePopup;
+	[SerializeField] private SimulationExitConfirmationView exitConfirmationPopup;
 
     [SerializeField] private Camera simulationCamera;
     [SerializeField] private Camera bestCreatureCamera;
@@ -95,10 +98,22 @@ public class SimulationViewController : MonoBehaviour,
 		cameraFollowController.FocusOnPreviousCreature();
 	}
 
-	public void GoBackToEditor() {
-		// TODO: Show confirmation
-		evolution.Finish();
-        SceneController.LoadSync(SceneController.Scene.Editor);
+	public void GoBackToEditor(bool force = false) {
+		
+		int saveDistance = evolution.CurrentGenerationNumber - evolution.LastSavedGeneration;
+
+		if (force || saveDistance <= EXIT_CONFIRMATION_SAVE_DISTANCE) {
+			evolution.Finish();
+			SceneController.LoadSync(SceneController.Scene.Editor);		
+			return;
+		}
+
+		exitConfirmationPopup.Show(delegate () {
+			evolution.Finish();
+			SceneController.LoadSync(SceneController.Scene.Editor);		
+		}, delegate () {
+			exitConfirmationPopup.Close();
+		});
 	}
 
 	private void Pause() {

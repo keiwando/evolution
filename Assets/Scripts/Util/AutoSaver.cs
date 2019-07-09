@@ -33,7 +33,7 @@
 
 			var lastSave = this.lastSaveFileName;
 
-			this.lastSaveFileName = SimulationSerializer.SaveSimulation(evolution.SimulationData);
+			this.lastSaveFileName = evolution.SaveSimulation();
 
 			// Delete the last auto-saved file
 			if (lastSave != "") {

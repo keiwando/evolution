@@ -56,6 +56,14 @@ public class CreatureFileManager : MonoBehaviour,
 
 	public void ShowUI() {
 		RefreshCache();
+		var currentName = editor.GetCreatureName();
+		this.selectedIndex = 0;
+		for (int i = 0; i < creatureNames.Count; i++) {
+			if (creatureNames[i] == currentName) {
+				this.selectedIndex = i;
+				break;
+			}
+		}
 		viewController.Show(this);
 	}
 

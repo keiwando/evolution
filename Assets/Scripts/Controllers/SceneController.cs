@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using Keiwando;
 using Keiwando.Evolution.Scenes;
 
 class SceneController {
@@ -43,6 +44,7 @@ class SceneController {
 
     public static void LoadSync(Scene scene) {
 
+        InputRegistry.shared.DeregisterAll();
         SceneManager.LoadScene(NameForScene(scene));
     }
 

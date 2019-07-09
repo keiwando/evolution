@@ -2,93 +2,91 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Keiwando.UI;
 
-public class HelpScreen : MonoBehaviour {
+namespace Keiwando.Evolution.UI {
 
-	private const string LANGUAGE_ENGLISH = "LANGUAGE_ENGLISH";
-	private const string LANGUAGE_GERMAN = "LANGUAGE_GERMAN";
-	private const string LANGUAGE_RUSSIAN = "LANGUAGE_RUSSIAN";
-	private const string LANGUAGE_PORTUGUESE = "LANGUAGE_PORTUGUESE";
+	public class HelpScreen : MonoBehaviour {
 
-	private Dictionary<string, RectTransform> languageMap;
-	private Dictionary<string, LanguageButton> buttonMap;
+		private const string LANGUAGE_ENGLISH = "LANGUAGE_ENGLISH";
+		private const string LANGUAGE_GERMAN = "LANGUAGE_GERMAN";
+		private const string LANGUAGE_RUSSIAN = "LANGUAGE_RUSSIAN";
+		private const string LANGUAGE_PORTUGUESE = "LANGUAGE_PORTUGUESE";
 
-	public ScrollRect scrollRect;
+		[SerializeField] private Dropdown uiDropdown;
+		[SerializeField] private Keiwando.UI.Dropdown<string> dropdown;
 
-	public RectTransform englishTextRect;
-	public RectTransform germanTextRect;
-	public RectTransform russianTextRect;
-	public RectTransform portugueseTextRect;
+		public ScrollRect scrollRect;
 
-	public LanguageButton englishButton;
-	public LanguageButton germanButton;
-	public LanguageButton russianButton;
-	public LanguageButton portugueseButton;
+		public RectTransform englishTextRect;
+		public RectTransform germanTextRect;
+		public RectTransform russianTextRect;
+		public RectTransform portugueseTextRect;
 
-	void Start () {
-		this.gameObject.SetActive(false);
-		this.gameObject.SetActive(true);
+	
+		private Dictionary<string, RectTransform> languageMap;
 
-		languageMap = new Dictionary<string, RectTransform>() {
-			{ LANGUAGE_ENGLISH, englishTextRect },
-			{ LANGUAGE_GERMAN, germanTextRect },
-			{ LANGUAGE_RUSSIAN, russianTextRect },
-			{ LANGUAGE_PORTUGUESE, portugueseTextRect }
-		};
+		void Start () {
+			// this.gameObject.SetActive(false);
+			// this.gameObject.SetActive(true);
 
-		buttonMap = new Dictionary<string, LanguageButton>() {
-			{ LANGUAGE_ENGLISH, englishButton },
-			{ LANGUAGE_GERMAN, germanButton },
-			{ LANGUAGE_RUSSIAN, russianButton },
-			{ LANGUAGE_PORTUGUESE, portugueseButton }
-		};
+			
 
-		var currentLanguage = Settings.HelpScreenLanguage;
-		LanguageSelected(currentLanguage);
-	}
+			languageMap = new Dictionary<string, RectTransform>() {
+				{ LANGUAGE_ENGLISH, englishTextRect },
+				{ LANGUAGE_GERMAN, germanTextRect },
+				{ LANGUAGE_RUSSIAN, russianTextRect },
+				{ LANGUAGE_PORTUGUESE, portugueseTextRect }
+			};
 
-
-	public void EnglishButtonClicked() {
-		LanguageSelected(LANGUAGE_ENGLISH);
-	}
-
-	public void GermanButtonClicked() {
-		LanguageSelected(LANGUAGE_GERMAN);
-	}
-
-	public void RussianButtonClicked() {
-		LanguageSelected(LANGUAGE_RUSSIAN);
-	}
-
-	public void PortugueseButtonClicked() {
-		LanguageSelected(LANGUAGE_PORTUGUESE);
-	}
-
-	private void LanguageSelected(string language) {
-
-		Settings.HelpScreenLanguage = language;
-
-		foreach (var rect in languageMap.Values) {
-			rect.gameObject.SetActive (false);
-		}
-		foreach (var btn in buttonMap.Values) {
-			btn.Deselected();
+			var currentLanguage = Settings.HelpScreenLanguage;
+			LanguageSelected(currentLanguage);
 		}
 
-		var languageRect = languageMap[language];
-		languageRect.gameObject.SetActive (true);
-		scrollRect.content = languageRect;
 
-		var button = buttonMap[language];
-		button.Selected();
+		public void EnglishButtonClicked() {
+			LanguageSelected(LANGUAGE_ENGLISH);
+		}
+
+		public void GermanButtonClicked() {
+			LanguageSelected(LANGUAGE_GERMAN);
+		}
+
+		public void RussianButtonClicked() {
+			LanguageSelected(LANGUAGE_RUSSIAN);
+		}
+
+		public void PortugueseButtonClicked() {
+			LanguageSelected(LANGUAGE_PORTUGUESE);
+		}
+
+		private void LanguageSelected(string language) {
+
+			Settings.HelpScreenLanguage = language;
+
+			foreach (var rect in languageMap.Values) {
+				rect.gameObject.SetActive (false);
+			}
+			foreach (var btn in buttonMap.Values) {
+				btn.Deselected();
+			}
+
+			var languageRect = languageMap[language];
+			languageRect.gameObject.SetActive (true);
+			scrollRect.content = languageRect;
+
+			var button = buttonMap[language];
+			button.Selected();
+		}
+
+
+		public void BackButtonClicked() {
+			this.gameObject.SetActive(false);
+		}
+
+		public void HelpButtonClicked() {
+			this.gameObject.SetActive(true);
+		}
 	}
 
-
-	public void BackButtonClicked() {
-		this.gameObject.SetActive(false);
-	}
-
-	public void HelpButtonClicked() {
-		this.gameObject.SetActive(true);
-	}
 }

@@ -38,6 +38,10 @@ namespace Keiwando {
                 receiverStack.RemoveAt(0);
         }
 
+        public void DeregisterAll() {
+            receiverStack.Clear();
+        } 
+
         public void Update() {
 
             InputType availableInputTypes = InputType.All;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
 using UnityEngine;
+using Keiwando;
 using Keiwando.NativeFileSO;
 
 public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerDelegate {
@@ -106,6 +107,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 		yield return new WaitForEndOfFrame();
 
 		var simulationData = SimulationSerializer.LoadSimulationData(filename);
+		InputRegistry.shared.Deregister();
 		editor.StartSimulation(simulationData);
 	}
 
