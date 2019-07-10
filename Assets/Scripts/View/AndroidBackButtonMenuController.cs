@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Keiwando.Evolution.UI;
 
 public class AndroidBackButtonMenuController : MonoBehaviour {
 
@@ -12,7 +13,7 @@ public class AndroidBackButtonMenuController : MonoBehaviour {
 	[SerializeField]
 	private FileSelectionViewController fileSelectionView;
 	[SerializeField]
-	private HelpScreen helpScreen;
+	private HelpViewController helpScreen;
 
 #if PLATFORM_ANDROID
 	void Update() {

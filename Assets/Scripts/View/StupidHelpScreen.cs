@@ -1,13 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Keiwando.Evolution.UI;
 
 public class StupidHelpScreen : MonoBehaviour {
 
 	[SerializeField] 
 	private GameObject stupidHelpCanvas;
 	[SerializeField]
-	private HelpScreen helpScreen;
+	private HelpViewController helpScreen;
 
 	void Start () {
 
