@@ -1469,7 +1469,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 61593908}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 058cba836c1846c3aa1c5fd2e28aea77, type: 3}
   m_Name: 
@@ -3616,15 +3616,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdb24602e3b4b47d58fc16a531128d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollRect: {fileID: 1517234763}
-  englishTextRect: {fileID: 369858882}
-  germanTextRect: {fileID: 38666064}
-  russianTextRect: {fileID: 501089252}
-  portugueseTextRect: {fileID: 1653807305}
-  englishButton: {fileID: 1427849333}
-  germanButton: {fileID: 1145385615}
-  russianButton: {fileID: 1297743943}
-  portugueseButton: {fileID: 1943556998}
 --- !u!114 &214203571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8166,7 +8157,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1590503237}
         m_MethodName: BackButtonClicked
         m_Mode: 1
         m_Arguments:
@@ -13486,7 +13477,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1113295609
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15962,7 +15953,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 214203570}
+      - m_Target: {fileID: 1590503237}
         m_MethodName: HelpButtonClicked
         m_Mode: 1
         m_Arguments:
@@ -16859,6 +16850,7 @@ GameObject:
   - component: {fileID: 1328395430}
   - component: {fileID: 1328395429}
   - component: {fileID: 1328395428}
+  - component: {fileID: 1328395431}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -16881,10 +16873,10 @@ RectTransform:
   m_Father: {fileID: 1845350356}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 82.5, y: -15}
+  m_SizeDelta: {x: 165, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1328395428
 MonoBehaviour:
@@ -16965,6 +16957,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1328395426}
   m_CullTransparentMesh: 0
+--- !u!225 &1328395431
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328395426}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1330843620
 GameObject:
   m_ObjectHideFlags: 0
@@ -19360,7 +19364,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1493969866}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 058cba836c1846c3aa1c5fd2e28aea77, type: 3}
   m_Name: 
@@ -21423,7 +21427,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1590503236
 RectTransform:
   m_ObjectHideFlags: 0
@@ -21457,12 +21461,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba005a1b0fa6a4d30b605e9cbc458bea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiDropdown: {fileID: 0}
-  scrollRect: {fileID: 0}
-  englishTextRect: {fileID: 0}
-  germanTextRect: {fileID: 0}
-  russianTextRect: {fileID: 0}
-  portugueseTextRect: {fileID: 0}
+  fonts:
+  - {fileID: 11400000, guid: 218c3b07212db44efb689fa34e96be1d, type: 2}
+  - {fileID: 11400000, guid: 161232c8f2c86449d874479db687ea6f, type: 2}
+  - {fileID: 11400000, guid: 151c87d9799e0479abb82f491ba48e8f, type: 2}
+  languageSelectionUIDropdown: {fileID: 1565829466}
+  helpPagesViewTemplate: {fileID: 1113295610}
 --- !u!114 &1590503238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26804,7 +26808,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -44, y: 0}
+  m_SizeDelta: {x: -44, y: 1619.94}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &2002250957
 MonoBehaviour:
@@ -26826,143 +26830,93 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: "<voffset=-0.5em><b><size=40>Evolution</size></b></voffset>               <size=70><sprite
-    index=4></size>\n\n\nUsing a set of basic components and a neural network this
-    evolution simulator enables you to create creatures that will hopefully evolve
-    into being able to accomplish tasks such as running, jumping, jumping over an
-    obstacle and climbing a steep hill.\n\n\n<b><size=20>The Creatures</size></b>\n\nThe
-    creatures are made up of three basic body parts (joints, bones & muscles) whose
-    functions are explained below:\n\n<b><size=20>Joints:</size></b>         <size=30><sprite
-    index=0></size>\n\nJoints are connectors between bones. Without joints you can\u2019t
-    place any bones in the creature building scene. Joints enable the connected bones
-    to rotate freely around the center of the joint. \n\nIn order to place a joint
-    click on the \u201DJoint\u201C Button or alternatively press J on your keyboard
-    and click where you want to place the joint. The joint option is selected by default
-    since you have to start every creature with at least two joints.\n\n<b><size=20>Bones:</size></b>
-    \                    <size=20><sprite index=1></size>\n\nBones make up the skeleton
-    of your creatures. You can only place bones between two existing joints. Bones
-    do not collide with each other, which means that they don\u2019t restrict the
-    movement of your creature in any way.\n\nIn order to place a bone you have to
-    select the \u201CBone\u201C button or press B on your keyboard. Click on the first
-    joint and then hold and drag your mouse to the second joint.\n\n<b><size=20>Muscles:</size></b>
-    \                   <size=50><sprite index=2></size>\n\nMuscles enable the creatures
-    to move their bones autonomously. They are the only body parts that the brain
-    of a creature can control. Muscles are always connected to the center points of
-    two bones, so you can\u2019t place any muscles if you haven\u2019t already placed
-    at least two bones in the creature building scene. \n\nIn order to place a muscle
-    you have to select the \u201DMuscle\u201C button or press M on your keyboard.
-    Then click on the first bone, hold down the mouse and move to the second bone.
-    The muscle will automatically connect to the center of the bones. \n\nUnlike real
-    muscles these creature muscles can both expand and contract (You can think of
-    them as simplified muscle pairs that go in opposite directions). Physically the
-    muscles are spring-like, which means that they will always tend to go back into
-    their starting position.\n\nA creature can expand and contract its muscles continuously
-    by applying a different amount of force to them. Without any muscles a creature
-    is not able to move at all and will therefore not be able to accomplish any of
-    the tasks. Another thing to keep in mind while building your creatures is that
-    both the joints and the bones have some weight to them (which is independent of
-    the length of the bones). Therefore, the more bones and joints your creature has
-    the more muscles you need to add to it, otherwise the muscles might not have enough
-    strength to move the skeleton around. Keep in mind that you also can\u2019t connect
-    more than one muscle between the same two bones. \n<b><size=25>The Brain</size></b>
-    \                        <size=70><sprite index=3></size>\n\n\nThis section explains
-    what the brain does and the basic principles of how it works.\n\nThe brain is
-    not a body part like joints, bones or muscles. You don\u2019t need to worry about
-    adding or setting up a brain for your creatures, this is all done automatically
-    when you hit the \u201CEvolve\u201C button. \n\nEvery creature needs a brain,
-    which controls all of the muscles and allows the creatures to evolve at all. The
-    brain is a neural network which takes a set of <b>inputs</b> and converts them
-    to a set of <b>outputs</b>. \n\nThe inputs include the following information:\n
-    - the distance of the creature from the ground\n - the current velocity (horizontal
-    and vertical component)\n - the rotational velocity\n - the number of points currently
-    touching the ground\n - the creature\u2019s rotation (= the average of all bone
-    rotations)\n\nDepending on the specific task there can be more inputs. The obstacle
-    jumping task for example requires another input for the distance between the creature
-    and the obstacle.\n\nEach output corresponds to exactly one muscle. The output
-    is a floating point number between -1 and 1 and determines how far the muscle
-    should expand/contract. Thus, a creature with just two muscles will have a brain
-    with two outputs and a creature with ten muscles will have a brain that produces
-    ten outputs. \n\nThe brain essentially defines how the creature will interpret
-    the inputs - which you can think of as senses - and act accordingly, meaning which
-    muscles to contract or expand and determine the degree of contraction / expansion.\n\nThe
-    brains can be encoded into binary strings (chromosomes) which are used in the
-    evolutionary algorithm in order to be able to create new creatures from existing
-    ones.\n\n\n<b><size=24>Evolution</size></b>\n\nWhen you have finished building
-    your creature you can click on the \u201CEvolve\u201C button (or alternatively
-    hit E on your keyboard) which will take the creature to the evolution scene. \n\nThe
-    evolution takes place using a genetic algorithm. In the following section I\u2019m
-    going to outline the basic idea behind such an algorithm:\n\nThe genetic algorithm
-    executes the following steps:\n\n1. Start out with a set of creatures with completely
-    random brains. (The size of this set can be adjusted once before starting the
-    evolution in the creature building scene. The number has to be even.)\n\n2. Let
-    the creatures try the selected task for a set amount of time. (This time can also
-    be adjusted once before starting the evolution in the creature building scene)\n\n3.
-    Evaluate how good each of the creatures was at completing the task. This is also
-    called assigning a fitness score (between 0 and 1).\n\n4. Create a new generation
-    of creatures. This is done by randomly picking two creatures from the set, taking
-    their chromosomes (which uniquely identify their brains and therefore their behavior),
-    split them at a random index (the same for both chromosomes) and put them back
-    together but this time using the one part from each of the two \u201Cparent\u201C
-    creatures. Now we have two new chromosomes that can be turned into two brains
-    again. We repeat this process until we reach the same number of new creatures
-    as in the previous generation. An important aspect of this step is that creatures
-    with a higher fitness score also have a higher chance of getting picked, so the
-    creatures that are better at completing the tasks have a higher change of passing
-    their genes to the next generation.\n\n5. Next comes the mutation. For every new
-    chromosome there is a small chance that some of the encoded bits get flipped,
-    thus introducing random behavior into some of the creatures.\n\n6. Finally we
-    \u201Ckill\u201C the old generation, replace them with the new creatures and go
-    back to step 2.\n\n\nThe fitness score of the creatures is determined based on
-    the task. \n\nFor the running task the fitness is based on how far a creature
-    has made it towards the right in the amount of time that it had.\nFor the jumping
-    task the fitness is calculated from the maximum jumping height of the creature.
-    \nFor the obstacle jumping task both the maximum jumping height and the number
-    of joints that did not touch the obstacle are of importance.\nFor the climbing
-    task the creature that made it the highest gets the highest fitness score. \n\n\n\n<b><size=20>General
-    Tips</size></b>\n\nYou can delete individual body part by clicking on the \u201CDelete\u201C
-    button (or pressing D on the keyboard) and clicking on the part that you want
-    to delete. This will also delete any directly attached objects. So if you delete
-    a bone that has a muscle attached, then that muscle will be deleted as well. Similarly,
-    if you delete a joint, this will delete all of the directly attached bones, which
-    in turn also delete the attached muscles. \n\nOnce you\u2019re happy with a creature
-    that you\u2019ve built you can save it using the save button in the top left corner
-    of the creature building scene (not available on the WebGL build). If you save
-    a creature with the same name as an existing save then that save will be overwritten
-    (without any warning) by the new one.\n\nYou can load your saved creatures using
-    the dropdown at the top. Choosing \u201DCreature\u201C from this list will delete
-    whatever is currently assembled in the building scene. This is especially helpful
-    if you want to start from scratch without having to delete all of the joints independently.
-    \n\nThere are a couple of creatures that are available \u201Cout of the box\u201C.
-    As of the time of me writing this we have the Hailer, the Spider and the Spring.
-    \n\nThe hailer is a simple creature with a small \u201Cbody\u201C and a long arm
-    that it can use to throw itself forwards. Since it is so basic it will be able
-    to do a fairly good job at the running task relatively quickly. However, it also
-    has some physical limitations, which means that it won\u2019t ever be the absolute
-    best at running. \n\nThe spider - with its four legs and eight muscles - is a
-    much more complex creature. This is why it takes a lot longer for this one to
-    evolve into being able to walk at a halfway decent pace, but when it does it is
-    a lot more exciting to watch. In fact the whole evolution process is more interesting
-    than that of the hailer.\n\nThe spring is - as the name says - essentially just
-    a spring shaped creature which can get relatively good at the jumping tasks.\n\nMore
-    default creatures are probably going to be added in the future.\n\n\n<b><size=18>What
-    makes a creature able to perform a specific task?</size></b>\n\nThere are essentially
-    two parts to each creature. One is its physical structure i.e. its body. This
-    is something that you control, since you are the one building the creature. The
-    body stays the same for all of the creatures during the whole course of evolution.
-    It is possible to write a variation of this algorithm that also evolves the body
-    of the creature into an \u201Coptimal\u201C shape, but that doesn\u2019t happen
-    here. \n\nThis means that you need to make sure that your creature is physically
-    able to accomplish the task in some form in the first place. If you for example
-    don\u2019t add any (or not enough) muscles to your creature then it will never
-    be able to move, no matter how long you let it evolve.\n\nThe second aspect is
-    the brain / behavior which is driven by evolution. You don\u2019t have a say in
-    this part. This is where you sit back, relax and watch your creature try out different
-    strategies and get excited when it gets better and better over time. \n\n\nA last
-    quick thing to note is that this is a simulation and not a game. There are no
-    objectives. If a creature of yours reaches 100% fitness - which shouldn\u2019t
-    even be physically possible at all - you don\u2019t win anything except for (hopefully)
-    some excitement and joy.\n\n\nNow it\u2019s your turn to go out and be creative
-    with your creatures and watch them try, fail, improve and succeed!\n\n\n\n\n\n\n\n\n"
+  m_text: '<voffset=-0.5em><b><size=40>Evolution</size></b></voffset>               <size=70><sprite
+    index=4></size>
+
+
+
+    Using a set of basic components and a neural network this evolution simulator
+    enables you to create creatures that will hopefully evolve into being able to
+    accomplish tasks such as running, jumping, jumping over an obstacle and climbing
+    a steep hill.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 218c3b07212db44efb689fa34e96be1d, type: 2}
   m_sharedMaterial: {fileID: 21083415609416166, guid: 218c3b07212db44efb689fa34e96be1d,
@@ -27032,14 +26986,14 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 2002250957}
-    characterCount: 10498
+    characterCount: 355
     spriteCount: 0
-    spaceCount: 2018
-    wordCount: 1837
+    spaceCount: 135
+    wordCount: 42
     linkCount: 0
-    lineCount: 222
+    lineCount: 83
     pageCount: 1
-    materialCount: 3
+    materialCount: 2
   m_havePropertiesChanged: 0
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0

@@ -10,7 +10,6 @@ namespace Keiwando.Evolution.UI {
     }
 
     public struct HelpPages {
-        public string ID { get; set; }
         public TMP_FontAsset Font { get; set; }
         public HelpPage[] Pages { get; set; }
     }
@@ -33,9 +32,11 @@ namespace Keiwando.Evolution.UI {
         public void Setup(HelpPages pages) {
 
             // Destroy all old items
-            for (int i = 0; i < sectionButtons.Length; i++) {
-                Destroy(sectionButtons[i].gameObject);
-                Destroy(sectionTextContainers[i].gameObject);
+            if (sectionButtons != null) {
+                for (int i = 0; i < sectionButtons.Length; i++) {
+                    Destroy(sectionButtons[i].gameObject);
+                    Destroy(sectionTextContainers[i].gameObject);
+                }
             }
 
             // Create the new containers and setup their content
@@ -58,8 +59,9 @@ namespace Keiwando.Evolution.UI {
                 buttonLabel.font = pages.Font;
                 container.font = pages.Font;
 
+                int section = i;
                 button.onClick.AddListener(delegate () {
-                    ShowSection(i);
+                    ShowSection(section);
                 });
 
                 container.text = page.Text;
@@ -68,7 +70,12 @@ namespace Keiwando.Evolution.UI {
                 sectionTextContainers[i] = container;
                 sectionButtons[i] = button;
                 buttonCanvasGroups[i] = buttonCanvasGroup;
+
+                container.gameObject.SetActive(false);
             }
+
+            sectionButtonTemplate.gameObject.SetActive(false);
+            textContainerTemplate.gameObject.SetActive(false);
 
             ShowSection(0);
         }

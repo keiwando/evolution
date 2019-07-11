@@ -15,6 +15,7 @@ public class Settings {
 	private const string AUTO_SAVE_ENABLED_KEY = "AUTO_SAVE_ENABLED_KEY";
 	private const string AUTO_SAVE_DISTANCE_KEY = "AUTO_SAVE_DISTANCE_KEY";
 	private const string HELP_SCREEN_LANGUAGE_KEY = "HELP_SCREEN_LANGUAGE";
+	private const string LANGUAGE_KEY = "LANGUAGE_KEY";
 	private const string HELP_INDICATOR_SHOWN_KEY = "FIRST_TIME";
 	private const string CREATURE_NAMES_KEY = "_CreatureNames";
 	private const string SIMULATION_SETTINGS_KEY = "EVOLUTION_SETTINGS";
@@ -87,6 +88,11 @@ public class Settings {
 		set { PlayerPrefs.SetString(HELP_SCREEN_LANGUAGE_KEY, value); Save(); }
 	}
 
+	public static string Language {
+		get { return PlayerPrefs.GetString(LANGUAGE_KEY, "en"); }
+		set { PlayerPrefs.SetString(LANGUAGE_KEY, value); Save(); }
+	}
+
 	public static bool HelpIndicatorShown {
 		get { return GetBool(HELP_INDICATOR_SHOWN_KEY, true); }
 		set { SetBool(HELP_INDICATOR_SHOWN_KEY, value); }
@@ -138,6 +144,7 @@ public class Settings {
 		AutoSaveEnabled = false;
 		AutoSaveDistance = 5;
 		HelpScreenLanguage = "LANGUAGE_ENGLISH";
+		Language = "en";
 	}
 
 	private static bool GetBool(string key, bool defaultValue = false) {

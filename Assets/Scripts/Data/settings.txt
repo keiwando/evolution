@@ -15,6 +15,7 @@ bool AutoSaveEnabled = false
 int AutoSaveDistance = 5
 
 string HelpScreenLanguage = "LANGUAGE_ENGLISH" (HELP_SCREEN_LANGUAGE)
+string Language = "en"
 bool HelpIndicatorShown (FIRST_TIME)
 
 string CreatureNames (_CreatureNames)
