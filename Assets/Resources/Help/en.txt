@@ -1,30 +1,35 @@
 Evolution
 #-#-#-Text-#-#-#
-<voffset=-0.5em><b><size=40>Evolution</size></b></voffset>               <size=70><sprite index=4></size>
+<voffset=-0.5em><b><size=40>Evolution</size></b></voffset>                      <size=75><sprite index=4></size>
 
 
 Using a set of basic components and a neural network this evolution simulator enables you to create creatures that will hopefully evolve into being able to accomplish tasks such as running, jumping, jumping over an obstacle and climbing a steep hill.
 
+
+
+
+
 #%#%#%Section%#%#%#
 The Creatures
 #-#-#-Text-#-#-#
-<b><size=20>The Creatures</size></b>
+<voffset=-0.5em><b><size=40>The Creatures</size></b></voffset>                      <size=75><sprite index=4></size>
+
 
 The creatures are made up of three basic body parts (joints, bones & muscles) whose functions are explained below:
 
-<b><size=20>Joints:</size></b>         <size=30><sprite index=0></size>
+<b><size=30>Joints:</size></b>         <size=30><sprite index=0></size>
 
 Joints are connectors between bones. Without joints you can’t place any bones in the creature building scene. Joints enable the connected bones to rotate freely around the center of the joint. 
 
 In order to place a joint click on the ”Joint“ Button or alternatively press J on your keyboard and click where you want to place the joint. The joint option is selected by default since you have to start every creature with at least two joints.
 
-<b><size=20>Bones:</size></b>                     <size=20><sprite index=1></size>
+<b><size=30>Bones:</size></b>                     <size=20><sprite index=1></size>
 
 Bones make up the skeleton of your creatures. You can only place bones between two existing joints. Bones do not collide with each other, which means that they don’t restrict the movement of your creature in any way.
 
 In order to place a bone you have to select the “Bone“ button or press B on your keyboard. Click on the first joint and then hold and drag your mouse to the second joint.
 
-<b><size=20>Muscles:</size></b>                    <size=50><sprite index=2></size>
+<b><size=30>Muscles:</size></b>                    <size=50><sprite index=2></size>
 
 Muscles enable the creatures to move their bones autonomously. They are the only body parts that the brain of a creature can control. Muscles are always connected to the center points of two bones, so you can’t place any muscles if you haven’t already placed at least two bones in the creature building scene. 
 
@@ -35,10 +40,18 @@ Unlike real muscles these creature muscles can both expand and contract (You can
 A creature can expand and contract its muscles continuously by applying a different amount of force to them. Without any muscles a creature is not able to move at all and will therefore not be able to accomplish any of the tasks. Another thing to keep in mind while building your creatures is that both the joints and the bones have some weight to them (which is independent of the length of the bones). Therefore, the more bones and joints your creature has the more muscles you need to add to it, otherwise the muscles might not have enough strength to move the skeleton around. Keep in mind that you also can’t connect more than one muscle between the same two bones. 
 
 
+
+
+
+
+
+
+
+
 #%#%#%Section%#%#%#
 The Brain
 #-#-#-Text-#-#-#
-<b><size=25>The Brain</size></b>                         <size=70><sprite index=3></size>
+<voffset=-0.5em><b><size=40>The Brain</size></b></voffset>                         <size=75><sprite index=3></size>
 
 
 This section explains what the brain does and the basic principles of how it works.
@@ -63,10 +76,19 @@ The brain essentially defines how the creature will interpret the inputs - which
 The brains can be encoded into binary strings (chromosomes) which are used in the evolutionary algorithm in order to be able to create new creatures from existing ones.
 
 
+
+
+
+
+
+
 #%#%#%Section%#%#%#
 The Simulation
 #-#-#-Text-#-#-#
-<b><size=24>Evolution</size></b>
+
+
+<voffset=-0.5em><b><size=40>The Simulation</size></b></voffset>
+
 
 When you have finished building your creature you can click on the “Evolve“ button (or alternatively hit E on your keyboard) which will take the creature to the evolution scene. 
 
@@ -94,10 +116,20 @@ For the jumping task the fitness is calculated from the maximum jumping height o
 For the obstacle jumping task both the maximum jumping height and the number of joints that did not touch the obstacle are of importance.
 For the climbing task the creature that made it the highest gets the highest fitness score. 
 
+
+
+
+
+
+
+
 #%#%#%Section%#%#%#
 General Tips
 #-#-#-Text-#-#-#
-<b><size=20>General Tips</size></b>
+
+
+<voffset=-0.5em><b><size=40>General Tips</size></b></voffset>
+
 
 You can delete individual body part by clicking on the “Delete“ button (or pressing D on the keyboard) and clicking on the part that you want to delete. This will also delete any directly attached objects. So if you delete a bone that has a muscle attached, then that muscle will be deleted as well. Similarly, if you delete a joint, this will delete all of the directly attached bones, which in turn also delete the attached muscles. 
 
@@ -116,7 +148,7 @@ The spring is - as the name says - essentially just a spring shaped creature whi
 More default creatures are probably going to be added in the future.
 
 
-<b><size=18>What makes a creature able to perform a specific task?</size></b>
+<b><size=22>What enables a creature to perform a specific task?</size></b>
 
 There are essentially two parts to each creature. One is its physical structure i.e. its body. This is something that you control, since you are the one building the creature. The body stays the same for all of the creatures during the whole course of evolution. It is possible to write a variation of this algorithm that also evolves the body of the creature into an “optimal“ shape, but that doesn’t happen here. 
 
@@ -125,7 +157,7 @@ This means that you need to make sure that your creature is physically able to a
 The second aspect is the brain / behavior which is driven by evolution. You don’t have a say in this part. This is where you sit back, relax and watch your creature try out different strategies and get excited when it gets better and better over time. 
 
 
-A last quick thing to note is that this is a simulation and not a game. There are no objectives. If a creature of yours reaches 100% fitness - which shouldn’t even be physically possible at all - you don’t win anything except for (hopefully) some excitement and joy.
+A last quick thing to note is that this more of a simulation than a game. There are no objectives. If a creature of yours reaches 100% fitness - which is very unlikely - you don’t win anything except for (hopefully) some excitement and joy.
 
 
 Now it’s your turn to go out and be creative with your creatures and watch them try, fail, improve and succeed!

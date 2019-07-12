@@ -13,31 +13,37 @@ namespace Keiwando.Evolution.UI {
 			public string id;
 			public string label;
 			public int fontIndex;
+			public int flagIndex;
 		}
 
 		[SerializeField] TMP_FontAsset[] fonts;
+		[SerializeField] Sprite[] flags;
 
 		private readonly Language[] languages = new [] {
 			new Language () {
 				id = "en",
 				label = "English",
-				fontIndex = 0
+				fontIndex = 0,
+				flagIndex = 0
 			},
-			// new Language () {
-			// 	id = "ru",
-			// 	label = "Russian",
-			// 	fontIndex = 1
-			// },
-			// new Language () {
-			// 	id = "pt",
-			// 	label = "Portuguese",
-			// 	fontIndex = 2
-			// },
-			// new Language () {
-			// 	id = "de",
-			// 	label = "German",
-			// 	fontIndex = 1
-			// }
+			new Language () {
+				id = "ru",
+				label = "Russian",
+				fontIndex = 1,
+			 	flagIndex = 1
+			},
+			new Language () {
+				id = "pt",
+				label = "Portuguese",
+				fontIndex = 2,
+			 	flagIndex = 2
+			},
+			new Language () {
+				id = "de",
+				label = "German",
+				fontIndex = 2,
+			 	flagIndex = 3
+			}
 		};
 
 		[SerializeField] private Dropdown languageSelectionUIDropdown;
@@ -54,7 +60,8 @@ namespace Keiwando.Evolution.UI {
 			foreach (var language in languages) {
 				dropdownData.Add(new Dropdown<string>.Data() {
 					Value = language.id,
-					Label = language.label
+					Label = language.label,
+					Sprite = flags[language.flagIndex]
 				});
 			}
 			var languageDropdown = new Dropdown<string>(languageSelectionUIDropdown, dropdownData);

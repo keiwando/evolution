@@ -1,3 +1,173 @@
-{
-  "ID": "LANGUAGE_GERMAN"
-}
+Evolution
+#-#-#-Text-#-#-#
+<voffset=-0.5em><b><size=40>Evolution</size></b></voffset>                      <size=75><sprite index=4></size>
+
+
+Dieser Evolutionssimulator ermöglicht es, mithilfe einer Reihe von grundlegenden Komponenten und einem neuronalen Netzwerk Kreaturen zu erschaffen, die hoffentlich dazu in der Lage sind, verschiedene Aufgaben wie Laufen, Springen, Überspringen eines Hindernisses und Treppensteigen zu bewältigen.
+
+
+
+
+
+#%#%#%Section%#%#%#
+Die Kreaturen
+#-#-#-Text-#-#-#
+<voffset=-0.5em><b><size=40>Die Kreaturen</size></b></voffset>                      <size=75><sprite index=4></size>
+
+
+Die Kreaturen bestehen aus drei grundlegenden Körperteilen (Gelenke, Knochen und Muskeln), deren Funktionen im Folgenden erklärt werden:
+
+<b><size=30>Gelenke:</size></b>         <size=30><sprite index=0></size>
+
+Gelenke sind Verbindungen zwischen Knochen. Ohne Gelenke kannst du keine Knochen in die Kreaturdesign-Szene legen. Gelenke ermöglichen es den verbundenen Knochen, sich frei um die Mitte des Gelenks zu drehen.
+
+Um ein Gelenk zu platzieren, klicke auf den "Joint" Knopf oder drücke J auf der Tastatur und klicke dort, wo du das Gelenk platzieren möchtest. Die Gelenkoption ist standardmäßig ausgewählt, da jedes Kreaturdesign mit mindestens zwei Gelenken begonnen werden muss.
+
+<b><size=30>Knochen:</size></b>                     <size=20><sprite index=1></size>
+
+Knochen bilden das Skelett deiner Kreaturen. Du kannst Knochen nur zwischen zwei vorhandenen Gelenken platzieren. Knochen kollidieren nicht miteinander, was bedeutet, dass sie die Bewegung deiner Kreatur in keiner Weise einschränken.
+
+Um einen Knochen zu platzieren, musst du den Knopf “Bone” wählen oder B auf der Tastatur drücken. Klicke auf das erste Gelenk und halte und ziehe die Maus zum zweiten Gelenk.
+
+<b><size=30>Muskeln:</size></b>                    <size=50><sprite index=2></size>
+
+Muskeln ermöglichen es den Kreaturen, ihre Knochen autonom zu bewegen. Sie sind die einzigen Körperteile, die das Gehirn einer Kreatur kontrollieren kann. Muskeln sind immer mit den Mittelpunkten von zwei Knochen verbunden, sodass du keine Muskeln platzieren kannst, wenn nicht bereits mindestens zwei Knochen in der Kreaturdesign-Szene platziert sind.
+
+Um einen Muskel zu platzieren, klicke auf den "Muscle" Knopf oder drücke M auf der Tastatur. Klicke dann auf den ersten Knochen, halte die Maus gedrückt und bewege sie zum zweiten Knochen. Der Muskel verbindet sich automatisch mit der Mitte der Knochen.
+
+Anders als echte Muskeln können sich diese Kreaturmuskeln sowohl ausdehnen als auch zusammenziehen (Du kannst dir diese als vereinfachte Muskelpaare vorstellen, die in entgegengesetzte Richtungen wirken). Physikalisch sind die Muskeln federartig, was bedeutet, dass sie immer dazu tendieren, in ihre Ausgangsposition zurückzukehren.
+
+Eine Kreatur kann ihre Muskeln kontinuierlich ausdehnen und zusammenziehen, indem sie eine andere Menge an Kraft auf sie ausübt. Ohne Muskeln ist eine Kreatur nicht in der Lage sich zu bewegen und wird daher keine der Aufgaben erfüllen können. Eine andere Sache, die du beim Aufbau deiner Kreaturen beachten solltest, ist, dass sowohl die Gelenke als auch die Knochen ein bestimmtes Gewicht haben (was unabhängig von der Länge der Knochen ist). Je mehr Knochen und Gelenke deine Kreatur hat, desto mehr Muskeln musst du ihr hinzufügen, sonst haben die Muskeln möglicherweise nicht genug Kraft, um das Skelett zu bewegen. Denk daran, dass du nicht mehr als einen Muskel zwischen den gleichen zwei Knochen verbinden kannst.
+
+
+
+
+
+
+
+
+
+
+#%#%#%Section%#%#%#
+Das Gehirn
+#-#-#-Text-#-#-#
+<voffset=-0.5em><b><size=40>Das Gehirn</size></b></voffset>                         <size=75><sprite index=3></size>
+
+
+Dieser Abschnitt erklärt, was das Gehirn macht und wie es funktioniert.
+
+Das Gehirn ist kein Körperteil wie Gelenke, Knochen oder Muskeln. Du musst dir keine Gedanken darüber machen, wie du deinen Kreaturen ein Gehirn hinzufügen oder einrichten kannst. Dies geschieht automatisch, wenn du auf den "Evolve" Knopf klickst.
+
+Jede Kreatur benötigt ein Gehirn, das alle Muskeln kontrolliert und es den Kreaturen ermöglicht, sich überhaupt zu entwickeln. Das Gehirn ist ein neuronales Netzwerk, das eine Menge von Eingaben erhält und sie in eine Menge von Ausgaben umwandelt.
+
+Die Eingaben umfassen die folgenden Informationen:
+ - die Entfernung der Kreatur vom Boden
+ - die aktuelle Geschwindigkeit (horizontale und vertikale Komponente)
+ - die Rotationsgeschwindigkeit
+ - die Anzahl der Punkte, die gerade den Boden berühren
+ - die Rotation der Kreatur (= der Durchschnitt aller Knochendrehungen)
+
+Abhängig von der spezifischen Aufgabe kann es mehr Eingaben geben. Die Hindernissprung-Aufgabe benötigt beispielsweise eine zusätzliche Eingabe für die Entfernung zwischen der Kreatur und dem Hindernis.
+
+Jede Ausgabe entspricht genau einem Muskel. Die Ausgabe ist eine Gleitkommazahl zwischen -1 und 1 und bestimmt, wie weit sich der Muskel ausdehnen / zusammenziehen soll. Somit hat eine Kreatur mit nur zwei Muskeln ein Gehirn mit zwei Ausgaben und eine Kreatur mit zehn Muskeln hat ein Gehirn, das zehn Ausgaben produziert.
+
+Das Gehirn definiert im Wesentlichen, wie die Kreatur die Eingaben interpretieren wird und entsprechend handelt, was bedeutet, welche Muskeln sich kontrahieren oder ausdehnen und den Grad der Kontraktion / Expansion.
+
+Die Gehirne können in binäre Strings (Chromosomen) kodiert werden, die im evolutionären Algorithmus verwendet werden, um neue Kreaturen aus bestehenden zu erstellen.
+
+
+
+
+
+
+
+
+#%#%#%Section%#%#%#
+Die Simulation
+#-#-#-Text-#-#-#
+
+
+<voffset=-0.5em><b><size=40>Die Simulation</size></b></voffset>
+
+
+Wenn du mit dem Bau deiner Kreatur fertig bist, kannst du auf den "Evolve" Knopf klicken (oder alternativ E auf der Tastatur drücken), was die Kreatur zur Evolutionsszene bringt.
+
+Die Evolution findet unter Verwendung eines genetischen Algorithmus statt. Im folgenden Abschnitt werde ich die Grundidee eines solchen Algorithmus skizzieren:
+
+Der genetische Algorithmus führt die folgenden Schritte aus:
+
+1. Beginne mit einer Reihe von Kreaturen mit völlig zufälligen Gehirnen. (Die Größe dieser Menge kann einmal vor Beginn der Evolution eingestellt werden.)
+
+2. Lasse die Kreaturen die ausgewählte Aufgabe für eine bestimmte Zeitspanne ausprobieren. (Diese Zeit kann auch einmal eingestellt werden, bevor die Evolution gestartet wird)
+
+3. Werte aus, wie gut die einzelnen Kreaturen die Aufgabe erfüllt haben. Dies wird auch als Fitness-Bewertung bezeichnet (zwischen 0 und 1).
+
+4. Erstelle eine neue Generation von Kreaturen. Dazu werden zufällig zwei Kreaturen aus der Menge ausgewählt, deren Chromosomen (die ihre Gehirne und somit ihr Verhalten eindeutig identifizieren), an einem zufälligen Index (für beide Chromosomen) aufgeteilt und dann wieder zusammengefügt, diesmal jedoch mit jeweils einem Teil von jedem der beiden "Eltern". Jetzt haben wir zwei neue Chromosomen, die wieder in zwei Gehirne verwandelt werden können. Wir wiederholen diesen Prozess, bis wir die gleiche Anzahl an neuen Kreaturen erreichen wie in der vorherigen Generation. Ein wichtiger Aspekt dieses Schritts ist, dass Kreaturen mit einem höheren Fitnesswert auch eine höhere Chance haben, zur Reproduktion ausgewählt zu werden, so dass die Kreaturen, die die Aufgaben besser erfüllen, eine höhere Wahrscheinlichkeit haben, ihre Gene auf die nächste Generation zu übertragen.
+
+5. Als nächstes kommt die Mutation. Für jedes neue Chromosom gibt es eine geringe Chance, dass einige der kodierten Bits umgedreht werden, wodurch zufälliges Verhalten in einige der Kreaturen eingeführt wird.
+
+6. Schließlich "töten" wir die alte Generation, ersetzen sie durch die neuen Kreaturen und gehen zurück zu Schritt 2.
+
+
+Der Fitnesswert der Kreaturen wird basierend auf der Aufgabe bestimmt.
+
+Für die Aufgabe Laufen (Running) basiert die Fitness darauf, wie weit eine Kreatur in der Zeit, die sie hatte, nach rechts gerückt ist.
+Für die Aufgabe Springen (Jumping) wird die Fitness aus der maximalen Sprunghöhe der Kreatur berechnet.
+Für die Aufgabe Hindernissprung (Obstacle Jump) sind sowohl die maximale Sprunghöhe als auch die Anzahl der Gelenke, die das Hindernis nicht berührt haben, von Bedeutung.
+Für die Kletteraufgabe (Climbing) erhält die Kreatur, die die höchste Stufe erreicht hat, den höchsten Fitnesswert.
+
+
+
+
+
+
+
+
+#%#%#%Section%#%#%#
+Allgemeine Hinweise
+#-#-#-Text-#-#-#
+
+
+<voffset=-0.5em><b><size=40>Allgemeine Hinweise</size></b></voffset>
+
+
+Du kannst einzelne Körperteile löschen, indem du auf den Knopf "Löschen" klickst (oder auf der Tastatur D drückst) und den Teil auswählst, der gelöscht werden soll. Dadurch werden auch alle direkt angefügten Objekte gelöscht. Wenn du also einen Knochen löschst, der mit einem Muskel verbunden ist, wird dieser Muskel ebenfalls gelöscht. Wenn du ein Gelenk löschst, werden auch alle direkt verbundenen Knochen gelöscht, wodurch wiederum die verbundenen Muskeln gelöscht werden.
+
+Wenn du mit einer Kreatur, die du designed hast, zufrieden bist, kannst du sie mit der Schaltfläche "Speichern" in der oberen linken Ecke speichern (nicht im WebGL-Build verfügbar). Wenn du eine Kreatur mit dem gleichen Namen wie eine bereits gespeicherte Kreatur speicherst, wird das alte Design (ohne Warnung) überschrieben.
+
+Du kannst deine gespeicherten Kreaturen über das Drop-down-Menü (oben in der Mitte) laden. Wenn du in dieser Liste "Kreatur" auswählen, wird alles gelöscht, was bisher in die Kreaturdesign-Szene gelegt worden ist. Dies ist besonders hilfreich, wenn du von vorne anfangen möchtest, ohne alle Körperteile einzeln löschen zu müssen.
+
+Es gibt ein paar Kreaturdesigns, die von vornherein verfügbar sind. Zu der Zeit, als ich diesen Text schreibe, haben wir den Hailer, die Spinne, den Frogger und die Feder.
+
+Der Hailer ist eine einfache Kreatur mit einem kleinen "Körper" und einem langen Arm, mit dem er sich nach vorne werfen kann. Da er so einfach gebaut ist, wird er in der Lage sein, eine relativ gute Arbeit bei der Aufgabe “Rennen” zu erledigen. Er hat jedoch auch einige physische Einschränkungen, was bedeutet, dass er niemals das absolut beste Ergebnis beim Rennen erhalten wird.
+
+Die Spinne - mit ihren vier Beinen und acht Muskeln - ist eine viel komplexere Kreatur. Aus diesem Grund dauert es auch viel länger, bis sie sich in einem halbwegs vernünftigen Tempo bewegen kann, aber wenn es passiert, ist es umso aufregender zu sehen. Wenn es funktioniert, ist der Evolutionsprozess der Spinne um einiges interessanter als der des Hailers.
+
+Das Frogger-Design repräsentiert eine sehr tierähnliche Knochenstruktur, die überraschend effektiv ist. Dieses Design liefert normalerweise ziemlich konsistente und besonders natürlich aussehende Ergebnisse.
+
+Die Feder ist - wie der Name sagt - im Wesentlichen nur eine federförmige Kreatur, die bei den Sprungaufgaben relativ gut werden kann.
+
+In Zukunft werden wahrscheinlich mehr Standardkreaturen hinzugefügt.
+
+
+<b><size=22>Wann ist eine Kreatur in der Lage, eine bestimmte Aufgabe auszuführen?</size></b>
+
+Zu jeder Kreatur gehören im Wesentlichen zwei Teile. Einer ist seine physische Struktur, d.h. sein Körperdesign. Das ist etwas, das du kontrollierst, da du derjenige bist, der die Kreatur baut. Der Körper bleibt während des gesamten Evolutionsprozesses für alle Lebewesen gleich. Es ist möglich, eine Variation dieses Algorithmus zu schreiben, der auch den Körper der Kreatur in eine "optimale" Form bringt, aber das passiert hier nicht.
+
+Das bedeutet, dass du sicherstellen musst, dass deine Kreatur die Aufgabe in irgendeiner Form physisch erfüllen kann. Wenn du deiner Kreatur zum Beispiel keine (oder nicht genug) Muskeln hinzufügst, wird sie sich niemals bewegen können, egal wie lange du sie entwickeln lässt.
+
+Der zweite Aspekt ist das Gehirn / Verhalten, das von der Evolution angetrieben wird. Du hast in diesem Teil nichts zu sagen. Hier lehnst du dich zurück, entspannst dich und siehst deiner Kreatur zu, wie sie verschiedene Strategien ausprobiert und mit der Zeit immer besser wird.
+
+Eine letzte schnelle Sache zu beachten ist, dass dies eine Simulation und kein Spiel ist. Es gibt keine Ziele. Wenn eine deiner Kreaturen 100% Fitness erreicht - was eigentlich gar nicht möglich sein sollte - gewinnst du nichts anderes als (hoffentlich) etwas Aufregung und Freude.
+
+Jetzt bist du an der Reihe mit deinen Kreaturen kreativ zu sein und ihnen dabei zuzusehen, wie sie versuchen, scheitern, sich verbessern und Erfolg haben!
+
+
+
+
+
+
+
+
+
+

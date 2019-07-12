@@ -1,3 +1,170 @@
-{
-  "ID": "LANGUAGE_PORTUGUESE"
-}
+Evolução
+#-#-#-Text-#-#-#
+<voffset=-0.5em><b><size=40>Evolução</size></b></voffset>                      <size=75><sprite index=4></size>
+
+
+Usando um conjunto de componentes básicos e uma rede neural, este simulador de evolução permite que você crie criaturas que evoluirão e se tornarão capazes de realizar tarefas como correr, saltar, pular obstáculos e subir colinas íngremes. 
+
+
+
+
+
+#%#%#%Section%#%#%#
+As Criaturas
+#-#-#-Text-#-#-#
+<voffset=-0.5em><b><size=40>As Criaturas</size></b></voffset>                      <size=75><sprite index=4></size>
+
+
+As criaturas são compostas de três estruturas corporais básicas (articulações, ossos e músculos) cujas funções são explicadas abaixo:
+
+<b><size=30>Articulações:</size></b>         <size=30><sprite index=0></size>
+
+Articulações são conectores entre os ossos. Sem elas, você não conseguirá acrescentar ossos nas criaturas. Articulações permitem que os ossos conectados girem livremente ao redor do centro da articulação.
+
+Para colocar uma articulação, clique no botão "Joint" ou pressione J no teclado e clique onde deseja colocá-la. A opção “Joint” é selecionada por padrão, já que você deve iniciar todas as criaturas com pelo menos duas articulações.
+
+<b><size=30>Ossos:</size></b>                     <size=20><sprite index=1></size>
+
+Ossos compõem o esqueleto de suas criaturas. Você só pode colocar ossos entre duas juntas já existentes. Ossos não colidem uns com os outros, o que significa que eles não restringem o movimento da sua criatura de forma alguma.
+
+Para colocar um osso, você deve selecionar o botão “Bone” ou pressionar B no teclado. Clique na primeira articulação, segure e arraste o mouse para a segunda articulação.
+
+<b><size=30>Músculos:</size></b>                    <size=50><sprite index=2></size>
+
+Os músculos permitem que as criaturas movam seus ossos de forma autônoma. Eles são as únicas partes do corpo que o cérebro de uma criatura pode controlar. Os músculos estão sempre conectados aos pontos centrais de dois ossos, então você não pode colocar nenhum músculo se você ainda não colocou pelo menos dois ossos na tela de criação da criatura.
+
+Para colocar um músculo, você deve selecionar o botão "Muscle" ou pressionar M no seu teclado. Em seguida, clique no primeiro osso, segure e arraste o mouse para o segundo osso. O músculo se conectará automaticamente ao centro dos ossos.
+
+Diferentes dos músculos reais, os músculos de criatura podem se expandir e contrair (você pode pensar neles como pares de músculos simplificados que vão em direções opostas). Fisicamente, os músculos são semelhantes a uma mola, o que significa que eles sempre tenderão a voltar à sua posição inicial.
+
+Uma criatura pode expandir e contrair seus músculos continuamente aplicando uma quantidade diferente de força a eles. Sem nenhum músculo, uma criatura não é capaz de se mover e, portanto, não será capaz de realizar nenhuma das tarefas. Outra coisa a ter em mente ao construir suas criaturas é que tanto as articulações quanto os ossos têm algum peso (que é independente do comprimento dos ossos). Portanto, quanto mais ossos e articulações sua criatura tiver, mais músculos você precisará adicionar; caso contrário, os músculos podem não ter força suficiente para movimentar o esqueleto. Lembre-se de que você também não pode conectar mais de um músculo entre os mesmos dois ossos.
+
+
+
+
+
+
+
+
+
+#%#%#%Section%#%#%#
+O Cérebro
+#-#-#-Text-#-#-#
+<voffset=-0.5em><b><size=40>O Cérebro</size></b></voffset>                         <size=75><sprite index=3></size>
+
+
+Esta seção explica o que o cérebro faz e os princípios básicos de como ele funciona.
+
+O cérebro não é uma parte do corpo como articulações, ossos ou músculos. Você não precisa se preocupar em adicionar ou configurar um cérebro para suas criaturas. Isso é feito automaticamente quando você clica no botão "Evolve".
+
+Toda criatura precisa de um cérebro, que controla todos os músculos e permite que as criaturas evoluam. O cérebro é uma rede neural que recebe um conjunto de entradas e as converte em um conjunto de saídas.
+
+As entradas incluem as seguintes informações:
+ - a distância da criatura do solo;
+ - a velocidade atual (componente horizontal e vertical);
+ - a velocidade rotacional;
+ - o número de pontos que tocam o solo;
+ - a rotação da criatura (= a média de todas as rotações ósseas).
+
+Dependendo da tarefa específica, podem haver mais entradas. A tarefa de saltar obstáculos, por exemplo, requer outra entrada para a distância entre a criatura e o obstáculo.
+
+Cada saída corresponde a exatamente um músculo. A saída é um número de ponto flutuante entre -1 e 1 e determina o quanto o músculo deve se expandir/contrair. Assim, uma criatura com apenas dois músculos terá um cérebro com duas saídas e uma criatura com dez músculos terá um cérebro que produz dez saídas.
+
+O cérebro essencialmente define como a criatura irá interpretar as entradas — que você pode pensar como sentidos — e como irá agir de acordo com elas, ou seja, definir quais músculos contrair ou expandir e determinar o grau de contração/expansão.
+
+Os cérebros podem ser codificados em cadeias binárias (cromossomos), que são usadas no algoritmo evolucionário para poder criar novas criaturas a partir das existentes.
+
+
+
+
+
+
+
+#%#%#%Section%#%#%#
+Evolução
+#-#-#-Text-#-#-#
+
+
+<voffset=-0.5em><b><size=40>Evolução</size></b></voffset>
+
+
+Quando terminar de construir sua criatura, você pode clicar no botão "Evolve" (ou pressionar E no seu teclado), que levará a criatura para a cena de evolução.
+
+A evolução ocorre usando um algoritmo genético. Na próxima seção, vou descrever a ideia básica por trás desse algoritmo.
+
+O algoritmo genético executa as seguintes etapas:
+
+1. Comece com um conjunto de criaturas com cérebros completamente aleatórios. (O tamanho desse conjunto pode ser ajustado uma vez antes de iniciar a evolução na tela de criação da criatura. O número deve ser par.)
+
+2. Deixe as criaturas tentarem realizar a tarefa selecionada por um determinado tempo. (Esse tempo também pode ser ajustado uma vez antes de iniciar a evolução na tela de criação de criatura.)
+
+3. Avalie quão bem cada uma das criaturas se saiu ao tentar completar a tarefa. Isso também é chamado de atribuir uma pontuação de aptidão (entre 0 e 1).
+
+4. Crie uma nova geração de criaturas. Isso é feito escolhendo aleatoriamente duas criaturas do conjunto, pegando seus cromossomos (que identificam seus cérebros e, portanto, seus comportamentos), dividindo-os em um índice aleatório (o mesmo para ambos os cromossomos) e os repondo, mas desta vez usando o uma parte de cada uma das duas criaturas "pais". Agora temos dois novos cromossomos que podem ser transformados em dois cérebros novamente. Repetimos esse processo até alcançarmos o mesmo número de novas criaturas que na geração anterior. Um aspecto importante dessa etapa é que criaturas com maior pontuação de aptidão também têm uma chance maior de serem escolhidas. Então, as criaturas que são melhores em completar as tarefas têm uma chance maior de passar seus genes para a próxima geração.
+
+5. Em seguida vem a mutação. Para cada novo cromossomo, há uma pequena chance de que alguns dos bits codificados sejam invertidos, introduzindo assim um comportamento aleatório em algumas das criaturas.
+
+6. Finalmente, “matamos” a velha geração; substitua-a pelas novas criaturas e volte ao passo 2.
+
+
+A pontuação de aptidão das criaturas é determinada com base na tarefa.
+
+Para a tarefa de corrida, a aptidão é baseada em quão longe uma criatura chegou à direita na quantidade de tempo que tinha.
+Para a tarefa de salto, a aptidão é calculada a partir da altura máxima de salto da criatura.
+Para a tarefa de saltar obstáculos, tanto a altura máxima de salto quanto o número de articulações que não tocaram no obstáculo são importantes.
+Para a tarefa de escalada, a criatura que chegou mais alto recebe a maior pontuação de aptidão.
+
+
+
+
+
+
+
+
+#%#%#%Section%#%#%#
+Dicas gerais
+#-#-#-Text-#-#-#
+
+
+<voffset=-0.5em><b><size=40>Dicas gerais</size></b></voffset>
+
+
+Você pode excluir partes individuais do corpo clicando no botão "Delete" (ou pressionando D no teclado) e clicando na parte que deseja excluir. Isso também excluirá todos os objetos conectados diretamente. Então, se você excluir um osso que tenha um músculo ligado, esse músculo também será excluído. Da mesma forma, se você excluir uma junta, isso excluirá todos os ossos conectados diretamente, o que, por sua vez, também excluirá os músculos anexados.
+
+Quando estiver satisfeito com uma criatura que criou, você poderá salvá-la usando o botão “Save” no canto superior esquerdo da tela de criação de criatura (não disponível na versão WebGL). Se você salvar uma criatura com o mesmo nome de um salvamento existente, esse salvamento será sobrescrito (sem nenhum aviso) pelo novo.
+
+Você pode carregar suas criaturas salvas usando a lista no dropdown no topo da tela. Escolher “Creature” dessa lista irá apagar o que estiver atualmente montado na tela de criação. Isso é especialmente útil se você quiser começar do zero sem ter de excluir todas as juntas individualmente.
+
+Há algumas criaturas que já vêm disponíveis. No momento em que escrevo isto, temos o Hailer, a Spider e a Spring.
+
+O Hailer é uma criatura simples com um pequeno "corpo" e um braço longo, que pode usar para se lançar para a frente. Como é tão básico, será capaz de executar um trabalho razoavelmente bom na tarefa de correr de forma relativamente rápida. No entanto, ele também tem algumas limitações físicas, o que significa que ele nunca será o melhor em correr.
+
+A Spider — com suas quatro patas e oito músculos — é uma criatura muito mais complexa. É por isso que leva muito mais tempo para que evolua e seja de andar em um ritmo decente, mas quando isso acontece, é muito mais emocionante de assistir. De fato, todo o processo de evolução é mais interessante que o do Hailer.
+
+A Spring é — como o nome sugere — essencialmente apenas uma criatura em forma de mola que pode ficar relativamente boa nas tarefas de salto.
+
+Mais criaturas padrão provavelmente serão adicionadas no futuro.
+
+<b><size=22>O que faz uma criatura capaz de realizar uma tarefa específica?</size></b>
+
+Existem essencialmente duas partes para cada criatura. Uma é sua estrutura física, ou seja, seu corpo. Isso é algo que você controla, já que você é quem está construindo a criatura. O corpo permanece o mesmo para todas as criaturas durante todo o curso da evolução. É possível escrever uma variação desse algoritmo que também evolui o corpo da criatura para uma forma "ideal", mas isso não acontece aqui.
+
+Isso significa que você precisa ter certeza de que sua criatura é, em primeiro lugar, fisicamente capaz de realizar a tarefa de alguma forma. Se, por exemplo, você não adicionar músculos (ou adicionar músculos insuficientes) à sua criatura, ela nunca poderá se mover, não importa quanto tempo você a deixe evoluir.
+
+O segundo aspecto é o cérebro/comportamento, que é impulsionado pela evolução. Você não tem controle sobre essa parte. É o momento em que você se senta, relaxa e observa sua criatura experimentar diferentes estratégias e fica animado quando ela fica melhor e melhor com o tempo.
+
+Uma última coisa rápida a notar é que isso é uma simulação e não um jogo. Não há objetivos. Se uma criatura sua atingir 100% de aptidão física — o que nem deveria ser fisicamente possível —, você não ganhará nada, exceto (espero) alguma emoção e alegria.
+
+Agora é sua vez de sair e ser criativo com suas criaturas e vê-las tentar, falhar, melhorar e ter sucesso!
+
+
+
+
+
+
+
+
+
+
+
+

@@ -21,6 +21,7 @@ namespace Keiwando.Evolution.UI {
 
         [SerializeField] private GridLayoutGroup sectionList;
         [SerializeField] private Button sectionButtonTemplate;
+        [SerializeField] private ScrollRect scrollRect;
         [SerializeField] private TMP_Text textContainerTemplate;
 
         private TMP_Text[] sectionTextContainers;
@@ -86,6 +87,11 @@ namespace Keiwando.Evolution.UI {
             currentSection = i;
             sectionTextContainers[i].gameObject.SetActive(true);
             buttonCanvasGroups[i].alpha = SELECTED_BUTTON_ALPHA;
+            var sectionRect = sectionTextContainers[i].GetComponent<RectTransform>();
+            scrollRect.content = sectionRect;
+            var newPosition = sectionRect.localPosition;
+            newPosition.y = 0;
+            sectionRect.localPosition = newPosition;
         }
     }
 }

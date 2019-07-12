@@ -12,6 +12,7 @@ namespace Keiwando.UI {
         public struct Data {
             public T Value { get; set; }
             public string Label { get; set; }
+            public Sprite Sprite { get; set; }
         }
 
         private UnityEngine.UI.Dropdown dropdown;
@@ -22,7 +23,7 @@ namespace Keiwando.UI {
             this.dropdown = dropdown;
             this.items = items;
             dropdown.options = items.Select(
-                x => new UnityEngine.UI.Dropdown.OptionData(x.Label)
+                x => new UnityEngine.UI.Dropdown.OptionData(x.Label, x.Sprite)
             ).ToList();
 
             dropdown.onValueChanged.AddListener(delegate (int index) {
