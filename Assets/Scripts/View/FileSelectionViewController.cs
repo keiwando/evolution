@@ -59,6 +59,9 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
         this.controllerDelegate = Delegate;
 
 		InputRegistry.shared.Register(InputType.All, delegate(InputType type) {});
+		InputRegistry.shared.RegisterForAndroidBackButton(delegate () {
+			Close();
+		});
 
 		DeleteAllItemViews();
 		gameObject.SetActive(true);
@@ -135,6 +138,7 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
     public void Close() {
 		controllerDelegate = null;
 		InputRegistry.shared.Deregister();
+		InputRegistry.shared.DeregisterBackButton();
 		gameObject.SetActive(false);
     }
 

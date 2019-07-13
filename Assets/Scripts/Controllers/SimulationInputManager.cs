@@ -10,6 +10,11 @@ namespace Keiwando.Evolution {
         void Start() {
             evolution = FindObjectOfType<Evolution>();
             viewController = FindObjectOfType<SimulationViewController>();
+
+            InputRegistry.shared.RegisterForAndroidBackButton(delegate () {
+                InputRegistry.shared.DeregisterBackButton();
+                viewController.GoBackToEditor();
+            });
         }
 
         void Update () {
@@ -28,14 +33,7 @@ namespace Keiwando.Evolution {
             } else if (Input.GetKeyDown(KeyCode.RightArrow)) {
 
                 viewController.FocusOnNextCreature();
-
-            } else if (Input.GetKeyDown(KeyCode.Escape)) {
-                viewController.GoBackToEditor();
             }
-
-            if (Application.platform == RuntimePlatform.Android && Input.GetKeyDown(KeyCode.Backspace)) {
-                viewController.GoBackToEditor();
-            }	
         }
     }
 }

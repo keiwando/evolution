@@ -36,6 +36,9 @@ public class SaveDialog : MonoBehaviour {
 		ResetErrors();
 		KeyInputManager.shared.Register();
 		InputRegistry.shared.Register(InputType.All, delegate (InputType type) {});
+		InputRegistry.shared.RegisterForAndroidBackButton(delegate () {
+			Close();
+		});
 
 		inputField.onValidateInput += delegate (string input, int charIndex, char addedChar) {
 			if (Delegate.CanEnterCharacter(this, charIndex, addedChar)) {
@@ -56,6 +59,7 @@ public class SaveDialog : MonoBehaviour {
 		Delegate = null;
 		KeyInputManager.shared.Deregister();
 		InputRegistry.shared.Deregister();
+		InputRegistry.shared.DeregisterBackButton();
 		gameObject.SetActive(false);
 	}
 

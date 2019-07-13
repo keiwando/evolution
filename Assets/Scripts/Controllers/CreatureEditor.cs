@@ -80,15 +80,14 @@ public class CreatureEditor: MonoBehaviour,
         viewController.Refresh();
 
         InputRegistry.shared.Register(InputType.Click | InputType.Key | InputType.Touch, delegate (InputType type) {
+            InputUtils.UpdateTouches();
             selectionManager.Update(Input.mousePosition);
             HandleClicks();
             HandleKeyboardInput();
         });
-    }
-
-    void Update() {
-
-        InputUtils.UpdateTouches();
+        InputRegistry.shared.RegisterForAndroidBackButton(delegate () {
+            Application.Quit();
+        });
     }
 
     /// <summary>
@@ -293,7 +292,14 @@ public class CreatureEditor: MonoBehaviour,
                 break;
 
             case Tool.Bone:
-                creatureEdited = creatureBuilder.PlaceCurrentBone(); break;
+                var hoveringJoint = selectionManager.GetSingleSelected<Joint>();
+                if (hoveringJoint != null) {
+                    creatureEdited = creatureBuilder.PlaceCurrentBone(); 
+                } else {
+                    creatureEdited = false;
+                    creatureBuilder.CancelCurrentBone();
+                }
+                break; 
 
             case Tool.Muscle:
                 creatureEdited = creatureBuilder.PlaceCurrentMuscle(); break;
@@ -393,7 +399,13 @@ public class CreatureEditor: MonoBehaviour,
             else if (input.GetKeyDown(KeyCode.Y)) {
                 historyManager.Redo();
             }
-        } 
+        }
+
+        // TODO: DEBUG
+
+        else if (Input.GetKeyDown(KeyCode.K)) {
+            Debug.Log(historyManager.GetDebugState());   
+        }
 
         viewController.Refresh();
     }

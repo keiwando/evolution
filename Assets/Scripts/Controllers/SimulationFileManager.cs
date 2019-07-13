@@ -29,7 +29,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 				if (extension.Equals(".evol")) {
 					var encoded = file.ToUTF8String();
 					try {
-						var simulationData = SimulationSerializer.ParseSimulationData(encoded);
+						var simulationData = SimulationSerializer.ParseSimulationData(encoded, file.Name);
 						SimulationSerializer.SaveSimulation(simulationData);
 					} catch {
 						didImport = false;
@@ -108,6 +108,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 
 		var simulationData = SimulationSerializer.LoadSimulationData(filename);
 		InputRegistry.shared.Deregister();
+		InputRegistry.shared.DeregisterBackButton();
 		editor.StartSimulation(simulationData);
 	}
 

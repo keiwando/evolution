@@ -67,9 +67,9 @@ public class CreatureBuilder {
 		}
 
 		// Update the idCounter
-		int maxJointID = design.Joints.Max(data => data.id);
-		int maxBoneID = design.Bones.Max(data => data.id);
-		int maxMuscleID = design.Muscles.Max(data => data.id);
+		int maxJointID = design.Joints.Count > 0 ? design.Joints.Max(data => data.id) : 0;
+		int maxBoneID = design.Bones.Count > 0 ? design.Bones.Max(data => data.id) : 0;
+		int maxMuscleID = design.Muscles.Count > 0 ? design.Muscles.Max(data => data.id) : 0;
 		idCounter = Mathf.Max(Mathf.Max(maxJointID, maxBoneID), maxMuscleID) + 1;
 	}
 
@@ -222,6 +222,14 @@ public class CreatureBuilder {
 			return true;
 		}
 	} 
+
+	public void CancelCurrentBone() {
+
+		if (currentBone == null) return;
+
+		UnityEngine.Object.Destroy(currentBone.gameObject);
+		currentBone = null;
+	}
 
 	#endregion
 	#region Muscle Placement

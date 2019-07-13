@@ -3572,7 +3572,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &623895136
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4862,7 +4862,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &794825188
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9114,9 +9114,7 @@ MonoBehaviour:
   ShowMuscleContractionToggle: {fileID: 751526730}
   ShowMusclesToggle: {fileID: 635651342}
   slideInOutButton: {fileID: 1702680860}
-  ejectImages:
-  - {fileID: 794825189}
-  - {fileID: 623895137}
+  ejectImages: []
   muscleConcentrationCanvasGroup: {fileID: 1134569357}
 --- !u!114 &1491541442
 MonoBehaviour:
@@ -10907,7 +10905,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: -3.699997}
+  m_AnchoredPosition: {x: 0, y: -10}
   m_SizeDelta: {x: 101.54, y: 31.02}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1702680860

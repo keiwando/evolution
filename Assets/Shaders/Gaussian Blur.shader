@@ -102,4 +102,39 @@
 			ENDCG
 		}
 	}
+
+	SubShader {
+		Tags { "Queue" = "Transparent" "RenderType"="Transparent" }
+		Blend SrcAlpha OneMinusSrcAlpha
+
+		CGINCLUDE
+		#include "UnityCG.cginc"
+
+		struct vOut
+		{
+			float4 pos: POSITION;
+		};
+
+		vOut vertex (appdata_base v)
+		{
+			vOut o;
+			o.pos = UnityObjectToClipPos(v.vertex);
+			return o;
+		}
+
+		half4 frag (vOut inData) : COLOR
+		{
+			return half4(0, 0, 0, 0);
+		}
+		ENDCG
+
+		Pass {
+
+			CGPROGRAM
+			#pragma vertex vertex
+			#pragma fragment frag
+			#pragma fragmentoption ARB_precision_hint_fastest
+			ENDCG
+		}
+	}
 }

@@ -75,7 +75,7 @@ public class SimulationParserV1 {
 		settings.SimulationTime = timePerGen;
 		settings.PopulationSize = currentChromosomes.Count;
 
-		var networkSettings = new NeuralNetworkSettings();
+		var networkSettings = NeuralNetworkSettings.Default;
 		var sceneDescription = DefaultSimulationScenes.DefaultSceneForTask(settings.Task);
 
 		int lastSimulatedV2Generation = bestChromosomes.Count;

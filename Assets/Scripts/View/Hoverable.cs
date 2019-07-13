@@ -9,11 +9,11 @@ abstract public class Hoverable: MonoBehaviour {
 		set {
 			_shouldHighlight = value;
 
-			#if (UNITY_ANDROID || UNITY_IOS) 
-			if (_shouldHighlight) {
-				EnlargeHitbox();
-			}
-			#endif
+			// #if (UNITY_ANDROID || UNITY_IOS) 
+			// if (_shouldHighlight) {
+			// 	EnlargeHitbox();
+			// }
+			// #endif
 		}
 		get { return _shouldHighlight; }
 	}
@@ -32,7 +32,7 @@ abstract public class Hoverable: MonoBehaviour {
 	// private Color defaultEmissionColor;
 
 	// Mobile input adjustments
-	private const float hitBoxIncrease = 2f;
+	private const float hitBoxIncrease = 3f;
 	private float defaultColliderRadius = 0.5f; 
 	private bool isEnlarged = false;
 
@@ -47,6 +47,10 @@ abstract public class Hoverable: MonoBehaviour {
 		normalMaterial = _renderer.sharedMaterial;
 		// highlightEmissionColor = new Color(0.7132353f, 0.5433174f, 0.2884408f, 1f);
 		// defaultEmissionColor = GetComponent<Renderer>().sharedMaterial.GetColor("_EmissionColor");		
+
+		#if (UNITY_ANDROID || UNITY_IOS) 
+		EnlargeHitbox();
+		#endif
 	}
 
 	// void OnHover() {

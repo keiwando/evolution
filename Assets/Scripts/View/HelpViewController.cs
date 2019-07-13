@@ -99,11 +99,17 @@ namespace Keiwando.Evolution.UI {
 		}
 
 		public void BackButtonClicked() {
+			InputRegistry.shared.Deregister();
+			InputRegistry.shared.DeregisterBackButton();
 			this.gameObject.SetActive(false);
 		}
 
 		public void HelpButtonClicked() {
 			this.gameObject.SetActive(true);
+			InputRegistry.shared.Register(InputType.All, delegate (InputType t) {});
+			InputRegistry.shared.RegisterForAndroidBackButton(delegate () {
+				BackButtonClicked();
+			});
 		}
 
 		private HelpPages LoadHelpPagesForLanguage(Language lang, TMPro.TMP_FontAsset font) {

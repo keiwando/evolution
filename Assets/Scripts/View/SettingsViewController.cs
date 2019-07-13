@@ -57,10 +57,14 @@ namespace Keiwando.Evolution.UI {
 
         public void Show() {
             gameObject.SetActive(true);
+            InputRegistry.shared.RegisterForAndroidBackButton(delegate () {
+                Hide();
+            });
             Refresh();
         }
 
         public void Hide() {
+            InputRegistry.shared.DeregisterBackButton();
             gameObject.SetActive(false);
         }
     }

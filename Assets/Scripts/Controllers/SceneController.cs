@@ -45,6 +45,7 @@ class SceneController {
     public static void LoadSync(Scene scene) {
 
         InputRegistry.shared.DeregisterAll();
+        InputRegistry.shared.DeregisterAllBackButtonCallbacks();
         SceneManager.LoadScene(NameForScene(scene));
     }
 

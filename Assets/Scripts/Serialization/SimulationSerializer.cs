@@ -117,7 +117,7 @@ public class SimulationSerializer {
 		if (string.IsNullOrEmpty(contents))
 			throw new Exception("Invalid Simulation Data file contents - empty!");
 
-		return ParseSimulationData(contents);
+		return ParseSimulationData(contents, name);
 	}
 
 	/// <summary>

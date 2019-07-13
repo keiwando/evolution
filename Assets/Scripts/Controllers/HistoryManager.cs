@@ -54,28 +54,28 @@ public class HistoryManager<State> {
         stateProvider.SetState(state);
     }
 
-    // public string GetDebugState() {
-    //     var stringBuilder = new StringBuilder();
-    //     var tempStack = new Stack<State>();
+    public string GetDebugState() {
+        var stringBuilder = new StringBuilder();
+        var tempStack = new Stack<State>();
 
-    //     stringBuilder.AppendLine("Undo Stack:");
-    //     while (undoStack.Count > 0) {
-    //         var state = undoStack.Pop();
-    //         stringBuilder.AppendLine(state.CreatureDesign.GetDebugDescription());
-    //         tempStack.Push(state);
-    //     }
-    //     while (tempStack.Count > 0) 
-    //         undoStack.Push(tempStack.Pop());
+        stringBuilder.AppendLine("Undo Stack:");
+        while (undoStack.Count > 0) {
+            var state = undoStack.Pop();
+            stringBuilder.AppendLine((state as CreatureDesign).GetDebugDescription());
+            tempStack.Push(state);
+        }
+        while (tempStack.Count > 0) 
+            undoStack.Push(tempStack.Pop());
 
-    //     stringBuilder.AppendLine("Redo Stack:");
-    //     while (redoStack.Count > 0) {
-    //         var state = redoStack.Pop();
-    //         stringBuilder.AppendLine(state.CreatureDesign.GetDebugDescription());
-    //         tempStack.Push(state);
-    //     }
-    //     while (tempStack.Count > 0) 
-    //         redoStack.Push(tempStack.Pop());
+        stringBuilder.AppendLine("Redo Stack:");
+        while (redoStack.Count > 0) {
+            var state = redoStack.Pop();
+            stringBuilder.AppendLine((state as CreatureDesign).GetDebugDescription());
+            tempStack.Push(state);
+        }
+        while (tempStack.Count > 0) 
+            redoStack.Push(tempStack.Pop());
 
-    //     return stringBuilder.ToString();
-    // }
+        return stringBuilder.ToString();
+    }
 }

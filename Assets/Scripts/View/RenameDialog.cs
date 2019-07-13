@@ -39,6 +39,9 @@ public class RenameDialog : MonoBehaviour {
 		this.confirmCanvasGroup = confirmButton.GetComponentInChildren<CanvasGroup>();
 		KeyInputManager.shared.Register();
 		InputRegistry.shared.Register(InputType.All, delegate (InputType types) {});
+		InputRegistry.shared.RegisterForAndroidBackButton(delegate () {
+			Close();
+		});
 
 		inputField.onValidateInput += delegate (string input, int charIndex, char addedChar) {
 			if (Delegate.CanEnterCharacter(this, charIndex, addedChar)) {
@@ -65,6 +68,7 @@ public class RenameDialog : MonoBehaviour {
 		Delegate = null;
 		KeyInputManager.shared.Deregister();
 		InputRegistry.shared.Deregister();
+		InputRegistry.shared.DeregisterBackButton();
 		inputField.onValidateInput = null;
 		inputField.onValueChanged.RemoveAllListeners();
 		confirmButton.onClick.RemoveAllListeners();
