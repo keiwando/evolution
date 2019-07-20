@@ -1,9 +1,8 @@
 using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Keiwando.JSON;
 
 [Serializable]
-public struct BoneData {
+public struct BoneData: IJsonConvertible {
 
     public readonly int id;
     public readonly int startJointID;
@@ -36,18 +35,18 @@ public struct BoneData {
         return json;
     }
 
-    public static BoneData Decode(string encoded) {
+    // public static BoneData Decode(string encoded) {
 
-        var json = JObject.Parse(encoded);
-        return Decode(json);        
-    }
+    //     var json = JObject.Parse(encoded);
+    //     return Decode(json);        
+    // }
 
     public static BoneData Decode(JObject json) {
 
-        int id = json[CodingKey.ID].ToObject<int>();
-        int startID = json[CodingKey.StartJointID].ToObject<int>();
-        int endID = json[CodingKey.EndJointID].ToObject<int>();
-        float weight = json[CodingKey.Weight].ToObject<float>();
+        int id = json[CodingKey.ID].ToInt();
+        int startID = json[CodingKey.StartJointID].ToInt();
+        int endID = json[CodingKey.EndJointID].ToInt();
+        float weight = json[CodingKey.Weight].ToFloat();
 
         return new BoneData(id, startID, endID, weight);
     }

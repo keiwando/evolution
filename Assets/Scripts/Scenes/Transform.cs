@@ -1,5 +1,5 @@
 using UnityEngine;
-using Newtonsoft.Json.Linq;
+using Keiwando.JSON;
 
 namespace Keiwando.Evolution.Scenes {
 
@@ -45,13 +45,13 @@ namespace Keiwando.Evolution.Scenes {
 
         public static Transform Decode(JObject json) {
             
-            float x = json[CodingKey.X].ToObject<float>();
-            float y = json[CodingKey.Y].ToObject<float>();
-            float z = json[CodingKey.Z].ToObject<float>();
-            float rotation = json[CodingKey.Rotation].ToObject<float>();
-            float sX = json[CodingKey.ScaleX].ToObject<float>();
-            float sY = json[CodingKey.ScaleY].ToObject<float>();
-            float sZ = json[CodingKey.ScaleZ].ToObject<float>();
+            float x = json[CodingKey.X].ToFloat();
+            float y = json[CodingKey.Y].ToFloat();
+            float z = json[CodingKey.Z].ToFloat();
+            float rotation = json[CodingKey.Rotation].ToFloat();
+            float sX = json[CodingKey.ScaleX].ToFloat();
+            float sY = json[CodingKey.ScaleY].ToFloat();
+            float sZ = json[CodingKey.ScaleZ].ToFloat();
             return new Transform(
                 new Vector3(x, y, z),
                 rotation, 

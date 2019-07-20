@@ -3,11 +3,9 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Keiwando.JSON;
 
-[Serializable]
-public class CreatureDesign {
+public class CreatureDesign: IJsonConvertible {
 
     public readonly int Version = 2;
 
@@ -49,9 +47,9 @@ public class CreatureDesign {
         var json = new JObject();
 
         json[CodingKey.Name] = this.Name;
-        json[CodingKey.Joints] = JToken.FromObject(this.Joints.Select(joint => joint.Encode()).ToList());
-        json[CodingKey.Bones] = JToken.FromObject(this.Bones.Select(bone => bone.Encode()).ToList());
-        json[CodingKey.Muscles] = JToken.FromObject(this.Muscles.Select(muscle => muscle.Encode()).ToList());
+        json[CodingKey.Joints] = JArray.From(this.Joints);
+        json[CodingKey.Bones] = JArray.From(this.Bones);
+        json[CodingKey.Muscles] = JArray.From(this.Muscles);
 
         return json;
     }
@@ -67,14 +65,10 @@ public class CreatureDesign {
 
     public static CreatureDesign Decode(JObject json) {
         
-        string name = json[CodingKey.Name].ToObject<string>();
-        var encodedJoints = json[CodingKey.Joints].ToObject<List<JObject>>();
-        var encodedBones = json[CodingKey.Bones].ToObject<List<JObject>>();
-        var encodedMuscles = json[CodingKey.Muscles].ToObject<List<JObject>>();
-
-        var joints = encodedJoints.Select(jointJson => JointData.Decode(jointJson)).ToList();
-        var bones = encodedBones.Select(boneJson => BoneData.Decode(boneJson)).ToList();
-        var muscles = encodedMuscles.Select(muscleJson => MuscleData.Decode(muscleJson)).ToList();
+        string name = json[CodingKey.Name].ToString();
+        var joints = json[CodingKey.Joints].ToList(JointData.Decode);
+        var bones = json[CodingKey.Bones].ToList(BoneData.Decode);
+        var muscles = json[CodingKey.Muscles].ToList(MuscleData.Decode);
 
         return new CreatureDesign(name, joints, bones, muscles);
     }

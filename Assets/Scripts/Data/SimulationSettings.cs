@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Keiwando.Evolution;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Keiwando.JSON;
 
 public struct SimulationSettings {
 	
@@ -135,16 +131,16 @@ public struct SimulationSettings {
 
 		// if (json[CodingKey.KeepBestCreatures] == null) return settings;
 
-		settings.KeepBestCreatures = json[CodingKey.KeepBestCreatures].ToObject<bool>();
-		settings.SimulationTime = json[CodingKey.SimulationTime].ToObject<int>();
-		settings.PopulationSize = json[CodingKey.PopulationSize].ToObject<int>();
-		settings.SimulateInBatches = json[CodingKey.SimulateInBatches].ToObject<bool>();
-		settings.BatchSize = json[CodingKey.BatchSize].ToObject<int>();
-		settings.Task = (EvolutionTask)json[CodingKey.Task].ToObject<int>();
-		settings.MutationRate = json[CodingKey.MutationRate].ToObject<float>();
-		settings.SelectionAlgorithm = (SelectionAlgorithm)json[CodingKey.SelectionAlgorithm].ToObject<int>();
-		settings.RecombinationAlgorithm = (RecombinationAlgorithm)json[CodingKey.RecombinationAlgorithm].ToObject<int>();
-		settings.MutationAlgorithm = (MutationAlgorithm)json[CodingKey.MutationAlgorithm].ToObject<int>();
+		settings.KeepBestCreatures = json[CodingKey.KeepBestCreatures].ToBool();
+		settings.SimulationTime = json[CodingKey.SimulationTime].ToInt();
+		settings.PopulationSize = json[CodingKey.PopulationSize].ToInt();
+		settings.SimulateInBatches = json[CodingKey.SimulateInBatches].ToBool();
+		settings.BatchSize = json[CodingKey.BatchSize].ToInt();
+		settings.Task = (EvolutionTask)json[CodingKey.Task].ToInt();
+		settings.MutationRate = json[CodingKey.MutationRate].ToFloat();
+		settings.SelectionAlgorithm = (SelectionAlgorithm)json[CodingKey.SelectionAlgorithm].ToInt();
+		settings.RecombinationAlgorithm = (RecombinationAlgorithm)json[CodingKey.RecombinationAlgorithm].ToInt();
+		settings.MutationAlgorithm = (MutationAlgorithm)json[CodingKey.MutationAlgorithm].ToInt();
 
 		return settings;
 	}

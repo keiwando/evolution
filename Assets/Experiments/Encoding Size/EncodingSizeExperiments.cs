@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Text;
 using UnityEngine;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+
+using Keiwando.JSON;
 
 namespace Keiwando.Experiments {
 
@@ -24,7 +24,7 @@ namespace Keiwando.Experiments {
             }
 
             JObject floatJSON = new JObject();
-            floatJSON["weights"] = JArray.FromObject(weights);
+            floatJSON["weights"] = new JArray(weights);
 
             JObject stringJSON = new JObject();
             stringJSON["weights"] = builder.ToString();

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Linq;
-using Newtonsoft.Json.Linq;
+using Keiwando.JSON;
 
 [SerializeField]
-public struct NeuralNetworkSettings {
+public struct NeuralNetworkSettings: IJsonConvertible {
 
 	public static readonly int MAX_LAYERS = 10;
 	public static readonly int MAX_NODES_PER_LAYER = 100;
@@ -29,13 +29,13 @@ public struct NeuralNetworkSettings {
 	public JObject Encode() {
 
 		JObject json = new JObject();
-		json[CodingKey.NodesPerIntermediateLayer] = JToken.FromObject(this.NodesPerIntermediateLayer);
+		json[CodingKey.NodesPerIntermediateLayer] = this.NodesPerIntermediateLayer;
 		return json;
 	}
 
 	public static NeuralNetworkSettings Decode(JObject json) {
 
-		int[] nodesPerLayer = json[CodingKey.NodesPerIntermediateLayer].ToObject<int[]>();
+		int[] nodesPerLayer = json[CodingKey.NodesPerIntermediateLayer].ToIntArray();
 		return new NeuralNetworkSettings(nodesPerLayer);
 	}
 

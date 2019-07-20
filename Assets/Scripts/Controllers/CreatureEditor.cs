@@ -172,6 +172,7 @@ public class CreatureEditor: MonoBehaviour,
         DontDestroyOnLoad(containerObject);
 
         InputRegistry.shared.Deregister();
+        InputRegistry.shared.DeregisterBackButton();
         
         // Load simulation scene
         SceneController.LoadSync(SceneController.Scene.SimulationContainer);

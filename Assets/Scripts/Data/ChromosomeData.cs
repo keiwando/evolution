@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using Keiwando.JSON;
 
 namespace Keiwando.Evolution {
 
     [Serializable]
-    public struct ChromosomeData: ISelectable<ChromosomeData> {
+    public struct ChromosomeData: ISelectable<ChromosomeData>, IJsonConvertible {
 
         public readonly string Chromosome;
         public readonly CreatureStats Stats;
@@ -58,8 +58,8 @@ namespace Keiwando.Evolution {
 
         public static ChromosomeData Decode(JObject json) {
 
-            string chromosome = json[CodingKey.Chromosome].ToObject<string>();
-            var statsJSON = json[CodingKey.CreatureStats].ToObject<JObject>();
+            string chromosome = json[CodingKey.Chromosome].ToString();
+            var statsJSON = json[CodingKey.CreatureStats] as JObject;
             var stats = CreatureStats.Decode(statsJSON);
             return new ChromosomeData(chromosome, stats);
         }

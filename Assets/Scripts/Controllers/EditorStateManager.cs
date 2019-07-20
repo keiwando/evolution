@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Keiwando.Evolution;
-using Newtonsoft.Json;
+using Keiwando.JSON;
 
 public class EditorStateManager {
 

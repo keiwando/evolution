@@ -180,6 +180,7 @@ namespace Keiwando.NativeFileSO {
 
 		// MARK: - Callbacks
 
+		[AOT.MonoPInvokeCallback(typeof(AsyncCallback))]
 		private static void DidSelectPathsForOpenFileCB(bool pathsSelected, IntPtr pathsPtr, ulong length) {
 
 			if (pathsSelected) {
@@ -190,6 +191,7 @@ namespace Keiwando.NativeFileSO {
 			}
 		}
 
+		[AOT.MonoPInvokeCallback(typeof(AsyncCallback))]
 		private static void DidSelectPathsForPathsCB(bool pathsSelected, IntPtr pathsPtr, ulong length) {
 
 			if (pathsSelected) {
@@ -201,6 +203,7 @@ namespace Keiwando.NativeFileSO {
 
 		}
 
+		[AOT.MonoPInvokeCallback(typeof(AsyncCallback))]
 		private static void DidSelectPathForSaveCB(bool pathsSelected, IntPtr pathsPtr, ulong length) {
 
 			if (pathsSelected) {

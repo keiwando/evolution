@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Keiwando.Evolution;
+using Keiwando.JSON;
 
 /// <summary>
 /// The SimulationSerializer provides function for saving and loading the state of a simulation in / from a file.
@@ -57,7 +58,7 @@ public class SimulationSerializer {
 	/// <returns>The filename of the save file without the extensions</returns>
 	public static string SaveSimulation(SimulationData data) {
 
-		string contents = data.Encode().ToString(Newtonsoft.Json.Formatting.None);
+		string contents = data.Encode().ToString(Formatting.None);
 		string creatureName = data.CreatureDesign.Name;
 		string dateString = System.DateTime.Now.ToString("MMM dd, yyyy");
 		string taskString = EvolutionTaskUtil.StringRepresentation(data.Settings.Task);

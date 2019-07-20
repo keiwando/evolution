@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Keiwando.JSON;
 
 public class NeuralNetworkSettingsManager : MonoBehaviour {
 
@@ -136,7 +137,7 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 	}
 
 	private void SaveNewSettings(NeuralNetworkSettings settings) {
-		Settings.NetworkSettings = settings.Encode().ToString(Newtonsoft.Json.Formatting.None);;
+		Settings.NetworkSettings = settings.Encode().ToString(Formatting.None);;
 	}
 
 	public void Reset() {

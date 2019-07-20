@@ -1,5 +1,5 @@
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+using Keiwando.JSON;
+
 using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
@@ -35,8 +35,8 @@ namespace Keiwando.Evolution.Scenes {
 
         public static DistanceMarkerSpawner Decode(JObject json) {
             var transform = BaseStructure.DecodeTransform(json);
-            var markerDistance = json[CodingKey.MarkerDistance].ToObject<float>();
-            var angleFactor = json[CodingKey.AngleFactor].ToObject<float>();
+            var markerDistance = json[CodingKey.MarkerDistance].ToFloat();
+            var angleFactor = json[CodingKey.AngleFactor].ToFloat();
             return new DistanceMarkerSpawner(transform, markerDistance, angleFactor);
         }
 

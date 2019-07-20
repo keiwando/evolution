@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+using Keiwando.JSON;
 
 namespace Keiwando.Evolution {
 
@@ -38,8 +38,8 @@ namespace Keiwando.Evolution {
 
             JObject json = JObject.Parse(encoded);
 
-            bool gridEnabled = json[CodingKey.GridEnabled].ToObject<bool>();
-            float gridSize = json[CodingKey.GridSize].ToObject<float>();
+            bool gridEnabled = json[CodingKey.GridEnabled].ToBool();
+            float gridSize = json[CodingKey.GridSize].ToFloat();
 
             return new EditorSettings() {
                 GridEnabled = gridEnabled,

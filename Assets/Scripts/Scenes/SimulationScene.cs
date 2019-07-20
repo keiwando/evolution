@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Keiwando.JSON;
 
 namespace Keiwando.Evolution.Scenes {
 
@@ -68,7 +67,7 @@ namespace Keiwando.Evolution.Scenes {
                 structures[i] = structureContainer;
             }
 
-            sceneJSON[CodingKey.Structures] = JToken.FromObject(structures);
+            sceneJSON[CodingKey.Structures] = new JArray(structures);
             return sceneJSON;
         }
 
@@ -80,7 +79,7 @@ namespace Keiwando.Evolution.Scenes {
 
         public static SimulationScene Decode(JObject json) {
 
-            var encodedStructures = json[CodingKey.Structures].ToObject<List<JObject>>();
+            var encodedStructures = json[CodingKey.Structures].ToList();
             var structures = new IStructure[encodedStructures.Count];
             
             for (int i = 0; i < encodedStructures.Count; i++) {
@@ -91,7 +90,7 @@ namespace Keiwando.Evolution.Scenes {
                     continue;
                 }
                 var decodingFunc = registeredStructures[encodingID];
-                var encodedStructure = structureContainer[CodingKey.StructureData].ToObject<JObject>();
+                var encodedStructure = structureContainer[CodingKey.StructureData] as JObject;
                 structures[i] = decodingFunc(encodedStructure);
             }
 

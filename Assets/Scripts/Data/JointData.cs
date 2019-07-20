@@ -1,10 +1,9 @@
 using System;
 using UnityEngine;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Keiwando.JSON;
 
 [Serializable]
-public struct JointData {
+public struct JointData: IJsonConvertible {
 
     public readonly int id;
 
@@ -43,10 +42,10 @@ public struct JointData {
 
     public static JointData Decode(JObject json) {
 
-        int id = json[CodingKey.ID].ToObject<int>();
-        float x = json[CodingKey.X].ToObject<float>();
-        float y = json[CodingKey.Y].ToObject<float>();
-        float weight = json[CodingKey.Weight].ToObject<float>();
+        int id = json[CodingKey.ID].ToInt();
+        float x = json[CodingKey.X].ToFloat();
+        float y = json[CodingKey.Y].ToFloat();
+        float weight = json[CodingKey.Weight].ToFloat();
 
         return new JointData(id, new Vector2(x, y), weight);
     }

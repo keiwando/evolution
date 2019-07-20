@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using Keiwando.JSON;
 
 public class IllegalFilenameException: IOException {
 
@@ -37,7 +38,7 @@ public class CreatureSerializer {
 
 	public static void SaveCreatureDesign(CreatureDesign design) {
 		
-		var encoded = design.Encode().ToString(Newtonsoft.Json.Formatting.None);
+		var encoded = design.Encode().ToString(Formatting.None);
 		SaveCreatureDesign(design.Name, encoded, true);
 	}
 

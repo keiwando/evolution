@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Newtonsoft.Json.Linq;
+using Keiwando.JSON;
 
 public class CreatureStats {
 
@@ -81,15 +81,15 @@ public class CreatureStats {
 	public static CreatureStats Decode(JObject json) {
 		
 		return new CreatureStats() {
-			fitness = json[CodingKey.Fitness].ToObject<float>(),
-			simulationTime = json[CodingKey.SimulationTime].ToObject<int>(),
-			horizontalDistanceTravelled = json[CodingKey.HorizontalDistance].ToObject<float>(),
-			verticalDistanceTravelled = json[CodingKey.VerticalDistance].ToObject<float>(),
-			maxJumpingHeight = json[CodingKey.MaxJumpHeight].ToObject<float>(),
-			weight = json[CodingKey.Weight].ToObject<float>(),
-			numberOfBones = json[CodingKey.NumberOfBones].ToObject<int>(),
-			numberOfMuscles = json[CodingKey.NumberOfMuscles].ToObject<int>(),
-			averageSpeed = json[CodingKey.AverageSpeed].ToObject<float>()
+			fitness = json[CodingKey.Fitness].ToFloat(),
+			simulationTime = json[CodingKey.SimulationTime].ToInt(),
+			horizontalDistanceTravelled = json[CodingKey.HorizontalDistance].ToFloat(),
+			verticalDistanceTravelled = json[CodingKey.VerticalDistance].ToFloat(),
+			maxJumpingHeight = json[CodingKey.MaxJumpHeight].ToFloat(),
+			weight = json[CodingKey.Weight].ToFloat(),
+			numberOfBones = json[CodingKey.NumberOfBones].ToInt(),
+			numberOfMuscles = json[CodingKey.NumberOfMuscles].ToInt(),
+			averageSpeed = json[CodingKey.AverageSpeed].ToFloat()
 		};
 	}
 

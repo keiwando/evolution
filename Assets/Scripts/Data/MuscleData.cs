@@ -1,9 +1,8 @@
 using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Keiwando.JSON;
 
 [Serializable]
-public struct MuscleData {
+public struct MuscleData: IJsonConvertible {
 
     public readonly int id;
     public readonly int startBoneID;
@@ -48,11 +47,11 @@ public struct MuscleData {
 
     public static MuscleData Decode(JObject json) {
 
-        int id = json[CodingKey.ID].ToObject<int>();
-        int startID = json[CodingKey.StartBoneID].ToObject<int>();
-        int endID = json[CodingKey.EndBoneID].ToObject<int>();
-        float strength = json[CodingKey.Strength].ToObject<float>();
-        bool canExpand = json[CodingKey.CanExpand].ToObject<bool>();
+        int id = json[CodingKey.ID].ToInt();
+        int startID = json[CodingKey.StartBoneID].ToInt();
+        int endID = json[CodingKey.EndBoneID].ToInt();
+        float strength = json[CodingKey.Strength].ToInt();
+        bool canExpand = json[CodingKey.CanExpand].ToBool();
 
         return new MuscleData(id, startID, endID, strength, canExpand);
     }
