@@ -195,12 +195,12 @@ public class SimulationSerializer {
 		CreateSaveFolder();
 
 		var names = new [] {
-			"FROGGER - RUNNING - Default - Gen(70).evol"	
+			"FROGGER - RUNNING - Default - Gen(70)"	
 		};
 
 		foreach (var name in names) {
 
-			var savePath = GetSavePathForFile(name);
+			var savePath = GetSavePathForFile(name + ".evol");
 
 			if (!System.IO.File.Exists(savePath)) {
 				var loadPath = Path.Combine("DefaultSaves", name);

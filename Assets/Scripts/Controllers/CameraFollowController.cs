@@ -49,7 +49,7 @@ namespace Keiwando.Evolution {
 			float hiddenOpacity = Settings.HiddenCreatureOpacity;
 
 			var batch = evolution.CurrentCreatureBatch;
-			if (batch == null) { return; }
+			if (batch == null || batch.Length == 0) { return; }
 
 			bool showContraction = Settings.ShowMuscleContraction;
 
