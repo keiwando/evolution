@@ -787,7 +787,7 @@ PlayerSettings:
     iOS: 2
   scriptingBackend:
     Android: 0
-    Standalone: 1
+    Standalone: 0
     WebGL: 1
     WebPlayer: 0
     iOS: 1
