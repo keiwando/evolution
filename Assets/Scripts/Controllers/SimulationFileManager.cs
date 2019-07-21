@@ -136,7 +136,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 		var name = filenames[selectedIndex];
 		string path = SimulationSerializer.PathToSimulationSave(name);
 
-		FileToSave file = new FileToSave(path, SupportedFileType.PlainText);
+		FileToSave file = new FileToSave(path, CustomEvolutionFileType.evol);
 
 		NativeFileSO.shared.SaveFile(file);
 	}
