@@ -213,6 +213,7 @@ MonoBehaviour:
   autosaveToggle: {fileID: 1500397759}
   saveButton: {fileID: 321432587}
   successfulSaveLabel: {fileID: 1664378893}
+  recordingIndicator: {fileID: 0}
   backButton: {fileID: 1659588229}
 --- !u!1 &34495178
 GameObject:
@@ -7920,8 +7921,8 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 4067a17ed2a8343958e3c88d89aaf4ee, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: de998bae6cf2f4fba9e253c9f7143ae5, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -9900,8 +9901,8 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 4067a17ed2a8343958e3c88d89aaf4ee, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: de998bae6cf2f4fba9e253c9f7143ae5, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
