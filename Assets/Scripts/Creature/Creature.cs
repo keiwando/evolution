@@ -55,6 +55,8 @@ public class Creature : MonoBehaviour {
 
 	private float maxJumpingHeight;
 
+	public bool usesLegacyRotationCalculation { get; set; } = false;
+
 	//private Vector3 currentLowest;
 
 	//public bool DEBUG = false;
@@ -157,10 +159,15 @@ public class Creature : MonoBehaviour {
 			var bone = bones[i];
 
 			angularVelZ += bone.Body.angularVelocity.z;
-			// Not actually the rotation value I originally wanted to have 
-			// but I have to keep this for the sake of not breaking existing
-			// creature behaviour
-			rotationZ += bone.transform.rotation.z;
+
+			if (usesLegacyRotationCalculation) {
+				// Not actually the rotation value I originally wanted to have 
+				// but I have to keep this for the sake of not breaking legacy
+				// creature behaviour
+				rotationZ += bone.transform.rotation.z;
+			} else {
+				rotationZ += (bone.transform.rotation.eulerAngles.z - 180f) * 0.002778f;
+			}
 		}
 
 		var distFromFloor = minJointY;
@@ -292,7 +299,11 @@ public class Creature : MonoBehaviour {
 
 		var boneCount = bones.Count;
 		for (int i = 0; i < boneCount; i++) {
-			rotation += bones[i].transform.rotation.z;
+			if (usesLegacyRotationCalculation) {
+				rotation += bones[i].transform.rotation.z;
+			} else {
+				rotation += (bones[i].transform.rotation.eulerAngles.z - 180f) * 0.002778f;
+			}
 		}
 			
 		return rotation / boneCount;
@@ -407,6 +418,7 @@ public class Creature : MonoBehaviour {
 			muscle.gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
 		}
 
+		if (gameObject == null) return;
 		gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
 	}
 

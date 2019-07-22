@@ -99,7 +99,8 @@ namespace Keiwando.Evolution {
 				this.evolution.SimulationData.CreatureDesign,
 				1,
 				this.evolution.SimulationData.SceneDescription,
-				SceneController.SimulationSceneType.BestCreatures
+				SceneController.SimulationSceneType.BestCreatures,
+				evolution.SimulationData.LastV2SimulatedGeneration > 0
 			);
 			var context = new SceneController.SimulationSceneLoadContext();
 			var sceneContext = new PlaybackSceneContext(this.evolution.SimulationData, this);

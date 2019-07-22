@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Keiwando.Evolution.Scenes;
+using Keiwando.Evolution;
 
 public class RaycastExperiments: MonoBehaviour {
 
@@ -22,7 +23,8 @@ public class RaycastExperiments: MonoBehaviour {
             new CreatureDesign("Unnamed", joints, new List<BoneData>(), new List<MuscleData>()),
             1,
             DefaultSimulationScenes.DefaultSceneForTask(EvolutionTask.Running),
-            SceneController.SimulationSceneType.Simulation
+            SceneController.SimulationSceneType.Simulation,
+            false
         );
         var context = new SceneController.SimulationSceneLoadContext();
 

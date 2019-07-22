@@ -35,12 +35,6 @@ public struct BoneData: IJsonConvertible {
         return json;
     }
 
-    // public static BoneData Decode(string encoded) {
-
-    //     var json = JObject.Parse(encoded);
-    //     return Decode(json);        
-    // }
-
     public static BoneData Decode(JObject json) {
 
         int id = json[CodingKey.ID].ToInt();

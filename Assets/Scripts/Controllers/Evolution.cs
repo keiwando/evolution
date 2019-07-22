@@ -188,7 +188,8 @@ namespace Keiwando.Evolution {
 					this.SimulationData.CreatureDesign,
 					currentBatchSize,
 					this.SimulationData.SceneDescription,
-					SceneController.SimulationSceneType.Simulation
+					SceneController.SimulationSceneType.Simulation,
+					SimulationData.LastV2SimulatedGeneration > 0
 				);
 
 				var context = new SceneController.SimulationSceneLoadContext();
