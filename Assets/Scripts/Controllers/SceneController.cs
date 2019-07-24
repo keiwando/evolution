@@ -22,22 +22,22 @@ namespace Keiwando.Evolution {
 
             public readonly CreatureDesign CreatureDesign;
             public readonly int CreatureSpawnCount;
-            public readonly SimulationScene SceneDescription;
+            public readonly SimulationSceneDescription SceneDescription;
             public readonly SimulationSceneType SceneType;
-            public readonly bool IsLegacySimulation;
+            public readonly LegacySimulationOptions LegacyOptions;
 
             public SimulationSceneLoadConfig(
                 CreatureDesign design,
                 int spawnCount,
-                SimulationScene sceneDescription,
+                SimulationSceneDescription sceneDescription,
                 SimulationSceneType sceneType,
-                bool isLegacySimulation
+                LegacySimulationOptions legacyOptions
             ) {
                 this.CreatureDesign = design;
                 this.CreatureSpawnCount = spawnCount;
                 this.SceneDescription = sceneDescription;
                 this.SceneType = sceneType;
-                this.IsLegacySimulation = isLegacySimulation;
+                this.LegacyOptions = legacyOptions;
             }
         }
 
@@ -96,7 +96,7 @@ namespace Keiwando.Evolution {
                 config.CreatureDesign, 
                 config.CreatureSpawnCount,
                 context.PhysicsScene,
-                config.IsLegacySimulation
+                config.LegacyOptions
             );
             var creatures = sceneSetup.SpawnBatch(spawnOptions);
             SceneManager.SetActiveScene(prevActiveScene);

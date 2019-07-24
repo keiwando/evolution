@@ -213,7 +213,6 @@ MonoBehaviour:
   autosaveToggle: {fileID: 1500397759}
   saveButton: {fileID: 321432587}
   successfulSaveLabel: {fileID: 1664378893}
-  recordingIndicator: {fileID: 0}
   backButton: {fileID: 1659588229}
 --- !u!1 &34495178
 GameObject:
@@ -3898,7 +3897,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &672691275
 Transform:
   m_ObjectHideFlags: 0
@@ -11306,6 +11305,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Ground
       objectReference: {fileID: 0}
+    - target: {fileID: 1407237259275536, guid: aa74b33b832b64838878d4a238e3e9ae, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4385827599941730, guid: aa74b33b832b64838878d4a238e3e9ae, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.476771
@@ -12670,6 +12673,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Distance Markers
       objectReference: {fileID: 0}
+    - target: {fileID: 5575713654964952053, guid: 812f86a30df644461891a1792f701b8f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5575713654964952050, guid: 812f86a30df644461891a1792f701b8f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -12743,6 +12751,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Ground
+      objectReference: {fileID: 0}
+    - target: {fileID: 7590732895987388326, guid: 11f84acc4a38043dc94c656bd7de34ef,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7592181000661328596, guid: 11f84acc4a38043dc94c656bd7de34ef,
         type: 3}

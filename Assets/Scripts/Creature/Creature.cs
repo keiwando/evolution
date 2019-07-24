@@ -194,8 +194,6 @@ public class Creature : MonoBehaviour {
 			return hit.distance;
 		}
 
-		// Debug.Log(hit.distance);
-
 		return 0f;
 	}
 

@@ -30,7 +30,7 @@ public class CameraFollowScript : MonoBehaviour {
 		Vector3 newPos = transform.position;
 		newPos.x = toFollow.GetXPosition();
 
-		if (DiagonalLock) {
+		if (true || DiagonalLock) {
 			newPos.y = (newPos.x - startPos.x) + startPos.y;
 		}
 

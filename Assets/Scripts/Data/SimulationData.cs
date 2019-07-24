@@ -15,7 +15,7 @@ namespace Keiwando.Evolution {
         public SimulationSettings Settings { get; set; }
         public NeuralNetworkSettings NetworkSettings { get; set; }
         public CreatureDesign CreatureDesign { get; set; }
-        public SimulationScene SceneDescription { get; set; }
+        public SimulationSceneDescription SceneDescription { get; set; }
 
         public List<ChromosomeData> BestCreatures { get; set; }
         public string[] CurrentChromosomes { get; set; }
@@ -26,7 +26,7 @@ namespace Keiwando.Evolution {
             SimulationSettings settings, 
             NeuralNetworkSettings networkSettings, 
             CreatureDesign design, 
-            SimulationScene sceneDescription
+            SimulationSceneDescription sceneDescription
         ) {
             this.Settings = settings;
             this.NetworkSettings = networkSettings;
@@ -41,7 +41,7 @@ namespace Keiwando.Evolution {
             SimulationSettings settings, 
             NeuralNetworkSettings networkSettings, 
             CreatureDesign design,
-            SimulationScene sceneDescription,
+            SimulationSceneDescription sceneDescription,
             List<ChromosomeData> bestCreatures, 
             string[] currentChromosomes,
             int lastV2SimulatedGeneration = 0
@@ -90,7 +90,7 @@ namespace Keiwando.Evolution {
                 json[CodingKey.Settings].Decode(SimulationSettings.Decode),
                 json[CodingKey.NetworkSettings].Decode(NeuralNetworkSettings.Decode),
                 json[CodingKey.CreatureDesign].Decode(CreatureDesign.Decode),
-                json[CodingKey.SceneDescription].Decode(SimulationScene.Decode),
+                json[CodingKey.SceneDescription].Decode(SimulationSceneDescription.Decode),
                 json[CodingKey.BestCreatures].ToList(ChromosomeData.Decode),
                 json[CodingKey.CurrentChromosomes].ToStringArray(),
                 json[CodingKey.LastV2SimulatedGeneration].ToInt()

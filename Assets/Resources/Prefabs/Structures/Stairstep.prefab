@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 8507221663071081462}
   - component: {fileID: 8507221663071081463}
   - component: {fileID: 8507221663071081456}
-  m_Layer: 0
-  m_Name: Step
+  m_Layer: 9
+  m_Name: Stairstep
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

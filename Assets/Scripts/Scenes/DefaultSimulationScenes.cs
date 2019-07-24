@@ -5,12 +5,12 @@ namespace Keiwando.Evolution.Scenes {
 
     public static class DefaultSimulationScenes {
 
-        public static readonly SimulationScene RunningScene = CreateRunningScene();
-        public static readonly SimulationScene JumpingScene = CreateJumpingScene();
-        public static readonly SimulationScene ObstacleJumpScene = CreateObstacleJumpScene();
-        public static readonly SimulationScene ClimbingScene = CreateClimbingScene();
+        public static readonly SimulationSceneDescription RunningScene = CreateRunningScene();
+        public static readonly SimulationSceneDescription JumpingScene = CreateJumpingScene();
+        public static readonly SimulationSceneDescription ObstacleJumpScene = CreateObstacleJumpScene();
+        public static readonly SimulationSceneDescription ClimbingScene = CreateClimbingScene();
 
-        public static SimulationScene DefaultSceneForTask(EvolutionTask task) {
+        public static SimulationSceneDescription DefaultSceneForTask(EvolutionTask task) {
             switch (task) {
             case EvolutionTask.Running: return RunningScene;
             case EvolutionTask.Jumping: return JumpingScene;
@@ -20,7 +20,7 @@ namespace Keiwando.Evolution.Scenes {
             }
         }
 
-        private static SimulationScene CreateRunningScene() {
+        private static SimulationSceneDescription CreateRunningScene() {
             
             var groundPos = new Vector3(0.476771f, -4.8f, -2.61f);
             var groundScale = new Vector3(1000000f, 9.56f, 29.8f);
@@ -34,12 +34,12 @@ namespace Keiwando.Evolution.Scenes {
 
             // var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
 
-            return new SimulationScene() {
+            return new SimulationSceneDescription() {
                 Structures = new IStructure[] { ground, distanceMarkerSpawner }
             };
         }
 
-        private static SimulationScene CreateJumpingScene() {
+        private static SimulationSceneDescription CreateJumpingScene() {
            
             var groundPos = new Vector3(0.476771f, -4.8f, -2.61f);
             var groundScale = new Vector3(1000000f, 9.56f, 29.8f);
@@ -52,12 +52,12 @@ namespace Keiwando.Evolution.Scenes {
 
             // var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
 
-            return new SimulationScene() {
+            return new SimulationSceneDescription() {
                 Structures = new IStructure[] { ground, distanceMarkerSpawner }
             };
         }
 
-        private static SimulationScene CreateObstacleJumpScene() {
+        private static SimulationSceneDescription CreateObstacleJumpScene() {
 
             var groundPos = new Vector3(0.476771f, -4.8f, -2.61f);
             var groundScale = new Vector3(1000000f, 9.56f, 29.8f);
@@ -76,12 +76,12 @@ namespace Keiwando.Evolution.Scenes {
 
             // var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
 
-            return new SimulationScene() {
+            return new SimulationSceneDescription() {
                 Structures = new IStructure[] { ground, leftWall, rightWall, obstacleSpawner }
             };
         }
 
-        private static SimulationScene CreateClimbingScene() {
+        private static SimulationSceneDescription CreateClimbingScene() {
 
             int stepCount = 4000;
             var structures = new IStructure[stepCount + 2];
@@ -99,7 +99,7 @@ namespace Keiwando.Evolution.Scenes {
             structures[1] = distanceMarkerSpawner;
             
             var spawnPosition = new Vector3(0.46f, 0.99243f, -1.8f);
-            var stepDistance = 0.5f;
+            var stepDistance = 1.5f;
             var spawnDistance = new Vector3(stepDistance, Mathf.Sin(Mathf.PI / 2) * stepDistance, 0);
             var stepScale = new Vector3(3f, 3f, 30f);
 
@@ -111,7 +111,7 @@ namespace Keiwando.Evolution.Scenes {
 
             // var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
 
-            return new SimulationScene() {
+            return new SimulationSceneDescription() {
                 Structures = structures
             };
         }

@@ -24,7 +24,7 @@ public class RaycastExperiments: MonoBehaviour {
             1,
             DefaultSimulationScenes.DefaultSceneForTask(EvolutionTask.Running),
             SceneController.SimulationSceneType.Simulation,
-            false
+            new LegacySimulationOptions()
         );
         var context = new SceneController.SimulationSceneLoadContext();
 

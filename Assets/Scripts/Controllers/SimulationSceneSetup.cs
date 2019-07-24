@@ -7,22 +7,22 @@ namespace Keiwando.Evolution {
         public readonly CreatureDesign Design;
         public readonly int BatchSize;
         public readonly PhysicsScene PhysicsScene;
-        public readonly bool IsLegacySimulation;
+        public readonly LegacySimulationOptions legacyOptions;
 
         public SimulationSpawnConfig(
             CreatureDesign design, int batchSize, 
-            PhysicsScene physicsScene, bool IsLegacySimulation
+            PhysicsScene physicsScene, LegacySimulationOptions legacyOptions
         ) {
             this.Design = design; 
             this.BatchSize = batchSize;
             this.PhysicsScene = physicsScene;
-            this.IsLegacySimulation = IsLegacySimulation;
+            this.legacyOptions = legacyOptions;
         }
     }
 
     public class SimulationSceneSetup: MonoBehaviour {
 
-        public void BuildScene(SimulationScene scene, ISceneContext context) {
+        public void BuildScene(SimulationSceneDescription scene, ISceneContext context) {
             SimulationSceneBuilder.Build(scene, context);
         }
 
@@ -45,8 +45,11 @@ namespace Keiwando.Evolution {
             float distanceFromGround = template.DistanceFromGround();
             float padding = 0.5f;
             var spawnPosition = template.transform.position;
-            spawnPosition.y -= distanceFromGround - padding;
-            spawnPosition.y += safeHeightOffset;
+            if (!options.legacyOptions.LegacyClimbingDropCalculation) {
+                spawnPosition.y -= distanceFromGround;   
+                spawnPosition.y += safeHeightOffset;
+            }
+            spawnPosition.y += padding;
 
             var batch = new Creature[options.BatchSize];        
             for (int i = 0; i < options.BatchSize; i++) {
@@ -54,7 +57,7 @@ namespace Keiwando.Evolution {
                 var builder = new CreatureBuilder(options.Design);
                 batch[i] = builder.Build();
                 batch[i].transform.position = spawnPosition;
-                batch[i].usesLegacyRotationCalculation = options.IsLegacySimulation;
+                batch[i].usesLegacyRotationCalculation = options.legacyOptions.LegacyRotationCalculation;
                 // batch[i].usesLegacyRotationCalculation = true;
                 // SetupCreature(batch[i], physicsScene);
 
@@ -68,14 +71,6 @@ namespace Keiwando.Evolution {
             Destroy(this.gameObject);
             return batch;
         }
-
-        // private void SetupCreature(Creature creature, PhysicsScene physicsScene) {
-
-        //     creature.PhysicsScene = physicsScene;
-        //     creature.RemoveMuscleColliders();
-        // 	creature.Alive = false;
-        //     creature.gameObject.SetActive(true);
-        // }
     }
 }
 

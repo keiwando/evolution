@@ -12,7 +12,7 @@ namespace Keiwando.Evolution.Scenes {
         }
     }
 
-    public class SimulationScene {
+    public class SimulationSceneDescription {
 
         public delegate IStructure DecodeStructure(JObject encoded);
 
@@ -26,7 +26,7 @@ namespace Keiwando.Evolution.Scenes {
             registeredStructures[encodingID] = decode;
         }
 
-        static SimulationScene() {
+        static SimulationSceneDescription() {
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
                 foreach (Type type in assembly.GetTypes()) {
                     var attributes = type.GetCustomAttributes(typeof(RegisterInSceneAttribute), true);
@@ -71,13 +71,13 @@ namespace Keiwando.Evolution.Scenes {
             return sceneJSON;
         }
 
-        public static SimulationScene Decode(string encoded) {
+        public static SimulationSceneDescription Decode(string encoded) {
 
             JObject json = JObject.Parse(encoded);
             return Decode(json);
         }
 
-        public static SimulationScene Decode(JObject json) {
+        public static SimulationSceneDescription Decode(JObject json) {
 
             var encodedStructures = json[CodingKey.Structures].ToList();
             var structures = new IStructure[encodedStructures.Count];
@@ -94,7 +94,7 @@ namespace Keiwando.Evolution.Scenes {
                 structures[i] = decodingFunc(encodedStructure);
             }
 
-            return new SimulationScene() {
+            return new SimulationSceneDescription() {
                 Structures = structures
             };
         }

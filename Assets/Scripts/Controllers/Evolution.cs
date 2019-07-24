@@ -189,7 +189,7 @@ namespace Keiwando.Evolution {
 					currentBatchSize,
 					this.SimulationData.SceneDescription,
 					SceneController.SimulationSceneType.Simulation,
-					SimulationData.LastV2SimulatedGeneration > 0
+					GetLegacySimulationOptions()
 				);
 
 				var context = new SceneController.SimulationSceneLoadContext();
@@ -417,6 +417,16 @@ namespace Keiwando.Evolution {
 			// foreach (var creature in currentGeneration) {
 			// 	creature.Obstacle = obstacle;
 			// }
+		}
+
+		public LegacySimulationOptions GetLegacySimulationOptions() {
+			if (SimulationData.LastV2SimulatedGeneration > 0) {
+				return new LegacySimulationOptions() {
+					LegacyRotationCalculation = true,
+					LegacyClimbingDropCalculation = SimulationData.Settings.Task == EvolutionTask.Climbing
+				};
+			}
+			return new LegacySimulationOptions();
 		}
 
 		public string SaveSimulation() {
