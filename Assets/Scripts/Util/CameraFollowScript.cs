@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-/** Has to be attached to a camera. */
+[RequireComponent(typeof(Camera))]
 public class CameraFollowScript : MonoBehaviour {
 
 	public RenderTexture renderTexture;
@@ -11,18 +11,12 @@ public class CameraFollowScript : MonoBehaviour {
 
 	public bool DiagonalLock = false;
 
-	new private Camera camera;
-
 	private Vector3 startPos;
 
-	// Use this for initialization
 	void Start () {
-
-		camera = GetComponent<Camera>();
-		startPos = camera.transform.position;
+		startPos = transform.position;
 	}
 
-	// Update is called once per frame
 	void Update () {
 
 		if (toFollow == null) return;

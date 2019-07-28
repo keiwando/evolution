@@ -96,7 +96,8 @@ namespace Keiwando.Evolution {
                 config.CreatureDesign, 
                 config.CreatureSpawnCount,
                 context.PhysicsScene,
-                config.LegacyOptions
+                config.LegacyOptions,
+                config.SceneDescription
             );
             var creatures = sceneSetup.SpawnBatch(spawnOptions);
             SceneManager.SetActiveScene(prevActiveScene);

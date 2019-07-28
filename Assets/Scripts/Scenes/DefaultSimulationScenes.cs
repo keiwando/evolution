@@ -32,10 +32,13 @@ namespace Keiwando.Evolution.Scenes {
                 5f
             );
 
-            // var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
-
-            return new SimulationSceneDescription() {
-                Structures = new IStructure[] { ground, distanceMarkerSpawner }
+            return new SimulationSceneDescription {
+                Version = 1,
+                Structures = new IStructure[] { ground, distanceMarkerSpawner },
+                DropHeight = 0.5f,
+                CameraControlPoints = new [] {
+                    new CameraControlPoint(0, 0, 0.5f), new CameraControlPoint(1, 0, 0.5f)
+                }
             };
         }
 
@@ -50,10 +53,13 @@ namespace Keiwando.Evolution.Scenes {
                 new Transform(new Vector3(-0.45f, 1.63f, 0), 90f)
             );
 
-            // var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
-
-            return new SimulationSceneDescription() {
-                Structures = new IStructure[] { ground, distanceMarkerSpawner }
+            return new SimulationSceneDescription {
+                Version = 1,
+                Structures = new IStructure[] { ground, distanceMarkerSpawner },
+                DropHeight = 0.5f,
+                CameraControlPoints = new [] {
+                    new CameraControlPoint(0, 0, 0.5f), new CameraControlPoint(1, 0, 0.5f)
+                }
             };
         }
 
@@ -74,10 +80,13 @@ namespace Keiwando.Evolution.Scenes {
             var obstacleSpawnerPos = new Vector3(31.1f, 4.41f, 0f);
             var obstacleSpawner = new RollingObstacleSpawner(new Transform(obstacleSpawnerPos, 180f));
 
-            // var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
-
-            return new SimulationSceneDescription() {
-                Structures = new IStructure[] { ground, leftWall, rightWall, obstacleSpawner }
+            return new SimulationSceneDescription {
+                Version = 1,
+                Structures = new IStructure[] { ground, leftWall, rightWall, obstacleSpawner },
+                DropHeight = 0.5f,
+                CameraControlPoints = new [] {
+                    new CameraControlPoint(0, 0, 0.5f), new CameraControlPoint(1, 0, 0.5f)
+                }
             };
         }
 
@@ -109,10 +118,13 @@ namespace Keiwando.Evolution.Scenes {
                 structures[i + 2] = new Stairstep(new Transform(spawnPosition, -16f, stepScale));
             }
 
-            // var spawnPoint = new Vector3(0.476771f, -4.299f, -2.5224161f);
-
-            return new SimulationSceneDescription() {
-                Structures = structures
+            return new SimulationSceneDescription {
+                Version = 1,
+                Structures = structures,
+                DropHeight = 0.5f,
+                CameraControlPoints = new [] {
+                    new CameraControlPoint(0, 0, 0.5f), new CameraControlPoint(1, 1, 0.5f)
+                }
             };
         }
     }

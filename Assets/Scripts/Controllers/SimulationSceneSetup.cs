@@ -7,16 +7,19 @@ namespace Keiwando.Evolution {
         public readonly CreatureDesign Design;
         public readonly int BatchSize;
         public readonly PhysicsScene PhysicsScene;
-        public readonly LegacySimulationOptions legacyOptions;
+        public readonly SimulationSceneDescription SceneDescription;
+        public readonly LegacySimulationOptions LegacyOptions;
 
         public SimulationSpawnConfig(
             CreatureDesign design, int batchSize, 
-            PhysicsScene physicsScene, LegacySimulationOptions legacyOptions
+            PhysicsScene physicsScene, LegacySimulationOptions legacyOptions,
+            SimulationSceneDescription sceneDescription
         ) {
             this.Design = design; 
             this.BatchSize = batchSize;
             this.PhysicsScene = physicsScene;
-            this.legacyOptions = legacyOptions;
+            this.LegacyOptions = legacyOptions;
+            this.SceneDescription = sceneDescription;
         }
     }
 
@@ -24,6 +27,7 @@ namespace Keiwando.Evolution {
 
         public void BuildScene(SimulationSceneDescription scene, ISceneContext context) {
             SimulationSceneBuilder.Build(scene, context);
+            SetupPhysics(scene.PhysicsConfiguration);
         }
 
         public Creature[] SpawnBatch(SimulationSpawnConfig options) {
@@ -43,13 +47,14 @@ namespace Keiwando.Evolution {
 
             // Calculate the drop height
             float distanceFromGround = template.DistanceFromGround();
-            float padding = 0.5f;
             var spawnPosition = template.transform.position;
-            if (!options.legacyOptions.LegacyClimbingDropCalculation) {
+            if (options.LegacyOptions.LegacyClimbingDropCalculation) {
+                spawnPosition.y += 0.5f;    
+            } else {
                 spawnPosition.y -= distanceFromGround;   
                 spawnPosition.y += safeHeightOffset;
+                spawnPosition.y += options.SceneDescription.DropHeight;
             }
-            spawnPosition.y += padding;
 
             var batch = new Creature[options.BatchSize];        
             for (int i = 0; i < options.BatchSize; i++) {
@@ -57,7 +62,7 @@ namespace Keiwando.Evolution {
                 var builder = new CreatureBuilder(options.Design);
                 batch[i] = builder.Build();
                 batch[i].transform.position = spawnPosition;
-                batch[i].usesLegacyRotationCalculation = options.legacyOptions.LegacyRotationCalculation;
+                batch[i].usesLegacyRotationCalculation = options.LegacyOptions.LegacyRotationCalculation;
                 // batch[i].usesLegacyRotationCalculation = true;
                 // SetupCreature(batch[i], physicsScene);
 
@@ -70,6 +75,19 @@ namespace Keiwando.Evolution {
             template.gameObject.SetActive(false);
             Destroy(this.gameObject);
             return batch;
+        }
+
+        private void SetupPhysics(ScenePhysicsConfiguration config) {
+            var gravity = Physics.gravity;
+            gravity.y = config.Gravity;
+            Physics.gravity = gravity;
+            Physics.bounceThreshold = config.BounceThreshold;
+            Physics.sleepThreshold = config.SleepThreshold;
+            Physics.defaultContactOffset = config.DefaultContactOffset;
+            Physics.defaultSolverIterations = config.DefaultSolverIterations;
+            Physics.defaultSolverVelocityIterations = config.DefaultSolverVelocityIterations;
+            Physics.queriesHitBackfaces = config.QueriesHitBackfaces;
+            Physics.queriesHitTriggers = config.QueriesHitTriggers;
         }
     }
 }

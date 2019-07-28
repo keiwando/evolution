@@ -14,6 +14,32 @@ namespace Keiwando.Evolution.Scenes {
 
     public class SimulationSceneDescription {
 
+        public const int LATEST_VERSION = 1;
+
+        public int Version = LATEST_VERSION;
+        public IStructure[] Structures = new IStructure[0];
+        public float DropHeight = 0.5f;
+        public ScenePhysicsConfiguration PhysicsConfiguration = new ScenePhysicsConfiguration();
+        public CameraControlPoint[] CameraControlPoints = new [] { 
+            new CameraControlPoint(0, 0, 0.5f), new CameraControlPoint(0, 0, 0.5f)    
+        };
+
+        public SimulationSceneDescription() {}
+        
+        public SimulationSceneDescription(
+            int version, IStructure[] structures, float dropHeight, 
+            ScenePhysicsConfiguration physicsConfiguration,
+            CameraControlPoint[] controlPoints
+        ) {
+            this.Version = version;
+            this.Structures = structures;
+            this.DropHeight = dropHeight;
+            this.PhysicsConfiguration = physicsConfiguration;
+            this.CameraControlPoints = controlPoints;
+        }
+
+        #region Encode & Decode
+
         public delegate IStructure DecodeStructure(JObject encoded);
 
         private static Dictionary<string, DecodeStructure> registeredStructures 
@@ -45,20 +71,32 @@ namespace Keiwando.Evolution.Scenes {
             }
         }
 
-        public IStructure[] Structures;
-
-        #region Encode & Decode
-
         private static class CodingKey {
             public const string Structures = "structures";
             public const string EncodingID = "encodingID";
             public const string StructureData = "structureData";
+            public const string Version = "version";
+            public const string DropHeight = "dropHeight";
+            public const string PhysicsConfig = "physicsConfiguration";
+            public const string CameraControlPoints = "cameraControlPoints";
         }
 
         public JObject Encode() {
 
-            var sceneJSON = new JObject();
-
+            var json = new JObject();
+            // Version
+            json[CodingKey.Version] = this.Version;
+            // Camera Control Points
+            var controlPoints = new JObject[this.CameraControlPoints.Length];
+            for (int i = 0; i < controlPoints.Length; i++) {
+                controlPoints[i] = this.CameraControlPoints[i].Encode();
+            }
+            json[CodingKey.CameraControlPoints] = new JArray(controlPoints);
+            // Drop Height
+            json[CodingKey.DropHeight] = this.DropHeight;
+            // Physics Configuration
+            json[CodingKey.PhysicsConfig] = this.PhysicsConfiguration.Encode();
+            // Structures
             var structures = new JObject[Structures.Length];
             for (int i = 0; i < structures.Length; i++) {
                 var structureContainer = new JObject();
@@ -66,9 +104,9 @@ namespace Keiwando.Evolution.Scenes {
                 structureContainer[CodingKey.StructureData] = Structures[i].Encode();
                 structures[i] = structureContainer;
             }
+            json[CodingKey.Structures] = new JArray(structures);
 
-            sceneJSON[CodingKey.Structures] = new JArray(structures);
-            return sceneJSON;
+            return json;
         }
 
         public static SimulationSceneDescription Decode(string encoded) {
@@ -79,6 +117,15 @@ namespace Keiwando.Evolution.Scenes {
 
         public static SimulationSceneDescription Decode(JObject json) {
 
+            // Version
+            int version = json[CodingKey.Version].ToInt();
+            // Camera Control Points
+            var controlPoints = json[CodingKey.CameraControlPoints].ToArray(CameraControlPoint.Decode);
+            // Drop Height
+            var dropHeight = json[CodingKey.DropHeight].ToFloat();
+            // Physics Config
+            var physicsConfig = ScenePhysicsConfiguration.Decode(json.ObjectForKey(CodingKey.PhysicsConfig));
+            // Structures
             var encodedStructures = json[CodingKey.Structures].ToList();
             var structures = new IStructure[encodedStructures.Count];
             
@@ -94,9 +141,7 @@ namespace Keiwando.Evolution.Scenes {
                 structures[i] = decodingFunc(encodedStructure);
             }
 
-            return new SimulationSceneDescription() {
-                Structures = structures
-            };
+            return new SimulationSceneDescription(version, structures, dropHeight, physicsConfig, controlPoints);
         }
 
         #endregion
