@@ -4,84 +4,113 @@ using UnityEngine;
 
 namespace Keiwando {
 
-    public delegate void InputHandler(InputType inputTypes);
     public delegate void OnBackButtonPressed();
 
-    [Flags]
-        public enum InputType {
-            Click = 1,
-            Touch = 2,
-            Key = 4,
-            Scroll = 8,
-            All = 1 | 2 | 4 | 8
-        }
+    public enum InputType {
+        Click,
+        Touch,
+        Key,
+        Scroll,
+        AndroidBack,
+        All
+    }
+
+    /// <summary>
+    /// Describes how an input event handler handles the event.
+    /// </summary>
+    public enum EventHandleMode {
+
+        /// <summary>
+        /// The event handler consumes the event. No other
+        /// handlers in the chain get to handle events consumed
+        /// by this handler. The same event might have been 
+        /// handled by a previous event handler in the chain.
+        /// </summary>
+        ConsumeEvent,
+
+        /// <summary>
+        /// The event handler handles the event but doesn't consume
+        /// it. Other handlers in the chain get to handle this 
+        /// event as well. The same event might have been 
+        /// handled by a previous event handler in the chain.
+        /// </summary>
+        PassthroughEvent,
+
+        /// <summary>
+        /// The event handler consumes the event. No other
+        /// handlers in the chain get to handle events consumed
+        /// by this handler. The same event has not been 
+        /// handled by a previous event handler in the chain.
+        /// </summary>
+        RequireUnique
+    }
 
     public class InputRegistry {
 
-        private struct Receiver {
-            public InputHandler handler;
-            public InputType inputTypes;
+        private struct Handler {
+            public InputType inputType;
+            public object handler;
+            public EventHandleMode eventHandleMode;
         }
 
         public static InputRegistry shared = new InputRegistry();
 
-        private List<Receiver> receiverStack = new List<Receiver>();
-        private List<OnBackButtonPressed> backButtonStack = new List<OnBackButtonPressed>();
+        private List<Handler> handlerStack = new List<Handler>();
 
-        public void Register(InputType inputTypes, InputHandler handler) {
-            var receiver = new Receiver() {
+        public void Register(
+            InputType inputType, 
+            object handler, 
+            EventHandleMode mode = EventHandleMode.ConsumeEvent
+        ) {
+            var receiver = new Handler() {
                 handler = handler,
-                inputTypes = inputTypes
+                inputType = inputType,
+                eventHandleMode = mode
             };
-            receiverStack.Insert(0, receiver);
+            handlerStack.Insert(0, receiver);
         }
 
         public void Deregister() {
-            if (receiverStack.Count > 0)
-                receiverStack.RemoveAt(0);
+            if (handlerStack.Count > 0)
+                handlerStack.RemoveAt(0);
         }
 
         public void DeregisterAll() {
-            receiverStack.Clear();
+            handlerStack.Clear();
         } 
 
-        public void RegisterForAndroidBackButton(OnBackButtonPressed onPress) {
-            backButtonStack.Insert(0, onPress);
-        }
+        /// <summary>
+        /// Returns whether or not the given handler is allowed to handle 
+        /// the specified event type.
+        /// </summary>
+        /// <param name="handler">The object that is trying to handle the 
+        /// given type of event.</param>
+        /// <param name="inputType">The type of event that is trying ot be handled.</param>
+        /// <returns></returns>
+        public bool MayHandle(object handler, InputType inputType) {
 
-        public void DeregisterBackButton() {
-            if (backButtonStack.Count > 0)
-                backButtonStack.RemoveAt(0);
-        }
+            bool alreadyHandled = false;
 
-        public void DeregisterAllBackButtonCallbacks() {
-            backButtonStack.Clear();
-        }
+            for (int i = 0; i < handlerStack.Count; i++) {
 
-        public void Update() {
+                var currentHandler = handlerStack[i];
+                var handledType = currentHandler.inputType;
+                var handleMode = currentHandler.eventHandleMode;
+                
+                if (handledType != inputType) continue;
 
-            InputType availableInputTypes = InputType.All;
-            for (int i = 0; i < receiverStack.Count; i++) {
-                var receiver = receiverStack[i];
-                InputType acceptedAndAvailable = receiver.inputTypes & availableInputTypes;
-                if (acceptedAndAvailable != 0) {
-                    receiver.handler(acceptedAndAvailable);
+                if (currentHandler.handler == handler) {
+                    return handleMode != EventHandleMode.RequireUnique || !alreadyHandled;
+                } else if (currentHandler.handler != handler) {
+                    if (handleMode == EventHandleMode.ConsumeEvent ||
+                        (handleMode == EventHandleMode.RequireUnique && !alreadyHandled)) {
+                        return false;
+                    }
+                    alreadyHandled |= inputType == handledType;
                 }
-                availableInputTypes &= ~acceptedAndAvailable;
             }
 
-            #if PLATFORM_ANDROID
-            if (Input.GetKeyDown(KeyCode.Escape)) {
-                if (backButtonStack.Count > 0) {
-                    backButtonStack[0]();
-                }
-            }
-            #endif
-        }
-
-        private static bool DoesReceiverHandleInput(Receiver receiver, InputType inputType) {
-        
-            return (inputType & receiver.inputTypes) != 0;
+            return false;
         }
     }
 }
