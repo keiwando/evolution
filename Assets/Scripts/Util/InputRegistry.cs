@@ -6,13 +6,14 @@ namespace Keiwando {
 
     public delegate void OnBackButtonPressed();
 
+    [Flags]
     public enum InputType {
-        Click,
-        Touch,
-        Key,
-        Scroll,
-        AndroidBack,
-        All
+        Click = 1,
+        Touch = 2,
+        Key = 4,
+        Scroll = 8,
+        AndroidBack = 16,
+        All = 1 | 2 | 4 | 8 | 16
     }
 
     /// <summary>
@@ -70,9 +71,15 @@ namespace Keiwando {
             handlerStack.Insert(0, receiver);
         }
 
-        public void Deregister() {
-            if (handlerStack.Count > 0)
-                handlerStack.RemoveAt(0);
+        public void Deregister(object handler) {
+            
+            var oldStack = this.handlerStack;
+            this.handlerStack = new List<Handler>();
+            for (int i = 0; i < oldStack.Count; i++) {
+                var element = oldStack[i];
+                if (element.handler != handler)
+                    handlerStack.Add(element);
+            }
         }
 
         public void DeregisterAll() {
@@ -87,7 +94,7 @@ namespace Keiwando {
         /// given type of event.</param>
         /// <param name="inputType">The type of event that is trying ot be handled.</param>
         /// <returns></returns>
-        public bool MayHandle(object handler, InputType inputType) {
+        public bool MayHandle(InputType inputType, object handler) {
 
             bool alreadyHandled = false;
 
@@ -97,7 +104,7 @@ namespace Keiwando {
                 var handledType = currentHandler.inputType;
                 var handleMode = currentHandler.eventHandleMode;
                 
-                if (handledType != inputType) continue;
+                if ((handledType & inputType) == 0) continue;
 
                 if (currentHandler.handler == handler) {
                     return handleMode != EventHandleMode.RequireUnique || !alreadyHandled;
@@ -106,7 +113,7 @@ namespace Keiwando {
                         (handleMode == EventHandleMode.RequireUnique && !alreadyHandled)) {
                         return false;
                     }
-                    alreadyHandled |= inputType == handledType;
+                    alreadyHandled = true;
                 }
             }
 

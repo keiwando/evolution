@@ -1,8 +1,19 @@
+using System;
 using UnityEngine;
 
 namespace Keiwando.Evolution {
 
     public abstract class ZoomableCamera: MonoBehaviour {
+
+        /// <summary>
+        /// The anchor around which zooming is performed relative to the camera bounds
+        /// </summary>
+        public Vector2 ZoomAnchor {
+            get { return zoomAnchor; }
+            set { zoomAnchor = value; }
+        }
+        [SerializeField]
+        protected Vector2 zoomAnchor = new Vector2(0.5f, 0.5f);
 
         /// <summary>
         /// The amount by which the camera can be zoomed in.
@@ -26,21 +37,66 @@ namespace Keiwando.Evolution {
         /// <summary>
         /// The minimum allowed value of the camera's orthographic size
         /// </summary>
-        private float minZoom;
+        protected float minZoom;
 
-        // Gestures
-
-        private float lastPinchDist = 0f;
+        private new Camera camera;
 
         internal virtual void Start(Camera camera) {
+            this.camera = camera;
             var initialZoom = camera.orthographicSize;
             minZoom = initialZoom - zoomInLength;
 
-            InputRegistry.shared.Register(InputType.Scroll, delegate (InputType type) {
-                UpdateInputs();
-            });
+            InputRegistry.shared.Register(InputType.Scroll, this, EventHandleMode.ConsumeEvent);
+            var scrollRecognizer = GestureRecognizerCollection.shared.GetScrollGestureRecognizer();
+            scrollRecognizer.OnGesture += delegate (ScrollGestureRecognizer recognizer) {
+                if (InputRegistry.shared.MayHandle(InputType.Scroll, this))
+                    ZoomCameraFromScroll(recognizer.ScrollDelta.y);
+            };
+
+            InputRegistry.shared.Register(InputType.Touch, this, EventHandleMode.PassthroughEvent);
+            var pinchRecognizer = GestureRecognizerCollection.shared.GetPinchGestureRecognizer();
+            pinchRecognizer.OnGesture += delegate (PinchGestureRecognizer recognizer) {
+                if (InputRegistry.shared.MayHandle(InputType.Touch, this)) {
+                    ZoomCameraFromPinch(recognizer.ScaleDelta);
+                    OnPinch(recognizer);
+                }
+            };
         }
 
-        
+        private void ZoomCameraFromScroll(float delta) {
+
+            SetZoom(camera.orthographicSize - delta);
+        }
+
+        private void ZoomCameraFromPinch(float percent) {
+
+            SetZoom(camera.orthographicSize / Math.Max(0.0000001f, percent));
+        }
+
+        private void SetZoom(float newZoom) {
+
+            var visibleSize = CameraUtils.GetOrthographicSize(camera);
+
+            var size = camera.orthographicSize;
+            var newSize = Math.Max(minZoom, Math.Min(minZoom + zoomLength, newZoom));
+            camera.orthographicSize = newSize;
+
+            var dSize = newSize / size;
+            var dPercent = dSize - 1f;
+            
+            // Readjust the center position based on the zoom anchor
+            var anchorAdjustX = (zoomAnchor.x - 0.5f) * visibleSize.x;
+            var anchorAdjustY = (zoomAnchor.y - 0.5f) * visibleSize.y;
+
+            var pos = camera.transform.position;
+            pos.x += anchorAdjustX;
+            pos.y += anchorAdjustY;
+            camera.transform.position = pos;
+
+            OnAfterZoom();
+        }
+
+        protected abstract void OnAfterZoom();
+        protected virtual void OnPinch(PinchGestureRecognizer gestureRecognizer) {}
     }
 }

@@ -107,8 +107,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 		yield return new WaitForEndOfFrame();
 
 		var simulationData = SimulationSerializer.LoadSimulationData(filename);
-		InputRegistry.shared.Deregister();
-		InputRegistry.shared.DeregisterBackButton();
+		InputRegistry.shared.DeregisterAll();
 		editor.StartSimulation(simulationData);
 	}
 

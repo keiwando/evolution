@@ -136,9 +136,9 @@ public class CameraController : MonoBehaviour {
             }
         }
 
-        InputRegistry.shared.Register(InputType.Scroll, delegate (InputType type) {
-            UpdateInputs();
-        });
+        // InputRegistry.shared.Register(InputType.Scroll, delegate (InputType type) {
+        //     UpdateInputs();
+        // });
     }
 
     private void UpdateInputs() {

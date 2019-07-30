@@ -65,7 +65,7 @@ public class CreatureEditor: MonoBehaviour,
         } else {
             creatureBuilder = new CreatureBuilder();
         }
-            // creatureBuilder = new CreatureBuilder();
+        
         selectionManager = new EditorSelectionManager(this, selectionArea, mouseDeleteTexture);
 
         var simulationConfigs = GameObject.FindGameObjectsWithTag("SimulationConfig");
@@ -79,15 +79,21 @@ public class CreatureEditor: MonoBehaviour,
 
         viewController.Refresh();
 
-        InputRegistry.shared.Register(InputType.Click | InputType.Key | InputType.Touch, delegate (InputType type) {
-            InputUtils.UpdateTouches();
-            selectionManager.Update(Input.mousePosition);
-            HandleClicks();
-            HandleKeyboardInput();
-        });
-        InputRegistry.shared.RegisterForAndroidBackButton(delegate () {
-            Application.Quit();
-        });
+        InputRegistry.shared.Register(InputType.Click | InputType.Key | InputType.Touch, this);
+
+        var androidBackButton = GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer();
+        androidBackButton.OnGesture += delegate (AndroidBackButtonGestureRecognizer recognizer) {
+            if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this))
+                Application.Quit();
+        };
+    }
+
+    void Update() {
+
+        InputUtils.UpdateTouches();
+        selectionManager.Update(Input.mousePosition);
+        HandleClicks();
+        HandleKeyboardInput();
     }
 
     /// <summary>
@@ -171,8 +177,7 @@ public class CreatureEditor: MonoBehaviour,
         configContainer.SimulationData = simulationData;
         DontDestroyOnLoad(containerObject);
 
-        InputRegistry.shared.Deregister();
-        InputRegistry.shared.DeregisterBackButton();
+        InputRegistry.shared.Deregister(this);
         
         // Load simulation scene
         SceneController.LoadSync(SceneController.Scene.SimulationContainer);
@@ -200,6 +205,8 @@ public class CreatureEditor: MonoBehaviour,
     private void HandleClicks() {
 
         if (cameraController.IsAdjustingCamera) return;
+
+        if (!InputRegistry.shared.MayHandle(InputType.Click | InputType.Touch, this)) return;
 
         bool isPointerOverUI = false;
         isPointerOverUI |= EventSystem.current.IsPointerOverGameObject();
@@ -345,6 +352,8 @@ public class CreatureEditor: MonoBehaviour,
     private void HandleKeyboardInput() {
 
         if (!Input.anyKeyDown) return;
+
+        if (!InputRegistry.shared.MayHandle(InputType.Key, this)) return;
 
         var input = KeyInputManager.shared;
         // J = place Joint
