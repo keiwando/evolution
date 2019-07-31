@@ -58,10 +58,8 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
     public void Show(FileSelectionViewControllerDelegate Delegate) {
         this.controllerDelegate = Delegate;
 
-		InputRegistry.shared.Register(InputType.All, delegate(InputType type) {});
-		InputRegistry.shared.RegisterForAndroidBackButton(delegate () {
-			Close();
-		});
+		InputRegistry.shared.Register(InputType.All, this);
+		GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture += OnAndroidBackButton;
 
 		DeleteAllItemViews();
 		gameObject.SetActive(true);
@@ -137,8 +135,8 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
 
     public void Close() {
 		controllerDelegate = null;
-		InputRegistry.shared.Deregister();
-		InputRegistry.shared.DeregisterBackButton();
+		InputRegistry.shared.Deregister(this);
+		GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture -= OnAndroidBackButton;
 		gameObject.SetActive(false);
     }
 
@@ -182,6 +180,11 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
 		items.Clear();
 	}
 
+	private void OnAndroidBackButton(AndroidBackButtonGestureRecognizer recognizer) {
+		if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this))
+			Close();
+	}
+
 	// MARK: - SelectableListItemViewDelegate
 
 	public void DidSelect(SelectableListItemView itemView) {
@@ -198,9 +201,11 @@ public class FileSelectionViewController : MonoBehaviour, SelectableListItemView
 
 	public void DidConfirmRename(RenameDialog dialog, string newName) {
 		if (controllerDelegate != null) {
-			controllerDelegate.DidEditTitleAtIndex(this, 
-												   controllerDelegate.GetIndexOfSelectedItem(this), 
-												   newName);
+			controllerDelegate.DidEditTitleAtIndex(
+				this, 
+				controllerDelegate.GetIndexOfSelectedItem(this), 
+				newName
+			);
 		}
 		Refresh();
 	}

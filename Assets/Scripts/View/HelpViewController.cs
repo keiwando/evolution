@@ -99,17 +99,15 @@ namespace Keiwando.Evolution.UI {
 		}
 
 		public void BackButtonClicked() {
-			InputRegistry.shared.Deregister();
-			InputRegistry.shared.DeregisterBackButton();
+			InputRegistry.shared.Deregister(this);
+			GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture -= OnAndroidBackButton;
 			this.gameObject.SetActive(false);
 		}
 
 		public void HelpButtonClicked() {
 			this.gameObject.SetActive(true);
-			InputRegistry.shared.Register(InputType.All, delegate (InputType t) {});
-			InputRegistry.shared.RegisterForAndroidBackButton(delegate () {
-				BackButtonClicked();
-			});
+			InputRegistry.shared.Register(InputType.All, this);
+			GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture += OnAndroidBackButton;
 		}
 
 		private HelpPages LoadHelpPagesForLanguage(Language lang, TMPro.TMP_FontAsset font) {
@@ -121,6 +119,11 @@ namespace Keiwando.Evolution.UI {
 				Font = font,
 				Pages = pages
 			};
+		}
+
+		private void OnAndroidBackButton(AndroidBackButtonGestureRecognizer recognizer) {
+			if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this))
+				BackButtonClicked();
 		}
 	}
 

@@ -54,15 +54,20 @@ namespace Keiwando.Evolution.UI {
 
         public void Show() {
             this.gameObject.SetActive(true);
-            InputRegistry.shared.RegisterForAndroidBackButton(delegate () {
-                Hide();
-            });
+            InputRegistry.shared.Register(InputType.AndroidBack, this);
+            GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture += OnAndroidBack;
         }
 
         public void Hide() {
             this.gameObject.SetActive(false);
-            InputRegistry.shared.DeregisterBackButton();
+            InputRegistry.shared.Deregister(this);
+            GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture -= OnAndroidBack;
             Delegate?.DidDismiss(this);
         }
+
+        private void OnAndroidBack(AndroidBackButtonGestureRecognizer rec) {
+            if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this))
+                Hide();
+        } 
     }
 }

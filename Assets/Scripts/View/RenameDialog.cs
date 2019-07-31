@@ -38,10 +38,8 @@ public class RenameDialog : MonoBehaviour {
 
 		this.confirmCanvasGroup = confirmButton.GetComponentInChildren<CanvasGroup>();
 		KeyInputManager.shared.Register();
-		InputRegistry.shared.Register(InputType.All, delegate (InputType types) {});
-		InputRegistry.shared.RegisterForAndroidBackButton(delegate () {
-			Close();
-		});
+		InputRegistry.shared.Register(InputType.All, this);
+		GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture += OnAndroidBack;
 
 		inputField.onValidateInput += delegate (string input, int charIndex, char addedChar) {
 			if (Delegate.CanEnterCharacter(this, charIndex, addedChar)) {
@@ -67,8 +65,8 @@ public class RenameDialog : MonoBehaviour {
 	public void Close() {
 		Delegate = null;
 		KeyInputManager.shared.Deregister();
-		InputRegistry.shared.Deregister();
-		InputRegistry.shared.DeregisterBackButton();
+		InputRegistry.shared.Deregister(this);
+		GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture -= OnAndroidBack;
 		inputField.onValidateInput = null;
 		inputField.onValueChanged.RemoveAllListeners();
 		confirmButton.onClick.RemoveAllListeners();
@@ -98,5 +96,10 @@ public class RenameDialog : MonoBehaviour {
 		errorMessage.enabled = false;
 		confirmCanvasGroup.alpha = 1f;
 		confirmButton.enabled = true;
+	}
+
+	private void OnAndroidBack(AndroidBackButtonGestureRecognizer rec) {
+		if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this))
+			Close();
 	}
 }

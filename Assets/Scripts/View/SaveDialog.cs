@@ -35,10 +35,8 @@ public class SaveDialog : MonoBehaviour {
 		this.Delegate = Delegate;
 		ResetErrors();
 		KeyInputManager.shared.Register();
-		InputRegistry.shared.Register(InputType.All, delegate (InputType type) {});
-		InputRegistry.shared.RegisterForAndroidBackButton(delegate () {
-			Close();
-		});
+		InputRegistry.shared.Register(InputType.All, this);
+		GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture += OnAndroidBack;
 
 		inputField.onValidateInput += delegate (string input, int charIndex, char addedChar) {
 			if (Delegate.CanEnterCharacter(this, charIndex, addedChar)) {
@@ -58,8 +56,8 @@ public class SaveDialog : MonoBehaviour {
 	public void Close() {
 		Delegate = null;
 		KeyInputManager.shared.Deregister();
-		InputRegistry.shared.Deregister();
-		InputRegistry.shared.DeregisterBackButton();
+		InputRegistry.shared.Deregister(this);
+		GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture -= OnAndroidBack;
 		gameObject.SetActive(false);
 	}
 
@@ -80,5 +78,10 @@ public class SaveDialog : MonoBehaviour {
 
 	public void ResetErrors() {
 		errorMessage.enabled = false;
+	}
+
+	private void OnAndroidBack(AndroidBackButtonGestureRecognizer rec) {
+		if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this))
+			Close();
 	}
 }

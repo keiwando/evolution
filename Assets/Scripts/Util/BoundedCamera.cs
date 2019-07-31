@@ -7,9 +7,6 @@ namespace Keiwando.Evolution {
     [RequireComponent(typeof(Camera))]
     public class BoundedCamera: ZoomableCamera {
 
-        [SerializeField]
-        public bool isControlledByInput = true;
-
         /// <summary>
         /// The camera to be controlled
         /// </summary>
@@ -70,15 +67,18 @@ namespace Keiwando.Evolution {
             InputRegistry.shared.Register(InputType.Touch | InputType.Click, this, EventHandleMode.PassthroughEvent);
             // Drag with middle mouse button
             var dragRecognizer = GestureRecognizerCollection.shared.GetDragGestureRecognizer(2);
-            dragRecognizer.OnGesture += delegate (DragGestureRecognizer gestureRecognizer) {
-                if (InputRegistry.shared.MayHandle(InputType.Touch | InputType.Click, this))
-                    MoveCamera(CameraUtils.ScreenToWorldDistance(camera, gestureRecognizer.DragDelta));
-            };
+            dragRecognizer.OnGesture += OnDrag;
+        }
+
+        private void OnDrag(DragGestureRecognizer rec) {
+            if (InputRegistry.shared.MayHandle(InputType.Touch | InputType.Click, this))
+                    MoveCamera(CameraUtils.ScreenToWorldDistance(camera, -rec.DragDelta));
         }
 
         protected override void OnAfterZoom() {
             ClampPosition();
         }
+
         protected override void OnPinch(PinchGestureRecognizer gestureRecognizer) {
             MoveCamera(CameraUtils.ScreenToWorldDistance(camera, gestureRecognizer.PinchCenterDelta));
         }
