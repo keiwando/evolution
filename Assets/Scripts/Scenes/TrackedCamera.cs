@@ -6,6 +6,8 @@ namespace Keiwando.Evolution.Scenes {
     [RequireComponent(typeof(Camera))]
     public class TrackedCamera: ZoomableCamera {
 
+        public RenderTexture RenderTexture;
+
         new private Camera camera;
 
         /// <summary>
@@ -36,7 +38,7 @@ namespace Keiwando.Evolution.Scenes {
         /// <summary>
         /// The transform to be tracked by this camera.
         /// </summary>
-        public UnityEngine.Transform Target;
+        public Creature Target;
 
         /// <summary>
         /// The index of the control points segment that the target was previously in.
@@ -57,7 +59,8 @@ namespace Keiwando.Evolution.Scenes {
 
             if (Target == null) return;
 
-            var controlPoint = GetInterpolatedControlPoint(Target.transform.position.x);
+            var controlPoint = GetInterpolatedControlPoint(Target.GetXPosition());
+            this.zoomAnchor = new Vector2(0.5f, controlPoint.pivot);
             camera.transform.position = CalculateCameraPosition(camera, controlPoint);
         }
 
@@ -68,7 +71,7 @@ namespace Keiwando.Evolution.Scenes {
         private static Vector3 CalculateCameraPosition(Camera camera, CameraControlPoint controlPoint) {
 
             Vector2 orthoSize = CameraUtils.GetOrthographicSize(camera);
-            float y = controlPoint.y + (controlPoint.pivot - 0.5f) * orthoSize.y;
+            float y = controlPoint.y - (controlPoint.pivot - 0.5f) * orthoSize.y;
             return new Vector3(controlPoint.x, y, camera.transform.position.z);
         }
 

@@ -46,7 +46,7 @@ namespace Keiwando.Evolution {
             var initialZoom = camera.orthographicSize;
             minZoom = initialZoom - zoomInLength;
 
-            InputRegistry.shared.Register(InputType.Scroll, this, EventHandleMode.ConsumeEvent);
+            InputRegistry.shared.Register(InputType.Scroll, this, EventHandleMode.PassthroughEvent);
             var scrollRecognizer = GestureRecognizerCollection.shared.GetScrollGestureRecognizer();
             scrollRecognizer.OnGesture += delegate (ScrollGestureRecognizer recognizer) {
                 if (InputRegistry.shared.MayHandle(InputType.Scroll, this))

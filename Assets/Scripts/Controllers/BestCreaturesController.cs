@@ -16,7 +16,8 @@ namespace Keiwando.Evolution {
 
 		#endregion
 
-		[SerializeField] new private CameraFollowScript camera;
+		[SerializeField] 
+		private TrackedCamera trackedCamera;
 
 		public Creature CurrentBest { get; private set; }
 
@@ -114,7 +115,7 @@ namespace Keiwando.Evolution {
 			evolution.ApplyBrain(this.CurrentBest, chromosome);
 			// TODO: Set Obstacle if needed
 
-			camera.toFollow = this.CurrentBest;
+			trackedCamera.Target = this.CurrentBest;
 			
 			this.CurrentBest.SetOnBestCreatureLayer();
 

@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering;
-using System;
-using System.Collections.Generic;
+using Keiwando.Evolution.Scenes;
 
 [RequireComponent(typeof(Camera))]
 public class HiddenCreatureRenderer: MonoBehaviour {
@@ -20,7 +19,7 @@ public class HiddenCreatureRenderer: MonoBehaviour {
         hiddenCamera.cullingMask = (1 << 11) | (1 << 8);
         hiddenCamera.backgroundColor = Color.clear;
         Destroy(hiddenCamera.GetComponent<HiddenCreatureRenderer>());
-        Destroy(hiddenCamera.GetComponent<CameraFollowScript>());
+        Destroy(hiddenCamera.GetComponent<TrackedCamera>());
         
         SetupRenderPass();
     }

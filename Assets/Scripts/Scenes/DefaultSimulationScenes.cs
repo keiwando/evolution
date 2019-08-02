@@ -5,6 +5,10 @@ namespace Keiwando.Evolution.Scenes {
 
     public static class DefaultSimulationScenes {
 
+        private static CameraControlPoint[] flatGroundControlPoints = new [] {
+            new CameraControlPoint(0, 0, 0.103727f), new CameraControlPoint(1, 0, 0.103727f)
+        };
+
         public static readonly SimulationSceneDescription RunningScene = CreateRunningScene();
         public static readonly SimulationSceneDescription JumpingScene = CreateJumpingScene();
         public static readonly SimulationSceneDescription ObstacleJumpScene = CreateObstacleJumpScene();
@@ -36,9 +40,7 @@ namespace Keiwando.Evolution.Scenes {
                 Version = 1,
                 Structures = new IStructure[] { ground, distanceMarkerSpawner },
                 DropHeight = 0.5f,
-                CameraControlPoints = new [] {
-                    new CameraControlPoint(0, 0, 0.5f), new CameraControlPoint(1, 0, 0.5f)
-                }
+                CameraControlPoints = flatGroundControlPoints
             };
         }
 
@@ -57,9 +59,7 @@ namespace Keiwando.Evolution.Scenes {
                 Version = 1,
                 Structures = new IStructure[] { ground, distanceMarkerSpawner },
                 DropHeight = 0.5f,
-                CameraControlPoints = new [] {
-                    new CameraControlPoint(0, 0, 0.5f), new CameraControlPoint(1, 0, 0.5f)
-                }
+                CameraControlPoints = flatGroundControlPoints
             };
         }
 
@@ -84,9 +84,7 @@ namespace Keiwando.Evolution.Scenes {
                 Version = 1,
                 Structures = new IStructure[] { ground, leftWall, rightWall, obstacleSpawner },
                 DropHeight = 0.5f,
-                CameraControlPoints = new [] {
-                    new CameraControlPoint(0, 0, 0.5f), new CameraControlPoint(1, 0, 0.5f)
-                }
+                CameraControlPoints = flatGroundControlPoints
             };
         }
 
@@ -123,7 +121,7 @@ namespace Keiwando.Evolution.Scenes {
                 Structures = structures,
                 DropHeight = 0.5f,
                 CameraControlPoints = new [] {
-                    new CameraControlPoint(0, 0, 0.5f), new CameraControlPoint(1, 1, 0.5f)
+                    new CameraControlPoint(0, 9, 0.5f), new CameraControlPoint(1, 10, 0.5f)
                 }
             };
         }

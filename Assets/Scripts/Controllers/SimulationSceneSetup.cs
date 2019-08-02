@@ -28,6 +28,11 @@ namespace Keiwando.Evolution {
         public void BuildScene(SimulationSceneDescription scene, ISceneContext context) {
             SimulationSceneBuilder.Build(scene, context);
             SetupPhysics(scene.PhysicsConfiguration);
+
+            var trackedCameras = FindObjectsOfType<TrackedCamera>();
+            foreach (var trackedCamera in trackedCameras) {
+                trackedCamera.ControlPoints = scene.CameraControlPoints;
+            }
         }
 
         public Creature[] SpawnBatch(SimulationSpawnConfig options) {

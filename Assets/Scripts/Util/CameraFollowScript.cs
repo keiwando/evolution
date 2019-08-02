@@ -1,33 +1,33 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
+﻿// using UnityEngine;
+// using UnityEngine.UI;
+// using System.Collections;
 
-[RequireComponent(typeof(Camera))]
-public class CameraFollowScript : MonoBehaviour {
+// [RequireComponent(typeof(Camera))]
+// public class CameraFollowScript : MonoBehaviour {
 
-	public RenderTexture renderTexture;
+// 	public RenderTexture renderTexture;
 
-	public Creature toFollow;
+// 	public Creature toFollow;
 
-	public bool DiagonalLock = false;
+// 	public bool DiagonalLock = false;
 
-	private Vector3 startPos;
+// 	private Vector3 startPos;
 
-	void Start () {
-		startPos = transform.position;
-	}
+// 	void Start () {
+// 		startPos = transform.position;
+// 	}
 
-	void Update () {
+// 	void Update () {
 
-		if (toFollow == null) return;
+// 		if (toFollow == null) return;
 
-		Vector3 newPos = transform.position;
-		newPos.x = toFollow.GetXPosition();
+// 		Vector3 newPos = transform.position;
+// 		newPos.x = toFollow.GetXPosition();
 
-		if (true || DiagonalLock) {
-			newPos.y = (newPos.x - startPos.x) + startPos.y;
-		}
+// 		if (true || DiagonalLock) {
+// 			newPos.y = (newPos.x - startPos.x) + startPos.y;
+// 		}
 
-		transform.position = newPos;
-	}
-}
+// 		transform.position = newPos;
+// 	}
+// }

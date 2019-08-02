@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using Keiwando.Evolution.Scenes;
 
 namespace Keiwando.Evolution {
 
@@ -10,7 +11,7 @@ namespace Keiwando.Evolution {
 		[SerializeField]
 		private Evolution evolution;
 		[SerializeField]
-		private CameraFollowScript cameraFollow;
+		private TrackedCamera cameraFollow;
 
 		void Start() {
 
@@ -41,7 +42,7 @@ namespace Keiwando.Evolution {
 
 		private void RefreshCameraFocus() {
 			var batch = evolution.CurrentCreatureBatch;
-			cameraFollow.toFollow = batch[watchingIndex];
+			cameraFollow.Target = batch[watchingIndex];
 		} 
 
 		public void RefreshVisibleCreatures() {
