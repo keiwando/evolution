@@ -1,5 +1,5 @@
 using Keiwando.JSON;
-
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
@@ -51,7 +51,10 @@ namespace Keiwando.Evolution.Scenes {
             public DistanceMarkerSpawnerBuilder(DistanceMarkerSpawner spawner): base(spawner) {}
 
             public override GameObject Build(ISceneContext context) {
-                var spawner = base.Build(context).GetComponent<Keiwando.Evolution.DistanceMarkerSpawner>();
+
+                if (!context.AreDistanceMarkersEnabled()) return null;
+
+                var spawner = base.Build(context).GetComponent<DistanceMarkerSpawnerBehaviour>();
                 spawner.MarkerDistance = this.structure.MarkerDistance;
                 spawner.DistanceAngleFactor = this.structure.DistanceAngleFactor;
                 spawner.Context = context;

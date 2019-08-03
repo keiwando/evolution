@@ -42,6 +42,10 @@ namespace Keiwando.Evolution.Scenes {
         public int GetCurrentGeneration() {
             return this.controller.CurrentGeneration;
         }
+
+        public bool AreDistanceMarkersEnabled() {
+            return false;
+        }
         
         public LayerMask GetBackgroundLayer() {
             return layerWithoutCollision;

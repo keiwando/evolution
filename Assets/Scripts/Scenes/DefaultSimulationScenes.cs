@@ -6,7 +6,7 @@ namespace Keiwando.Evolution.Scenes {
     public static class DefaultSimulationScenes {
 
         private static CameraControlPoint[] flatGroundControlPoints = new [] {
-            new CameraControlPoint(0, 0, 0.103727f), new CameraControlPoint(1, 0, 0.103727f)
+            new CameraControlPoint(0, 0, 0.11f), new CameraControlPoint(1, 0, 0.11f)
         };
 
         public static readonly SimulationSceneDescription RunningScene = CreateRunningScene();

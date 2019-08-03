@@ -38,6 +38,10 @@ namespace Keiwando.Evolution.Scenes {
             return this.data.BestCreatures.Count + 1;
         }
 
+        public bool AreDistanceMarkersEnabled() {
+            return true;
+        }
+
         public LayerMask GetBackgroundLayer() {
             return layerWithoutCollision;
         }
