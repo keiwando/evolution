@@ -10,6 +10,7 @@ namespace Keiwando.Evolution.Scenes {
 
         public float MarkerDistance { get; set; } = 5f;
         public float DistanceAngleFactor { get; set; } = 1f;
+        public float BestMarkerRotation { get; set; } = 0f;
 
         public ISceneContext Context { get; set; }
 
@@ -32,7 +33,6 @@ namespace Keiwando.Evolution.Scenes {
             var pos = transform.position;
             // Push the markers into the background
             pos.z = 3;
-            // TODO: Add factor to distance calculation
             // Create markers
             for (int i = 1; i <= INITIAL_SPAWN_COUNT; i++) {
                 pos += transform.right * MarkerDistance * STAT_ADJUSTMENT_FACTOR;
@@ -45,7 +45,7 @@ namespace Keiwando.Evolution.Scenes {
             if (!float.IsNaN(prevBestDistance)) {
                 var actualDistance = prevBestDistance / (STAT_ADJUSTMENT_FACTOR * DistanceAngleFactor);
                 var bestLabelPos = transform.position + (prevBestDistance * transform.right);
-                var rotationEulerAngle = transform.eulerAngles.z; // + 90f;
+                var rotationEulerAngle = BestMarkerRotation;
                 var marker = AddMarker(bestMarkerTemplate, bestLabelPos, actualDistance.ToString("0"), rotationEulerAngle);
                 marker.Text = "---  ";
                 marker.TextColor = new Color(0.23f, 0.23f, 0.23f, 0.36f);

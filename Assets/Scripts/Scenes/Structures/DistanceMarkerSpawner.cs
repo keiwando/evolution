@@ -11,10 +11,17 @@ namespace Keiwando.Evolution.Scenes {
 
         public float MarkerDistance { get; private set; }
         public float DistanceAngleFactor { get; private set; }
+        public float BestMarkerRotation { get; private set; }
 
-        public DistanceMarkerSpawner(Transform transform, float markerDistance = 5f, float angleFactor = 1f): base(transform) {
+        public DistanceMarkerSpawner(
+            Transform transform, 
+            float markerDistance = 5f, 
+            float angleFactor = 1f,
+            float bestMarkerRotation = 0f
+        ): base(transform) {
             this.MarkerDistance = markerDistance;
             this.DistanceAngleFactor = angleFactor;
+            this.BestMarkerRotation = bestMarkerRotation;
         }
 
         public override string GetEncodingKey() {
@@ -57,6 +64,7 @@ namespace Keiwando.Evolution.Scenes {
                 var spawner = base.Build(context).GetComponent<DistanceMarkerSpawnerBehaviour>();
                 spawner.MarkerDistance = this.structure.MarkerDistance;
                 spawner.DistanceAngleFactor = this.structure.DistanceAngleFactor;
+                spawner.BestMarkerRotation = this.structure.BestMarkerRotation;
                 spawner.Context = context;
                 spawner.gameObject.layer = context.GetBackgroundLayer();
                 return spawner.gameObject;

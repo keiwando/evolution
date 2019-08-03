@@ -26,10 +26,11 @@ namespace Keiwando.Evolution.Scenes {
             switch (this.data.Settings.Task) {
             case EvolutionTask.Running: 
                 return stats.horizontalDistanceTravelled;
-            case EvolutionTask.Jumping:
             case EvolutionTask.ObstacleJump: 
             case EvolutionTask.Climbing:
                 return stats.verticalDistanceTravelled;
+            case EvolutionTask.Jumping:
+                return stats.maxJumpingHeight;
             }
             return stats.horizontalDistanceTravelled;
         }

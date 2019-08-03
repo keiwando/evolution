@@ -52,7 +52,7 @@ namespace Keiwando.Evolution.Scenes {
             var ground = new Ground(groundTransform);
 
             var distanceMarkerSpawner = new DistanceMarkerSpawner(
-                new Transform(new Vector3(-0.45f, 1.63f, 0), 90f)
+                new Transform(new Vector3(-0.45f, 1.63f, 0), 90f), 5, 1, 90f
             );
 
             return new SimulationSceneDescription {
@@ -93,15 +93,15 @@ namespace Keiwando.Evolution.Scenes {
             int stepCount = 4000;
             var structures = new IStructure[stepCount + 2];
 
-            // 205.8f 83.21243f -16.5f
             var groundPos = new Vector3(14.6f, -4.8f, -2.61f);
             var groundScale = new Vector3(1000000, 30f, 29.8f);
             var ground = new Ground(new Transform(groundPos, 45f, groundScale));
             structures[0] = ground;
 
             var distanceMarkerSpawner = new DistanceMarkerSpawner(
-                new Transform(new Vector3(-0.45f, 1.63f, 0), 45f),
-                5f, Mathf.Sin((float)Math.PI * 0.25f)
+                new Transform(new Vector3(-0.45f, 5.5f, 0), 45f),
+                5f * Mathf.Sin((float)Math.PI * 0.25f), 
+                1f / Mathf.Sin((float)Math.PI * 0.25f)
             );
             structures[1] = distanceMarkerSpawner;
             
