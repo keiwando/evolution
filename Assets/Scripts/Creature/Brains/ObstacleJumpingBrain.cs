@@ -14,16 +14,17 @@ public class ObstacleJumpingBrain : Brain {
 
 	private float maxHeightJumped;
 
-	// Use this for initialization
+	private GameObject obstacle;
+
+	
 	void Start () {
 
 		collidedJoints = new HashSet<Joint>();
 	}
 	
-	// Update is called once per frame
 	public override void FixedUpdate () {
 		base.FixedUpdate();
-
+		FindObstacleIfNeeded();
 		//numOfCollisionsWithObstacle += creature.GetNumberOfObstacleCollisions();
 		Creature.AddObstacleCollidingJointsToSet(collidedJoints);
 	}
@@ -66,6 +67,26 @@ public class ObstacleJumpingBrain : Brain {
 		// Creature rotation
 		Network.Inputs[5] = Creature.GetRotation();
 		// distance from obstacle
-		Network.Inputs[6] = Creature.GetDistanceFromObstacle();
+		Network.Inputs[6] = Creature.GetDistanceFromObstacle(this.obstacle);
+	}
+
+	private void FindObstacleIfNeeded() {
+		if (obstacle != null) return;
+		int playbackCreatureLayer = LayerMask.NameToLayer("PlaybackCreature");
+		int dynamicForegroundLayer = LayerMask.NameToLayer("DynamicForeground");
+		int playbackDynamicForegroundLayer = LayerMask.NameToLayer("PlaybackDynamicForeground");
+		var obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+
+		foreach (var obstacle in obstacles) {
+			bool correctObstacle = false;
+			if (this.gameObject.layer == playbackCreatureLayer) {
+				correctObstacle = obstacle.layer == playbackDynamicForegroundLayer;
+			} else {
+				correctObstacle = obstacle.layer == dynamicForegroundLayer;
+			}
+			if (correctObstacle) {
+				this.obstacle = obstacle;
+			}
+		}
 	}
 }

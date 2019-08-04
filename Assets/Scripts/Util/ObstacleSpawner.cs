@@ -51,11 +51,11 @@ namespace Keiwando.Evolution {
 		} 
 
 		private void UpdateObstacleKnowledge() {
-			if (!BCScene) {
-				GameObject.Find("Evolution").GetComponent<Evolution>().UpdateCreaturesWithObstacle(obstacle);	
-			} else {
-				BCController.CurrentBest.Obstacle = obstacle;
-			}
+			// if (!BCScene) {
+			// 	GameObject.Find("Evolution").GetComponent<Evolution>().UpdateCreaturesWithObstacle(obstacle);	
+			// } else {
+			// 	BCController.CurrentBest.Obstacle = obstacle;
+			// }
 		}
 	}
 }
