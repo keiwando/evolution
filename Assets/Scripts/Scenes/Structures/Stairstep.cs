@@ -1,5 +1,4 @@
 using Keiwando.JSON;
-
 using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {

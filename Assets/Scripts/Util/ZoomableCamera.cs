@@ -39,10 +39,10 @@ namespace Keiwando.Evolution {
         /// </summary>
         protected float minZoom;
 
-        private new Camera camera;
+        private Camera _camera;
 
         internal virtual void Start(Camera camera) {
-            this.camera = camera;
+            this._camera = camera;
             var initialZoom = camera.orthographicSize;
             minZoom = initialZoom - zoomInLength;
 
@@ -65,21 +65,21 @@ namespace Keiwando.Evolution {
 
         private void ZoomCameraFromScroll(float delta) {
 
-            SetZoom(camera.orthographicSize - delta);
+            SetZoom(_camera.orthographicSize - delta);
         }
 
         private void ZoomCameraFromPinch(float percent) {
 
-            SetZoom(camera.orthographicSize / Math.Max(0.0000001f, percent));
+            SetZoom(_camera.orthographicSize / Math.Max(0.0000001f, percent));
         }
 
         private void SetZoom(float newZoom) {
 
-            var visibleSize = CameraUtils.GetOrthographicSize(camera);
+            var visibleSize = CameraUtils.GetOrthographicSize(_camera);
 
-            var size = camera.orthographicSize;
+            var size = _camera.orthographicSize;
             var newSize = Math.Max(minZoom, Math.Min(minZoom + zoomLength, newZoom));
-            camera.orthographicSize = newSize;
+            _camera.orthographicSize = newSize;
 
             var dSize = newSize / size;
             var dPercent = dSize - 1f;
@@ -88,10 +88,10 @@ namespace Keiwando.Evolution {
             var anchorAdjustX = (zoomAnchor.x - 0.5f) * visibleSize.x;
             var anchorAdjustY = (zoomAnchor.y - 0.5f) * visibleSize.y;
 
-            var pos = camera.transform.position;
+            var pos = _camera.transform.position;
             pos.x += anchorAdjustX;
             pos.y += anchorAdjustY;
-            camera.transform.position = pos;
+            _camera.transform.position = pos;
 
             OnAfterZoom();
         }
