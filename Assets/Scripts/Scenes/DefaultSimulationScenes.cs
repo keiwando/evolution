@@ -71,11 +71,11 @@ namespace Keiwando.Evolution.Scenes {
             var ground = new Ground(groundTransform);
 
             var rightWallPos = new Vector3(40f, -4.8f, -2.61f);
-            var leftWallPos = new Vector3(-34.9f, -4.8f, -2.61f);
+            var leftWallPos = new Vector3(-41.73f, -4.8f, -2.61f);
             var rightWallScale = new Vector3(10000f, 35.78f, 29.8f);
-            var leftWallScale = new Vector3(10000f, 22.12f, 29.8f);
-            var rightWall = new Wall(new Transform(rightWallPos, rightWallScale));
-            var leftWall = new Wall(new Transform(leftWallPos, leftWallScale));
+            var leftWallScale = new Vector3(10000f, 35.78f, 29.8f);
+            var rightWall = new Wall(new Transform(rightWallPos, 90f, rightWallScale));
+            var leftWall = new Wall(new Transform(leftWallPos, 90f, leftWallScale));
 
             var obstacleSpawnerPos = new Vector3(31.1f, 4.41f, 0f);
             var obstacleSpawner = new RollingObstacleSpawner(new Transform(obstacleSpawnerPos, 180f));

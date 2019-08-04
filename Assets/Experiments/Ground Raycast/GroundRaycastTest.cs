@@ -10,11 +10,11 @@ namespace GroundRaycastTest {
 
         void Start() {
 
-            var ground = GameObject.FindGameObjectWithTag("Ground");
+            var ground = GameObject.FindGameObjectWithTag("StaticForeground");
             ground.GetComponent<BoxCollider>().enabled = false;
             ground.GetComponent<BoxCollider>().enabled = true;
 
-            var groundLayerMask = LayerMask.NameToLayer("Ground");
+            var groundLayerMask = LayerMask.NameToLayer("StaticForeground");
             Debug.Log("GroundMask " + groundLayerMask);
 
             RaycastHit hit;

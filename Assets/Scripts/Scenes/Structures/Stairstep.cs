@@ -26,6 +26,7 @@ namespace Keiwando.Evolution.Scenes {
         public class StairstepBuilder: BaseStructureBuilder<Stairstep> {
 
             protected override string prefabPath => "Prefabs/Structures/Stairstep";
+            protected override CollisionLayer collisionLayer => CollisionLayer.StaticForeground;
 
             public StairstepBuilder(Stairstep step): base(step) {}
         }

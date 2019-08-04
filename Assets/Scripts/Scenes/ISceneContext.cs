@@ -11,5 +11,7 @@ namespace Keiwando.Evolution.Scenes {
         int GetCurrentGeneration();
 
         LayerMask GetBackgroundLayer();
+        LayerMask GetStaticForegroundLayer();
+        LayerMask GetDynamicForegroundLayer();
     }
 }

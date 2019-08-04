@@ -20,19 +20,19 @@ TagManager:
   - 
   - 
   - Creature
-  - Ground
-  - Obstacle
+  - StaticForeground
+  - DynamicForeground
   - Joint
-  - Wall
+  - PlaybackStaticForeground
   - VisibleCreature
   - VisibleJoint
-  - BestCreatureCreature
-  - BestCreatureJoint
+  - PlaybackCreature
+  - PlaybackJoint
   - No Collisions
   - PlaybackBackground
   - SimulationBackground
-  - 
-  - 
+  - PlaybackDynamicForeground
+  - Wall
   - 
   - 
   - 

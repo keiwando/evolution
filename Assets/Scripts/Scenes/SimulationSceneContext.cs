@@ -6,11 +6,16 @@ namespace Keiwando.Evolution.Scenes {
     public class SimulationSceneContext: ISceneContext {
 
         private readonly SimulationData data;
-        private LayerMask layerWithoutCollision;
+        
+        private readonly LayerMask backgroundLayer;
+        private readonly LayerMask staticForegroundLayer;
+        private readonly LayerMask dynamicForegroundLayer;
 
         public SimulationSceneContext(SimulationData data) {
             this.data = data;
-            this.layerWithoutCollision = LayerMask.NameToLayer("SimulationBackground");
+            this.backgroundLayer = LayerMask.NameToLayer("SimulationBackground");
+            this.staticForegroundLayer = LayerMask.NameToLayer("StaticForeground");
+            this.dynamicForegroundLayer = LayerMask.NameToLayer("DynamicForeground");
         }
 
         public CreatureStats GetStatsForBestOfGeneration(int generation) {
@@ -44,7 +49,15 @@ namespace Keiwando.Evolution.Scenes {
         }
 
         public LayerMask GetBackgroundLayer() {
-            return layerWithoutCollision;
+            return backgroundLayer;
+        }
+
+        public LayerMask GetDynamicForegroundLayer() {
+            return dynamicForegroundLayer;
+        }
+
+        public LayerMask GetStaticForegroundLayer() {
+            return staticForegroundLayer;
         }
     }
 }

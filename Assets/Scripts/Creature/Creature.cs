@@ -441,19 +441,19 @@ public class Creature : MonoBehaviour {
 	public void SetOnBestCreatureLayer() {
 
 		foreach (var bone in bones) {
-			bone.gameObject.layer = LayerMask.NameToLayer("BestCreatureCreature");
-			bone.muscleJoint.gameObject.layer = LayerMask.NameToLayer("BestCreatureCreature");
+			bone.gameObject.layer = LayerMask.NameToLayer("PlaybackCreature");
+			bone.muscleJoint.gameObject.layer = LayerMask.NameToLayer("PlaybackCreature");
 		}
 
 		foreach (var joint in joints) {
-			joint.gameObject.layer = LayerMask.NameToLayer("BestCreatureJoint");
+			joint.gameObject.layer = LayerMask.NameToLayer("PlaybackJoint");
 		}
 
 		foreach (var muscle in muscles) {
-			muscle.gameObject.layer = LayerMask.NameToLayer("BestCreatureCreature");
+			muscle.gameObject.layer = LayerMask.NameToLayer("PlaybackCreature");
 		}
 
-		gameObject.layer = LayerMask.NameToLayer("BestCreatureCreature");
+		gameObject.layer = LayerMask.NameToLayer("PlaybackCreature");
 	}
 
 	public void Reset() {

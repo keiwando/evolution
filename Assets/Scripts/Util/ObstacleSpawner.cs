@@ -26,23 +26,14 @@ namespace Keiwando.Evolution {
 
 		public bool BCScene;
 
-		//private Evolution evolution;
 
 		void Start () {
-
-			//evolution = GameObject.Find("Evolution").GetComponent<Evolution>();
 
 			obsRigidbody = obstacle.GetComponent<Rigidbody>();
 
 			StartCoroutine(SpawnObstacle());
 		}
 		
-		// Update is called once per frame
-		void Update () {
-			
-		}
-
-		// Spawns a 
 		private IEnumerator SpawnObstacle() {
 
 			while(true) {

@@ -27,6 +27,7 @@ namespace Keiwando.Evolution.Scenes {
         public class GroundBuilder: BaseStructureBuilder<Ground> {
 
             protected override string prefabPath => "Prefabs/Structures/Ground";
+            protected override CollisionLayer collisionLayer => CollisionLayer.StaticForeground;
 
             public GroundBuilder(Ground ground): base(ground) {}
         }

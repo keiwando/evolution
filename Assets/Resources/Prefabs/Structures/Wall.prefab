@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1407237259275536, guid: aa74b33b832b64838878d4a238e3e9ae, type: 3}
       propertyPath: m_Name
-      value: Right Wall
+      value: Wall
       objectReference: {fileID: 0}
     - target: {fileID: 1407237259275536, guid: aa74b33b832b64838878d4a238e3e9ae, type: 3}
       propertyPath: m_TagString
@@ -17,7 +17,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1407237259275536, guid: aa74b33b832b64838878d4a238e3e9ae, type: 3}
       propertyPath: m_Layer
-      value: 12
+      value: 21
       objectReference: {fileID: 0}
     - target: {fileID: 4385827599941730, guid: aa74b33b832b64838878d4a238e3e9ae, type: 3}
       propertyPath: m_LocalPosition.x
@@ -67,7 +67,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
     - target: {fileID: 65496094442360066, guid: aa74b33b832b64838878d4a238e3e9ae,
         type: 3}
       propertyPath: m_Center.y

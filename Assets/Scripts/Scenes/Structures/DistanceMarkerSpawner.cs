@@ -31,12 +31,14 @@ namespace Keiwando.Evolution.Scenes {
         private static class CodingKey {
             public const string MarkerDistance = "markerDistance";
             public const string AngleFactor = "distanceAngleFactor";
+            public const string BestMarkerRotation = "bestMarkerRotation";
         }
 
         public override JObject Encode() {
             var json = base.Encode();
             json[CodingKey.MarkerDistance] = MarkerDistance;
             json[CodingKey.AngleFactor] = DistanceAngleFactor;
+            json[CodingKey.BestMarkerRotation] = BestMarkerRotation;
             return json;
         }
 
@@ -44,7 +46,8 @@ namespace Keiwando.Evolution.Scenes {
             var transform = BaseStructure.DecodeTransform(json);
             var markerDistance = json[CodingKey.MarkerDistance].ToFloat();
             var angleFactor = json[CodingKey.AngleFactor].ToFloat();
-            return new DistanceMarkerSpawner(transform, markerDistance, angleFactor);
+            var bestMarkerRotation = json[CodingKey.BestMarkerRotation].ToFloat();
+            return new DistanceMarkerSpawner(transform, markerDistance, angleFactor, bestMarkerRotation);
         }
 
         public override IStructureBuilder GetBuilder() {
@@ -54,6 +57,7 @@ namespace Keiwando.Evolution.Scenes {
         public class DistanceMarkerSpawnerBuilder: BaseStructureBuilder<DistanceMarkerSpawner> {
 
             protected override string prefabPath => "Prefabs/Structures/DistanceMarkerSpawner";
+            protected override CollisionLayer collisionLayer => CollisionLayer.Background;
 
             public DistanceMarkerSpawnerBuilder(DistanceMarkerSpawner spawner): base(spawner) {}
 
@@ -66,7 +70,6 @@ namespace Keiwando.Evolution.Scenes {
                 spawner.DistanceAngleFactor = this.structure.DistanceAngleFactor;
                 spawner.BestMarkerRotation = this.structure.BestMarkerRotation;
                 spawner.Context = context;
-                spawner.gameObject.layer = context.GetBackgroundLayer();
                 return spawner.gameObject;
             }
         }

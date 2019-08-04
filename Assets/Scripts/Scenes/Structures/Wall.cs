@@ -27,6 +27,7 @@ namespace Keiwando.Evolution.Scenes {
         public class WallBuilder: BaseStructureBuilder<Wall> {
 
             protected override string prefabPath => "Prefabs/Structures/Wall";
+            protected override CollisionLayer collisionLayer => CollisionLayer.Wall;
 
             public WallBuilder(Wall wall): base(wall) {}
         }
