@@ -63,8 +63,6 @@ namespace Keiwando.Evolution.Scenes {
 
             public override GameObject Build(ISceneContext context) {
 
-                if (!context.AreDistanceMarkersEnabled()) return null;
-
                 var spawner = base.Build(context).GetComponent<DistanceMarkerSpawnerBehaviour>();
                 spawner.MarkerDistance = this.structure.MarkerDistance;
                 spawner.DistanceAngleFactor = this.structure.DistanceAngleFactor;

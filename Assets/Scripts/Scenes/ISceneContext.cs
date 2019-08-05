@@ -6,9 +6,9 @@ namespace Keiwando.Evolution.Scenes {
     public interface ISceneContext {
 
         CreatureStats GetStatsForBestOfGeneration(int generation);
-        bool AreDistanceMarkersEnabled();
-        float GetDistanceOfBest(int generation);
-        int GetCurrentGeneration();
+        float GetDistanceOfBest();
+        // float GetDistanceOfBest(int generation);
+        // int GetCurrentGeneration();
 
         LayerMask GetBackgroundLayer();
         LayerMask GetStaticForegroundLayer();

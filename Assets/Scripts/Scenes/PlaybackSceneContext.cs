@@ -1,66 +1,29 @@
-using System;
 using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
 
-    public class PlaybackSceneContext: ISceneContext {
+    public class PlaybackSceneContext: BaseSceneContext, ISceneContext {
 
-        private readonly SimulationData data;
+        protected override string backgroundLayerName => "PlaybackBackground";
+        protected override string staticForegroundLayerName => "PlaybackStaticForeground";
+        protected override string dynamicForegroundLayerName => "PlaybackDynamicForeground";
+
         private readonly BestCreaturesController controller;
 
-        private readonly LayerMask backgroundLayer;
-        private readonly LayerMask staticForegroundLayer;
-        private readonly LayerMask dynamicForegroundLayer;
-
-        public PlaybackSceneContext(SimulationData data, BestCreaturesController controller) {
-            this.data = data;
+        public PlaybackSceneContext(SimulationData data, BestCreaturesController controller): base(data) {
             this.controller = controller;
-            this.backgroundLayer = LayerMask.NameToLayer("PlaybackBackground");
-            this.staticForegroundLayer = LayerMask.NameToLayer("PlaybackStaticForeground");
-            this.dynamicForegroundLayer = LayerMask.NameToLayer("PlaybackDynamicForeground");
         }
 
-        public CreatureStats GetStatsForBestOfGeneration(int generation) {
-            if (generation < 1 || generation > data.BestCreatures.Count) {
-                return null;
-            }
-            return data.BestCreatures[generation - 1].Stats;
-        }
+        public override float GetDistanceOfBest() {
+            var currentGeneration = GetCurrentGeneration();
+            if (currentGeneration == 0) return float.NaN;
 
-        public float GetDistanceOfBest(int generation) {
-
-            var stats = GetStatsForBestOfGeneration(generation);
-            if (stats == null) return float.NaN;
-
-            switch (this.data.Settings.Task) {
-            case EvolutionTask.Running:
-                return stats.horizontalDistanceTravelled;
-            case EvolutionTask.Jumping:
-            case EvolutionTask.ObstacleJump: 
-            case EvolutionTask.Climbing:
-                return stats.verticalDistanceTravelled;
-            }
-            return stats.horizontalDistanceTravelled;
-        }
-
-        public int GetCurrentGeneration() {
-            return this.controller.CurrentGeneration;
-        }
-
-        public bool AreDistanceMarkersEnabled() {
-            return false;
+            var stats = GetStatsForBestOfGeneration(currentGeneration);
+            return BaseSceneContext.GetDistanceForTask(stats, data.Settings.Task);
         }
         
-        public LayerMask GetBackgroundLayer() {
-            return backgroundLayer;
-        }
-
-        public LayerMask GetDynamicForegroundLayer() {
-            return dynamicForegroundLayer;
-        }
-
-        public LayerMask GetStaticForegroundLayer() {
-            return staticForegroundLayer;
+        private int GetCurrentGeneration() {
+            return this.controller.CurrentGeneration;
         }
     }
 }

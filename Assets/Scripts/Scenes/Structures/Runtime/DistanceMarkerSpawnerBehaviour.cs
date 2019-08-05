@@ -41,7 +41,7 @@ namespace Keiwando.Evolution.Scenes {
             }
 
             // Create marker for best of previous gen
-            var prevBestDistance = Context != null ? Context.GetDistanceOfBest(Context.GetCurrentGeneration() - 1) : float.NaN;
+            var prevBestDistance = Context != null ? Context.GetDistanceOfBest() : float.NaN;
             if (!float.IsNaN(prevBestDistance)) {
                 var actualDistance = prevBestDistance / (STAT_ADJUSTMENT_FACTOR * DistanceAngleFactor);
                 var bestLabelPos = transform.position + (prevBestDistance * transform.right);
@@ -60,6 +60,11 @@ namespace Keiwando.Evolution.Scenes {
             var newMarker = Instantiate(template, pos, Quaternion.Euler(0, 0, rotation), template.transform.parent);
             newMarker.Text = label;
             newMarker.gameObject.layer = this.gameObject.layer;
+            var markerTransform = newMarker.transform;
+            for (int i = 0; i < markerTransform.childCount; i++) {
+                var child = markerTransform.GetChild(i);
+                child.gameObject.layer = newMarker.gameObject.layer;
+            }
             allMarkers.Add(newMarker);
             return newMarker;
         }
