@@ -3,46 +3,46 @@ using System.Collections.Generic;
 
 namespace Keiwando.Evolution {
 
-    public struct LazyChromosomeData: ISelectable<LazyChromosomeData> {
+    public struct LazyChromosomeData<T>: ISelectable<LazyChromosomeData<T>> {
 
-        public string Chromosome {
+        public T Chromosome {
             get {
-                if (cachedChromosome == null) {
-                    cachedChromosome = this.encodable.ToChromosomeString();
+                if (EqualityComparer<T>.Default.Equals(default(T), cachedChromosome)) {
+                    cachedChromosome = this.encodable.ToChromosome();
                 }
                 return cachedChromosome;
             }
         }
-        private string cachedChromosome;
+        private T cachedChromosome;
 
-        private readonly IChromosomeEncodable encodable;
+        private readonly IChromosomeEncodable<T> encodable;
         public readonly CreatureStats Stats;
 
-        public LazyChromosomeData(IChromosomeEncodable encodable, CreatureStats stats) {
+        public LazyChromosomeData(IChromosomeEncodable<T> encodable, CreatureStats stats) {
             this.encodable = encodable;
             this.Stats = stats;
-            this.cachedChromosome = null;
+            this.cachedChromosome = default(T);
         } 
 
         #region Comparers
 
-        public class AscendingComparer: IComparer<LazyChromosomeData> {
-            public int Compare(LazyChromosomeData lhs, LazyChromosomeData rhs) {
+        public class AscendingComparer: IComparer<LazyChromosomeData<T>> {
+            public int Compare(LazyChromosomeData<T> lhs, LazyChromosomeData<T> rhs) {
                 return lhs.Stats.fitness.CompareTo(rhs.Stats.fitness);
             }
         }
 
-        public class DescendingComparer: IComparer<LazyChromosomeData> {
-            public int Compare(LazyChromosomeData lhs, LazyChromosomeData rhs) {
+        public class DescendingComparer: IComparer<LazyChromosomeData<T>> {
+            public int Compare(LazyChromosomeData<T> lhs, LazyChromosomeData<T> rhs) {
                 return rhs.Stats.fitness.CompareTo(lhs.Stats.fitness);
             }
         }
 
-        public IComparer<LazyChromosomeData> GetDescendingComparer() {
+        public IComparer<LazyChromosomeData<T>> GetDescendingComparer() {
             return new DescendingComparer();
         }
 
-        public IComparer<LazyChromosomeData> GetAscendingComparer() {
+        public IComparer<LazyChromosomeData<T>> GetAscendingComparer() {
             return new AscendingComparer();
         }
 

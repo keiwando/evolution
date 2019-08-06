@@ -63,7 +63,7 @@ abstract public class Brain : MonoBehaviour {
 	// 		Brain.byte2StringCache[i] = Convert.ToString(i, 2).PadLeft(8, '0');
 	// }
 
-	public void Init(NeuralNetworkSettings settings, Muscle[] muscles, string chromosome = "") {
+	public void Init(NeuralNetworkSettings settings, Muscle[] muscles, float[] chromosome = null) {
 
 		this.Network = new FeedForwardNetwork(NumberOfInputs, muscles.Length, settings, chromosome);
 		this.muscles = muscles;

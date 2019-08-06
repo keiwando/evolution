@@ -6,8 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Text;
-using System.Linq;
-using Keiwando.Evolution;
 using Keiwando.Evolution.Scenes;
 
 namespace Keiwando.Evolution {
@@ -15,7 +13,7 @@ namespace Keiwando.Evolution {
 	public class Evolution : MonoBehaviour {
 
 		private struct Solution {
-			public IChromosomeEncodable Encodable;
+			public IChromosomeEncodable<float[]> Encodable;
 			public CreatureStats Stats;
 		}
 
@@ -142,7 +140,7 @@ namespace Keiwando.Evolution {
 			this.cachedSettings = Settings;
 			this.LastSavedGeneration = data.BestCreatures.Count;
 
-			Debug.Log("Task " + EvolutionTaskUtil.StringRepresentation(data.Settings.Task));
+			// Debug.Log("Task " + EvolutionTaskUtil.StringRepresentation(data.Settings.Task));
 
 			// Instantiate the creature template
 			var creatureBuilder = new CreatureBuilder(data.CreatureDesign);
@@ -203,7 +201,7 @@ namespace Keiwando.Evolution {
 				this.currentCreatureBatch = batch;
 
 				var chromosomeCount = Math.Min(this.SimulationData.CurrentChromosomes.Length, batch.Length);
-				var chromosomes = new string[chromosomeCount];
+				var chromosomes = new float[chromosomeCount][];
 				for (int c = 0; c < chromosomeCount; c++) {
 					chromosomes[c] = this.SimulationData.CurrentChromosomes[c + firstChromosomeIndex];
 				}
@@ -251,7 +249,7 @@ namespace Keiwando.Evolution {
 
 			// Save the best solution
 			var best = solutions[0];
-			SimulationData.BestCreatures.Add(new ChromosomeData(best.Encodable.ToChromosomeString(), best.Stats));
+			SimulationData.BestCreatures.Add(new ChromosomeData(best.Encodable.ToChromosome(), best.Stats));
 
 			// Autosave if necessary
 			bool saved = AutoSaver.Update(this.currentGenerationNumber, this);
@@ -273,15 +271,15 @@ namespace Keiwando.Evolution {
 			Array.Sort(generation, delegate(Solution lhs, Solution rhs) { return rhs.Stats.fitness.CompareTo(lhs.Stats.fitness); } );
 		}
 
-		private string[] CreateNewChromosomes(int nextGenerationSize, Solution[] solutions, bool keepBest) {
+		private float[][] CreateNewChromosomes(int nextGenerationSize, Solution[] solutions, bool keepBest) {
 
-			string[] result = new string[nextGenerationSize];
+			float[][] result = new float[nextGenerationSize][];
 
-			var lazyChromosomes = new List<LazyChromosomeData>();
+			var lazyChromosomes = new List<LazyChromosomeData<float[]>>();
 			foreach (var solution in solutions) {
-				lazyChromosomes.Add(new LazyChromosomeData(solution.Encodable, solution.Stats));
+				lazyChromosomes.Add(new LazyChromosomeData<float[]>(solution.Encodable, solution.Stats));
 			}
-			var selection = new Selection<LazyChromosomeData>(SelectionAlgorithm.FitnessProportional, lazyChromosomes);
+			var selection = new Selection<LazyChromosomeData<float[]>>(SelectionAlgorithm.FitnessProportional, lazyChromosomes);
 
 			int start = 0;
 			if (keepBest) {
@@ -295,6 +293,8 @@ namespace Keiwando.Evolution {
 				start = 2;
 			}
 
+			float[][] recombinationResult = new float[2][];
+
 			for (int i = start; i < result.Length; i += 2) {
 
 				// randomly pick two creatures and let them "mate"
@@ -303,19 +303,20 @@ namespace Keiwando.Evolution {
 				var parent1 = selection.Select();
 				var parent2 = selection.Select();
 
-				string chrom1 = parent1.Chromosome;
-				string chrom2 = parent2.Chromosome;
+				float[] chrom1 = parent1.Chromosome;
+				float[] chrom2 = parent2.Chromosome;
 				// string chrom1 = GetChromosomeWithCaching(index1);
 				// string chrom2 = GetChromosomeWithCaching(index2);
 
-				string[] newChromosomes = CombineChromosomes(chrom1, chrom2);
+				Recombination<float>.Recombine(chrom1, chrom2, recombinationResult, Settings.RecombinationAlgorithm);
+				// string[] newChromosomes = CombineChromosomes(chrom1, chrom2);
 
-				Assert.AreEqual(chrom1.Length, chrom2.Length);
-				Assert.AreEqual(chrom1.Length, newChromosomes[0].Length);
+				// Assert.AreEqual(chrom1.Length, chrom2.Length);
+				// Assert.AreEqual(chrom1.Length, newChromosomes[0].Length);
 
-				result[i] = newChromosomes[0];
+				result[i] = recombinationResult[0];
 				if (i + 1 < result.Length) {
-					result[i + 1] = newChromosomes[1];
+					result[i + 1] = recombinationResult[1];
 				}
 			}
 
@@ -364,7 +365,7 @@ namespace Keiwando.Evolution {
 			return Mutation.Mutate<MutableString, char>(new MutableString(chromosome), MutationAlgorithm.ChunkFlip).Builder;
 		}
 
-		private void ApplyBrains(Creature[] creatures, string[] chromosomes) {
+		private void ApplyBrains(Creature[] creatures, float[][] chromosomes) {
 
 			for (int i = 0; i < creatures.Length; i++) {
 
@@ -378,7 +379,7 @@ namespace Keiwando.Evolution {
 			}
 		}
 
-		public void ApplyBrain(Creature creature, string chromosome = "") {
+		public void ApplyBrain(Creature creature, float[] chromosome = null) {
 			
 			Brain brain = creature.GetComponent<Brain>();
 			
@@ -405,18 +406,6 @@ namespace Keiwando.Evolution {
 			default:
 				throw new System.ArgumentException(string.Format("There is no brain type for the given task: {0}", task));
 			}
-		}
-
-		public void UpdateCreaturesWithObstacle(GameObject obstacle) {
-
-			print("NOT IMPLEMENTED!!");
-
-			// if (currentGeneration == null) return;
-
-			// this.Obstacle = obstacle;
-			// foreach (var creature in currentGeneration) {
-			// 	creature.Obstacle = obstacle;
-			// }
 		}
 
 		public LegacySimulationOptions GetLegacySimulationOptions() {

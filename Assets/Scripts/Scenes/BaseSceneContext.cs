@@ -58,8 +58,6 @@ namespace Keiwando.Evolution.Scenes {
             return staticForegroundLayer;
         }
 
-        // Not part of ISceneContext
-
         protected static float GetDistanceForTask(CreatureStats stats, EvolutionTask task) {
             if (stats == null) return float.NaN;
             switch (task) {

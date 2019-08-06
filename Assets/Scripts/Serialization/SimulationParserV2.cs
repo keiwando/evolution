@@ -50,18 +50,18 @@ public class SimulationParserV2 {
 
 			if (chromosomeData != "") {
 				var stats = ChromosomeStats.FromString(chromosomeData);
-				var data = new ChromosomeData(stats.chromosome, stats.stats);
-				bestChromosomes.Add(data);	
+				var data = new StringChromosomeData(stats.chromosome, stats.stats);
+				bestChromosomes.Add(data.ToChromosomeData());	
 			}
 		}
 
 		var chromosomeComponents = components[5].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None);
-		var currentChromosomes = new List<string>();
+		var currentChromosomes = new List<float[]>();
 
 		foreach (var chromosome in chromosomeComponents) {
 
 			if (chromosome != "") {
-				currentChromosomes.Add(chromosome);
+				currentChromosomes.Add(ConversionUtils.BinaryStringToFloatArray(chromosome));
 			}
 		}
 

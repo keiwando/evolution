@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-public class FeedForwardNetwork: IChromosomeEncodable {
+public class FeedForwardNetwork: IChromosomeEncodable<string>, IChromosomeEncodable<float[]> {
 
     private struct Constants {
         public static float MIN_WEIGHT = -3.0f;
@@ -22,8 +22,8 @@ public class FeedForwardNetwork: IChromosomeEncodable {
     private float[][] tempResults;
     private StringBuilder builder;
 
-
-    public FeedForwardNetwork(int inputCount, int outputCount, NeuralNetworkSettings settings, string encoded = "") {
+    
+    private FeedForwardNetwork(int inputCount, int outputCount, NeuralNetworkSettings settings) {
 
         // Setup layerSizes
         int layerCount = settings.NumberOfIntermediateLayers + 2;
@@ -34,23 +34,45 @@ public class FeedForwardNetwork: IChromosomeEncodable {
             layerSizes[i] = settings.NodesPerIntermediateLayer[i - 1];
         }
 
-        // Create weights arrays
+        this.Inputs = new float[inputCount];
+    }
 
+    public FeedForwardNetwork(
+        int inputCount, 
+        int outputCount, 
+        NeuralNetworkSettings settings, 
+        float[] weights
+    ) : this(inputCount, outputCount, settings) {
+
+        // Create weights arrays
+        if (weights == null || weights.Length == 0) {
+            SetupRandomWeights();
+        } else {
+            this.weights = WeightsFromFloatArray(weights);
+        }
+        
+        InitializeTempResults();
+    }
+
+    public FeedForwardNetwork(
+        int inputCount, 
+        int outputCount, 
+        NeuralNetworkSettings settings, 
+        string encoded = ""
+    ) : this(inputCount, outputCount, settings) {
+
+        // Create weights arrays
         if (string.IsNullOrEmpty(encoded)) {
-            // Setup Random weights
-            this.weights = new float[layerCount - 1][][];
-            for (int i = 0; i < weights.Length; i++) {
-                this.weights[i] = MatrixUtils.CreateRandomMatrix2D(layerSizes[i], layerSizes[i + 1], 
-                                                                   Constants.MIN_WEIGHT, Constants.MAX_WEIGHT);
-            }
+            SetupRandomWeights();            
         } else {
             // Decode Weights
             this.weights = WeightsFromBinaryString(encoded);
         }
 
-        this.Inputs = new float[NumberOfInputs];
+        InitializeTempResults();
+    }
 
-        // Initialize temporary result vectors
+    private void InitializeTempResults() {
         this.tempResults = new float[weights.Length][];
         for (int i = 0; i < weights.Length; i++) {
             int cols = weights[i][0].Length;
@@ -58,6 +80,17 @@ public class FeedForwardNetwork: IChromosomeEncodable {
         }
     }
 
+    private void SetupRandomWeights() {
+        this.weights = new float[layerSizes.Length - 1][][];
+        for (int i = 0; i < weights.Length; i++) {
+            this.weights[i] = MatrixUtils.CreateRandomMatrix2D(
+                layerSizes[i], layerSizes[i + 1], 
+                Constants.MIN_WEIGHT, Constants.MAX_WEIGHT
+            );
+        }
+    }
+
+    
     public float[] CalculateOutputs() {
 
         float[] result = Inputs;
@@ -91,6 +124,33 @@ public class FeedForwardNetwork: IChromosomeEncodable {
 		return builder.ToString();
     }
 
+    public float[] ToFloatArray() {
+
+        int weightCount = GetTotalWeightCount();
+        float[] allWeights = new float[weightCount];
+        int weightIndex = 0;
+
+        for (int i = 0; i < NumberOfLayers - 1; i++) {
+            int rows = layerSizes[i];
+			int cols = layerSizes[i+1];
+            for (int row = 0; row < rows; row++) {
+                for (int col = 0; col < cols; col++) {
+                    allWeights[weightIndex] = this.weights[i][row][col];       
+                    weightIndex++;
+                }
+            }
+        }
+        return allWeights;
+    }
+
+    private int GetTotalWeightCount() {
+        int totalWeightCount = 0;
+        for (int i = 0; i < NumberOfLayers - 1; i++) {
+            totalWeightCount += this.weights[i].Length * this.weights[i][0].Length;
+        }
+        return totalWeightCount;
+    }
+
     public static float Sigmoid(float x) {
 		return (float)(1 / (1 + Math.Exp(-x)));
 	}
@@ -122,7 +182,34 @@ public class FeedForwardNetwork: IChromosomeEncodable {
 		return matrices;
     }
 
-    public string ToChromosomeString() {
+    private float[][][] WeightsFromFloatArray(float[] weights) {
+
+        float[][][] matrices = new float[NumberOfLayers - 1][][];
+        int weightIndex = 0;
+
+        for (int i = 0; i < NumberOfLayers - 1; i++) {
+            int rows = layerSizes[i];
+            int cols = layerSizes[i + 1];
+            int weightsInMatrix = rows * cols;
+
+            var matrix = new float[rows][];
+            for (int row = 0; row < rows; row++) {
+                matrix[row] = new float[cols];
+                for (int col = 0; col < cols; col++) {
+                    matrix[row][col] = weights[weightIndex];
+                    weightIndex++;
+                }
+            }
+            matrices[i] = matrix;
+        }
+        return matrices;
+    }
+
+    string IChromosomeEncodable<string>.ToChromosome() {
         return ToBinaryString();
+    }
+
+    float[] IChromosomeEncodable<float[]>.ToChromosome() {
+        return ToFloatArray();
     }
 }

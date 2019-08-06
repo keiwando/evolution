@@ -92,6 +92,20 @@ public static class ConversionUtils {
 		return matrix;
     }
 
+	public static float[] BinaryStringToFloatArray(string str) {
+		
+		if (str.Length % 32 != 0) {
+			throw new ArgumentException("Only binary strings are supported");
+		}
+
+		int floatCount = str.Length / 32;
+		float[] floats = new float[floatCount];
+		for (int i = 0; i < floatCount; i++) {
+			floats[i] = BinaryStringToFloat(str, i * 32, 32);
+		}
+		return floats;
+	}
+
     public static float BinaryStringToFloat(string str) {
 
 		int numOfBytes = str.Length / 8;

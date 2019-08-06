@@ -18761,7 +18761,6 @@ MonoBehaviour:
   zoomAnchor: {x: 0.5, y: 0.5}
   zoomInLength: 4
   zoomOutLength: 10
-  isControlledByInput: 1
   bottomMovementPadding: 10
   topMovementPadding: 10
   leftMovementPadding: 18
@@ -23562,6 +23561,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.b
       value: 0.13333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 2808836621106590131, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: m_Text
+      value: '<size=20><b>Recombination Algorithm</b></size>
+
+
+        Defines how two parent chromosomes are recombined into one offspring
+
+
+        <b>One Point</b>
+
+        Cuts the parent chromosomes at the same random index and uses one part from
+        each parent
+
+
+        <b>Multi Point</b>
+
+        Cuts the parent chromosomes at multiple random indices and alternatingly chooses
+        parts from the parent chromosomes
+
+
+        <b>Uniform</b>
+
+        Chooses each bit at random from either parent chromosome'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ddba5d3d97b9c407b8551ce8581fa97a, type: 3}

@@ -1,3 +1,3 @@
-public interface IChromosomeEncodable {
-    string ToChromosomeString();
+public interface IChromosomeEncodable<T> {
+    T ToChromosome();
 }

@@ -49,22 +49,24 @@ public class SimulationParserV1 {
 		foreach (var chromosomeData in bestChromosomesData) {
 
 			if (chromosomeData != "") {
-
-				var chromosomeInfo = ChromosomeInfo.FromString(chromosomeData);
-				var chromosomeStats = new ChromosomeStats(chromosomeInfo.chromosome, new CreatureStats());
-				chromosomeStats.stats.fitness = chromosomeInfo.fitness;
-				var data = new ChromosomeData(chromosomeInfo.chromosome, chromosomeStats.stats);
-				bestChromosomes.Add(data);
+				// Parse the chromosome data
+				var parts = chromosomeData.Split(':');
+				var chromosome = parts[0];
+				var fitness = float.Parse(parts[1]);
+				var chromosomeStats = new ChromosomeStats(chromosome, new CreatureStats());
+				chromosomeStats.stats.fitness = fitness;
+				var data = new StringChromosomeData(chromosome, chromosomeStats.stats);
+				bestChromosomes.Add(data.ToChromosomeData());
 			}
 		}
 
 		var chromosomeComponents = components[4].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None);
-		var currentChromosomes = new List<string>();
+		var currentChromosomes = new List<float[]>();
 
 		foreach (var chromosome in chromosomeComponents) {
 
 			if (chromosome != "") {
-				currentChromosomes.Add(chromosome);
+				currentChromosomes.Add(ConversionUtils.BinaryStringToFloatArray(chromosome));
 			}
 		}
 

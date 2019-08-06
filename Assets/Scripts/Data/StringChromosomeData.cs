@@ -5,35 +5,39 @@ using Keiwando.JSON;
 namespace Keiwando.Evolution {
 
     [Serializable]
-    public struct ChromosomeData: ISelectable<ChromosomeData>, IJsonConvertible {
+    public struct StringChromosomeData: ISelectable<StringChromosomeData>, IJsonConvertible {
 
-        public readonly float[] Chromosome;
+        public readonly string Chromosome;
         public readonly CreatureStats Stats;
 
-        public ChromosomeData(float[] chromosome, CreatureStats stats) {
+        public StringChromosomeData(string chromosome, CreatureStats stats) {
             this.Chromosome = chromosome;
             this.Stats = stats;
         } 
 
+        public ChromosomeData ToChromosomeData() {
+            return new ChromosomeData(ConversionUtils.BinaryStringToFloatArray(Chromosome), Stats);
+        }
+
         #region Comparers
 
-        public class AscendingComparer: IComparer<ChromosomeData> {
-            public int Compare(ChromosomeData lhs, ChromosomeData rhs) {
+        public class AscendingComparer: IComparer<StringChromosomeData> {
+            public int Compare(StringChromosomeData lhs, StringChromosomeData rhs) {
                 return lhs.Stats.fitness.CompareTo(rhs.Stats.fitness);
             }
         }
 
-        public class DescendingComparer: IComparer<ChromosomeData> {
-            public int Compare(ChromosomeData lhs, ChromosomeData rhs) {
+        public class DescendingComparer: IComparer<StringChromosomeData> {
+            public int Compare(StringChromosomeData lhs, StringChromosomeData rhs) {
                 return rhs.Stats.fitness.CompareTo(lhs.Stats.fitness);
             }
         }
 
-        public IComparer<ChromosomeData> GetDescendingComparer() {
+        public IComparer<StringChromosomeData> GetDescendingComparer() {
             return new DescendingComparer();
         }
 
-        public IComparer<ChromosomeData> GetAscendingComparer() {
+        public IComparer<StringChromosomeData> GetAscendingComparer() {
             return new AscendingComparer();
         }
 
@@ -52,16 +56,16 @@ namespace Keiwando.Evolution {
             return json;
         }
 
-        public static ChromosomeData Decode(string encoded) {
+        public static StringChromosomeData Decode(string encoded) {
             return Decode(JObject.Parse(encoded));
         }
 
-        public static ChromosomeData Decode(JObject json) {
+        public static StringChromosomeData Decode(JObject json) {
 
-            var chromosome = json[CodingKey.Chromosome].ToFloatArray();
+            string chromosome = json[CodingKey.Chromosome].ToString();
             var statsJSON = json[CodingKey.CreatureStats] as JObject;
             var stats = CreatureStats.Decode(statsJSON);
-            return new ChromosomeData(chromosome, stats);
+            return new StringChromosomeData(chromosome, stats);
         }
 
         #endregion

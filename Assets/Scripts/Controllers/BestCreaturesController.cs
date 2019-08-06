@@ -113,7 +113,6 @@ namespace Keiwando.Evolution {
 			var chromosome = evolution.SimulationData.BestCreatures[generation - 1].Chromosome;
 			this.CurrentBest = context.Creatures[0];
 			evolution.ApplyBrain(this.CurrentBest, chromosome);
-			// TODO: Set Obstacle if needed
 
 			trackedCamera.Target = this.CurrentBest;
 			
