@@ -23587,5 +23587,28 @@ PrefabInstance:
 
         Chooses each bit at random from either parent chromosome'
       objectReference: {fileID: 0}
+    - target: {fileID: 2808836619867664945, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: m_Text
+      value: '<size=20><b>Mutation Algorithm</b></size>
+
+
+        Defines how random changes are applied to offspring chromosomes
+
+
+        <b>Chunk</b>
+
+        Changes a random number of consecutive values in the chromosome
+
+
+        <b>Global</b>
+
+        Changes the value at each index with a random probability
+
+
+        <b>Inversion</b>
+
+        Chooses a random start and end index and inverts the order of values inbetween'
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ddba5d3d97b9c407b8551ce8581fa97a, type: 3}

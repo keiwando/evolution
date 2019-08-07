@@ -66,7 +66,7 @@ public struct SimulationSettings {
 		MutationRate = 0.5f,
 		SelectionAlgorithm = SelectionAlgorithm.RankProportional,
 		RecombinationAlgorithm = RecombinationAlgorithm.OnePointCrossover,
-		MutationAlgorithm = MutationAlgorithm.ChunkFlip
+		MutationAlgorithm = MutationAlgorithm.Global
 	};
 
 	public SimulationSettings(EvolutionTask task) {

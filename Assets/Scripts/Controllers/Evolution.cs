@@ -288,8 +288,6 @@ namespace Keiwando.Evolution {
 				var best = selection.SelectBest(2);
 				result[0] = best[0].Chromosome;
 				result[1] = best[1].Chromosome;
-				// result[0] = GetChromosomeWithCaching(0);
-				// result[1] = GetChromosomeWithCaching(1);
 				start = 2;
 			}
 
@@ -297,26 +295,17 @@ namespace Keiwando.Evolution {
 
 			for (int i = start; i < result.Length; i += 2) {
 
-				// randomly pick two creatures and let them "mate"
-				// int index1 = PickRandomWeightedIndex();
-				// int index2 = PickRandomWeightedIndex();
 				var parent1 = selection.Select();
 				var parent2 = selection.Select();
 
 				float[] chrom1 = parent1.Chromosome;
 				float[] chrom2 = parent2.Chromosome;
-				// string chrom1 = GetChromosomeWithCaching(index1);
-				// string chrom2 = GetChromosomeWithCaching(index2);
-
+				
 				Recombination<float>.Recombine(chrom1, chrom2, recombinationResult, Settings.RecombinationAlgorithm);
-				// string[] newChromosomes = CombineChromosomes(chrom1, chrom2);
 
-				// Assert.AreEqual(chrom1.Length, chrom2.Length);
-				// Assert.AreEqual(chrom1.Length, newChromosomes[0].Length);
-
-				result[i] = recombinationResult[0];
+				result[i] = Mutated(recombinationResult[0]);
 				if (i + 1 < result.Length) {
-					result[i + 1] = recombinationResult[1];
+					result[i + 1] = Mutated(recombinationResult[1]);
 				}
 			}
 
@@ -324,45 +313,12 @@ namespace Keiwando.Evolution {
 
 		}
 
-		/// <summary>
-		/// Optimized
-		/// Takes two chromosome strings and returns an array of two new chromosome strings that are a combination of the parent strings.
-		/// </summary>
-		private string[] CombineChromosomes(string chrom1, string chrom2) {
-
-			// TODO: Move into Recombination class
-
-			int splitIndex = UnityEngine.Random.Range(1, chrom2.Length);
-			string[] result = new string[2];
-
-			var chrom1Builder = new StringBuilder(chrom1);
-			var chrom2Builder = new StringBuilder(chrom2);
-
-			var chrom2End = chrom2.Substring(splitIndex);
-			var chrom1End = chrom1.Substring(splitIndex);
-
-			chrom1Builder.Remove(splitIndex, chrom1Builder.Length - splitIndex);
-			chrom2Builder.Remove(splitIndex, chrom2Builder.Length - splitIndex);
-
-			chrom1Builder.Append(chrom2End);
-			chrom2Builder.Append(chrom1End);
-
-			Assert.AreEqual(chrom1Builder.Length, chrom1.Length);
-			Assert.AreEqual(chrom2Builder.Length, chrom2.Length);
-
-			result[0] = Mutate(chrom1Builder).ToString();
-			result[1] = Mutate(chrom2Builder).ToString();
-
-			return result;
-		}
-
-		private StringBuilder Mutate(StringBuilder chromosome) {
+		private float[] Mutated(float[] chromosome) {
 
 			bool shouldMutate = UnityEngine.Random.Range(0, 100.0f) < Settings.MutationRate * 100f;
-
 			if (!shouldMutate) return chromosome;
 
-			return Mutation.Mutate<MutableString, char>(new MutableString(chromosome), MutationAlgorithm.ChunkFlip).Builder;
+			return Mutation.Mutate(chromosome, Settings.MutationAlgorithm);
 		}
 
 		private void ApplyBrains(Creature[] creatures, float[][] chromosomes) {

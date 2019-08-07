@@ -106,8 +106,8 @@ namespace Keiwando.Evolution.UI {
         private readonly DropdownData<MutationAlgorithm>[] mutationAlgorithms = new [] {
             new DropdownData<MutationAlgorithm>() {
                 Index = 0,
-                Value = MutationAlgorithm.ChunkFlip,
-                Label = "Chunk Flip"
+                Value = MutationAlgorithm.Chunk,
+                Label = "Chunk"
             },
             new DropdownData<MutationAlgorithm>() {
                 Index = 1,
