@@ -46,6 +46,10 @@ namespace Keiwando.Evolution {
             return new AscendingComparer();
         }
 
+        public float GetFitness() {
+            return Stats.fitness;
+        }
+
         #endregion
     }
 }

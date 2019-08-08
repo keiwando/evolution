@@ -5,6 +5,7 @@ namespace Keiwando.Evolution {
 
     public interface ISelectable<T> {
         
+        float GetFitness();
         IComparer<T> GetDescendingComparer();
         IComparer<T> GetAscendingComparer();
     }
@@ -18,39 +19,24 @@ namespace Keiwando.Evolution {
 
     public class Selection<T> where T: ISelectable<T> {
 
-        private SelectionAlgorithm mode;
+        private readonly SelectionAlgorithm mode;
         
         /// <summary>
-        /// A sorted list of solutions to select from in descending order.
+        /// A sorted list of solutions to select from in ascending order.
         /// </summary>
         private List<T> solutions;
 
-        private int[] randomPickingWeights;
+        private RandomPicker<T> random;
 
         public Selection(SelectionAlgorithm mode, List<T> solutions) {
             this.mode = mode;
             this.solutions = solutions;
 
             if (solutions.Count > 0) {
-                this.solutions.Sort(solutions[0].GetDescendingComparer());
+                this.solutions.Sort(solutions[0].GetAscendingComparer());
             }
 
-            SetupPickingWeights(mode, solutions.Count);
-        }
-
-        public T Select() {
-
-            // Select a random weighted index
-            int rand = UnityEngine.Random.Range(0, this.randomPickingWeights[0] - 1);
-            int index = 0;
-            for(int i = this.solutions.Count - 1; i >= 0; i--) {
-                if( randomPickingWeights[i] >= rand ) {
-                    index = i;
-                    break;
-                }
-            }
-
-            return solutions[index];
+            SetupPickingWeights(mode, solutions);
         }
 
         /// <summary>
@@ -59,35 +45,67 @@ namespace Keiwando.Evolution {
         public List<T> SelectBest(int n) {
 
             var best = new List<T>();
-            for (int i = 0; i < n; i++) {
+            for (int i = solutions.Count - 1; i > solutions.Count - 1 - n; i--) {
                 best.Add(solutions[i]);
             }
             return best;
         }
 
-        #region Weight setup
+        public T Select() {
+            switch (mode) {
 
-        private void SetupPickingWeights(SelectionAlgorithm mode, int count) {
+            case SelectionAlgorithm.Uniform:
+            case SelectionAlgorithm.RankProportional:
+            case SelectionAlgorithm.FitnessProportional:
+            return random.Next();
 
-            this.randomPickingWeights = new int[count];
+            case SelectionAlgorithm.TournamentSelection:
+            T sel1 = random.Next();
+            T sel2 = random.Next();
+            T sel3 = random.Next();
+            float fitness1 = sel1.GetFitness();
+            float fitness2 = sel2.GetFitness();
+            float fitness3 = sel3.GetFitness();
+            if (fitness1 > fitness2) {
+                return fitness1 > fitness3 ? sel1 : sel3;
+            } else {
+                return fitness2 > fitness3 ? sel2 : sel3;
+            }
+
+            default: throw new System.ArgumentException("Invalid selection mode.");
+            }
+        }
+
+
+        private void SetupPickingWeights(SelectionAlgorithm mode, List<T> solutions) {
+
+            random = new RandomPicker<T>();
 
             switch (mode) {
-                case SelectionAlgorithm.FitnessProportional: 
-                SetupFitnessProportionalWeights(this.randomPickingWeights);
-                break;
-                default: break;
+
+            case SelectionAlgorithm.FitnessProportional: 
+            
+            foreach (var solution in solutions) {
+                random.Add(solution, solution.GetFitness());
+            }
+            break;
+            
+            case SelectionAlgorithm.Uniform:
+            case SelectionAlgorithm.TournamentSelection:
+            foreach (var solution in solutions) {
+                random.Add(solution, 1);
+            }
+            break;
+
+            case SelectionAlgorithm.RankProportional:
+            for (int i = 0; i < solutions.Count; i++) {
+                random.Add(solutions[i], i);
+            }
+            break;
+            
+            default: break;
             }
         }
-
-        private void SetupFitnessProportionalWeights(int[] weights) {
-            int value = 1;
-            for (int i = 1; i <= weights.Length; i++) {
-                weights[weights.Length - i] = value;
-                value += i;
-            }
-        }
-
-        #endregion
     }
 }
 

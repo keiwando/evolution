@@ -279,7 +279,7 @@ namespace Keiwando.Evolution {
 			foreach (var solution in solutions) {
 				lazyChromosomes.Add(new LazyChromosomeData<float[]>(solution.Encodable, solution.Stats));
 			}
-			var selection = new Selection<LazyChromosomeData<float[]>>(SelectionAlgorithm.FitnessProportional, lazyChromosomes);
+			var selection = new Selection<LazyChromosomeData<float[]>>(Settings.SelectionAlgorithm, lazyChromosomes);
 
 			int start = 0;
 			if (keepBest) {

@@ -29,6 +29,10 @@ namespace Keiwando.Evolution {
             }
         }
 
+        public float GetFitness() {
+            return Stats.fitness;
+        }
+
         public IComparer<ChromosomeData> GetDescendingComparer() {
             return new DescendingComparer();
         }
