@@ -65,7 +65,7 @@ public class SimulationParserV2 {
 			}
 		}
 
-		var sceneDescription = DefaultSimulationScenes.DefaultSceneForTask(simulationSettings.Task);
+		var sceneDescription = DefaultSimulationScenes.DefaultSceneForObjective(simulationSettings.Objective);
 
 		return new SimulationData(
 			simulationSettings, networkSettings, creatureDesign, 

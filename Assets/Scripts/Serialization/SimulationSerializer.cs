@@ -61,9 +61,9 @@ public class SimulationSerializer {
 		string contents = data.Encode().ToString(Formatting.None);
 		string creatureName = data.CreatureDesign.Name;
 		string dateString = System.DateTime.Now.ToString("MMM dd, yyyy");
-		string taskString = EvolutionTaskUtil.StringRepresentation(data.Settings.Task);
+		string objectiveString = ObjectiveUtil.StringRepresentation(data.Settings.Objective);
 		int generation = data.BestCreatures.Count + 1;
-		string filename = string.Format("{0} - {1} - {2} - Gen {3}", creatureName, taskString, dateString, generation);
+		string filename = string.Format("{0} - {1} - {2} - Gen {3}", creatureName, objectiveString, dateString, generation);
 
 		// Save without overwriting existing saves
 		return SaveSimulationFile(filename, contents, false);

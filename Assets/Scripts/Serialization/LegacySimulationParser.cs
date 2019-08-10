@@ -54,7 +54,7 @@ public class LegacySimulationLoader {
 	/// The current save file format version. This number has nothing to do with the Application.version.
 	/// It should be the first line of every savefile prepended by a v so that it can be immediately identified how to interpret
 	/// the rest of the file.
-	/// The first savefiles do not contain a version number (1), but instead immediately start with the simulation task as an int, 
+	/// The first savefiles do not contain a version number (1), but instead immediately start with the simulation objective as an int, 
 	/// which is how they can be differentiated from the rest (They don't start with a v).
 	/// </summary>
 	private static int version = 2;

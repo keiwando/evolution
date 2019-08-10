@@ -7,17 +7,20 @@ namespace Keiwando.Evolution {
         public readonly CreatureDesign Design;
         public readonly int BatchSize;
         public readonly PhysicsScene PhysicsScene;
+        public readonly ISceneContext SceneContext;
         public readonly SimulationSceneDescription SceneDescription;
         public readonly LegacySimulationOptions LegacyOptions;
 
         public SimulationSpawnConfig(
             CreatureDesign design, int batchSize, 
-            PhysicsScene physicsScene, LegacySimulationOptions legacyOptions,
+            PhysicsScene physicsScene, ISceneContext context, 
+            LegacySimulationOptions legacyOptions,
             SimulationSceneDescription sceneDescription
         ) {
             this.Design = design; 
             this.BatchSize = batchSize;
             this.PhysicsScene = physicsScene;
+            this.SceneContext = context;
             this.LegacyOptions = legacyOptions;
             this.SceneDescription = sceneDescription;
         }
@@ -41,6 +44,7 @@ namespace Keiwando.Evolution {
             // SetupCreature(template, physicsScene);
             template.PhysicsScene = options.PhysicsScene;
             template.RemoveMuscleColliders();
+            template.SceneContext = options.SceneContext;
             template.Alive = false;
             template.gameObject.SetActive(true);
 
@@ -65,16 +69,17 @@ namespace Keiwando.Evolution {
             for (int i = 0; i < options.BatchSize; i++) {
 
                 var builder = new CreatureBuilder(options.Design);
-                batch[i] = builder.Build();
-                batch[i].transform.position = spawnPosition;
-                batch[i].usesLegacyRotationCalculation = options.LegacyOptions.LegacyRotationCalculation;
+                var creature = builder.Build();
+                batch[i] = creature;
+                creature.transform.position = spawnPosition;
+                creature.SceneContext = options.SceneContext;
+                creature.usesLegacyRotationCalculation = options.LegacyOptions.LegacyRotationCalculation;
                 // batch[i].usesLegacyRotationCalculation = true;
                 // SetupCreature(batch[i], physicsScene);
 
                 // batch[i] = Instantiate(template, spawnPosition, Quaternion.identity);
-                batch[i].RefreshLineRenderers();
-                batch[i].PhysicsScene = options.PhysicsScene;
-                // TODO: Connect Obstacle
+                creature.RefreshLineRenderers();
+                creature.PhysicsScene = options.PhysicsScene;
             }
 
             template.gameObject.SetActive(false);

@@ -22,13 +22,13 @@ public class RaycastExperiments: MonoBehaviour {
         var config = new SceneController.SimulationSceneLoadConfig(
             new CreatureDesign("Unnamed", joints, new List<BoneData>(), new List<MuscleData>()),
             1,
-            DefaultSimulationScenes.DefaultSceneForTask(EvolutionTask.Running),
+            DefaultSimulationScenes.DefaultSceneForObjective(Objective.Running),
             SceneController.SimulationSceneType.Simulation,
             new LegacySimulationOptions()
         );
         var context = new SceneController.SimulationSceneLoadContext();
 
-        yield return SceneController.LoadSimulationScene(config, context);
+        yield return SceneController.LoadSimulationScene(config, context, null);
 
         Debug.Log("TestGroundDistance");
 

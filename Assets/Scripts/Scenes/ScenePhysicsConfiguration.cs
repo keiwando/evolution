@@ -35,7 +35,7 @@ namespace Keiwando.Evolution.Scenes {
 
         /// <summary>
         /// Define how many solver processes Unity runs on every physics frame. 
-        /// Solvers are small physics engine tasks which determine a number of 
+        /// Solvers are small physics engine objectives which determine a number of 
         /// physics interactions, such as the movements of joints or managing 
         /// contact between overlapping Rigidbody components. 
         /// This affects the quality of the solver output and it’s advisable 

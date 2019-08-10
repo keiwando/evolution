@@ -162,8 +162,8 @@ namespace Keiwando.Evolution {
             return simulationSettings.SimulationTime;
         }
 
-        public EvolutionTask GetEvolutionTask(BasicSettingsView view) {
-            return simulationSettings.Task;
+        public Objective GetObjective(BasicSettingsView view) {
+            return simulationSettings.Objective;
         }
 
         public void PopulationSizeDidChange(BasicSettingsView view, int value) {
@@ -178,9 +178,9 @@ namespace Keiwando.Evolution {
             simulationSettings = settings;
         }
 
-        public void EvolutionTaskDidChange(BasicSettingsView view, EvolutionTask task) {
+        public void ObjectiveDidChange(BasicSettingsView view, Objective objective) {
             var settings = simulationSettings;
-            settings.Task = task;
+            settings.Objective = objective;
             simulationSettings = settings;
         }
     }

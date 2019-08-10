@@ -37,7 +37,7 @@ namespace Keiwando.Evolution.Scenes {
             for (int i = 0; i < data.BestCreatures.Count; i++) {
                 float distance = 0f;
                 var stats = data.BestCreatures[i].Stats;
-                distance = GetDistanceForTask(stats, this.data.Settings.Task);
+                distance = GetDistanceForObjective(stats, this.data.Settings.Objective);
                 if (distance > bestDistance) {
                     bestDistance = distance;
                 }
@@ -58,15 +58,15 @@ namespace Keiwando.Evolution.Scenes {
             return staticForegroundLayer;
         }
 
-        protected static float GetDistanceForTask(CreatureStats stats, EvolutionTask task) {
+        protected static float GetDistanceForObjective(CreatureStats stats, Objective objective) {
             if (stats == null) return float.NaN;
-            switch (task) {
-            case EvolutionTask.Running: 
+            switch (objective) {
+            case Objective.Running: 
                 return stats.horizontalDistanceTravelled;
-            case EvolutionTask.ObstacleJump: 
-            case EvolutionTask.Climbing:
+            case Objective.ObstacleJump: 
+            case Objective.Climbing:
                 return stats.verticalDistanceTravelled;
-            case EvolutionTask.Jumping:
+            case Objective.Jumping:
                 return stats.maxJumpingHeight;
             }
             return stats.horizontalDistanceTravelled;

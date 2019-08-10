@@ -57,7 +57,7 @@ namespace Keiwando.Evolution {
             yield return SceneManager.UnloadSceneAsync(scene);
         }
 
-        public static IEnumerator LoadSimulationScene(SimulationSceneLoadConfig config, SimulationSceneLoadContext context, ISceneContext sceneContext = null) {
+        public static IEnumerator LoadSimulationScene(SimulationSceneLoadConfig config, SimulationSceneLoadContext context, ISceneContext sceneContext) {
             
             // Load Scene
             var sceneName = NameForScene(config.SceneType);
@@ -95,6 +95,7 @@ namespace Keiwando.Evolution {
                 config.CreatureDesign, 
                 config.CreatureSpawnCount,
                 context.PhysicsScene,
+                sceneContext,
                 config.LegacyOptions,
                 config.SceneDescription
             );

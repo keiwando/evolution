@@ -160,7 +160,7 @@ public class CreatureEditor: MonoBehaviour,
 
         EditorStateManager.LastCreatureDesign = creatureDesign;
 
-        var sceneDescription = DefaultSimulationScenes.DefaultSceneForTask(simulationSettings.Task);
+        var sceneDescription = DefaultSimulationScenes.DefaultSceneForObjective(simulationSettings.Objective);
         
         var simulationData = new SimulationData(simulationSettings, 
                                                 networkSettings,

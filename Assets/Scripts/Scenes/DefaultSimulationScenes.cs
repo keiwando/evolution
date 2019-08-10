@@ -14,13 +14,13 @@ namespace Keiwando.Evolution.Scenes {
         public static readonly SimulationSceneDescription ObstacleJumpScene = CreateObstacleJumpScene();
         public static readonly SimulationSceneDescription ClimbingScene = CreateClimbingScene();
 
-        public static SimulationSceneDescription DefaultSceneForTask(EvolutionTask task) {
-            switch (task) {
-            case EvolutionTask.Running: return RunningScene;
-            case EvolutionTask.Jumping: return JumpingScene;
-            case EvolutionTask.ObstacleJump: return ObstacleJumpScene;
-            case EvolutionTask.Climbing: return ClimbingScene;
-            default: throw new System.ArgumentException("Invalid task!");
+        public static SimulationSceneDescription DefaultSceneForObjective(Objective objective) {
+            switch (objective) {
+            case Objective.Running: return RunningScene;
+            case Objective.Jumping: return JumpingScene;
+            case Objective.ObstacleJump: return ObstacleJumpScene;
+            case Objective.Climbing: return ClimbingScene;
+            default: throw new System.ArgumentException("Invalid objective!");
             }
         }
 

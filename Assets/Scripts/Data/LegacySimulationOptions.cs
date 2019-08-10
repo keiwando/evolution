@@ -11,7 +11,7 @@ namespace Keiwando.Evolution {
         public bool LegacyRotationCalculation = false;
 
         /// <summary>
-        /// In the climbing task, the template creature's DistanceFromGround
+        /// In the climbing objective, the template creature's DistanceFromGround
         /// call always returned 0, so the drop height calculation ended up
         /// being incorrect
         /// </summary>

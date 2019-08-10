@@ -10,7 +10,7 @@ using Keiwando.Evolution.Scenes;
 /// 
 /// Content: 
 /// 
-/// simulation task
+/// simulation objective
 /// -separator-
 /// time per generation
 /// -separator-
@@ -36,7 +36,7 @@ public class SimulationParserV1 {
 		var components = content.Split(splitOptions.SPLIT_ARRAY, System.StringSplitOptions.None);
 
 		// extract the save data from the file contents.
-		var taskType = EvolutionTaskUtil.TaskForNumber(int.Parse(components[0].Replace(Environment.NewLine, "")));
+		var objectiveType = ObjectiveUtil.ObjectiveForNumber(int.Parse(components[0].Replace(Environment.NewLine, "")));
 
 		var timePerGen = int.Parse(components[1].Replace(Environment.NewLine, ""));
 
@@ -73,12 +73,12 @@ public class SimulationParserV1 {
 		var currentGeneration = bestChromosomes.Count + 1;
 
 		var settings = new SimulationSettings();
-		settings.Task = taskType;
+		settings.Objective = objectiveType;
 		settings.SimulationTime = timePerGen;
 		settings.PopulationSize = currentChromosomes.Count;
 
 		var networkSettings = NeuralNetworkSettings.Default;
-		var sceneDescription = DefaultSimulationScenes.DefaultSceneForTask(settings.Task);
+		var sceneDescription = DefaultSimulationScenes.DefaultSceneForObjective(settings.Objective);
 
 		int lastSimulatedV2Generation = bestChromosomes.Count;
 

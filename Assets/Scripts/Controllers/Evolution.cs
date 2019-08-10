@@ -61,11 +61,6 @@ namespace Keiwando.Evolution {
 		/// </summary>
 		private Creature creature;
 
-		/// <summary>
-		/// The obstacle gameobject of the "Obstacle Jump" task.
-		/// </summary>
-		public GameObject Obstacle { get; set; }
-
 		public int CurrentGenerationNumber { get { return currentGenerationNumber; } }
 		/// <summary>
 		/// The number of the currently simulating generation. Starts at 1.
@@ -140,7 +135,7 @@ namespace Keiwando.Evolution {
 			this.cachedSettings = Settings;
 			this.LastSavedGeneration = data.BestCreatures.Count;
 
-			// Debug.Log("Task " + EvolutionTaskUtil.StringRepresentation(data.Settings.Task));
+			// Debug.Log("Objective " + ObjectiveUtil.StringRepresentation(data.Settings.Objective));
 
 			// Instantiate the creature template
 			var creatureBuilder = new CreatureBuilder(data.CreatureDesign);
@@ -216,7 +211,7 @@ namespace Keiwando.Evolution {
 					var creature = batch[j];
 					solutions[solutionIndex++] = new Solution() { 
 						Encodable = creature.brain.Network,
-						Stats = creature.GetStatistics()
+						Stats = creature.GetStatistics(this.cachedSettings.SimulationTime)
 					};
 				}
 				
@@ -340,27 +335,29 @@ namespace Keiwando.Evolution {
 			Brain brain = creature.GetComponent<Brain>();
 			
 			if (brain == null) {
-				brain = AddBrainComponent(Settings.Task, creature.gameObject);
+				brain = AddBrainComponent(Settings.Objective, creature.gameObject);
 			}
 			brain.Init(NetworkSettings, creature.muscles.ToArray(), chromosome);
 			
-			brain.SimulationTime = cachedSettings.SimulationTime;
-			brain.Creature = creature;
 			creature.brain = brain;
 		}
 
-		private static Brain AddBrainComponent(EvolutionTask task, GameObject gameObject) {
-			switch (task) {
-			case EvolutionTask.Running:
+		private static Brain AddBrainComponent(Objective objective, GameObject gameObject) {
+			switch (objective) {
+			case Objective.Running:
+				gameObject.AddComponent<RunningObjectiveTracker>();
 				return gameObject.AddComponent<RunningBrain>();
-			case EvolutionTask.Jumping:
+			case Objective.Jumping:
+				gameObject.AddComponent<JumpingObjectiveTracker>();
 				return gameObject.AddComponent<JumpingBrain>();
-			case EvolutionTask.ObstacleJump:
+			case Objective.ObstacleJump:
+				gameObject.AddComponent<ObstacleJumpObjectiveTracker>();
 				return gameObject.AddComponent<ObstacleJumpingBrain>();
-			case EvolutionTask.Climbing:
+			case Objective.Climbing:
+				gameObject.AddComponent<ClimbingObjectiveTracker>();
 				return gameObject.AddComponent<ClimbingBrain>();
 			default:
-				throw new System.ArgumentException(string.Format("There is no brain type for the given task: {0}", task));
+				throw new System.ArgumentException(string.Format("There is no brain type for the given objective: {0}", objective));
 			}
 		}
 
@@ -368,7 +365,7 @@ namespace Keiwando.Evolution {
 			if (SimulationData.LastV2SimulatedGeneration > 0) {
 				return new LegacySimulationOptions() {
 					LegacyRotationCalculation = true,
-					LegacyClimbingDropCalculation = SimulationData.Settings.Task == EvolutionTask.Climbing
+					LegacyClimbingDropCalculation = SimulationData.Settings.Objective == Objective.Climbing
 				};
 			}
 			return new LegacySimulationOptions();

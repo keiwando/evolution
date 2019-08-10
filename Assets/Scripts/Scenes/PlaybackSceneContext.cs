@@ -19,7 +19,7 @@ namespace Keiwando.Evolution.Scenes {
             if (currentGeneration == 0) return float.NaN;
 
             var stats = GetStatsForBestOfGeneration(currentGeneration);
-            return BaseSceneContext.GetDistanceForTask(stats, data.Settings.Task);
+            return BaseSceneContext.GetDistanceForObjective(stats, data.Settings.Objective);
         }
         
         private int GetCurrentGeneration() {

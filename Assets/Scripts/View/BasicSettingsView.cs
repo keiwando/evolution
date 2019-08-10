@@ -9,11 +9,11 @@ namespace Keiwando.Evolution.UI {
 
         int GetPopulationSize(BasicSettingsView view);
         int GetGenerationDuration(BasicSettingsView view);
-        EvolutionTask GetEvolutionTask(BasicSettingsView view);
+        Objective GetObjective(BasicSettingsView view);
 
         void PopulationSizeDidChange(BasicSettingsView view, int value);
         void GenerationDurationDidChange(BasicSettingsView view, int value);
-        void EvolutionTaskDidChange(BasicSettingsView view, EvolutionTask task);
+        void ObjectiveDidChange(BasicSettingsView view, Objective objective);
     }
 
     public class BasicSettingsView: MonoBehaviour {
@@ -30,27 +30,27 @@ namespace Keiwando.Evolution.UI {
 
             var dropdownData = new List<Dropdown<int>.Data> {
                 new Dropdown<int>.Data() {
-                    Value = (int)EvolutionTask.Running,
+                    Value = (int)Objective.Running,
                     Label = "Running"
                 },
                 new Dropdown<int>.Data() {
-                    Value = (int)EvolutionTask.Jumping,
+                    Value = (int)Objective.Jumping,
                     Label = "Jumping"
                 },
                 new Dropdown<int>.Data() {
-                    Value = (int)EvolutionTask.ObstacleJump,
+                    Value = (int)Objective.ObstacleJump,
                     Label = "Obstacle Jump"
                 },
                 new Dropdown<int>.Data() {
-                    Value = (int)EvolutionTask.Climbing,
+                    Value = (int)Objective.Climbing,
                     Label = "Climbing"
                 }
             };
             
             var taskDropdown = new Dropdown<int>(this.taskDropdown, dropdownData);
             taskDropdown.onValueChanged += delegate (int value) {
-                var task = (EvolutionTask)value;
-                Delegate?.EvolutionTaskDidChange(this, task);
+                var objective = (Objective)value;
+                Delegate?.ObjectiveDidChange(this, objective);
             };
             this.dropdownWrapper = taskDropdown;
 
@@ -75,7 +75,7 @@ namespace Keiwando.Evolution.UI {
 
             populationSizeInput.text = Delegate.GetPopulationSize(this).ToString();
             generationDurationInput.text = Delegate.GetGenerationDuration(this).ToString();
-            this.taskDropdown.value = (int)Delegate.GetEvolutionTask(this);
+            this.taskDropdown.value = (int)Delegate.GetObjective(this);
         }
     }
 }
