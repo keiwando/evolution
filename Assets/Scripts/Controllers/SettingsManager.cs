@@ -82,8 +82,7 @@ namespace Keiwando.Evolution {
             return simulationSettings.SimulationTime;
         }
 
-
-        public void SimulationTimeChanged(PauseViewController view, int time) {
+        public void SimulationTimeDidChange(int time) {
             var settings = simulationSettings;
             settings.SimulationTime = Math.Min(Math.Max(time, 1), 100000);
             simulationSettings = settings;
@@ -154,31 +153,25 @@ namespace Keiwando.Evolution {
 
         // MARK: - IBasicSettingsViewDelegate
 
-        public int GetPopulationSize(BasicSettingsView view) {
+        public int GetPopulationSize() {
             return simulationSettings.PopulationSize;
         }
 
-        public int GetGenerationDuration(BasicSettingsView view) {
+        public int GetGenerationDuration() {
             return simulationSettings.SimulationTime;
         }
 
-        public Objective GetObjective(BasicSettingsView view) {
+        public Objective GetObjective() {
             return simulationSettings.Objective;
         }
 
-        public void PopulationSizeDidChange(BasicSettingsView view, int value) {
+        public void PopulationSizeDidChange(int value) {
             var settings = simulationSettings;
             settings.PopulationSize = value;
             simulationSettings = settings;
         }
 
-        public void GenerationDurationDidChange(BasicSettingsView view, int value) {
-            var settings = simulationSettings;
-            settings.SimulationTime = value;
-            simulationSettings = settings;
-        }
-
-        public void ObjectiveDidChange(BasicSettingsView view, Objective objective) {
+        public void ObjectiveDidChange(Objective objective) {
             var settings = simulationSettings;
             settings.Objective = objective;
             simulationSettings = settings;

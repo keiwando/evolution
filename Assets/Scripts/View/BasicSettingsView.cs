@@ -7,13 +7,13 @@ namespace Keiwando.Evolution.UI {
 
     public interface IBasicSettingsViewDelegate {
 
-        int GetPopulationSize(BasicSettingsView view);
-        int GetGenerationDuration(BasicSettingsView view);
-        Objective GetObjective(BasicSettingsView view);
+        int GetPopulationSize();
+        int GetGenerationDuration();
+        Objective GetObjective();
 
-        void PopulationSizeDidChange(BasicSettingsView view, int value);
-        void GenerationDurationDidChange(BasicSettingsView view, int value);
-        void ObjectiveDidChange(BasicSettingsView view, Objective objective);
+        void PopulationSizeDidChange(int value);
+        void SimulationTimeDidChange(int value);
+        void ObjectiveDidChange(Objective objective);
     }
 
     public class BasicSettingsView: MonoBehaviour {
@@ -50,21 +50,21 @@ namespace Keiwando.Evolution.UI {
             var taskDropdown = new Dropdown<int>(this.taskDropdown, dropdownData);
             taskDropdown.onValueChanged += delegate (int value) {
                 var objective = (Objective)value;
-                Delegate?.ObjectiveDidChange(this, objective);
+                Delegate?.ObjectiveDidChange(objective);
             };
             this.dropdownWrapper = taskDropdown;
 
             populationSizeInput.onValueChanged.AddListener(delegate (string value) {
                 int populationSize = 0;
                 if (int.TryParse(value, out populationSize)) {
-                    Delegate?.PopulationSizeDidChange(this, populationSize);
+                    Delegate?.PopulationSizeDidChange(populationSize);
                 }
             });
 
             generationDurationInput.onValueChanged.AddListener(delegate (string value) {
                 int duration = 0;
                 if (int.TryParse(value, out duration)) {
-                    Delegate?.GenerationDurationDidChange(this, duration);
+                    Delegate?.SimulationTimeDidChange(duration);
                 }
             });
         }
@@ -73,9 +73,9 @@ namespace Keiwando.Evolution.UI {
 
             if (Delegate == null) return;
 
-            populationSizeInput.text = Delegate.GetPopulationSize(this).ToString();
-            generationDurationInput.text = Delegate.GetGenerationDuration(this).ToString();
-            this.taskDropdown.value = (int)Delegate.GetObjective(this);
+            populationSizeInput.text = Delegate.GetPopulationSize().ToString();
+            generationDurationInput.text = Delegate.GetGenerationDuration().ToString();
+            this.taskDropdown.value = (int)Delegate.GetObjective();
         }
     }
 }

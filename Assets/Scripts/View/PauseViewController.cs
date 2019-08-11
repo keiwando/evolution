@@ -1,6 +1,6 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
-using Keiwando.Evolution;
 
 namespace Keiwando.Evolution.UI {
 
@@ -15,6 +15,7 @@ namespace Keiwando.Evolution.UI {
         [SerializeField] private Button continueButton;
         
         [SerializeField] private InputField generationTimeInput;
+        [SerializeField] private InputField populationSizeInput;
 
         [SerializeField] private GeneralSettingsView generalSettingsView;
 
@@ -32,12 +33,25 @@ namespace Keiwando.Evolution.UI {
             generationTimeInput.onValueChanged.AddListener(delegate (string text) {
                 int simulationTime = 0;
                 try {
-                    int.TryParse(text, out simulationTime);
+                    simulationTime = int.Parse(text);
                 } catch { 
                     Refresh();
                     return; 
                 }
-                settingsManager.SimulationTimeChanged(this, simulationTime);
+                settingsManager.SimulationTimeDidChange(simulationTime);
+            });
+
+            populationSizeInput.onValueChanged.AddListener(delegate (string text) {
+                int populationSize = 10;
+                try {
+                    populationSize = int.Parse(text);
+                } catch {
+                    Refresh();
+                    return;
+                }
+                int batchSize = Math.Min(settingsManager.GetBatchSize(generalSettingsView), populationSize);
+                settingsManager.BatchSizeChanged(generalSettingsView, batchSize);
+                settingsManager.PopulationSizeDidChange(populationSize);
             });
 
             generalSettingsView.Delegate = settingsManager;
@@ -48,6 +62,7 @@ namespace Keiwando.Evolution.UI {
         public void Refresh() {
 
             generationTimeInput.text = settingsManager.GetSimulationTime(this).ToString();
+            populationSizeInput.text = settingsManager.GetPopulationSize().ToString();
 
             generalSettingsView.Refresh();
         }
