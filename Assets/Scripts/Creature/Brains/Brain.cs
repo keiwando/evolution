@@ -7,17 +7,14 @@ namespace Keiwando.Evolution {
 	[RequireComponent(typeof(Creature))]
 	abstract public class Brain : MonoBehaviour {
 
-		/// <summary>
-		/// The creature that this brain belongs to.
-		/// </summary>
-		protected Creature creature;
-
-		// public NeuralNetworkSettings networkSettings;
 		public FeedForwardNetwork Network { get; protected set; }
+
+		abstract public int NumberOfInputs { get; }
+		virtual public int NumberOfOutputs => muscles.Length;
 
 		private Muscle[] muscles;
 
-		abstract public int NumberOfInputs { get; }
+		protected Creature creature;
 
 		public virtual void Start() {
 			this.creature = GetComponent<Creature>();
@@ -25,8 +22,8 @@ namespace Keiwando.Evolution {
 
 		public void Init(NeuralNetworkSettings settings, Muscle[] muscles, float[] chromosome = null) {
 
-			this.Network = new FeedForwardNetwork(NumberOfInputs, muscles.Length, settings, chromosome);
 			this.muscles = muscles;
+			this.Network = new FeedForwardNetwork(NumberOfInputs, NumberOfOutputs, settings, chromosome);
 		}
 
 		virtual public void FixedUpdate() {
@@ -48,9 +45,9 @@ namespace Keiwando.Evolution {
 		/// Takes the neural network outputs outputs and applies them to the 
 		/// list of muscles. Calls the ApplyOutputToMuscle function for every output. 
 		/// </summary>
-		private void ApplyOutputs(float[] outputs) {
+		protected virtual void ApplyOutputs(float[] outputs) {
 
-			for (int i = 0; i < outputs.Length; i++) {
+			for (int i = 0; i < muscles.Length; i++) {
 				float output = float.IsNaN(outputs[i]) ? 0 : outputs[i];
 				ApplyOutputToMuscle(output, muscles[i]);
 			}

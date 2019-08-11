@@ -181,6 +181,26 @@ namespace Keiwando.Evolution {
 			};
 		}
 
+		public float RaycastDistance(Vector3 origin, Vector3 direction) {
+
+			return RaycastDistance(origin, direction,
+				(1 << SceneContext.GetStaticForegroundLayer()) | (1 << SceneContext.GetDynamicForegroundLayer())
+			);
+		}
+
+		public float RaycastDistance(Vector3 origin, Vector3 direction, int layerMask) {
+			RaycastHit hit;
+			if (PhysicsScene.Raycast(
+				origin, direction,
+				out hit, Mathf.Infinity,
+				layerMask)
+			) {
+				return hit.distance;
+			}
+
+			return Mathf.Infinity;
+		}
+
 		public float DistanceFromGround(Vector3 position) {
 			RaycastHit hit;
 			if (PhysicsScene.Raycast(
@@ -216,21 +236,10 @@ namespace Keiwando.Evolution {
 			return minDistance;
 		}
 
-		// public float DistanceFromFlatFloor() {
-
-		// 	float min = joints[0].center.y;
-
-		// 	var jointsCount = joints.Count;
-		// 	for (int i = 0; i < jointsCount; i++) {
-		// 		var joint = joints[i];
-		// 		float height = joint.center.y;// - joint.GetComponent<Collider>().bounds.size.y / 2;
-		// 		min = height < min ? height : min; 
-		// 	}
-
-		// 	return min - floorHeight;
-		// }
-
-		/** Returns the velocity of the creature */
+		/// <summary>
+		/// Returns the velocity of the creature.
+		/// </summary>
+		/// <returns></returns>
 		public Vector3 GetVelocity() {
 
 			if (joints.Count == 0) return Vector3.zero;
@@ -261,7 +270,7 @@ namespace Keiwando.Evolution {
 
 			if (bones.Count == 0) return Vector3.zero;
 
-			//calculate the average velocity of the bones.
+			// Calculate the average velocity of the bones.
 			Vector3 velocity = Vector3.zero;
 
 			var boneCount = bones.Count;
@@ -305,7 +314,6 @@ namespace Keiwando.Evolution {
 					collidedJoints.Add(joints[i]);
 				}
 			}
-			//print(string.Format("Percentage of collided joints: {0}%", ((float)collidedJoints.Count/joints.Count) * 100f)); 
 		}
 
 		public float GetRotation() {

@@ -6,32 +6,14 @@ namespace Keiwando.Evolution {
 
 	public class ObstacleJumpingBrain : Brain {
 
-		public override int NumberOfInputs { get { return 7; } }
-
-		//private long numOfCollisionsWithObstacle = 0;
-		// private HashSet<Joint> collidedJoints;
-
+		public override int NumberOfInputs => 7;
 
 		private GameObject obstacle;
-
 		
 		public override void FixedUpdate () {
 			base.FixedUpdate();
 			FindObstacleIfNeeded();
-			//numOfCollisionsWithObstacle += creature.GetNumberOfObstacleCollisions();
-			// Creature.AddObstacleCollidingJointsToSet(collidedJoints);
 		}
-
-		// public override void EvaluateFitness (){
-
-		// 	//print(string.Format("Number of obstacle collisions: {0}", numOfCollisionsWithObstacle));
-		// 	var heightFitness = Mathf.Clamp(maxHeightJumped / MAX_HEIGHT, 0f, 1f);
-		// 	//var collisionFitness = Mathf.Clamp(100f - (numOfCollisionsWithObstacle * 12) / GetComponent<Creature>().joints.Count, 0f, 100f) / 100f;
-		// 	var collisionFitness = 1f - Mathf.Clamp((float) collidedJoints.Count / Creature.joints.Count, 0f, 1f);
-
-		// 	fitness = 0.5f * (heightFitness + collisionFitness);
-		// 	//print(string.Format("HeightFitness: {0}%, CollisionFitness: {1}%, Total fitness: {2}%", heightFitness * 100f, collisionFitness * 100f, fitness * 100f));
-		// }
 
 		/*Inputs:
 		* 
@@ -47,7 +29,6 @@ namespace Keiwando.Evolution {
 			
 			// distance from ground
 			Network.Inputs[0] = creature.DistanceFromGround();
-			// maxHeightJumped = Mathf.Max(Network.Inputs[0], maxHeightJumped);
 			// horizontal velocity
 			Vector3 velocity = creature.GetVelocity();
 			Network.Inputs[1] = velocity.x;

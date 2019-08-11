@@ -5,24 +5,7 @@ namespace Keiwando.Evolution {
 
 	public class ClimbingBrain : Brain {
 
-		public override int NumberOfInputs { get { return 6; } }
-
-		// private const float MAX_HEIGHT = 100f;
-
-
-		// Update is called once per frame
-		// public override void FixedUpdate () {
-		// 	base.FixedUpdate();
-		// }
-
-		// public override void EvaluateFitness (){
-
-		// 	var maxHeight = MAX_HEIGHT * SimulationTime / 10f;
-		// 	// The fitness for the climbing objective is made up of the final distance from the ground.
-		// 	fitness = Mathf.Clamp((Creature.DistanceFromFlatFloor() / maxHeight) + 0.5f, 0f, 1f);
-		// 	//print(string.Format("Climbing fitness: {0}",fitness));
-		// 	//print(string.Format("Distance from floor: {0}", creature.DistanceFromFlatFloor()));
-		// }
+		public override int NumberOfInputs => 6;
 
 		/*Inputs:
 		* 
