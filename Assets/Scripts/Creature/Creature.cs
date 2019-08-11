@@ -37,21 +37,9 @@ namespace Keiwando.Evolution {
 			}
 		}
 
-		/// <summary>
-		/// The y-position of the floor.
-		/// </summary>
-		// public float FloorHeight {
-		// 	set { floorHeight = value; }
-		// 	get { return floorHeight; }
-		// }
-		// private float floorHeight = 0;
-
 		public ISceneContext SceneContext { get; set; }
 
 		public PhysicsScene PhysicsScene { get; set; }
-
-		// TODO: Depends on Scene ("StaticForeground" | "PlaybackStaticForeground")
-		private static LayerMask groundLayerMask = 1 << 9; //LayerMask.NameToLayer("Ground");
 
 		public bool usesLegacyRotationCalculation { get; set; } = false;
 
@@ -69,8 +57,6 @@ namespace Keiwando.Evolution {
 		}
 
 		void Update () {
-
-			//maxJumpingHeight = Mathf.Max(maxJumpingHeight, DistanceFromGround());
 
 			if (Alive) {
 				var jumpHeight = GetLowestPoint().y - InitialPosition.y;
@@ -195,10 +181,10 @@ namespace Keiwando.Evolution {
 			};
 		}
 
-		public float DistanceFromGround() {
+		public float DistanceFromGround(Vector3 position) {
 			RaycastHit hit;
 			if (PhysicsScene.Raycast(
-				GetLowestPoint(), 
+				position, 
 				Vector3.down, 
 				out hit, Mathf.Infinity, 
 				1 << SceneContext.GetStaticForegroundLayer())
@@ -207,6 +193,27 @@ namespace Keiwando.Evolution {
 			}
 
 			return 0f;
+		}
+
+		public float DistanceFromGround() {
+			return DistanceFromGround(GetLowestPoint());
+		}
+
+		/// <summary>
+		/// Returns the smallest distance of the lowest 5 joints from the ground.
+		/// Should be used if the ground is uneven.
+		/// Does not guarantee that there is no other joint with a smaller distance to the ground.
+		/// </summary>
+		public float SemiSafeDistanceFromGround() {
+			int jointCount = System.Math.Min(5, joints.Count);
+			var sortedJoints = new List<Joint>(joints);
+			sortedJoints.Sort((lhs, rhs) => lhs.transform.position.y.CompareTo(lhs.transform.position.y));
+			float minDistance = float.MaxValue;
+			for (int i = 0; i < jointCount; i++) {
+				var distance = DistanceFromGround(joints[i].transform.position);
+				minDistance = System.Math.Min(minDistance, distance);
+			}
+			return minDistance;
 		}
 
 		// public float DistanceFromFlatFloor() {

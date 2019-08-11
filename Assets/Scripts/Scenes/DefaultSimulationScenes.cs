@@ -119,7 +119,7 @@ namespace Keiwando.Evolution.Scenes {
             return new SimulationSceneDescription {
                 Version = 1,
                 Structures = structures,
-                DropHeight = 0.5f,
+                DropHeight = 1f,
                 CameraControlPoints = new [] {
                     new CameraControlPoint(0, 9, 0.5f), new CameraControlPoint(1, 10, 0.5f)
                 }

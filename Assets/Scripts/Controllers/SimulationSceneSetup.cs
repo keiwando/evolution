@@ -55,12 +55,14 @@ namespace Keiwando.Evolution {
             var safeHeightOffset = lowestY < 0 ? -lowestY + 1f : 0f;
 
             // Calculate the drop height
-            float distanceFromGround = template.DistanceFromGround();
+            // float distanceFromGround = template.DistanceFromGround();
+            
             var spawnPosition = template.transform.position;
             if (options.LegacyOptions.LegacyClimbingDropCalculation) {
+                spawnPosition.y -= template.DistanceFromGround();
                 spawnPosition.y += 0.5f;    
             } else {
-                spawnPosition.y -= distanceFromGround;   
+                spawnPosition.y -= template.SemiSafeDistanceFromGround();;   
                 spawnPosition.y += safeHeightOffset;
                 spawnPosition.y += options.SceneDescription.DropHeight;
             }
