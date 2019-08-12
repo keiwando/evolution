@@ -4,7 +4,7 @@ namespace Keiwando.Evolution {
 
     public class UniversalBrain: Brain {
 
-        public override int NumberOfInputs => 14;
+        public override int NumberOfInputs => 11;
         public override int NumberOfOutputs {
             get { return base.NumberOfOutputs + 1; }
         }
@@ -20,15 +20,12 @@ namespace Keiwando.Evolution {
         ///     - Down-Forward
         ///     - Down-Back
         ///     - Back
-        ///     - Up-Back
-        ///     - Up-Front
         ///     - Custom
         /// - dX velocity
         /// - dY velocity
         /// - angular velocity
         /// - number of points touching ground
         /// - creature rotation
-        /// - custom raycast angle
         /// </summary>
         protected override void UpdateInputs() {
 
@@ -40,9 +37,10 @@ namespace Keiwando.Evolution {
             var downForward = creature.RaycastDistance(center, new Vector3(1, -1));
             var downBack = creature.RaycastDistance(center, new Vector3(-1, -1));
             var back = creature.RaycastDistance(center, new Vector3(-1, 0));
-            var upBack = creature.RaycastDistance(center, new Vector3(-1, 1));
-            var upFront = creature.RaycastDistance(center, new Vector3(1, 1));
-            var custom = creature.RaycastDistance(center, new Vector3(Mathf.Cos(customRaycastAngle), Mathf.Sin(customRaycastAngle)));
+
+            var direction = new Vector3(Mathf.Cos(customRaycastAngle), Mathf.Sin(customRaycastAngle));
+            // Debug.DrawRay(center, direction * 5, Color.magenta);
+            var custom = creature.RaycastDistance(center, direction);
 
             var inputs = Network.Inputs;
             inputs[0] = creature.DistanceFromGround();
@@ -50,22 +48,19 @@ namespace Keiwando.Evolution {
             inputs[2] = downForward;
             inputs[3] = downBack;
             inputs[4] = back;
-            inputs[5] = upBack;
-            inputs[6] = upFront;
-            inputs[7] = custom;
+            inputs[5] = custom;
 
-            inputs[8] = basicInputs.VelocityX;
-            inputs[8] = basicInputs.VelocityY;
-            inputs[10] = basicInputs.AngularVelocity;
-            inputs[11] = basicInputs.PointsTouchingGroundCount;
-            inputs[12] = basicInputs.Rotation;
-            inputs[13] = customRaycastAngle;
+            inputs[6] = basicInputs.VelocityX;
+            inputs[7] = basicInputs.VelocityY;
+            inputs[8] = basicInputs.AngularVelocity;
+            inputs[9] = basicInputs.PointsTouchingGroundCount;
+            inputs[10] = basicInputs.Rotation;
         }
 
         protected override void ApplyOutputs(float[] outputs) {
             base.ApplyOutputs(outputs);
 
-            customRaycastAngle = outputs[outputs.Length - 1];
+            customRaycastAngle = outputs[outputs.Length - 1] * 2 * Mathf.PI;
         }
     }
 }

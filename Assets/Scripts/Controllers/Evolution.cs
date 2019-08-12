@@ -335,30 +335,51 @@ namespace Keiwando.Evolution {
 			Brain brain = creature.GetComponent<Brain>();
 			
 			if (brain == null) {
-				brain = AddBrainComponent(Settings.Objective, creature.gameObject);
+				var useLegacyBrains = SimulationData.LastV2SimulatedGeneration > 0;
+				AddObjectiveTracker(Settings.Objective, creature);
+				brain = AddBrainComponent(Settings.Objective, creature, useLegacyBrains);
 			}
 			brain.Init(NetworkSettings, creature.muscles.ToArray(), chromosome);
 			
 			creature.brain = brain;
 		}
 
-		private static Brain AddBrainComponent(Objective objective, GameObject gameObject) {
+		private static Brain AddBrainComponent(Objective objective, Creature creature, bool useLegacyBrains = false) {
+
+			var gameObject = creature.gameObject;
+
+			if (!useLegacyBrains) {
+				return gameObject.AddComponent<UniversalBrain>();
+			}
+
 			switch (objective) {
 			case Objective.Running:
-				gameObject.AddComponent<RunningObjectiveTracker>();
 				return gameObject.AddComponent<RunningBrain>();
 			case Objective.Jumping:
-				gameObject.AddComponent<JumpingObjectiveTracker>();
 				return gameObject.AddComponent<JumpingBrain>();
 			case Objective.ObstacleJump:
-				gameObject.AddComponent<ObstacleJumpObjectiveTracker>();
 				return gameObject.AddComponent<ObstacleJumpingBrain>();
 			case Objective.Climbing:
-				gameObject.AddComponent<ClimbingObjectiveTracker>();
 				return gameObject.AddComponent<ClimbingBrain>();
 			default:
 				throw new System.ArgumentException(string.Format("There is no brain type for the given objective: {0}", objective));
 			}
+		}
+
+		private static ObjectiveTracker AddObjectiveTracker(Objective objective, Creature creature) {
+
+			switch (objective) {
+			case Objective.Running:
+				return creature.gameObject.AddComponent<RunningObjectiveTracker>();
+			case Objective.Jumping:
+				return creature.gameObject.AddComponent<JumpingObjectiveTracker>();
+			case Objective.ObstacleJump:
+				return creature.gameObject.AddComponent<ObstacleJumpObjectiveTracker>();
+			case Objective.Climbing:
+				return creature.gameObject.AddComponent<ClimbingObjectiveTracker>();
+			}
+
+			throw new System.ArgumentException(string.Format("There is no objective tracker for the given objective {0}", objective));
 		}
 
 		public LegacySimulationOptions GetLegacySimulationOptions() {

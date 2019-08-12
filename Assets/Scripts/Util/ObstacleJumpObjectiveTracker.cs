@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -40,7 +41,7 @@ namespace Keiwando.Evolution {
             var averageCollisionDuration = totalCollisionDuration / creature.joints.Count;
 
             var collisionFitness = 1f - Mathf.Clamp(averageCollisionDuration / MAX_COLLISION_DURATION_PER_JOINT, 0f, 1f);
-            return 0.5f * (heightFitness + collisionFitness);
+            return Math.Max(collisionFitness, 0.3f * heightFitness + 0.7f * collisionFitness);
         }
     }
 }

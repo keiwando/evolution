@@ -190,6 +190,7 @@ namespace Keiwando.Evolution {
 
 		public float RaycastDistance(Vector3 origin, Vector3 direction, int layerMask) {
 			RaycastHit hit;
+
 			if (PhysicsScene.Raycast(
 				origin, direction,
 				out hit, Mathf.Infinity,
@@ -198,7 +199,7 @@ namespace Keiwando.Evolution {
 				return hit.distance;
 			}
 
-			return Mathf.Infinity;
+			return 0f;
 		}
 
 		public float DistanceFromGround(Vector3 position) {
