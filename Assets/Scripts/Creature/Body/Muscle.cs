@@ -312,7 +312,7 @@ public class Muscle : BodyComponent {
 		this._collider = col;
 
 		// Collider is added as child object of line
-		col.transform.parent = lineRenderer.transform;
+		// col.transform.parent = lineRenderer.transform;
 		// length of line
 		float lineLength = Vector3.Distance (startingPoint, endingPoint); 
 		// size of collider is set where X is length of line, Y is width of line, Z will be set as per requirement
@@ -329,7 +329,7 @@ public class Muscle : BodyComponent {
 		}
 
 		angle = Mathf.Rad2Deg * Mathf.Atan (angle);
-		col.transform.Rotate (0, 0, angle);
+		col.transform.eulerAngles = new Vector3(0, 0, angle);
 
 		// Add a rigidbody
 		Rigidbody rBody = gameObject.AddComponent<Rigidbody>();

@@ -310,7 +310,8 @@ public class CreatureEditor: MonoBehaviour,
                 break; 
 
             case Tool.Muscle:
-                creatureEdited = creatureBuilder.PlaceCurrentMuscle(); break;
+                creatureEdited = creatureBuilder.PlaceCurrentMuscle(); 
+                break;
 
             case Tool.Move: 
                 creatureEdited = creatureBuilder.MoveEnded(jointsToMove); 
@@ -339,6 +340,9 @@ public class CreatureEditor: MonoBehaviour,
 
             if (creatureEdited) {
                 historyManager.Push(oldDesign);
+                if (selectedTool == Tool.Move) {
+                    creatureBuilder.RefreshMuscleColliders();
+                }
             }
         }
 

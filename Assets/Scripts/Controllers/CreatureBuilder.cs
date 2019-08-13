@@ -501,6 +501,13 @@ namespace Keiwando.Evolution {
 
 		#region Hover Configuration
 
+		public void RefreshMuscleColliders() {
+			foreach (Muscle muscle in muscles) {
+				muscle.RemoveCollider();
+				muscle.AddCollider();
+			}
+		}
+
 		/// <summary>
 		/// Enabled / Disables highlighting on hover for the specified body components
 		/// </summary>
