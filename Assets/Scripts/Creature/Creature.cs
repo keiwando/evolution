@@ -181,19 +181,20 @@ namespace Keiwando.Evolution {
 			};
 		}
 
-		public float RaycastDistance(Vector3 origin, Vector3 direction) {
+		public float RaycastDistance(Vector3 origin, Vector3 direction, float maxDistance = Mathf.Infinity) {
 
 			return RaycastDistance(origin, direction,
-				(1 << SceneContext.GetStaticForegroundLayer()) | (1 << SceneContext.GetDynamicForegroundLayer())
+				(1 << SceneContext.GetStaticForegroundLayer()) | (1 << SceneContext.GetDynamicForegroundLayer()),
+				maxDistance
 			);
 		}
 
-		public float RaycastDistance(Vector3 origin, Vector3 direction, int layerMask) {
+		public float RaycastDistance(Vector3 origin, Vector3 direction, int layerMask, float maxDistance = Mathf.Infinity) {
 			RaycastHit hit;
 
 			if (PhysicsScene.Raycast(
 				origin, direction,
-				out hit, Mathf.Infinity,
+				out hit, maxDistance,
 				layerMask)
 			) {
 				return hit.distance;

@@ -13,6 +13,7 @@ namespace Keiwando.Evolution.Scenes {
         public static readonly SimulationSceneDescription JumpingScene = CreateJumpingScene();
         public static readonly SimulationSceneDescription ObstacleJumpScene = CreateObstacleJumpScene();
         public static readonly SimulationSceneDescription ClimbingScene = CreateClimbingScene();
+        // public static readonly SimulationSceneDescription RunningScene = CreateIncrementalClimbingScene();
 
         public static SimulationSceneDescription DefaultSceneForObjective(Objective objective) {
             switch (objective) {
@@ -122,6 +123,60 @@ namespace Keiwando.Evolution.Scenes {
                 DropHeight = 1f,
                 CameraControlPoints = new [] {
                     new CameraControlPoint(0, 9, 0.5f), new CameraControlPoint(1, 10, 0.5f)
+                }
+            };
+        }
+
+        private static SimulationSceneDescription CreateIncrementalClimbingScene() {
+
+            int stepCount = 4000;
+            var structures = new IStructure[stepCount + 1];
+
+            var flatGroundPos = new Vector3(0.476771f, -4.8f, -2.61f);
+            var flatGroundScale = new Vector3(1000000f, 9.56f, 29.8f);
+            var flatGroundTransform = new Transform(flatGroundPos, flatGroundScale);
+            var flatGround = new Ground(flatGroundTransform);
+
+            // var groundPos = new Vector3(14.6f, -4.8f, -2.61f);
+            // var groundScale = new Vector3(1000000, 30f, 29.8f);
+            // var ground = new Ground(new Transform(groundPos, 45f, groundScale));
+            
+            structures[0] = flatGround;
+            
+
+            // var distanceMarkerSpawner = new DistanceMarkerSpawner(
+            //     new Transform(new Vector3(-0.45f, 5.5f, 0), 45f),
+            //     5f * Mathf.Sin((float)Math.PI * 0.25f), 
+            //     1f / Mathf.Sin((float)Math.PI * 0.25f)
+            // );
+            // structures[1] = distanceMarkerSpawner;
+            
+            var spawnPosition = new Vector3(0.46f, 0.99243f, -1.8f);
+            var stepDistance = 1.5f;
+            float maxAngle = Mathf.PI * 0.5f;
+            int maxAngleIndex = 500;
+            
+            var stepScale = new Vector3(3f, 3f, 30f);
+
+            // spawnPosition -= spawnDistance * (stepCount / 2);
+            spawnPosition += new Vector3(2, -2.5f);
+            for (int i = 0; i < stepCount; i++) {
+                float percentageOfMax = (float)Math.Min(i, maxAngleIndex) / maxAngleIndex;
+                var angle = Mathf.Sin(percentageOfMax * maxAngle) * stepDistance;
+                var spawnDistance = new Vector3(stepDistance, angle, 0);
+                spawnPosition += spawnDistance;
+                structures[i + 1] = new Stairstep(new Transform(spawnPosition, 16f * (percentageOfMax - 0.2f), stepScale));
+            }
+
+            return new SimulationSceneDescription {
+                Version = 1,
+                Structures = structures,
+                DropHeight = 1f,
+                CameraControlPoints = new [] {
+                    new CameraControlPoint(0, 0, 0.11f), 
+                    new CameraControlPoint(50, 0.05f, 0.12f),
+                    new CameraControlPoint(200, 0.4f, 0.14f), 
+                    new CameraControlPoint(1000, 2f, 0.4f)
                 }
             };
         }

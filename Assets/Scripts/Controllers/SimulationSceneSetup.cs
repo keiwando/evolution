@@ -62,7 +62,7 @@ namespace Keiwando.Evolution {
                 spawnPosition.y -= template.DistanceFromGround();
                 spawnPosition.y += 0.5f;    
             } else {
-                spawnPosition.y -= template.SemiSafeDistanceFromGround();;   
+                spawnPosition.y -= template.SemiSafeDistanceFromGround();
                 spawnPosition.y += safeHeightOffset;
                 spawnPosition.y += options.SceneDescription.DropHeight;
             }

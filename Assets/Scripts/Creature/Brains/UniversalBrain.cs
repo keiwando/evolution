@@ -4,6 +4,9 @@ namespace Keiwando.Evolution {
 
     public class UniversalBrain: Brain {
 
+        private const float MAX_RAYCAST_DISTANCE = 20f;
+        private const float ANGLE_SMOOTHING_WEIGHT = 0.1f;
+
         public override int NumberOfInputs => 11;
         public override int NumberOfOutputs {
             get { return base.NumberOfOutputs + 1; }
@@ -33,14 +36,14 @@ namespace Keiwando.Evolution {
             
             var center = new Vector3(creature.GetXPosition(), creature.GetYPosition());
 
-            var forward = creature.RaycastDistance(center, new Vector3(1, 0));
-            var downForward = creature.RaycastDistance(center, new Vector3(1, -1));
-            var downBack = creature.RaycastDistance(center, new Vector3(-1, -1));
-            var back = creature.RaycastDistance(center, new Vector3(-1, 0));
+            var forward = creature.RaycastDistance(center, new Vector3(1, 0), MAX_RAYCAST_DISTANCE);
+            var downForward = creature.RaycastDistance(center, new Vector3(1, -1), MAX_RAYCAST_DISTANCE);
+            var downBack = creature.RaycastDistance(center, new Vector3(-1, -1), MAX_RAYCAST_DISTANCE);
+            var back = creature.RaycastDistance(center, new Vector3(-1, 0), MAX_RAYCAST_DISTANCE);
 
             var direction = new Vector3(Mathf.Cos(customRaycastAngle), Mathf.Sin(customRaycastAngle));
-            // Debug.DrawRay(center, direction * 5, Color.magenta);
-            var custom = creature.RaycastDistance(center, direction);
+            Debug.DrawRay(center, direction.normalized * MAX_RAYCAST_DISTANCE, Color.magenta);
+            var custom = creature.RaycastDistance(center, direction, MAX_RAYCAST_DISTANCE);
 
             var inputs = Network.Inputs;
             inputs[0] = creature.DistanceFromGround();
@@ -60,7 +63,8 @@ namespace Keiwando.Evolution {
         protected override void ApplyOutputs(float[] outputs) {
             base.ApplyOutputs(outputs);
 
-            customRaycastAngle = outputs[outputs.Length - 1] * 2 * Mathf.PI;
+            var newRaycastAngle = outputs[outputs.Length - 1] * 2 * Mathf.PI;
+            customRaycastAngle = ANGLE_SMOOTHING_WEIGHT * newRaycastAngle + (1f - ANGLE_SMOOTHING_WEIGHT) * customRaycastAngle;
         }
     }
 }

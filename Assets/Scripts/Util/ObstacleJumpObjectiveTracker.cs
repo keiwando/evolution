@@ -10,7 +10,7 @@ namespace Keiwando.Evolution {
     public class ObstacleJumpObjectiveTracker: ObjectiveTracker {
 
         private const float MAX_HEIGHT = 20f;
-        private const float MAX_COLLISION_DURATION_PER_JOINT = 1f;
+        private const float MAX_COLLISION_DURATION_PER_JOINT = 0.75f;
 
         /// <summary>
         /// Stores the amount of time (ms) that each joint was colliding with the obstacle
