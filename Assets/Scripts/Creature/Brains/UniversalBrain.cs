@@ -6,8 +6,9 @@ namespace Keiwando.Evolution {
 
         private const float MAX_RAYCAST_DISTANCE = 20f;
         private const float ANGLE_SMOOTHING_WEIGHT = 0.1f;
+        public const int NUMBER_OF_INPUTS = 11;
 
-        public override int NumberOfInputs => 11;
+        public override int NumberOfInputs => NUMBER_OF_INPUTS;
         public override int NumberOfOutputs {
             get { return base.NumberOfOutputs + 1; }
         }
@@ -42,7 +43,7 @@ namespace Keiwando.Evolution {
             var back = creature.RaycastDistance(center, new Vector3(-1, 0), MAX_RAYCAST_DISTANCE);
 
             var direction = new Vector3(Mathf.Cos(customRaycastAngle), Mathf.Sin(customRaycastAngle));
-            Debug.DrawRay(center, direction.normalized * MAX_RAYCAST_DISTANCE, Color.magenta);
+            // Debug.DrawRay(center, direction.normalized * MAX_RAYCAST_DISTANCE, Color.magenta);
             var custom = creature.RaycastDistance(center, direction, MAX_RAYCAST_DISTANCE);
 
             var inputs = Network.Inputs;

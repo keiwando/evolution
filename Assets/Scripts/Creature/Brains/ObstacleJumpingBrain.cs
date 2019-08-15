@@ -6,7 +6,8 @@ namespace Keiwando.Evolution {
 
 	public class ObstacleJumpingBrain : Brain {
 
-		public override int NumberOfInputs => 7;
+		public const int NUMBER_OF_INPUTS = 7;
+		public override int NumberOfInputs => NUMBER_OF_INPUTS;
 
 		private GameObject obstacle;
 		

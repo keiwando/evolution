@@ -260,11 +260,7 @@ public class SimulationViewController : MonoBehaviour,
     }
 
     public int GetNumberOfNetworkInputs(BestCreaturesOverlayView view) {
-        if (bestCreatureController.CurrentBest != null) {
-            return bestCreatureController.CurrentBest.brain.NumberOfInputs;
-        }
-        // TODO: Improve this implementation
-        return 0;
+		return evolution.GetNumberOfCurrentBrainInputs();
     }
 
 	#endregion
@@ -285,7 +281,6 @@ public class SimulationViewController : MonoBehaviour,
 	
 	public void ShowMusclesDidChange(SimulationVisibilityOptionsView view, bool showMuscles) {
 		Settings.ShowMuscles = showMuscles;
-		// TODO: Maybe create a more specific function for 
 		cameraFollowController.RefreshVisibleCreatures();
 	}
 

@@ -2,7 +2,8 @@
 
 	public class RunningBrain : Brain {
 
-		public override int NumberOfInputs => 6;
+		public const int NUMBER_OF_INPUTS = 6;
+		public override int NumberOfInputs => NUMBER_OF_INPUTS;
 
 		/*Inputs:
 		* 

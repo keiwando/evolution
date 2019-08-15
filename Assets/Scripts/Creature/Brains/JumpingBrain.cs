@@ -5,7 +5,8 @@ namespace Keiwando.Evolution {
 
 	public class JumpingBrain : Brain {
 
-		public override int NumberOfInputs => 6;
+		public const int NUMBER_OF_INPUTS = 6;
+		public override int NumberOfInputs => NUMBER_OF_INPUTS;
 
 		private const float MAX_HEIGHT = 20f;
 

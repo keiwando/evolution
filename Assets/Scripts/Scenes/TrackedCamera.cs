@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
@@ -15,18 +17,22 @@ namespace Keiwando.Evolution.Scenes {
         /// </summary>
         public CameraControlPoint[] ControlPoints { 
             set {
-                // TODO: Remove control points with duplicate x values
-                if (value.Length == 0) {
+                var pointMap = new Dictionary<float, CameraControlPoint>();
+                for (int i = 0; i < value.Length; i++) {
+                    pointMap[value[i].x] = value[i];
+                }
+                var uniquePoints = pointMap.Values.ToArray();
+
+                if (uniquePoints.Length == 0) {
                     this.controlPoints = new [] { 
                         new CameraControlPoint(0, 0, 0.5f), new CameraControlPoint(1, 0, 0.5f)
                     };
-                } else if (value.Length == 1) {
+                } else if (uniquePoints.Length == 1) {
                     this.controlPoints = new [] {
-                        value[0], new CameraControlPoint(value[0].x + 1, value[0].y, value[0].pivot)
+                        uniquePoints[0], new CameraControlPoint(uniquePoints[0].x + 1, uniquePoints[0].y, uniquePoints[0].pivot)
                     };
                 } else {
-                    this.controlPoints = new CameraControlPoint[value.Length];
-                    Array.Copy(value, this.controlPoints, value.Length);
+                    this.controlPoints = uniquePoints;
                     Array.Sort(this.controlPoints, delegate (CameraControlPoint lhs, CameraControlPoint rhs) {
                         return lhs.x.CompareTo(rhs.x);
                     });

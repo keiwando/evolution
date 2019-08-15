@@ -76,7 +76,7 @@ namespace Keiwando {
             ScaleDelta = newScale / Scale;
             Scale = newScale;
 
-            if (DeltaScale != 1f || oldPinchCenter !== PinchCenter) {
+            if (ScaleDelta != 1f || oldPinchCenter != PinchCenter) {
                 State = GestureRecognizerState.Changed;
                 if (OnGesture != null) OnGesture(this);
             }

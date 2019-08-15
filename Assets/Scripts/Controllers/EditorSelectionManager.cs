@@ -248,7 +248,6 @@ namespace Keiwando.Evolution {
         }
 
         private void DisableHighlightsOnNonSelected() {
-            // TODO: Make this more efficient
             var all = GameObject.FindObjectsOfType<BodyComponent>();
             foreach (var bodyComponent in all) {
                 if (!this.selection.Contains(bodyComponent)) {

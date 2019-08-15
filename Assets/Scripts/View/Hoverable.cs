@@ -53,32 +53,6 @@ abstract public class Hoverable: MonoBehaviour {
 		#endif
 	}
 
-	// void OnHover() {
-
-	// 	hovering = true;
-
-	// 	// TODO: Replace this with changing out the material completely 
-	// 	// instead of altering material properties
-
-	// 	hotSpot = mouseHoverTexture == null ? Vector2.zero : new Vector2(mouseHoverTexture.width / 2, mouseHoverTexture.height / 2);
-
-	// 	if (shouldHighlight) {
-
-	// 		EnableHighlight();
-	// 		Cursor.SetCursor(mouseHoverTexture, hotSpot, cursorMode);
-	// 	}
-	// }
-
-	// void OnHoverExit() {
-
-	// 	hovering = false;
-
-	// 	if (shouldHighlight)
-
-	// 	DisableHighlight();
-	// 	Cursor.SetCursor(null, Vector2.zero, cursorMode);
-	// }
-
 	void OnDestroy() {
 		Cursor.SetCursor(null, Vector2.zero, cursorMode);
 	}

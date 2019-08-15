@@ -382,6 +382,23 @@ namespace Keiwando.Evolution {
 			throw new System.ArgumentException(string.Format("There is no objective tracker for the given objective {0}", objective));
 		}
 
+		public int GetNumberOfCurrentBrainInputs() {
+			
+			var usesLegacyBrain = SimulationData.LastV2SimulatedGeneration > 0;
+			if (!usesLegacyBrain) {
+				return UniversalBrain.NUMBER_OF_INPUTS;
+			}
+
+			switch (cachedSettings.Objective) {
+				case Objective.Running: return RunningBrain.NUMBER_OF_INPUTS;
+				case Objective.Jumping: return JumpingBrain.NUMBER_OF_INPUTS;
+				case Objective.ObstacleJump: return ObstacleJumpingBrain.NUMBER_OF_INPUTS;
+				case Objective.Climbing: return ClimbingBrain.NUMBER_OF_INPUTS;
+			}
+
+			return 0;
+		}
+
 		public LegacySimulationOptions GetLegacySimulationOptions() {
 			if (SimulationData.LastV2SimulatedGeneration > 0) {
 				return new LegacySimulationOptions() {

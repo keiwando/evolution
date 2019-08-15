@@ -415,11 +415,11 @@ public class CreatureEditor: MonoBehaviour,
             }
         }
 
-        // TODO: DEBUG
+        // DEBUG
 
-        else if (Input.GetKeyDown(KeyCode.K)) {
-            Debug.Log(historyManager.GetDebugState());   
-        }
+        // else if (Input.GetKeyDown(KeyCode.K)) {
+        //     Debug.Log(historyManager.GetDebugState());   
+        // }
 
         viewController.Refresh();
     }
