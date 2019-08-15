@@ -23,28 +23,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 
 	void Start() {
 		NativeFileSOMobile.shared.FilesWereOpened += delegate (OpenedFile[] files) {
-			var didImport = false;
-			foreach (var file in files) { 
-				var extension = file.Extension.ToLower();
-				if (extension.Equals(".evol")) {
-					var encoded = file.ToUTF8String();
-					try {
-						var simulationData = SimulationSerializer.ParseSimulationData(encoded, file.Name);
-						SimulationSerializer.SaveSimulation(simulationData);
-					} catch {
-						didImport = false;
-						Debug.LogError(string.Format("Failed to parse .evol file contents: {0}", encoded));
-						continue;
-					}
-					SimulationSerializer.SaveSimulationFile(file.Name, file.ToUTF8String());
-					didImport = true;
-				}
-			}
-			RefreshCache();
-			viewController.Refresh();
-			if (didImport) {
-				importIndicator.FadeInOut();
-			}
+			TryImport(files);
 		};
 	}
 
@@ -111,6 +90,34 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 		editor.StartSimulation(simulationData);
 	}
 
+	private void TryImport(OpenedFile[] files) {
+		var didImport = false;
+		foreach (OpenedFile file in files) {
+
+			var extension = file.Extension.ToLower();
+			if (extension.Equals(".evol")) {
+				var encoded = file.ToUTF8String();
+				try {
+					var simulationData = SimulationSerializer.ParseSimulationData(encoded, file.Name);
+					// SimulationSerializer.SaveSimulation(simulationData);
+				} catch {
+					didImport = false;
+					Debug.LogError(string.Format("Failed to parse .evol file contents: {0}", encoded));
+					continue;
+				}
+				SimulationSerializer.SaveSimulationFile(file.Name, encoded);
+				didImport = true;
+			}
+		}
+		RefreshCache();
+		viewController.Refresh();
+		if (didImport) {
+			importIndicator.FadeInOut();
+		} else {
+			failedImportIndicator.FadeInOut(1.8f);
+		} 
+	}
+
 	public void ImportButtonClicked(FileSelectionViewController controller) {
 
 		SupportedFileType[] supportedFileTypes = {
@@ -120,12 +127,7 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 		NativeFileSO.shared.OpenFiles(supportedFileTypes,
 		  delegate (bool filesWereOpened, OpenedFile[] files) { 
 			if (filesWereOpened) {
-				foreach (OpenedFile file in files) {
-					SimulationSerializer.SaveSimulationFile(file.Name, file.ToUTF8String());	
-					RefreshCache();
-					viewController.Refresh();
-					importIndicator.FadeInOut();
-				}
+				TryImport(files);
 			}
 		});
 	}

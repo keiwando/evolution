@@ -42,6 +42,7 @@ public class SimulationParserV2 {
 
 		var creatureData = components[3];
 		var creatureDesign = CreatureSerializer.ParseCreatureDesign(creatureData);
+		creatureDesign.Name = creatureName;
 
 		var bestChromosomesData = new List<string>(components[4].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None));
 		var bestChromosomes = new List<ChromosomeData>();

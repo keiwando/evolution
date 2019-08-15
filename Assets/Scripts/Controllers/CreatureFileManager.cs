@@ -26,31 +26,7 @@ public class CreatureFileManager : MonoBehaviour,
 
 	void Start() {
 		NativeFileSOMobile.shared.FilesWereOpened += delegate (OpenedFile[] files) {
-			var didImport = false;
-			foreach (var file in files) { 
-				var extension = file.Extension.ToLower();
-				if (extension.Equals(".creat")) {
-
-					var nameFromFile = CreatureSerializer.EXTENSION_PATTERN.Replace(file.Name, "");
-					var encoded = file.ToUTF8String();
-					try {
-						var design = CreatureSerializer.ParseCreatureDesign(encoded, name);
-						CreatureSerializer.SaveCreatureDesign(design.Name, encoded, false);	
-					} catch {
-						didImport = false;
-						Debug.LogError(string.Format("Failed to parse .creat file contents: {0}", encoded));
-						continue;
-					}
-					didImport = true;
-				}
-			}
-			RefreshCache();
-			viewController.Refresh();
-			if (didImport) {
-				importIndicator.FadeInOut();
-			} else {
-				failedImportIndicator.FadeInOut(1.8f);
-			}
+			TryImport(files);
 		};
 	}
 
@@ -165,6 +141,34 @@ public class CreatureFileManager : MonoBehaviour,
 		editor.LoadDesign(design);
 	}
 
+	private void TryImport(OpenedFile[] files) {
+		var didImport = false;
+		foreach (var file in files) { 
+			var extension = file.Extension.ToLower();
+			if (extension.Equals(".creat")) {
+
+				var nameFromFile = CreatureSerializer.EXTENSION_PATTERN.Replace(file.Name, "");
+				var encoded = file.ToUTF8String();
+				try {
+					var design = CreatureSerializer.ParseCreatureDesign(encoded, nameFromFile);
+					CreatureSerializer.SaveCreatureDesign(design.Name, encoded, false);	
+				} catch {
+					didImport = false;
+					Debug.LogError(string.Format("Failed to parse .creat file contents: {0}", encoded));
+					continue;
+				}
+				didImport = true;
+			}
+		}
+		RefreshCache();
+		viewController.Refresh();
+		if (didImport) {
+			importIndicator.FadeInOut();
+		} else {
+			failedImportIndicator.FadeInOut(1.8f);
+		}
+	}
+
 	public void ImportButtonClicked(FileSelectionViewController controller) {
 
 		SupportedFileType[] supportedFileTypes = {
@@ -174,27 +178,7 @@ public class CreatureFileManager : MonoBehaviour,
 		NativeFileSO.shared.OpenFiles(supportedFileTypes,
 		delegate (bool filesWereOpened, OpenedFile[] files) {
 			if (filesWereOpened) {
-			  	foreach (OpenedFile file in files) {
-
-					var extension = file.Extension.ToLower();
-					if (extension.Equals(".creat")) {
-						
-						var nameFromFile = CreatureSerializer.EXTENSION_PATTERN.Replace(file.Name, "");
-						var encoded = file.ToUTF8String();
-						try {
-							var design = CreatureSerializer.ParseCreatureDesign(encoded, name);
-							CreatureSerializer.SaveCreatureDesign(design.Name, encoded, false);	
-						} catch {
-							failedImportIndicator.FadeInOut(1.8f);	
-							Debug.LogError(string.Format("Failed to parse .creat file contents: {0}", encoded));
-							continue;
-						}
-					}
-
-				  	RefreshCache();
-				  	viewController.Refresh();
-					importIndicator.FadeInOut();
-			 	}
+			  	TryImport(files);
 			}
 	  	});
 	}
