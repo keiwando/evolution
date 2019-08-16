@@ -101,6 +101,7 @@ public class CreatureEditor: MonoBehaviour,
         
         historyManager.Push(GetState(historyManager));
         creatureBuilder.Reset();
+        viewController.Refresh();
     }
 
     public void LoadDesign(CreatureDesign design) {

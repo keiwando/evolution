@@ -396,6 +396,7 @@ namespace Keiwando.Evolution {
 
 		public void Reset() {
 			DeleteAll();
+			Name = "Unnamed";
 			idCounter = 0;
 		}
 
