@@ -68,8 +68,6 @@ namespace Keiwando.Evolution {
             // Drag with middle mouse button
             var dragRecognizer = GestureRecognizerCollection.shared.GetDragGestureRecognizer(2);
             dragRecognizer.OnGesture += OnDrag;
-            var pinchRecognizer = GestureRecognizerCollection.shared.GetPinchGestureRecognizer();
-            pinchRecognizer.OnGesture += OnDrag;
         }
 
         private void OnDrag(DragGestureRecognizer rec) {
@@ -77,17 +75,12 @@ namespace Keiwando.Evolution {
                     MoveCamera(CameraUtils.ScreenToWorldDistance(camera, -rec.DragDelta));
         }
 
-        private void OnDrag(PinchGestureRecognizer rec) {
-            if (InputRegistry.shared.MayHandle(InputType.Touch | InputType.Click, this))
-                    MoveCamera(CameraUtils.ScreenToWorldDistance(camera, -rec.PinchCenterDelta));
+        protected override void OnPinch(PinchGestureRecognizer gestureRecognizer) {
+            MoveCamera(CameraUtils.ScreenToWorldDistance(camera, -gestureRecognizer.PinchCenterDelta));
         }
 
         protected override void OnAfterZoom() {
             ClampPosition();
-        }
-
-        protected override void OnPinch(PinchGestureRecognizer gestureRecognizer) {
-            MoveCamera(CameraUtils.ScreenToWorldDistance(camera, gestureRecognizer.PinchCenterDelta));
         }
 
         private void MoveCamera(Vector3 distance) {

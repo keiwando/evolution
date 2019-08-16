@@ -5,6 +5,7 @@ namespace Keiwando {
     public enum GestureRecognizerState {
         Began,
         Changed,
+        Cancelled,
         Ended
     }
 

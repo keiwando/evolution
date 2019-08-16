@@ -42,9 +42,16 @@ namespace Keiwando {
             // Gesture Ended
             if (Input.touchCount != 2) {
                 var previousState = State;
-                State = GestureRecognizerState.Ended;
-                if (previousState != GestureRecognizerState.Ended) {
-                    if (OnGesture != null) OnGesture(this);
+                if (Input.touchCount == 0) {
+                    State = GestureRecognizerState.Ended;
+                    if (previousState != GestureRecognizerState.Ended) {
+                        if (OnGesture != null) OnGesture(this);
+                    }
+                } else if (previousState != GestureRecognizerState.Ended) {
+                    State = GestureRecognizerState.Cancelled;
+                    if (previousState != GestureRecognizerState.Cancelled) {
+                        if (OnGesture != null) OnGesture(this);
+                    }
                 }
                 return;
             }
@@ -60,7 +67,7 @@ namespace Keiwando {
             if (touchDistance == 0f) touchDistance = 0.00001f;
 
             // Gesture Began
-            if (State == GestureRecognizerState.Ended) {
+            if (State == GestureRecognizerState.Ended || State == GestureRecognizerState.Cancelled) {
 
                 State = GestureRecognizerState.Began;
                 startPinchDistance = touchDistance;

@@ -33,8 +33,6 @@ public class CreatureEditor: MonoBehaviour,
     [SerializeField]
     private EditorViewController viewController;
     [SerializeField]
-    private CameraController cameraController;
-    [SerializeField]
     private Grid grid;
 
     [SerializeField]
@@ -204,7 +202,8 @@ public class CreatureEditor: MonoBehaviour,
 	/// </summary>
     private void HandleClicks() {
 
-        if (cameraController.IsAdjustingCamera) return;
+        var pinchRecognizer = GestureRecognizerCollection.shared.GetPinchGestureRecognizer();
+        if (pinchRecognizer.State != GestureRecognizerState.Ended) return;
 
         if (!InputRegistry.shared.MayHandle(InputType.Click | InputType.Touch, this)) return;
 
