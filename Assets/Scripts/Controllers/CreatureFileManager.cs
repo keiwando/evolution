@@ -141,9 +141,18 @@ public class CreatureFileManager : MonoBehaviour,
 		editor.LoadDesign(design);
 	}
 
+	private void CloseAndLoadOnNextFrame(string name) {
+		viewController.Close();
+		StartCoroutine(LoadOnNextFrame(name));
+	}
+
 	private void TryImport(OpenedFile[] files) {
-		var didImport = false;
-		foreach (var file in files) { 
+		// Whether at least one file was successfully imported
+		var successfulImport = false;
+		// Whether at least one .creat file failed to be imported
+		var failedImport = false;
+		CreatureDesign lastImportedDesign = null;
+		foreach (var file in files) {
 			var extension = file.Extension.ToLower();
 			if (extension.Equals(".creat")) {
 
@@ -151,20 +160,25 @@ public class CreatureFileManager : MonoBehaviour,
 				var encoded = file.ToUTF8String();
 				try {
 					var design = CreatureSerializer.ParseCreatureDesign(encoded, nameFromFile);
-					CreatureSerializer.SaveCreatureDesign(design.Name, encoded, false);	
+					CreatureSerializer.SaveCreatureDesign(design, false);
+					lastImportedDesign = design;
 				} catch {
-					didImport = false;
+					failedImport = true;
 					Debug.LogError(string.Format("Failed to parse .creat file contents: {0}", encoded));
 					continue;
 				}
-				didImport = true;
+				successfulImport = true;
 			}
 		}
 		RefreshCache();
-		viewController.Refresh();
-		if (didImport) {
+		try {
+			viewController.Refresh();
+		} catch {}
+		if (successfulImport) {
 			importIndicator.FadeInOut();
-		} else {
+			CloseAndLoadOnNextFrame(lastImportedDesign.Name);
+		}
+		if (failedImport) {
 			failedImportIndicator.FadeInOut(1.8f);
 		}
 	}

@@ -91,7 +91,10 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 	}
 
 	private void TryImport(OpenedFile[] files) {
-		var didImport = false;
+		// Whether at least one file was successfully imported
+		var successfulImport = false;
+		// Whether at least one .evol file failed to be imported
+		var failedImport = false;
 		foreach (OpenedFile file in files) {
 
 			var extension = file.Extension.ToLower();
@@ -101,19 +104,22 @@ public class SimulationFileManager : MonoBehaviour, FileSelectionViewControllerD
 					var simulationData = SimulationSerializer.ParseSimulationData(encoded, file.Name);
 					// SimulationSerializer.SaveSimulation(simulationData);
 				} catch {
-					didImport = false;
+					failedImport = true;
 					Debug.LogError(string.Format("Failed to parse .evol file contents: {0}", encoded));
 					continue;
 				}
 				SimulationSerializer.SaveSimulationFile(file.Name, encoded);
-				didImport = true;
+				successfulImport = true;
 			}
 		}
 		RefreshCache();
-		viewController.Refresh();
-		if (didImport) {
+		try {
+			viewController.Refresh();
+		} catch {}
+		if (successfulImport) {
 			importIndicator.FadeInOut();
-		} else {
+		} 
+		if (failedImport) {
 			failedImportIndicator.FadeInOut(1.8f);
 		} 
 	}

@@ -132,6 +132,7 @@ namespace Keiwando.NativeFileSO {
 			
 			if (string.IsNullOrEmpty(directory)) {
 				dialog.RestoreDirectory = true;
+				dialog.FileName = file.Name;
 			} else {
 				dialog.FileName = CreateFilenameForSaveDialog(directory, file.Name);
 			}
@@ -177,6 +178,7 @@ namespace Keiwando.NativeFileSO {
 
 			if (string.IsNullOrEmpty(directory)) {
 				dialog.RestoreDirectory = true;
+				dialog.FileName = file.Name;
 			} else {
 				dialog.FileName = CreateFilenameForSaveDialog(directory, file.Name);
 			}

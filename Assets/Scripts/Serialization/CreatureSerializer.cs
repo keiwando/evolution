@@ -36,12 +36,6 @@ public class CreatureSerializer {
 		CopyDefaultCreatures();
 	}
 
-	public static void SaveCreatureDesign(CreatureDesign design) {
-		
-		var encoded = design.Encode().ToString(Formatting.None);
-		SaveCreatureDesign(design.Name, encoded, true);
-	}
-
 	/// <summary>
 	/// Saves the given creature design data to a .creat file.
 	/// </summary>
@@ -50,17 +44,22 @@ public class CreatureSerializer {
 	/// <param name="saveData">The design data to be stored.</param>
 	/// <param name="overwrite">Whether an existing creature design with the same name should
 	/// be overwritten or not. If not, then an available name is chosen for the new save.</param>
-	public static void SaveCreatureDesign(string creatureName, string saveData, bool overwrite = false) { 
-
+	/// <returns>The name under which the design has been saved.</returns>
+	public static void SaveCreatureDesign(CreatureDesign design, bool overwrite = false) {
+		
+		var creatureName = design.Name;
 		creatureName = EXTENSION_PATTERN.Replace(creatureName, "");
 
 		if (!overwrite) {
 			creatureName = GetAvailableCreatureName(creatureName);
 		}
+
+		design.Name = creatureName;
+		var encoded = design.Encode().ToString(Formatting.None);
 		var path = PathToCreatureDesign(creatureName);
 
 		CreateSaveFolder();
-		File.WriteAllText(path, saveData);
+		File.WriteAllText(path, encoded);
 	}
 
 	/// <summary>
@@ -209,7 +208,8 @@ public class CreatureSerializer {
 
 		foreach (var creature in DefaultCreatures.defaultCreatures) {
 			if (!CreatureExists(creature.Key)) {
-				SaveCreatureDesign(creature.Key, creature.Value);
+				var design = ParseCreatureDesign(creature.Value, creature.Key);
+				SaveCreatureDesign(design, false);
 			}
 		}
 	}
@@ -245,7 +245,8 @@ public class CreatureSerializer {
 		foreach (var creatureName in creatureNames) {
 			var saveData = PlayerPrefs.GetString(creatureName, "");
 			if (!string.IsNullOrEmpty(saveData) && !CreatureExists(creatureName)) {
-				SaveCreatureDesign(creatureName, saveData, false);
+				var design = ParseCreatureDesign(saveData, creatureName);
+				SaveCreatureDesign(design, false);
 			}
 		}
 
