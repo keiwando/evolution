@@ -229,10 +229,10 @@ namespace Keiwando.Evolution {
 		public float SemiSafeDistanceFromGround() {
 			int jointCount = System.Math.Min(5, joints.Count);
 			var sortedJoints = new List<Joint>(joints);
-			sortedJoints.Sort((lhs, rhs) => lhs.transform.position.y.CompareTo(lhs.transform.position.y));
+			sortedJoints.Sort((lhs, rhs) => lhs.center.y.CompareTo(rhs.center.y));
 			float minDistance = float.MaxValue;
 			for (int i = 0; i < jointCount; i++) {
-				var distance = DistanceFromGround(joints[i].transform.position);
+				var distance = DistanceFromGround(sortedJoints[i].center);
 				minDistance = System.Math.Min(minDistance, distance);
 			}
 			return minDistance;
@@ -422,7 +422,7 @@ namespace Keiwando.Evolution {
 			stats.numberOfBones = bones.Count;
 			stats.numberOfMuscles = muscles.Count;
 			stats.simulationTime = Mathf.RoundToInt(simulationTime);
-			stats.weight = joints.Select(x => x.JointData.weight).Sum() + 2 * bones.Select(x => x.BoneData.weight).Sum();
+			stats.weight = joints.Select(x => x.JointData.weight).Sum() + bones.Select(x => x.GetWeight()).Sum();
 			stats.maxJumpingHeight = maxJumpingHeight;
 
 			return stats;
@@ -430,60 +430,66 @@ namespace Keiwando.Evolution {
 
 		public void SetOnVisibleLayer() {
 
+			var boneLayer = LayerMask.NameToLayer("VisibleCreature");
+			var jointLayer = LayerMask.NameToLayer("VisibleJoint");
+
 			foreach (var bone in bones) {
 				if (bone == null) continue;
-				bone.gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
-				bone.muscleJoint.gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
+				bone.SetLayer(boneLayer);
 			}
 
 			foreach (var joint in joints) {
 				if (joint == null) continue;
-				joint.gameObject.layer = LayerMask.NameToLayer("VisibleJoint");
+				joint.gameObject.layer = jointLayer;
 			}
 
 			foreach (var muscle in muscles) {
 				if (muscle == null) continue;
-				muscle.gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
+				muscle.gameObject.layer = boneLayer;
 			}
 
 			if (gameObject == null) return;
-			gameObject.layer = LayerMask.NameToLayer("VisibleCreature");
+			gameObject.layer = boneLayer;
 		}
 
 		public void SetOnInvisibleLayer() {
 
+			var boneLayer = LayerMask.NameToLayer("Creature");
+			var jointLayer = LayerMask.NameToLayer("Joint");
+
 			foreach (var bone in bones) {
-				bone.gameObject.layer = LayerMask.NameToLayer("Creature");
-				bone.muscleJoint.gameObject.layer = LayerMask.NameToLayer("Creature");
+				bone.SetLayer(boneLayer);
 			}
 
 			foreach (var joint in joints) {
-				joint.gameObject.layer = LayerMask.NameToLayer("Joint");
+				joint.gameObject.layer = jointLayer;
 			}
 
 			foreach (var muscle in muscles) {
-				muscle.gameObject.layer = LayerMask.NameToLayer("Creature");
+				muscle.gameObject.layer = boneLayer;
 			}
 
-			gameObject.layer = LayerMask.NameToLayer("Creature");
+			gameObject.layer = boneLayer;
 		}
 
 		public void SetOnBestCreatureLayer() {
 
+			var boneLayer = LayerMask.NameToLayer("PlaybackCreature");
+			var jointLayer = LayerMask.NameToLayer("PlaybackJoint");
+
 			foreach (var bone in bones) {
-				bone.gameObject.layer = LayerMask.NameToLayer("PlaybackCreature");
-				bone.muscleJoint.gameObject.layer = LayerMask.NameToLayer("PlaybackCreature");
+				bone.SetLayer(boneLayer);
 			}
 
 			foreach (var joint in joints) {
-				joint.gameObject.layer = LayerMask.NameToLayer("PlaybackJoint");
+				joint.gameObject.layer = jointLayer;
 			}
 
 			foreach (var muscle in muscles) {
-				muscle.gameObject.layer = LayerMask.NameToLayer("PlaybackCreature");
+				muscle.gameObject.layer = boneLayer;
 			}
 
-			gameObject.layer = LayerMask.NameToLayer("PlaybackCreature");
+			gameObject.layer = boneLayer;
 		}
 
 		public void Reset() {

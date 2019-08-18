@@ -68,7 +68,7 @@ public static class LegacyCreatureParser {
 		var jointID1 = int.Parse(parts[1]);
 		var jointID2 = int.Parse(parts[2]);
 
-		return new BoneData(boneID, jointID1, jointID2, 1f);		
+		return new BoneData(boneID, jointID1, jointID2, 1f, true);		
 	}
 
 	private static MuscleData ParseMuscleData(string encoded) {

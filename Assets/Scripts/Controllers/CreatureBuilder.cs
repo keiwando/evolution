@@ -240,12 +240,9 @@ namespace Keiwando.Evolution {
 		/// </summary>
 		public void TryStartingMuscle(Bone bone) {
 
-			// find the selected bone
-			// Bone bone = HoveringUtil.GetHoveringObject<Bone>(bones);
-
 			if (bone != null) {
 				CreateMuscleFromBone(bone);
-				var startPos = bone.muscleJoint.transform.position;
+				var startPos = bone.Center;
 				currentMuscle.SetLinePoints(startPos, startPos);
 			}
 		}
@@ -257,9 +254,8 @@ namespace Keiwando.Evolution {
 
 			var muscleData = new MuscleData(idCounter++, bone.BoneData.id, bone.BoneData.id, Muscle.Defaults.MaxForce, true);
 			currentMuscle = Muscle.CreateFromData(muscleData);
-			var muscleJoint = bone.muscleJoint;
-			currentMuscle.startingJoint = muscleJoint;
-			currentMuscle.SetLinePoints(muscleJoint.transform.position, muscleJoint.transform.position);
+			currentMuscle.startingBone = bone;
+			currentMuscle.SetLinePoints(bone.Center, bone.Center);
 		}
 
 		/// <summary>
@@ -275,11 +271,9 @@ namespace Keiwando.Evolution {
 
 				if (hoveringBone != null) {
 					
-					MuscleJoint joint = hoveringBone.muscleJoint;
-
-					if (!joint.Equals(currentMuscle.startingJoint)) {
-						endingPoint = joint.transform.position;
-						currentMuscle.endingJoint = joint;	
+					if (!hoveringBone.Equals(currentMuscle.startingBone)) {
+						endingPoint = hoveringBone.Center;
+						currentMuscle.endingBone = hoveringBone;	
 						var oldData = currentMuscle.MuscleData;
 						var newData = new MuscleData(
 							oldData.id, oldData.startBoneID, hoveringBone.BoneData.id, 
@@ -287,13 +281,13 @@ namespace Keiwando.Evolution {
 						); 
 						currentMuscle.MuscleData = newData;
 					} else {
-						currentMuscle.endingJoint = null;
+						currentMuscle.endingBone = null;
 					}
 				} else {
-					currentMuscle.endingJoint = null;
+					currentMuscle.endingBone = null;
 				}
 
-				currentMuscle.SetLinePoints(currentMuscle.startingJoint.transform.position, endingPoint);
+				currentMuscle.SetLinePoints(currentMuscle.startingBone.Center, endingPoint);
 			}
 		}
 
@@ -306,7 +300,7 @@ namespace Keiwando.Evolution {
 				
 			if (currentMuscle == null) return false;
 
-			if (currentMuscle.endingJoint == null) {
+			if (currentMuscle.endingBone == null) {
 				// The connection has no connected ending -> Destroy
 				UnityEngine.Object.Destroy(currentMuscle.gameObject);
 				currentMuscle = null;
@@ -349,13 +343,11 @@ namespace Keiwando.Evolution {
 		private Muscle CreateMuscleBetween(Bone startingBone, Bone endingBone, MuscleData data) {
 
 			var muscle = Muscle.CreateFromData(data);
-			var startJoint = startingBone.muscleJoint;
-			var endJoint = endingBone.muscleJoint;
 
-			muscle.startingJoint = startJoint;
-			muscle.endingJoint = endJoint;
+			muscle.startingBone = startingBone;
+			muscle.endingBone = endingBone;
 
-			muscle.SetLinePoints(startJoint.transform.position, endJoint.transform.position);
+			muscle.SetLinePoints(startingBone.Center, endingBone.Center);
 			return muscle;
 		}
 

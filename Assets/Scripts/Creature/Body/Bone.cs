@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public class Bone : BodyComponent {
@@ -9,59 +8,78 @@ public class Bone : BodyComponent {
 	public Joint startingJoint;
 	public Joint endingJoint;
 
-	public Vector3 startingPoint {
-		get { return startingJoint.center; }
-	}
+	public Vector3 startingPoint => startingJoint.center;
+	public Vector3 endingPoint => endingJoint.center;
 
-	public Vector3 endingPoint {
-		get { return endingJoint.center; }	
-	}
+	public Vector3 Center => BoneData.legacy ? legacyWeightObj.transform.position : transform.position;
 
-	public MuscleJoint muscleJoint;
+	private List<Muscle> connectedMuscles = new List<Muscle>();
+	public GameObject legacyWeightObj => _legacyWeightObj;
+	private GameObject _legacyWeightObj;
 
 	public BoneData BoneData { get; set; }
 
 	private Vector3 resetPosition;
 	private Quaternion resetRotation;
 
-	public Rigidbody Body {
-		get { return body; }
-	}
+	public Rigidbody Body => body;
 	private Rigidbody body;
 
 	public static Bone CreateAtPoint(Vector3 point, BoneData data) {
 		
 		var bone = ((GameObject) Instantiate(Resources.Load(PATH), point, Quaternion.identity)).GetComponent<Bone>();
 		bone.BoneData = data;
+
+		var body = bone.GetComponent<Rigidbody>();
+		bone.body = body;
+		if (data.legacy) {
+			body.mass = 2 * data.weight - 1;
+			// Add a second weight representing the old muscle joint object
+			var weightObj = new GameObject();
+			var weightBody = weightObj.AddComponent<Rigidbody>();
+			weightBody.mass = 1f;
+			weightBody.angularDrag = 0.05f;
+			var fixedJoint = weightObj.AddComponent<FixedJoint>();
+			fixedJoint.connectedBody = body;
+			fixedJoint.enablePreprocessing = false;
+			weightObj.transform.parent = bone.transform;
+			weightObj.transform.localPosition = Vector3.zero;
+			weightObj.transform.localScale = Vector3.one;
+			weightBody.constraints = RigidbodyConstraints.FreezePositionZ;
+			bone._legacyWeightObj = weightObj;
+
+		} else {
+
+			body.mass = data.weight;
+		}
+
 		return bone;
 	}
 	
-	// Use this for initialization
 	public override void Start () {
 		base.Start();
 
 		resetPosition = transform.position;
 		resetRotation = transform.rotation;
-
-		body = GetComponent<Rigidbody>();
-
-		body.mass = 2 * BoneData.weight - 1;
 	}
 
 	public void Reset() {
 		transform.SetPositionAndRotation(resetPosition, resetRotation);
 		body.velocity = Vector3.zero;
 		body.angularVelocity = Vector3.zero;
-		muscleJoint.Body.velocity = Vector3.zero;
-		muscleJoint.Body.angularVelocity = Vector3.zero;
-		muscleJoint.transform.localPosition = Vector3.zero;
-		muscleJoint.transform.localRotation = Quaternion.identity;
+
+		if (BoneData.legacy) {
+			var weightBody = _legacyWeightObj.GetComponent<Rigidbody>();
+			weightBody.velocity = Vector3.zero;
+			weightBody.angularVelocity = Vector3.zero;
+			_legacyWeightObj.transform.localPosition = Vector3.zero;
+			_legacyWeightObj.transform.localRotation = Quaternion.identity;
+		}
 	}
 
 	/** Places the bone between the specified points. (Points flattened to 2D) */
 	private void PlaceBetweenPoints(Vector3 start, Vector3 end, float width) {
 
-		// flatten the vectors to 2D
 		start.z = 0;
 		end.z = 0;
 
@@ -118,7 +136,7 @@ public class Bone : BodyComponent {
 	public override void Delete() {
 		base.Delete();
 		// Delete the connected muscles
-		muscleJoint.deleteAllConnected();
+		DeleteAllConnectedMuscles();
 
 		// Disconnect from the joints
 		startingJoint.Disconnect(this);
@@ -128,10 +146,40 @@ public class Bone : BodyComponent {
 
 	}
 
+	private void DeleteAllConnectedMuscles() {
+
+		var connected = new List<Muscle>(connectedMuscles);
+		foreach (Muscle muscle in connected) {
+			if (muscle != null) {
+				muscle.Delete();
+			}
+		}
+		connectedMuscles.Clear();
+	}
+
+	public void Connect(Muscle muscle) {
+		connectedMuscles.Add(muscle);
+	}
+
+	public void Disconnect(Muscle muscle) {
+		connectedMuscles.Remove(muscle);
+	}
+
 	public override void PrepareForEvolution () {
 
 		body = GetComponent<Rigidbody>();
 
 		body.isKinematic = false;
+	}
+
+	public void SetLayer(LayerMask layer) {
+		this.gameObject.layer = layer;
+		if (this._legacyWeightObj != null) {
+			this._legacyWeightObj.layer = layer;
+		}
+	}
+
+	public float GetWeight() {
+		return body.mass + (_legacyWeightObj != null ? 1f : 0f);
 	}
 }
