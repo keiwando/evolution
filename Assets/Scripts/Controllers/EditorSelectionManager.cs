@@ -66,6 +66,7 @@ namespace Keiwando.Evolution {
                 break;
 
             case CreatureEditor.Tool.Delete:
+            case CreatureEditor.Tool.Select:
                 hovering = GetComponentAtScreenPoint<Joint>(mouseScreenPos);
                 if (hovering == null)
                     hovering = CheckCachedCollisionsFor<Bone>();
@@ -138,6 +139,8 @@ namespace Keiwando.Evolution {
         }
 
         public void UpdateSelection(Vector3 currentEndPosition) {
+
+            if (!selectionArea.gameObject.activeSelf) return;
 
             this.currentAreaEnd = currentEndPosition;
             UpdateVisualSelectionArea();
