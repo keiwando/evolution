@@ -28,7 +28,7 @@ public static class InputUtils {
 				var touch = Input.GetTouch(i);
 				var overUI = EventSystem.current.IsPointerOverGameObject(touch.fingerId);
 				if (touch.phase == TouchPhase.Ended) {
-					overUI = touches[touch.fingerId].overUI;
+					overUI |= touches[touch.fingerId].overUI;
 				}
 				touches[touch.fingerId] = new TouchInfo() {
 					touch = touch,

@@ -213,7 +213,6 @@ public class CreatureEditor: MonoBehaviour,
         if (Input.touchCount > 0) {
             isPointerOverUI |= InputUtils.IsTouchOverUI(Input.GetTouch(0).fingerId);
         }
-        // if (EventSystem.current.IsPointerOverGameObject()) return;
 
         var clickWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         clickWorldPos.z = 0;
@@ -296,6 +295,9 @@ public class CreatureEditor: MonoBehaviour,
             case Tool.Joint:
                 if (isPointerOverUI) return;
                 if (Input.touchCount > 1) return;
+                #if UNITY_IOS || UNITY_ANDROID
+                if (Input.touchCount == 0) return;
+                #endif
                 creatureEdited = creatureBuilder.TryPlacingJoint(clickWorldPos); 
                 break;
 
