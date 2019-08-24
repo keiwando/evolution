@@ -8583,6 +8583,7 @@ MonoBehaviour:
   deleteConfirmation: {fileID: 114944712193497983}
   renameDialog: {fileID: 162276786}
   searchInputField: {fileID: 1244978340}
+  visibleContainerRect: {fileID: 611327317}
 --- !u!114 &658012952
 MonoBehaviour:
   m_ObjectHideFlags: 0

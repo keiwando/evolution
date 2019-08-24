@@ -64,8 +64,14 @@ namespace Keiwando.Evolution.UI {
 		private Search search;
 		private SearchResult searchResult;
 
+		[SerializeField]
+		private RectTransform visibleContainerRect;
+		private RectTransform containerRect;
+
 		public void Show(FileSelectionViewControllerDelegate Delegate) {
 			this.controllerDelegate = Delegate;
+
+			this.containerRect = itemTemplate.transform.parent.GetComponent<RectTransform>();
 
 			InputRegistry.shared.Register(InputType.All, this, EventHandleMode.ConsumeEvent);
 			GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture += OnAndroidBackButton;
@@ -122,7 +128,6 @@ namespace Keiwando.Evolution.UI {
 				itemTemplate.gameObject.SetActive(false);
 			}
 
-			var containerRect = container.GetComponent<RectTransform>();
 			var size = containerRect.sizeDelta;
 			size = new Vector2(size.x, items.Count * (itemList.CellHeight + itemList.Spacing));
 			containerRect.sizeDelta = size;
@@ -148,7 +153,19 @@ namespace Keiwando.Evolution.UI {
 			int currentSelected = controllerDelegate.GetIndexOfSelectedItem(this);
 			
 			if (IsIndexInSearchResult(currentSelected))
-				scrollRect.verticalNormalizedPosition = itemCount == 0 ? 1f : 1f - (float)currentSelected / itemCount;
+				// scrollRect.verticalNormalizedPosition = itemCount == 0 ? 1f : 1f - (float)currentSelected / itemCount;
+				scrollRect.verticalNormalizedPosition = CalculateScrollPositionForItem(currentSelected);
+		}
+
+		private float CalculateScrollPositionForItem(int index) {
+			
+			float itemCount = GetNumberOfItems();
+			if (itemCount == 0) return 1f;
+			float itemHeight = itemList.CellHeight + itemList.Spacing;
+			float itemsOnScreen = visibleContainerRect.rect.height / itemHeight;
+			float relScrollPerItem = 1f / (itemCount - itemsOnScreen);
+
+			return 1f - (float)index * relScrollPerItem;
 		}
 
 		// Search filter
