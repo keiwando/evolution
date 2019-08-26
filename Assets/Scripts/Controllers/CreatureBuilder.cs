@@ -128,8 +128,7 @@ namespace Keiwando.Evolution {
 		/// </summary>
 		private void CreateBoneFromJoint(Joint joint){
 			
-			// TODO: Keep Muscle joint weight in mind
-			var boneData = new BoneData(idCounter++, joint.JointData.id, joint.JointData.id, 2f);
+			var boneData = new BoneData(idCounter++, joint.JointData.id, joint.JointData.id, 1f);
 			currentBone = Bone.CreateAtPoint(joint.center, boneData);
 			currentBone.startingJoint = joint;
 		}

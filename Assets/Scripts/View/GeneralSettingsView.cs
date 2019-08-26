@@ -143,8 +143,8 @@ namespace Keiwando.Evolution.UI {
                 Refresh();
             });
 
-            batchSizeInputField.onValueChanged.AddListener(delegate (string text) {
-                int batchSize = 0;
+            batchSizeInputField.onEndEdit.AddListener(delegate (string text) {
+                int batchSize = Delegate.GetBatchSize(this);
                 try {
                     int.TryParse(text, out batchSize);
                 } catch { 

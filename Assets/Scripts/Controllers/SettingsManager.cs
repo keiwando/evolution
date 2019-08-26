@@ -119,7 +119,7 @@ namespace Keiwando.Evolution {
 
         public void BatchSizeChanged(GeneralSettingsView view, int batchSize) {
             var settings = simulationSettings;
-            settings.BatchSize = batchSize;
+            settings.BatchSize = Math.Min(Math.Max(batchSize, 1), settings.PopulationSize);
             simulationSettings = settings;
         }
 
@@ -167,7 +167,7 @@ namespace Keiwando.Evolution {
 
         public void PopulationSizeDidChange(int value) {
             var settings = simulationSettings;
-            settings.PopulationSize = value;
+            settings.PopulationSize = Math.Max(2, value);
             simulationSettings = settings;
         }
 

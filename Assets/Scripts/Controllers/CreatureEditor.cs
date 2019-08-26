@@ -108,6 +108,7 @@ public class CreatureEditor: MonoBehaviour,
         historyManager.Push(GetState(historyManager));
         creatureBuilder.Reset();
         creatureBuilder = new CreatureBuilder(design);
+        viewController.Refresh();
     }
     
     /// <summary>
@@ -243,8 +244,21 @@ public class CreatureEditor: MonoBehaviour,
 
             case Tool.Move:
                 selectionManager.AddCurrentHoveringToSelection();
-                jointsToMove = selectionManager.GetJointsToMoveFromSelection(); 
+                jointsToMove = selectionManager.GetJointsToMoveFromSelection();
                 lastDragPosition = clickWorldPos;
+                if (grid.gameObject.activeSelf && jointsToMove.Count > 0) {
+                    // Snap the closest joint to the grid
+                    Joint closestJoint = null;
+                    float closestDistance = float.MaxValue;
+                    foreach (var jointToMove in jointsToMove) {
+                        var distance = Vector3.Distance(jointToMove.center, clickWorldPos);
+                        if (distance < closestDistance) {
+                            closestJoint = jointToMove;
+                            closestDistance = distance;
+                        }
+                    }
+                    lastDragPosition = closestJoint.center + (clickWorldPos - grid.ClosestPointOnGrid(closestJoint.center));
+                }
                 break;
 
             case Tool.Select:
@@ -254,6 +268,8 @@ public class CreatureEditor: MonoBehaviour,
             default: break;
             
             }
+
+            viewController.Refresh();
         }
         // Mouse Move
         else if (InputUtils.MouseHeld()) {
@@ -346,9 +362,9 @@ public class CreatureEditor: MonoBehaviour,
                     creatureBuilder.RefreshMuscleColliders();
                 }
             }
-        }
 
-        viewController.Refresh();
+            viewController.Refresh();
+        }
     }
 
     
@@ -360,6 +376,8 @@ public class CreatureEditor: MonoBehaviour,
         if (!Input.anyKeyDown) return;
 
         if (!InputRegistry.shared.MayHandle(InputType.Key, this)) return;
+
+        if (EventSystem.current.currentSelectedGameObject != null) return;
 
         var input = KeyInputManager.shared;
         // J = place Joint

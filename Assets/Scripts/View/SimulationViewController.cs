@@ -263,6 +263,12 @@ public class SimulationViewController : MonoBehaviour,
 		return evolution.GetNumberOfCurrentBrainInputs();
     }
 
+	public int GetNumberOfNetworkOutputs(BestCreaturesOverlayView view) {
+		var currentBest = bestCreatureController.CurrentBest;
+		if (currentBest == null) return 0;
+		return currentBest.brain.NumberOfOutputs;
+	}
+
 	#endregion
 
 	#region ISimulationVisibilityOptionsViewDelegate 

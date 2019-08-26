@@ -92,14 +92,14 @@ public class SimulationSerializer {
 
 	/// <summary>
 	/// Returns a simulation save filename that is still available based on the
-	/// specified suggested name. (Both without extensions)
+	/// specified suggested name. (Both without the extension)
 	/// </summary>
 	private static string GetAvailableSimulationName(string suggestedName) {
 		
 		var existingNames = GetEvolutionSaveFilenames();
 		int counter = 2;
 		var finalName = suggestedName;
-		while (existingNames.Contains(finalName)) {
+		while (existingNames.Contains(finalName + FILE_EXTENSION)) {
 			finalName = string.Format("{0} ({1})", suggestedName, counter);
 			counter++;
 		}

@@ -30,7 +30,7 @@ namespace Keiwando.Evolution.UI {
                 Hide();
             });
 
-            generationTimeInput.onValueChanged.AddListener(delegate (string text) {
+            generationTimeInput.onEndEdit.AddListener(delegate (string text) {
                 int simulationTime = 0;
                 try {
                     simulationTime = int.Parse(text);
@@ -39,9 +39,10 @@ namespace Keiwando.Evolution.UI {
                     return; 
                 }
                 settingsManager.SimulationTimeDidChange(simulationTime);
+                Refresh();
             });
 
-            populationSizeInput.onValueChanged.AddListener(delegate (string text) {
+            populationSizeInput.onEndEdit.AddListener(delegate (string text) {
                 int populationSize = 10;
                 try {
                     populationSize = int.Parse(text);
@@ -52,6 +53,7 @@ namespace Keiwando.Evolution.UI {
                 int batchSize = Math.Min(settingsManager.GetBatchSize(generalSettingsView), populationSize);
                 settingsManager.BatchSizeChanged(generalSettingsView, batchSize);
                 settingsManager.PopulationSizeDidChange(populationSize);
+                Refresh();
             });
 
             generalSettingsView.Delegate = settingsManager;

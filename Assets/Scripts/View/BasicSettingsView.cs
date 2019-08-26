@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -54,18 +55,20 @@ namespace Keiwando.Evolution.UI {
             };
             this.dropdownWrapper = taskDropdown;
 
-            populationSizeInput.onValueChanged.AddListener(delegate (string value) {
+            populationSizeInput.onEndEdit.AddListener(delegate (string value) {
                 int populationSize = 0;
                 if (int.TryParse(value, out populationSize)) {
                     Delegate?.PopulationSizeDidChange(populationSize);
                 }
+                Refresh();
             });
 
-            generationDurationInput.onValueChanged.AddListener(delegate (string value) {
+            generationDurationInput.onEndEdit.AddListener(delegate (string value) {
                 int duration = 0;
                 if (int.TryParse(value, out duration)) {
                     Delegate?.SimulationTimeDidChange(duration);
                 }
+                Refresh();
             });
         }
 

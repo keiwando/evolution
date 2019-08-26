@@ -111,7 +111,7 @@ namespace Keiwando.Evolution {
 						Debug.LogError(string.Format("Failed to parse .evol file contents: {0}", encoded));
 						continue;
 					}
-					SimulationSerializer.SaveSimulationFile(file.Name, encoded);
+					SimulationSerializer.SaveSimulationFile(file.Name, encoded, false);
 					successfulImport = true;
 				}
 			}

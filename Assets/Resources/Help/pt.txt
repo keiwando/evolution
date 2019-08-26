@@ -60,19 +60,18 @@ O cérebro não é uma parte do corpo como articulações, ossos ou músculos. V
 Toda criatura precisa de um cérebro, que controla todos os músculos e permite que as criaturas evoluam. O cérebro é uma rede neural que recebe um conjunto de entradas e as converte em um conjunto de saídas.
 
 As entradas incluem as seguintes informações:
- - a distância da criatura do solo;
- - a velocidade atual (componente horizontal e vertical);
- - a velocidade rotacional;
- - o número de pontos que tocam o solo;
+ - a distância da criatura do solo
+ - a velocidade atual (componente horizontal e vertical)
+ - a velocidade rotacional
+ - o número de pontos que tocam o solo
  - a rotação da criatura (= a média de todas as rotações ósseas).
-
-Dependendo da tarefa específica, podem haver mais entradas. A tarefa de saltar obstáculos, por exemplo, requer outra entrada para a distância entre a criatura e o obstáculo.
+ - distâncias da criatura do entorno
 
 Cada saída corresponde a exatamente um músculo. A saída é um número de ponto flutuante entre -1 e 1 e determina o quanto o músculo deve se expandir/contrair. Assim, uma criatura com apenas dois músculos terá um cérebro com duas saídas e uma criatura com dez músculos terá um cérebro que produz dez saídas.
 
 O cérebro essencialmente define como a criatura irá interpretar as entradas — que você pode pensar como sentidos — e como irá agir de acordo com elas, ou seja, definir quais músculos contrair ou expandir e determinar o grau de contração/expansão.
 
-Os cérebros podem ser codificados em cadeias binárias (cromossomos), que são usadas no algoritmo evolucionário para poder criar novas criaturas a partir das existentes.
+Os cérebros podem ser codificados em cromossomos (uma matriz de números), que são usadas no algoritmo evolucionário para poder criar novas criaturas a partir das existentes.
 
 
 
@@ -131,9 +130,7 @@ Dicas gerais
 
 Você pode excluir partes individuais do corpo clicando no botão "Delete" (ou pressionando D no teclado) e clicando na parte que deseja excluir. Isso também excluirá todos os objetos conectados diretamente. Então, se você excluir um osso que tenha um músculo ligado, esse músculo também será excluído. Da mesma forma, se você excluir uma junta, isso excluirá todos os ossos conectados diretamente, o que, por sua vez, também excluirá os músculos anexados.
 
-Quando estiver satisfeito com uma criatura que criou, você poderá salvá-la usando o botão “Save” no canto superior esquerdo da tela de criação de criatura (não disponível na versão WebGL). Se você salvar uma criatura com o mesmo nome de um salvamento existente, esse salvamento será sobrescrito (sem nenhum aviso) pelo novo.
-
-Você pode carregar suas criaturas salvas usando a lista no dropdown no topo da tela. Escolher “Creature” dessa lista irá apagar o que estiver atualmente montado na tela de criação. Isso é especialmente útil se você quiser começar do zero sem ter de excluir todas as juntas individualmente.
+Quando estiver satisfeito com uma criatura que criou, você poderá salvá-la usando o botão “Save” (não disponível na versão WebGL).
 
 Há algumas criaturas que já vêm disponíveis. No momento em que escrevo isto, temos o Hailer, a Spider e a Spring.
 

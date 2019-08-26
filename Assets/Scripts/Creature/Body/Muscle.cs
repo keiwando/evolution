@@ -12,6 +12,9 @@ public class Muscle : BodyComponent {
 	private const string BLUE_MATERIAL_PATH = "Materials/MuscleMaterialBlue";
 	private const string INVISIBLE_MATERIAL_PATH = "Materials/MuscleMaterialInvisible";
 
+	private const float LINE_WIDTH = 0.5f;
+	private const float SPRING_STRENGTH = 1000;
+
 	public enum MuscleAction {
 		CONTRACT, EXPAND	
 	}
@@ -59,9 +62,6 @@ public class Muscle : BodyComponent {
 		} 
 	}
 	private bool shouldShowContraction;
-
-	private const float LINE_WIDTH = 0.5f;
-	private const float SPRING_STRENGTH = 1000;
 
 	public float currentForce = 0;
 

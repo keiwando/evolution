@@ -5,7 +5,7 @@ namespace Keiwando.Evolution {
 
     public class BoneSettingsManager: BodyComponentSettingsManager {
 
-        private const float MIN_WEIGHT = 1f;
+        private const float MIN_WEIGHT = 0.5f;
         private const float MAX_WEIGHT = 5f;
 
         private Bone bone;
