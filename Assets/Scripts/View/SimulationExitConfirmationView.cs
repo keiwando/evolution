@@ -13,7 +13,17 @@ namespace Keiwando.Evolution.UI {
         [SerializeField] private Button exitButton;
         [SerializeField] private Button cancelButton;
 
+        private DidCancelExit onCancel;
+
         public void Show(DidConfirmExit onConfirm, DidCancelExit onCancel) {
+
+            InputRegistry.shared.Register(InputType.AndroidBack, this);
+		    GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture += OnAndroidBack;
+
+            #if UNITY_WEBGL
+            onConfirm();
+            return;
+            #endif
 
             if (Settings.DontShowExitConfirmationOverlayAgain) {
                 onConfirm();
@@ -27,6 +37,7 @@ namespace Keiwando.Evolution.UI {
             cancelButton.onClick.AddListener(delegate () {
                 onCancel();
             });
+            this.onCancel = onCancel;
 
             dontAskAgainToggle.isOn = Settings.DontShowExitConfirmationOverlayAgain;
             dontAskAgainToggle.onValueChanged.AddListener(delegate (bool value) {
@@ -40,7 +51,15 @@ namespace Keiwando.Evolution.UI {
 
             exitButton.onClick.RemoveAllListeners();
             cancelButton.onClick.RemoveAllListeners();
+            InputRegistry.shared.Deregister(this);
+		    GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture -= OnAndroidBack;
             gameObject.SetActive(false);
+        }
+
+        private void OnAndroidBack(AndroidBackButtonGestureRecognizer rec) {
+            if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this)) {
+                onCancel();
+            }
         }
     }
 }

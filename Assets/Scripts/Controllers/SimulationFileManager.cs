@@ -22,7 +22,7 @@ namespace Keiwando.Evolution {
 		private UIFade failedImportIndicator;
 
 		private int selectedIndex = 0;
-		private List<string> filenames;
+		private List<string> filenames = new List<string>();
 
 		void Start() {
 			NativeFileSOMobile.shared.FilesWereOpened += delegate (OpenedFile[] files) {
@@ -118,7 +118,9 @@ namespace Keiwando.Evolution {
 			RefreshCache();
 			try {
 				viewController.Refresh();
-			} catch {}
+			} catch {
+				DelayExtensions.Delay(this, 0.2f, delegate() { viewController.Refresh(); });
+			}
 			if (successfulImport) {
 				importIndicator.FadeInOut();
 			} 

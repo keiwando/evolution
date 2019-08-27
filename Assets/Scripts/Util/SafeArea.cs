@@ -1,6 +1,7 @@
 // #define SAFE_AREA_DEBUG
 
 using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(RectTransform))]
 public class SafeArea : MonoBehaviour {
@@ -14,10 +15,10 @@ public class SafeArea : MonoBehaviour {
     void Start() {
         safeAreaRect = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
-        OnRectTransformDimensionsChange();
+        OnRectTransformDimensionsChanged();
     }
 
-    private void OnRectTransformDimensionsChange() {
+    private void OnRectTransformDimensionsChanged() {
 
         if (GetSafeArea() != lastSafeArea && canvas != null) {
             lastSafeArea = GetSafeArea();

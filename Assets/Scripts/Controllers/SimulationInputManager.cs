@@ -15,7 +15,6 @@ namespace Keiwando.Evolution {
             var androidRecognizer = GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer();
             androidRecognizer.OnGesture += delegate (AndroidBackButtonGestureRecognizer recognizer) {
                 if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this)) {
-                    InputRegistry.shared.Deregister(this);
                     viewController.GoBackToEditor();
                 }
             };

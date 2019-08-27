@@ -77,7 +77,7 @@ public class CreatureEditor: MonoBehaviour,
 
         viewController.Refresh();
 
-        InputRegistry.shared.Register(InputType.Click | InputType.Key | InputType.Touch, this, EventHandleMode.PassthroughEvent);
+        InputRegistry.shared.Register(InputType.Click | InputType.Key | InputType.Touch | InputType.AndroidBack, this, EventHandleMode.PassthroughEvent);
 
         var androidBackButton = GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer();
         androidBackButton.OnGesture += delegate (AndroidBackButtonGestureRecognizer recognizer) {

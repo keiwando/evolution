@@ -48,6 +48,7 @@ namespace Keiwando.Evolution {
 
 		public void PromptCreatureSave() {
 			saveDialog.Show(this);
+			DidChangeValue(saveDialog, GetSuggestedName(saveDialog));
 		}
 
 		// MARK: - SaveDialogDelegate

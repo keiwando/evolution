@@ -2,33 +2,51 @@
 using UnityEngine.UI;
 using UnityEngine;
 
-public class DeleteConfirmationDialog : MonoBehaviour {
+namespace Keiwando.Evolution.UI {
 
-	public delegate void Delete(string name);
+	public class DeleteConfirmationDialog : MonoBehaviour {
 
-	private Delete deleteHandler;
+		public delegate void Delete(string name);
 
-	[SerializeField] private Text filenameLabel;
+		private Delete deleteHandler;
 
-	public void ConfirmDeletionFor(string filename, Delete deleteHandler) {
+		[SerializeField] private Text filenameLabel;
 
-		filenameLabel.text = filename;
-		this.deleteHandler = deleteHandler;
+		public void ConfirmDeletionFor(string filename, Delete deleteHandler) {
 
-		gameObject.SetActive(true);
-	}
+			filenameLabel.text = filename;
+			this.deleteHandler = deleteHandler;
 
-	public void ConfirmedDeletion() {
+			InputRegistry.shared.Register(InputType.AndroidBack, this, EventHandleMode.ConsumeEvent);
+			GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture += OnAndroidBack;
 
-		//SimulationSerializer.DeleteSaveFile(filenameLabel.text);
-		deleteHandler(filenameLabel.text);
+			gameObject.SetActive(true);
+		}
 
-		gameObject.SetActive(false);
-	}
+		public void ConfirmedDeletion() {
 
-	public void Cancel() {
-		filenameLabel.text = "";
+			//SimulationSerializer.DeleteSaveFile(filenameLabel.text);
+			deleteHandler(filenameLabel.text);
 
-		gameObject.SetActive(false);
+			DeregisterAndroidBack();
+			gameObject.SetActive(false);
+		}
+
+		public void Cancel() {
+			filenameLabel.text = "";
+
+			DeregisterAndroidBack();
+			gameObject.SetActive(false);
+		}
+
+		private void DeregisterAndroidBack() {
+			InputRegistry.shared.Deregister(this);
+			GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture -= OnAndroidBack;
+		}
+
+		private void OnAndroidBack(AndroidBackButtonGestureRecognizer recognizer) {
+			if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this))
+			Cancel();
+		}
 	}
 }
