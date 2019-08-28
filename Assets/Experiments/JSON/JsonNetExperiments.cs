@@ -1,131 +1,131 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿// using System;
+// using System.Collections;
+// using System.Collections.Generic;
+// using UnityEngine;
+// using Newtonsoft.Json;
+// using Newtonsoft.Json.Linq;
 
-namespace Keiwando.Experiments {
+// namespace Keiwando.Experiments {
 
-    public class JsonNetExperiments : MonoBehaviour {
+//     public class JsonNetExperiments : MonoBehaviour {
 
-        private class Data {
-            public int ID { get; set; }
-            public string Name { get; set; } = "Unnamed";
-        }
+//         private class Data {
+//             public int ID { get; set; }
+//             public string Name { get; set; } = "Unnamed";
+//         }
 
-        private class Container {
-            public int ID { get; set; }
-            public List<Data> items { get; set; }
-        }
+//         private class Container {
+//             public int ID { get; set; }
+//             public List<Data> items { get; set; }
+//         }
 
-        void Start() {
-            // TestDefaultValuesWhenMissing();
-            // TestRenamedPropertyDeserialization();
-            // TestPartialDecode();
-            // TestDetailedEncoding();
-            TestNestedObjects();
-        }
+//         void Start() {
+//             // TestDefaultValuesWhenMissing();
+//             // TestRenamedPropertyDeserialization();
+//             // TestPartialDecode();
+//             // TestDetailedEncoding();
+//             TestNestedObjects();
+//         }
 
-        private void TestDetailedEncoding() {
+//         private void TestDetailedEncoding() {
 
-            var item = new JObject();
-            item["ID"] = 5;
-            item["Name"] = "Keiwan";
+//             var item = new JObject();
+//             item["ID"] = 5;
+//             item["Name"] = "Keiwan";
 
-            var items = new List<JObject>() { item };
-            var json = new JObject();
-            json["ID"] = 10;
-            json["items"] = JToken.FromObject(items);
+//             var items = new List<JObject>() { item };
+//             var json = new JObject();
+//             json["ID"] = 10;
+//             json["items"] = JToken.FromObject(items);
 
-            Debug.Log(json.ToString());
-        }
+//             Debug.Log(json.ToString());
+//         }
 
-        private void TestNestedObjects() {
+//         private void TestNestedObjects() {
 
-            var item = new JObject();
-            item["ID"] = 5;
-            item["Name"] = "Keiwan";
+//             var item = new JObject();
+//             item["ID"] = 5;
+//             item["Name"] = "Keiwan";
 
-            var child = new JObject();
-            child["X"] = JToken.FromObject(new string[] { "A", "B", "C" });
-            child["Y"] = 10;
-            item["child"] = child;
+//             var child = new JObject();
+//             child["X"] = JToken.FromObject(new string[] { "A", "B", "C" });
+//             child["Y"] = 10;
+//             item["child"] = child;
 
-            Debug.Log(item.ToString());
-        }
+//             Debug.Log(item.ToString());
+//         }
 
-        private void TestPartialDecode() {
+//         private void TestPartialDecode() {
 
-            var encoded = @"
-            {
-                'ID': 1,
-                'items': [
-                    {
-                        'ID': 5,
-                        'Name': 'Keiwan'
-                    },
-                    {
-                        'ID': 100,
-                        'Name': 'Unnamed',
-                        'additionalData': 'some string'
-                    }
-                ]
-            }";
+//             var encoded = @"
+//             {
+//                 'ID': 1,
+//                 'items': [
+//                     {
+//                         'ID': 5,
+//                         'Name': 'Keiwan'
+//                     },
+//                     {
+//                         'ID': 100,
+//                         'Name': 'Unnamed',
+//                         'additionalData': 'some string'
+//                     }
+//                 ]
+//             }";
 
-            var json = JObject.Parse(encoded);
+//             var json = JObject.Parse(encoded);
 
-            var id = json["ID"];
-            var items = json["items"].ToObject<List<JObject>>();
+//             var id = json["ID"];
+//             var items = json["items"].ToObject<List<JObject>>();
             
-            Debug.Log(string.Format("ID: {0}", id.ToObject<int>()));
-            foreach (var item in items) {
-                Debug.Log(string.Format("item: {0}", item.ToString()));
-            }
-        }
+//             Debug.Log(string.Format("ID: {0}", id.ToObject<int>()));
+//             foreach (var item in items) {
+//                 Debug.Log(string.Format("item: {0}", item.ToString()));
+//             }
+//         }
 
-        private void TestRenamedPropertyDeserialization() {
+//         private void TestRenamedPropertyDeserialization() {
 
-            // encoded has been created from a previous version of the Data
-            // class, which had the Property 'name' instead of 'Name'.
-            var encoded = @"
-            {
-                'ID': 5,
-                '_name': 'Keiwan'
-            }";
+//             // encoded has been created from a previous version of the Data
+//             // class, which had the Property 'name' instead of 'Name'.
+//             var encoded = @"
+//             {
+//                 'ID': 5,
+//                 '_name': 'Keiwan'
+//             }";
 
-            // When decoding it, we want the serialized value for 'name'
-            // to be used as the value of 'Name'
+//             // When decoding it, we want the serialized value for 'name'
+//             // to be used as the value of 'Name'
 
-            var jObject = JObject.Parse(encoded);
-            var id = jObject["ID"];
-            var name = jObject["Name"] ?? jObject["_name"];
-            var data = new Data() { ID = id.ToObject<int>(), Name = name.ToString() };
+//             var jObject = JObject.Parse(encoded);
+//             var id = jObject["ID"];
+//             var name = jObject["Name"] ?? jObject["_name"];
+//             var data = new Data() { ID = id.ToObject<int>(), Name = name.ToString() };
 
-            Debug.Log(string.Format("ID: {0}", data.ID));
-            Debug.Log(string.Format("Name: {0}", data.Name));
-        }
+//             Debug.Log(string.Format("ID: {0}", data.ID));
+//             Debug.Log(string.Format("Name: {0}", data.Name));
+//         }
 
-        private void TestDefaultValuesWhenMissing() {
+//         private void TestDefaultValuesWhenMissing() {
 
-            // encoded has been created from a previous version of the Data
-            // class, which was missing the Name property.
-            var encoded = @"
-            {
-                'ID': 5  
-            }";
+//             // encoded has been created from a previous version of the Data
+//             // class, which was missing the Name property.
+//             var encoded = @"
+//             {
+//                 'ID': 5  
+//             }";
 
-            // When decoding it, we want the default value of Name to be assigned
-            // in the decoded Data instance
+//             // When decoding it, we want the default value of Name to be assigned
+//             // in the decoded Data instance
 
-            var data = JsonConvert.DeserializeObject<Data>(encoded);
+//             var data = JsonConvert.DeserializeObject<Data>(encoded);
 
-            Debug.Log(string.Format("ID: {0}", data.ID));
-            Debug.Log(string.Format("Name: {0}", data.Name));
+//             Debug.Log(string.Format("ID: {0}", data.ID));
+//             Debug.Log(string.Format("Name: {0}", data.Name));
 
-            // Prints
-            // ID: 5
-            // Name: Unnamed
-        }
-    }
-}
+//             // Prints
+//             // ID: 5
+//             // Name: Unnamed
+//         }
+//     }
+// }

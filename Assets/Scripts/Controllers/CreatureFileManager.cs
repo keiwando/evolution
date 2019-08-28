@@ -164,7 +164,6 @@ namespace Keiwando.Evolution {
 					var encoded = file.ToUTF8String();
 					try {
 						var design = CreatureSerializer.ParseCreatureDesign(encoded, nameFromFile);
-						Debug.Log(design.Encode().ToString());
 						CreatureSerializer.SaveCreatureDesign(design, false);
 						lastImportedDesign = design;
 					} catch {

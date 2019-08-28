@@ -118,7 +118,7 @@ public class CreatureSerializer {
 	/// </summary>
 	/// <param name="name">The name of the creature design.</param>
 	public static bool CreatureExists(string name) {
-		return GetCreatureNames().Contains(name);
+		return GetCreatureNames().Select(n => n.ToLower()).Contains(name.ToLower());
 	}
 
 	/// <summary>
@@ -153,10 +153,10 @@ public class CreatureSerializer {
 	/// </summary>
 	private static string GetAvailableCreatureName(string suggestedName) {
 
-		var existingNames = GetCreatureNames();
+		var existingNames = GetCreatureNames().Select(n => n.ToLower());
 		int counter = 2;
 		var finalName = suggestedName;
-		while (existingNames.Contains(finalName)) {
+		while (existingNames.Contains(finalName.ToLower())) {
 			finalName = string.Format("{0} ({1})", suggestedName, counter);
 			counter++;
 		}

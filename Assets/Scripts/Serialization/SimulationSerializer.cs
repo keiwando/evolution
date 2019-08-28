@@ -96,10 +96,10 @@ public class SimulationSerializer {
 	/// </summary>
 	private static string GetAvailableSimulationName(string suggestedName) {
 		
-		var existingNames = GetEvolutionSaveFilenames();
+		var existingNames = GetEvolutionSaveFilenames().Select(n => n.ToLower());
 		int counter = 2;
 		var finalName = suggestedName;
-		while (existingNames.Contains(finalName + FILE_EXTENSION)) {
+		while (existingNames.Contains(finalName.ToLower() + FILE_EXTENSION)) {
 			finalName = string.Format("{0} ({1})", suggestedName, counter);
 			counter++;
 		}
@@ -162,7 +162,7 @@ public class SimulationSerializer {
 	/// </summary>
 	/// <param name="name"></param>
 	public static bool SimulationSaveExists(string name) {
-		return GetEvolutionSaveFilenames().Contains(name + FILE_EXTENSION);
+		return GetEvolutionSaveFilenames().Select(n => n.ToLower()).Contains(name.ToLower() + FILE_EXTENSION);
 	}
 
 	/// <summary>
