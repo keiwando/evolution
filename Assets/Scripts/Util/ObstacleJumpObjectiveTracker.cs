@@ -41,7 +41,7 @@ namespace Keiwando.Evolution {
             var averageCollisionDuration = totalCollisionDuration / creature.joints.Count;
 
             var collisionFitness = 1f - Mathf.Clamp(averageCollisionDuration / MAX_COLLISION_DURATION_PER_JOINT, 0f, 1f);
-            return Math.Max(collisionFitness, 0.3f * heightFitness + 0.7f * collisionFitness);
+            return Math.Max(0.5f * collisionFitness, 0.3f * heightFitness + 0.7f * collisionFitness);
         }
     }
 }

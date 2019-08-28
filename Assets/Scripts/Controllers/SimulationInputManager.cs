@@ -39,7 +39,15 @@ namespace Keiwando.Evolution {
             } else if (Input.GetKeyDown(KeyCode.RightArrow)) {
 
                 viewController.FocusOnNextCreature();
+            } 
+            
+            #if UNITY_EDITOR
+            if (Input.GetKeyDown(KeyCode.P)) {
+                foreach (var bestCreature in evolution.SimulationData.BestCreatures) {
+                    Debug.Log(bestCreature.GetFitness());
+                }
             }
+            #endif
         }
     }
 }
