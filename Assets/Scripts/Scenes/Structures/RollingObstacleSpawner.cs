@@ -3,10 +3,9 @@ using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
 
-    [RegisterInScene(ENCODING_ID)]
     public class RollingObstacleSpawner: BaseStructure {
 
-        private const string ENCODING_ID = "evolution::structure::rollingobstaclespawner";
+        public const string ENCODING_ID = "evolution::structure::rollingobstaclespawner";
 
         public float SpawnInterval { get; private set; }
         public float ObstacleLifetime { get; private set; }

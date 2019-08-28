@@ -5,12 +5,12 @@ using Keiwando.JSON;
 
 namespace Keiwando.Evolution.Scenes {
 
-    public class RegisterInSceneAttribute: Attribute {
-        public readonly string id;
-        public RegisterInSceneAttribute(string id) {
-            this.id = id;
-        }
-    }
+    // public class RegisterInSceneAttribute: Attribute {
+    //     public readonly string id;
+    //     public RegisterInSceneAttribute(string id) {
+    //         this.id = id;
+    //     }
+    // }
 
     public class SimulationSceneDescription {
 
@@ -53,21 +53,11 @@ namespace Keiwando.Evolution.Scenes {
         }
 
         static SimulationSceneDescription() {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
-                foreach (Type type in assembly.GetTypes()) {
-                    var attributes = type.GetCustomAttributes(typeof(RegisterInSceneAttribute), true);
-                    if (type.GetCustomAttributes(typeof(RegisterInSceneAttribute), true).Length > 0) {
-                    var attribute = attributes[0] as RegisterInSceneAttribute;
-                        RegisterStructure(
-                            attribute.id, 
-                            Delegate.CreateDelegate(
-                                typeof(DecodeStructure),
-                                type.GetMethod("Decode"),
-                                true
-                            ) as DecodeStructure
-                        ); 
-                    }
-                }
+
+            var allStructures = StructureRegistry.Structures;
+            for (int i = 0; i < allStructures.Length; i++) {
+                var structure = allStructures[i];
+                RegisterStructure(structure.id, structure.decoder);
             }
         }
 

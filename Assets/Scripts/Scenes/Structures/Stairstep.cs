@@ -3,10 +3,9 @@ using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
 
-    [RegisterInScene(ENCODING_ID)]
     public class Stairstep: BaseStructure {
 
-        private const string ENCODING_ID = "evolution::structure::stairstep";
+        public const string ENCODING_ID = "evolution::structure::stairstep";
 
         public Stairstep(Transform transform): base(transform) {}
 

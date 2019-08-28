@@ -4,10 +4,9 @@ using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
 
-    [RegisterInScene(ENCODING_ID)]
     public class DistanceMarkerSpawner: BaseStructure {
 
-        private const string ENCODING_ID = "evolution::structure::distancemarkerspawner";
+        public const string ENCODING_ID = "evolution::structure::distancemarkerspawner";
 
         public float MarkerDistance { get; private set; }
         public float DistanceAngleFactor { get; private set; }

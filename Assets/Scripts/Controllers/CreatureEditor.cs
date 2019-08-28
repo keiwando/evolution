@@ -131,9 +131,9 @@ public class CreatureEditor: MonoBehaviour,
         creatureBuilder.Name = name;
         var design = creatureBuilder.GetDesign();
         SaveDesign(design);
+        viewController.Refresh();
     }
 
-    
     public void SaveDesign(CreatureDesign design) {
         CreatureSerializer.SaveCreatureDesign(design);
     }

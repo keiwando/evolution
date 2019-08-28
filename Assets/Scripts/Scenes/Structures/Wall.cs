@@ -4,10 +4,9 @@ using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
 
-    [RegisterInScene(ENCODING_ID)]
     public class Wall: BaseStructure {
 
-        private const string ENCODING_ID = "evolution::structure::wall";
+        public const string ENCODING_ID = "evolution::structure::wall";
 
         public Wall(Transform transform): base(transform) {}
 
