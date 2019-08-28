@@ -38,7 +38,17 @@ public static class HoveringUtil {
 		foreach (Hoverable hov in hoverables) {
 			hov.ResetHitbox();
 		}
-	} 
+	}
+
+	/// <summary>
+	/// Enlarges the hoverable colliders on the list items. 
+	/// </summary>
+	public static void EnlargeHoverableColliders<T>(List<T> hoverables) where T: Hoverable {
+
+		foreach (Hoverable hov in hoverables) {
+			hov.EnlargeHitbox();
+		}
+	}
 
     /// <summary>
     /// Sets the mouseHoverTexture property iof 

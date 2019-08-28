@@ -63,7 +63,8 @@ public class CreatureEditor: MonoBehaviour,
         } else {
             creatureBuilder = new CreatureBuilder();
         }
-        
+        creatureBuilder.EnlargeHoverableColliders();
+
         selectionManager = new EditorSelectionManager(this, selectionArea, mouseDeleteTexture);
 
         var simulationConfigs = GameObject.FindGameObjectsWithTag("SimulationConfig");
@@ -109,6 +110,10 @@ public class CreatureEditor: MonoBehaviour,
         creatureBuilder.Reset();
         creatureBuilder = new CreatureBuilder(design);
         viewController.Refresh();
+
+        #if UNITY_IOS || UNITY_ANDROID
+        creatureBuilder.EnlargeHoverableColliders();
+        #endif
     }
     
     /// <summary>
@@ -361,6 +366,7 @@ public class CreatureEditor: MonoBehaviour,
                 if (selectedTool == Tool.Move) {
                     creatureBuilder.RefreshMuscleColliders();
                 }
+                creatureBuilder.EnlargeHoverableColliders();
             }
 
             viewController.Refresh();

@@ -4,14 +4,8 @@ abstract public class BodyComponent: Hoverable {
 
 	public bool deleted;
 
-	// Use this for initialization
 	public override void Start () {
 		base.Start();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
 	}
 
 	virtual public void Delete(){
@@ -21,7 +15,11 @@ abstract public class BodyComponent: Hoverable {
 	/// <summary>
 	/// Prepares the component for the evolution simulation.
 	/// </summary>
-	abstract public void PrepareForEvolution();
+	virtual public void PrepareForEvolution() {
+		#if UNITY_IOS || UNITY_ANDROID
+		ResetHitbox();
+		#endif
+	}
 
 	/// <summary>
 	/// Removes the already destroyed object that are still left in the list.

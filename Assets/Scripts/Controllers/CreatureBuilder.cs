@@ -522,12 +522,18 @@ namespace Keiwando.Evolution {
 		}
 
 		/// <summary>
-		/// Resets the hoverable colliders on joints and bones.
+		/// Enlarges the hoverable colliders on joints and bones.
 		/// </summary>
-		private void ResetHoverableColliders() {
+		public void ResetHoverableColliders() {
 
 			HoveringUtil.ResetHoverableColliders(joints);
 			HoveringUtil.ResetHoverableColliders(bones);
+		}
+
+		public void EnlargeHoverableColliders() {
+			
+			HoveringUtil.EnlargeHoverableColliders(joints);
+			HoveringUtil.EnlargeHoverableColliders(bones);
 		}
 
 		#endregion

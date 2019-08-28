@@ -369,7 +369,7 @@ public class Muscle : BodyComponent {
 	}
 
 	public override void PrepareForEvolution () {
-		
+		base.PrepareForEvolution();
 		living = true;
 	}
 

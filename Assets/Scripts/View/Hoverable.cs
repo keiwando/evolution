@@ -8,12 +8,6 @@ abstract public class Hoverable: MonoBehaviour {
 	public bool shouldHighlight {
 		set {
 			_shouldHighlight = value;
-
-			// #if (UNITY_ANDROID || UNITY_IOS) 
-			// if (_shouldHighlight) {
-			// 	EnlargeHitbox();
-			// }
-			// #endif
 		}
 		get { return _shouldHighlight; }
 	}
@@ -27,9 +21,6 @@ abstract public class Hoverable: MonoBehaviour {
 	private Vector2 hotSpot;
 
 	private const float highlightAlpha = 0.5f;
-
-	// private Color highlightEmissionColor;
-	// private Color defaultEmissionColor;
 
 	// Mobile input adjustments
 	private const float hitBoxIncrease = 3f;
@@ -45,12 +36,6 @@ abstract public class Hoverable: MonoBehaviour {
 		highlightMaterial = Resources.Load("Materials/Selection Highlight") as Material;
 		_renderer = GetComponent<Renderer>();
 		normalMaterial = _renderer.sharedMaterial;
-		// highlightEmissionColor = new Color(0.7132353f, 0.5433174f, 0.2884408f, 1f);
-		// defaultEmissionColor = GetComponent<Renderer>().sharedMaterial.GetColor("_EmissionColor");		
-
-		#if (UNITY_ANDROID || UNITY_IOS) 
-		EnlargeHitbox();
-		#endif
 	}
 
 	void OnDestroy() {
@@ -58,13 +43,13 @@ abstract public class Hoverable: MonoBehaviour {
 	}
 
 	public void EnableHighlight() {
-		// GetComponent<Renderer>().material.SetColor("_EmissionColor", highlightEmissionColor);
+
 		if (_renderer == null) return;
 		_renderer.sharedMaterial = highlightMaterial;
 	}
 
 	public void DisableHighlight() {
-		// GetComponent<Renderer>().material.SetColor("_EmissionColor", defaultEmissionColor);
+		
 		if (_renderer == null) return;
 		_renderer.sharedMaterial = normalMaterial;
 	}
@@ -93,6 +78,8 @@ abstract public class Hoverable: MonoBehaviour {
 	}
 
 	public void ResetHitbox() {
+
+		if (!isEnlarged) return;
 
 		isEnlarged = false;
 
