@@ -9,10 +9,36 @@ namespace Keiwando.Evolution.Scenes {
             new CameraControlPoint(0, 0, 0.11f), new CameraControlPoint(1, 0, 0.11f)
         };
 
-        public static readonly SimulationSceneDescription RunningScene = CreateRunningScene();
-        public static readonly SimulationSceneDescription JumpingScene = CreateJumpingScene();
-        public static readonly SimulationSceneDescription ObstacleJumpScene = CreateObstacleJumpScene();
-        public static readonly SimulationSceneDescription ClimbingScene = CreateClimbingScene();
+        public static SimulationSceneDescription RunningScene {
+            get {
+                if (_runningScene == null) _runningScene = CreateRunningScene();
+                return _runningScene;
+            }
+        }
+        private static SimulationSceneDescription _runningScene;
+        public static SimulationSceneDescription JumpingScene {
+            get {
+                if (_jumpingScene == null) _jumpingScene = CreateJumpingScene();
+                return _jumpingScene;
+            }
+        }
+        private static SimulationSceneDescription _jumpingScene;
+        
+        public static  SimulationSceneDescription ObstacleJumpScene {
+            get {
+                if (_obstacleJumpScene == null) _obstacleJumpScene = CreateObstacleJumpScene();
+                return _obstacleJumpScene;
+            }
+        }
+        private static SimulationSceneDescription _obstacleJumpScene;
+
+        public static SimulationSceneDescription ClimbingScene {
+            get {
+                if (_climbingScene == null) _climbingScene = CreateClimbingScene();
+                return _climbingScene;
+            }
+        }
+        private static SimulationSceneDescription _climbingScene;
         // public static readonly SimulationSceneDescription RunningScene = CreateIncrementalClimbingScene();
 
         public static SimulationSceneDescription DefaultSceneForObjective(Objective objective) {

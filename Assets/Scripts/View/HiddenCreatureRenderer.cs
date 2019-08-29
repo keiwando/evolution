@@ -10,6 +10,7 @@ public class HiddenCreatureRenderer: MonoBehaviour {
     private new Camera camera;
     private Camera hiddenCamera;
 
+    [SerializeField]
     private Material material;
 
     void Start() {
@@ -44,11 +45,11 @@ public class HiddenCreatureRenderer: MonoBehaviour {
         // commandBuffer.Blit(hiddenCamera.targetTexture, debugRenderTexture);
 
         var quad = GetQuad();
-        var shader = Shader.Find("Sprites/Default");
-        var material = new Material(shader);
+        // var shader = Shader.Find("Sprites/Default");
+        // var material = new Material(shader);
         material.SetTexture("_MainTex", hiddenCamera.targetTexture);
         material.color = new Color(1f, 1f, 1f, Settings.HiddenCreatureOpacity);
-        this.material = material;
+        // this.material = material;
 
         commandBuffer.SetViewProjectionMatrices(Matrix4x4.Scale(new Vector3(2f, 2f)), Matrix4x4.identity);
         commandBuffer.DrawMesh(quad, Matrix4x4.identity, material);

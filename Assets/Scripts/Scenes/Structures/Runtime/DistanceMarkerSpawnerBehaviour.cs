@@ -36,8 +36,8 @@ namespace Keiwando.Evolution.Scenes {
             // Create markers
             for (int i = 1; i <= INITIAL_SPAWN_COUNT; i++) {
                 pos += transform.right * MarkerDistance * STAT_ADJUSTMENT_FACTOR;
-                var labelValue = i * MarkerDistance * DistanceAngleFactor;
-                AddMarker(template, pos, labelValue.ToString("0"));
+                var labelValue = (int)(i * MarkerDistance * DistanceAngleFactor);
+                AddMarker(template, pos, labelValue.ToString());
             }
 
             // Create marker for best of previous gen
