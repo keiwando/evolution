@@ -121,7 +121,8 @@ public class BestCreaturesOverlayView: MonoBehaviour {
     private void RefreshStats() {
 
         var stats = Delegate.GetCreatureStatsOfCurrentBest(this);
-        var fitnessPercentage = Mathf.Round(stats.fitness * 10000f) / 100f;
+        // var fitnessPercentage = Mathf.Round(stats.fitness * 10000f) / 100f;
+        var fitnessPercentage = Mathf.Round(stats.fitness * 1000f) / 10f;
         fitnessLabel.text = string.Format("Fitness: {0}%", fitnessPercentage);
 
         if (stats.simulationTime <= 0) {

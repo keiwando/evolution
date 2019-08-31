@@ -14,11 +14,22 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 	[SerializeField] private VisualNeuralNetworkRenderer networkRenderer;
 	[SerializeField] private RectTransform leftEdge;
 	[SerializeField] private RectTransform rightEdge;
-	[SerializeField] private RenderTexture renderTexture;
+	[SerializeField] private RawImage image;
+	[SerializeField] private RenderTexture renderTextureAA;
+	// For platforms that don't support AA textures (WebGL 1.0 Safari)
+	[SerializeField] private RenderTexture renderTextureNoAA;
+	private RenderTexture renderTexture;
 
 	private Dictionary<int, InputField> intermediateInputs = new Dictionary<int, InputField>();
 
 	void Start() {
+
+		#if UNITY_WEBGL
+		renderTexture = renderTextureNoAA;
+		#else 
+		renderTexture = renderTextureAA;
+		#endif
+		image.texture = renderTexture;
 	
 		numberOfLayersInput.onEndEdit.AddListener(delegate(string arg0) {
 			NumberOfLayersChanged(arg0);

@@ -6,7 +6,7 @@ RenderTexture:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Visual Neural Network
+  m_Name: Visual Neural Network No AA
   m_ImageContentsHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -14,7 +14,7 @@ RenderTexture:
   m_DownscaleFallback: 0
   m_Width: 2048
   m_Height: 1024
-  m_AntiAliasing: 2
+  m_AntiAliasing: 1
   m_DepthFormat: 0
   m_ColorFormat: 0
   m_MipMap: 0

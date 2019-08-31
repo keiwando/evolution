@@ -10,7 +10,7 @@ public class VisualNeuralNetworkRenderer: MonoBehaviour {
     [SerializeField] private Texture2D nodeTexture;
     [SerializeField] private Texture2D connectionTexture;
 
-    [SerializeField] private RenderTexture targetTexture;
+    // [SerializeField] private RenderTexture targetTexture;
 
     // void Start() {
     //     var testNetworkSettings = NeuralNetworkSettings.Default;

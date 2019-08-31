@@ -46,6 +46,15 @@ namespace Keiwando.Evolution {
                 foreach (var bestCreature in evolution.SimulationData.BestCreatures) {
                     Debug.Log(bestCreature.GetFitness());
                 }
+            } else if (Input.GetKeyDown(KeyCode.L)) {
+                var bestCreatures = evolution.SimulationData.BestCreatures;
+                if (bestCreatures.Count <= 1) return;
+                var lastFitness = bestCreatures[0].GetFitness();
+                for (int i = 1; i < bestCreatures.Count; i++) {
+                    var fitness = bestCreatures[i].GetFitness();
+                    Debug.Log((fitness - lastFitness) * 100);
+                    lastFitness = fitness;
+                }
             }
             #endif
         }
