@@ -79,6 +79,7 @@ public class SimulationParserV1 {
 
 		var networkSettings = NeuralNetworkSettings.Default;
 		var sceneDescription = DefaultSimulationScenes.DefaultSceneForObjective(settings.Objective);
+		sceneDescription.PhysicsConfiguration = ScenePhysicsConfiguration.Legacy;
 
 		int lastSimulatedV2Generation = bestChromosomes.Count;
 

@@ -95,7 +95,7 @@ namespace Keiwando.Evolution {
 
 		private Coroutine simulationRoutine;
 		
-		void Start () {
+		void Start() {
 			
 			Physics.autoSimulation = false;
 			Screen.sleepTimeout = SleepTimeout.NeverSleep;
@@ -134,18 +134,9 @@ namespace Keiwando.Evolution {
 			this.SimulationData = data;
 			this.cachedSettings = Settings;
 			this.LastSavedGeneration = data.BestCreatures.Count;
-
-			// Debug.Log("Objective " + ObjectiveUtil.StringRepresentation(data.Settings.Objective));
-
-			// Instantiate the creature template
-			var creatureBuilder = new CreatureBuilder(data.CreatureDesign);
-			this.creature = creatureBuilder.Build();
-			this.creature.RemoveMuscleColliders();
-			this.creature.Alive = false;
 			
 			this.currentGenerationNumber = data.BestCreatures.Count + 1;
 
-			this.creature.gameObject.SetActive(false);
 			if (this.InitializationDidEnd != null) InitializationDidEnd();
 
 			this.simulationRoutine = StartCoroutine(Simulate());

@@ -49,7 +49,7 @@ public class Bone : BodyComponent {
 			bone._legacyWeightObj = weightObj;
 
 		} else {
-
+			
 			body.mass = data.weight;
 		}
 

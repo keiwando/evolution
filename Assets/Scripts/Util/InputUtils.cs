@@ -20,7 +20,7 @@ public static class InputUtils {
 
 		#if !UNITY_IOS && !UNITY_ANDROID 
 		return;
-		#endif
+		#else 
 		
 		RemoveOutdatedTouches();
 		if (Input.touchCount > 0) {
@@ -38,6 +38,8 @@ public static class InputUtils {
 		} else {
 			touches.Clear();
 		}
+
+		#endif
 	}
 
 	// Removes all touches that ended in the last frame from the "touches" cache

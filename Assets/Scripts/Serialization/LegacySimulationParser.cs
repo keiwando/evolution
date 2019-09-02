@@ -57,7 +57,7 @@ public class LegacySimulationLoader {
 	/// The first savefiles do not contain a version number (1), but instead immediately start with the simulation objective as an int, 
 	/// which is how they can be differentiated from the rest (They don't start with a v).
 	/// </summary>
-	private static int version = 2;
+	// private static int version = 2;
 
 
 	public static SimulationData ParseSimulationData(string filename, string contents) {

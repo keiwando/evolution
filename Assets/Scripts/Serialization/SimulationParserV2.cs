@@ -67,6 +67,7 @@ public class SimulationParserV2 {
 		}
 
 		var sceneDescription = DefaultSimulationScenes.DefaultSceneForObjective(simulationSettings.Objective);
+		sceneDescription.PhysicsConfiguration = ScenePhysicsConfiguration.Legacy;
 
 		return new SimulationData(
 			simulationSettings, networkSettings, creatureDesign, 

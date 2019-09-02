@@ -68,6 +68,8 @@ namespace Keiwando.Evolution.Scenes {
         /// </summary>
         public bool QueriesHitTriggers { get; set; } = true;
 
+        public bool AutoSyncTransforms { get; set; } = false;
+
         #region Encode & Decode
 
         private static class CodingKey {
@@ -79,6 +81,7 @@ namespace Keiwando.Evolution.Scenes {
             public const string DefaultSolverVelocityIterations = "defaultSolverVelocityIterations";
             public const string QueriesHitBackfaces = "queriesHitBackfaces";
             public const string QueriesHitTriggers = "queriesHitTriggers";
+            public const string AutoSyncTransforms = "autoSyncTransforms";
         }
 
         public JObject Encode() {
@@ -92,10 +95,13 @@ namespace Keiwando.Evolution.Scenes {
             json[CodingKey.DefaultSolverVelocityIterations] = this.DefaultSolverVelocityIterations;
             json[CodingKey.QueriesHitBackfaces] = this.QueriesHitBackfaces;
             json[CodingKey.QueriesHitTriggers] = this.QueriesHitTriggers;
+            json[CodingKey.AutoSyncTransforms] = this.AutoSyncTransforms;
             return json;
         }
 
         public static ScenePhysicsConfiguration Decode(JObject json) {
+
+            var autoSyncTransforms = json.ContainsKey(CodingKey.AutoSyncTransforms) ? json[CodingKey.AutoSyncTransforms].ToBool() : false;
 
             return new ScenePhysicsConfiguration {
                 Gravity = json[CodingKey.Gravity].ToFloat(),
@@ -105,10 +111,23 @@ namespace Keiwando.Evolution.Scenes {
                 DefaultSolverIterations = json[CodingKey.DefaultSolverIterations].ToInt(),
                 DefaultSolverVelocityIterations = json[CodingKey.DefaultSolverVelocityIterations].ToInt(),
                 QueriesHitBackfaces = json[CodingKey.QueriesHitBackfaces].ToBool(),
-                QueriesHitTriggers = json[CodingKey.QueriesHitTriggers].ToBool()
+                QueriesHitTriggers = json[CodingKey.QueriesHitTriggers].ToBool(),
+                AutoSyncTransforms = autoSyncTransforms
             };
         }
 
         #endregion
+
+        public static ScenePhysicsConfiguration Legacy = new ScenePhysicsConfiguration() {
+            Gravity = -50f,
+            BounceThreshold = 2f,
+            SleepThreshold = 0.005f,
+            DefaultContactOffset = 0.01f,
+            DefaultSolverIterations = 7,
+            DefaultSolverVelocityIterations = 10,
+            QueriesHitBackfaces = false,
+            QueriesHitTriggers = true,
+            AutoSyncTransforms = true
+        };
     }
 }

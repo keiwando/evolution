@@ -444,6 +444,11 @@ public class CreatureEditor: MonoBehaviour,
         // DEBUG
 
         // else if (Input.GetKeyDown(KeyCode.K)) {
+        //     var simulationFileManager = FindObjectOfType<SimulationFileManager>();
+        //     simulationFileManager.LoadButtonClicked(null);
+        // }
+
+        // else if (Input.GetKeyDown(KeyCode.K)) {
         //     Debug.Log(historyManager.GetDebugState());   
         // }
 
@@ -451,6 +456,9 @@ public class CreatureEditor: MonoBehaviour,
     }
 
     private void OnToolChanged(Tool tool) {
+        if (tool == Tool.Joint || tool == Tool.Bone || tool == Tool.Muscle) {
+            selectionManager.DeselectAll();
+        }
         if (tool == Tool.Delete) {
             DeleteCurrentSelection();
         }

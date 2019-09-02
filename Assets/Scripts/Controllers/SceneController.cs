@@ -62,7 +62,7 @@ namespace Keiwando.Evolution {
             // Load Scene
             var sceneName = NameForScene(config.SceneType);
             var options = new LoadSceneParameters(LoadSceneMode.Additive, LocalPhysicsMode.Physics3D);
-        
+
             SceneManager.LoadScene(sceneName, options);
             var scene = SceneManager.GetSceneByName(sceneName);
             context.PhysicsScene = scene.GetPhysicsScene();

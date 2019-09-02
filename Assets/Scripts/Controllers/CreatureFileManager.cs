@@ -65,6 +65,7 @@ namespace Keiwando.Evolution {
 			} catch (IllegalFilenameException e) {
 				dialog.ShowErrorMessage(string.Format("The creature name cannot contain: {0}", 
 				new string(FileUtil.INVALID_FILENAME_CHARACTERS)));
+				Debug.LogError(e.Message);
 				return;
 			}
 

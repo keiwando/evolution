@@ -45,7 +45,7 @@ namespace Keiwando.JSON {
             }
 
             if (this.type == Type.Float)
-                builder.Append(valueF);
+                builder.Append(valueF.ToString("G9"));
             else 
                 builder.Append(valueI);
         }

@@ -76,10 +76,6 @@ namespace Keiwando.Evolution {
                 creature.transform.position = spawnPosition;
                 creature.SceneContext = options.SceneContext;
                 creature.usesLegacyRotationCalculation = options.LegacyOptions.LegacyRotationCalculation;
-                // batch[i].usesLegacyRotationCalculation = true;
-                // SetupCreature(batch[i], physicsScene);
-
-                // batch[i] = Instantiate(template, spawnPosition, Quaternion.identity);
                 creature.RefreshLineRenderers();
                 creature.PhysicsScene = options.PhysicsScene;
             }

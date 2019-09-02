@@ -5,13 +5,6 @@ using Keiwando.JSON;
 
 namespace Keiwando.Evolution.Scenes {
 
-    // public class RegisterInSceneAttribute: Attribute {
-    //     public readonly string id;
-    //     public RegisterInSceneAttribute(string id) {
-    //         this.id = id;
-    //     }
-    // }
-
     public class SimulationSceneDescription {
 
         public const int LATEST_VERSION = 1;
