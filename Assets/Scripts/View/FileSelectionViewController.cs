@@ -78,7 +78,7 @@ namespace Keiwando.Evolution.UI {
 
 			DeleteAllItemViews();
 			gameObject.SetActive(true);
-			SetupSearch();
+			RefreshSearch();
 			searchInputField.text = "";
 			searchInputField.onValueChanged.AddListener(delegate (string value) {
 				this.searchResult = this.search.Find(value);
@@ -170,13 +170,14 @@ namespace Keiwando.Evolution.UI {
 
 		// Search filter
 
-		private void SetupSearch() {
+		private void RefreshSearch() {
 			int itemCount = controllerDelegate.GetNumberOfItems(this);
 			string[] items = new string[itemCount];
 			for (int i = 0; i < itemCount; i++) {
 				items[i] = controllerDelegate.GetTitleForItemAtIndex(this, i);
 			}
 			this.search = new Search(items);
+			this.searchResult = this.search.Find(searchInputField.text);
 		}
 
 		private int GetNumberOfItems() {
@@ -243,8 +244,8 @@ namespace Keiwando.Evolution.UI {
 
 		public void ImportButtonClicked() {
 			controllerDelegate.ImportButtonClicked(this);
+			RefreshSearch();
 			Refresh();
-			SetupSearch();
 		}
 
 		public void ExportButtonClicked() {
@@ -257,8 +258,13 @@ namespace Keiwando.Evolution.UI {
 			deleteConfirmation.ConfirmDeletionFor(filename, delegate(string name) {
 
 				controllerDelegate.DeleteButtonClicked(this);
+				RefreshSearch();
+				if (this.searchResult.indices.Length > 0) {
+					controllerDelegate.DidSelectItem(this, this.searchResult.indices[0]);
+				} else {
+					controllerDelegate.DidSelectItem(this, 0);
+				}
 				Refresh();
-				SetupSearch();
 			});
 		}
 
@@ -302,8 +308,8 @@ namespace Keiwando.Evolution.UI {
 					newName
 				);
 			}
+			RefreshSearch();
 			Refresh();
-			SetupSearch();
 		}
 
 		public bool CanEnterCharacter(RenameDialog dialog, int index, char c) {
