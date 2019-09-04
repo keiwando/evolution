@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Keiwando.UI {
 
@@ -8,8 +9,8 @@ namespace Keiwando.UI {
         public event System.Action<float> onValueChanged;
 
         [SerializeField] private Slider slider;
-        [SerializeField] private Text descriptionLabel;
-        [SerializeField] private Text valueLabel;
+        [SerializeField] private TMP_Text descriptionLabel;
+        [SerializeField] private TMP_Text valueLabel;
 
         public string Description {
             get { return descriptionLabel?.text ?? ""; }

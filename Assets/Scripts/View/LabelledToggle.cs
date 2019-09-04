@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Keiwando.UI {
 
@@ -8,7 +9,7 @@ namespace Keiwando.UI {
         public event System.Action<bool> onValueChanged;
 
         [SerializeField] private Toggle toggle;
-        [SerializeField] private Text descriptionLabel;
+        [SerializeField] private TMP_Text descriptionLabel;
 
         public string Description {
             get { return descriptionLabel?.text ?? ""; }

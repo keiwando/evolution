@@ -2,12 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Keiwando.UI;
+using TMPro;
 
 namespace Keiwando.Evolution.UI {
 
     public class AdvancedBodyControlsViewController: MonoBehaviour {
 
-        [SerializeField] private Text title;
+        [SerializeField] private TMP_Text title;
         
         [SerializeField] private LabelledSlider sliderTemplate;
         [SerializeField] private LabelledToggle toggleTemplate;
