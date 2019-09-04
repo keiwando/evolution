@@ -20,6 +20,9 @@ public class IllegalFilenameException: IOException {
 /// </summary>
 public class CreatureSerializer {
 
+	public static event Action MigrationDidBegin;
+	public static event Action MigrationDidEnd;
+
 	/// <summary>
 	/// The name of the folder that holds the creature save files.
 	/// </summary>
@@ -240,6 +243,7 @@ public class CreatureSerializer {
 		if (Settings.DidMigrateCreatureSaves) return;
 		if (IsWebGL()) return;
 		Debug.Log("Beginning creature save data migration.");
+		if (MigrationDidBegin != null) MigrationDidBegin();
 
 		var creatureNames = GetCreatureNamesFromPlayerPrefs();
 		foreach (var creatureName in creatureNames) {
@@ -251,6 +255,7 @@ public class CreatureSerializer {
 		}
 
 		Settings.DidMigrateCreatureSaves = true;
+		if (MigrationDidEnd != null) MigrationDidEnd();
 	}
 
 	private static List<string> GetCreatureNamesFromPlayerPrefs() {

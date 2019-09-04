@@ -63,7 +63,9 @@ public class CreatureEditor: MonoBehaviour,
         } else {
             creatureBuilder = new CreatureBuilder();
         }
+        #if UNITY_IOS || UNITY_ANDROID
         creatureBuilder.EnlargeHoverableColliders();
+        #endif
 
         selectionManager = new EditorSelectionManager(this, selectionArea, mouseDeleteTexture);
 
@@ -366,7 +368,10 @@ public class CreatureEditor: MonoBehaviour,
                 if (selectedTool == Tool.Move) {
                     creatureBuilder.RefreshMuscleColliders();
                 }
+                #if UNITY_IOS || UNITY_ANDROID
                 creatureBuilder.EnlargeHoverableColliders();
+                #endif
+                Physics.Simulate(Time.fixedDeltaTime);
             }
 
             viewController.Refresh();

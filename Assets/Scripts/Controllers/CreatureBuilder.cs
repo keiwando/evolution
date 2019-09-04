@@ -511,17 +511,6 @@ namespace Keiwando.Evolution {
 		}
 
 		/// <summary>
-		/// Sets the specified mouse hover texture on all body components created 
-		/// by this builder.
-		/// </summary>
-		public void SetMouseHoverTextures(Texture2D texture) {
-
-			HoveringUtil.SetMouseHoverTexture(joints, texture);
-			HoveringUtil.SetMouseHoverTexture(bones, texture);
-			HoveringUtil.SetMouseHoverTexture(muscles, texture);
-		}
-
-		/// <summary>
 		/// Enlarges the hoverable colliders on joints and bones.
 		/// </summary>
 		public void ResetHoverableColliders() {

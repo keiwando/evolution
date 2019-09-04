@@ -36,6 +36,9 @@ namespace Keiwando.Evolution.UI {
         [SerializeField]
         private Button redoButton;
 
+        [SerializeField]
+        private GameObject migrationNotice;
+
         void Start() {
             basicSettingsView.Delegate = new SettingsManager();
 
@@ -48,6 +51,13 @@ namespace Keiwando.Evolution.UI {
                 Delegate.Redo();
                 RefreshUndoButtons();
             });
+
+            CreatureSerializer.MigrationDidBegin += delegate () {
+                migrationNotice.SetActive(true);
+            };
+            CreatureSerializer.MigrationDidEnd += delegate () {
+                migrationNotice.SetActive(false);
+            };
         }
 
         public void ShowBasicSettingsControls() {

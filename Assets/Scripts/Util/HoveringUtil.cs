@@ -49,14 +49,4 @@ public static class HoveringUtil {
 			hov.EnlargeHitbox();
 		}
 	}
-
-    /// <summary>
-    /// Sets the mouseHoverTexture property iof 
-    /// </summary>
-    public static void SetMouseHoverTexture<T>(List<T> hoverables, Texture2D texture) where T: Hoverable {
-
-        foreach (var obj in hoverables) {
-            obj.mouseHoverTexture = texture;
-        }
-    }
 }

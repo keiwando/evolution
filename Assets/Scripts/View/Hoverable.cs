@@ -13,10 +13,8 @@ abstract public class Hoverable: MonoBehaviour {
 	}
 	private bool _shouldHighlight;
 
-	/** Specifies whether the mouse is hovering over the object. */
 	public bool hovering { get; private set; }
 
-	public Texture2D mouseHoverTexture;
 	private CursorMode cursorMode = CursorMode.Auto;
 	private Vector2 hotSpot;
 
