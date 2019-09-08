@@ -109,11 +109,14 @@ public class CreatureSerializer {
 	/// Existing files are overwritten.
 	/// </summary>
 	public static void RenameCreatureDesign(string oldName, string newName) {
+		
 		var oldPath = PathToCreatureDesign(oldName);
-		var newPath = PathToCreatureDesign(newName);
+		if (!File.Exists(oldPath)) return;
 
-		if (File.Exists(oldPath))
-			File.Move(oldPath, newPath);
+		var creatureDesign = LoadCreatureDesign(oldName);
+		creatureDesign.Name = newName;
+		DeleteCreatureSave(oldName);
+		SaveCreatureDesign(creatureDesign, true);
 	}
 
 	/// <summary>

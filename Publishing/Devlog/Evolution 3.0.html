@@ -1,0 +1,64 @@
+<p>I‘m incredibly excited to announce that the update I have been working on (for more than a year now) is finally finished. A huge thank you to everybody who has supported this project over the years!</p>
+<p>Let‘s take a look at some of the new features:</p>
+
+<h2>What's New</h2>
+<p></p>
+
+<h3>Import and Export Save Files</h3>
+
+<p>It's now possible to export both simulation saves and creature designs directly from within the app using native file dialogs and share popovers. This means that you can now easily share your creature designs with your friends e.g. using&nbsp;AirDrop. You can also use this feature to transfer files between your own devices&nbsp;and to manually back up your saves.</p>
+<p>This feature is supported on macOS, Windows, iOS and Android, but <em>not&nbsp;</em>on Web or Linux.</p>
+<p>It is also important to note that Unity's physics system is not fully deterministic, especially across different hardware. Therefore, you might see slight changes in behaviour (and with that fitness drops)&nbsp;&nbsp;when importing and loading a simulation save file, which was originally created on a different device.</p>
+
+<h3>UI Improvements</h3>
+
+<p>Evolution 3.0 comes with a new UI. You will probably first notice the redesigned editor screen, which not only&nbsp;comes with new features but is&nbsp;hopefully also&nbsp;easier to understand and navigate. You might notice that the zoom slider in the bottom right corner is gone. That's because you can now pinch to zoom on mobile and scroll to zoom on desktop.&nbsp;Here's a before and after comparison.</p>
+<p><img src="https://img.itch.zone/aW1nLzI0NzU0NDcucG5n/original/cWyrS%2B.png"><br></p>
+
+<p>One of the most exciting UI improvements is the new file selection screen, which is now also used for creature design saves in addition to simulation saves. This new&nbsp;UI allows you to search and rename your save files. And I think it looks a lot better as well.</p>
+<figure><img src="https://img.itch.zone/aW1nLzI0NzU0NDkucG5n/original/9a336H.png"></figure>
+
+<p>The settings screen now has tooltips, which explain what each setting does, which is especially helpful for the new selection/recombination/mutation algorithm options.</p>
+<figure><img src="https://img.itch.zone/aW1nLzI0NzU0NTAucG5n/original/sn8RF%2B.png"></figure>
+
+<p>The help pages have been redesigned with tabs instead of being one very long block of text, which&nbsp;makes that screen much more memory efficient and allows it to open a lot faster than before.</p>
+<figure><img src="https://img.itch.zone/aW1nLzI0NzU0NDgucG5n/original/UBHzuI.png"></figure>
+
+<p><br><br></p>
+
+<h3>New Editor Features</h3>
+
+<ul><li><strong>Select Tool</strong><br>With the "Select" tool you can select individual body parts or multiple parts at once by dragging out a selection rectangle. When you have one or more parts selected and you switch to the "Delete" tool, the whole&nbsp;selection gets deleted. Similarly, you can now move entire selections at once using the "Move" tool, instead of only one joint at a time.</li></ul>
+
+<ul><li><strong>Muscle, Bone & Joint Settings</strong><br>When you select a single muscle, bone or joint, you now get additional options which allow you to really fine-tune your creature design. You can control the weight of bones and joints, the strength of each muscle and whether or not each individual muscle can expand or not. Please keep in mind that the default settings have been chosen to work well with the physics engine, so if you for example&nbsp;make your creature very lightweight and at the same time max&nbsp;out all of the muscle strengths, you might see an increasing number of glitches.</li></ul>
+
+<ul><li><strong>Clear Button<br></strong>There is now a dedicated clear button, so you don't have to select "Creature" from the old creature designs dropdown anymore&nbsp;in order to delete your current design and start from scratch.</li></ul>
+
+<ul><li><strong>Undo & Redo<br></strong>I don't think this needs much of an explanation.&nbsp;This alone makes the editor so much easier to use.</li></ul>
+
+<p></p>
+<h3>Simulation</h3>
+
+<ul><li><strong>Distance Markers<br></strong>This has been one of the most common requests since the very beginning and it's finally here.</li></ul>
+
+<ul><li><strong>Multiple Selection, Recombination and Mutation Algorithms</strong><br>You can now decide which selection, recombination and mutation algorithm is used during the simulation. Experiment around with which settings lead to faster and better results.</li></ul>
+
+<ul><li><strong>Zoom<br></strong>Just like in the editor, you can now also pinch/scroll to zoom during the simulation.</li></ul>
+
+<ul><li><strong>Hide Muscles<br></strong>In addition to visualizing the muscle contraction, you can&nbsp;turn off muscle rendering completely if you like.</li></ul>
+
+<ul><li><strong>Improved Visual Clarity<br></strong>The camera is always locked onto a single creature (which you can change using the arrow keys on your keyboard or the arrow buttons in the top left). You previously had the option to either show all creatures at the same time or only render one at a time. With this new update, only the creature that the camera is currently focused on will render at full opacity. All other creatures are rendered behind this creature at a lower opacity, which makes it a lot easier to understand what's going on. You can customize the opacity of the "background" creatures in the visibility settings.<br><br><img src="https://img.itch.zone/aW1nLzI0NzU3MTcucG5n/original/qDwALb.png"></li></ul>
+
+<ul><li><strong>Change Population Size during Simulation</strong><br>It is now possible to change the population size during the simulation from the pause screen.</li></ul>
+
+<ul><li><strong>Improved Physics Determinism</strong><br>The simulation is now a lot more deterministic (at least on a per-device basis), which fixes many playback and unexpected fitness drop&nbsp;issues.</li></ul>
+
+<ul><li><strong>Improved Physics Performance & Smaller Save Files</strong><br>Some other features include more a more&nbsp;efficient physics simulation, which is especially important for mobile devices and smaller save file sizes.</li></ul>
+
+<p></p>
+<h3>Legacy Simulations</h3>
+
+<p><span style="color: inherit; font-family: inherit; font-size: inherit;">There is one unfortunate thing with this update that I&nbsp;have to point out though. Unity made some internal&nbsp;changes to&nbsp;its physics system (they upgraded to PhysX 3.4), which breaks the accurate playback of simulation that were saved with previous versions.</span><br><span style="color: inherit; font-family: inherit; font-size: inherit;">I visualized the effect of the&nbsp;physics changes on old simulation saves here:&nbsp;</span><br><a href="https://twitter.com/keiwando/status/1122929085158707201?s=20" style="font-family: inherit; font-size: inherit;">https://twitter.com/keiwando/status/1122929085158707201?s=20</a><span style="color: inherit; font-family: inherit; font-size: inherit;"></span><br><span style="color: inherit; font-family: inherit; font-size: inherit;">So unfortunately, you won't be able to accurately play back your old simulation saves with this new version and there is not really anything I&nbsp;can do about that (since Unity's physics implementation and changes to it&nbsp;are outside of my control). Sorry about that!&nbsp;I wrote about this in more detail here:</span><br><a href="http://keiwando.com/evolution/legacy" style="font-family: inherit; font-size: inherit;">http://keiwando.com/evolution/legacy</a><br><span style="color: inherit; font-family: inherit; font-size: inherit;">However, I went ahead and created a special build of this app using an older version of Unity before they made the physics changes, which you can use to play back your old simulation saves in a browser (now that you can easily export them from the app as well):</span><br><a href="https://keiwan.itch.io/evolution-legacy-playback" style="font-family: inherit; font-size: inherit;">https://keiwan.itch.io/evolution-legacy-playback</a><span style="color: inherit; font-family: inherit; font-size: inherit;"></span><br><span style="color: inherit; font-family: inherit; font-size: inherit;">This won't necessarily be 100% accurate either, since Unity's physics system is not deterministic across different platforms, but it's the best I can do without any insane amount of overhead. Please also note that I won't be updating this special playback build if it ever happens to&nbsp;</span><span style="color: inherit; font-family: inherit; font-size: inherit;">break in the future.</span></p>
+
+<h3>Source Code</h3>
+<p>It was never a secret but the entire source code of this project&nbsp;is in a public repository on my GitHub:&nbsp;<br><a href="https://github.com/keiwando/evolution">https://github.com/keiwando/evolution</a><br>Quite a few people have been asking me for it so I decided to include a link to it within the application itself so that everybody would at least be aware that it exists. Look into the README for information on how you can use this code.</p>
