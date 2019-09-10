@@ -195,7 +195,8 @@ public class SimulationSerializer {
 		CreateSaveFolder();
 
 		var names = new [] {
-			"FROGGER - RUNNING - Default - Gen(70)"	
+			// "FROGGER - RUNNING - Default - Gen(70)"
+			"FROGGER - Running - Default - Gen 40"
 		};
 
 		foreach (var name in names) {
