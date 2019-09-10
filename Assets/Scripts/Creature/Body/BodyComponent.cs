@@ -2,7 +2,7 @@
 
 abstract public class BodyComponent: Hoverable {
 
-	public bool deleted;
+	private bool deleted;
 
 	public override void Start () {
 		base.Start();
@@ -15,11 +15,7 @@ abstract public class BodyComponent: Hoverable {
 	/// <summary>
 	/// Prepares the component for the evolution simulation.
 	/// </summary>
-	virtual public void PrepareForEvolution() {
-		#if UNITY_IOS || UNITY_ANDROID
-		ResetHitbox();
-		#endif
-	}
+	abstract public void PrepareForEvolution();
 
 	/// <summary>
 	/// Removes the already destroyed object that are still left in the list.

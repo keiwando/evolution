@@ -63,9 +63,6 @@ public class CreatureEditor: MonoBehaviour,
         } else {
             creatureBuilder = new CreatureBuilder();
         }
-        #if UNITY_IOS || UNITY_ANDROID
-        creatureBuilder.EnlargeHoverableColliders();
-        #endif
 
         selectionManager = new EditorSelectionManager(this, selectionArea, mouseDeleteTexture);
 
@@ -87,6 +84,9 @@ public class CreatureEditor: MonoBehaviour,
             if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this))
                 Application.Quit();
         };
+
+        // Physics.autoSimulation = true;
+        Physics.autoSyncTransforms = true;
     }
 
     void Update() {
@@ -112,10 +112,6 @@ public class CreatureEditor: MonoBehaviour,
         creatureBuilder.Reset();
         creatureBuilder = new CreatureBuilder(design);
         viewController.Refresh();
-
-        #if UNITY_IOS || UNITY_ANDROID
-        creatureBuilder.EnlargeHoverableColliders();
-        #endif
     }
     
     /// <summary>
@@ -185,6 +181,9 @@ public class CreatureEditor: MonoBehaviour,
         DontDestroyOnLoad(containerObject);
 
         InputRegistry.shared.Deregister(this);
+
+        Physics.autoSimulation = false;
+        Physics.autoSyncTransforms = false;
         
         // Load simulation scene
         SceneController.LoadSync(SceneController.Scene.SimulationContainer);
@@ -368,10 +367,6 @@ public class CreatureEditor: MonoBehaviour,
                 if (selectedTool == Tool.Move) {
                     creatureBuilder.RefreshMuscleColliders();
                 }
-                #if UNITY_IOS || UNITY_ANDROID
-                creatureBuilder.EnlargeHoverableColliders();
-                #endif
-                Physics.Simulate(Time.fixedDeltaTime);
             }
 
             viewController.Refresh();

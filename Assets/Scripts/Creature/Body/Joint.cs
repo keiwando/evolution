@@ -123,7 +123,6 @@ public class Joint : BodyComponent {
 	}
 
 	public override void PrepareForEvolution() {
-		base.PrepareForEvolution();
 
 		body = GetComponent<Rigidbody>();
 		body.isKinematic = false;

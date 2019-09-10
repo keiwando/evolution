@@ -1,3 +1,4 @@
+// #define TEST
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,8 @@ namespace Keiwando.Evolution {
 
         private static RaycastHit[] _cachedPointCollisions = new RaycastHit[10];
         private static int _cachedPointCollisionsLength = 0;
+        private static Collider[] _cachedSphereCollisions = new Collider[10];
+        private static int _cachedSphereCollisionsLength = 0;
 
         /// <summary>
         /// The treshold distance used to distinguish between a click/touch and a drag
@@ -63,6 +66,11 @@ namespace Keiwando.Evolution {
                 hovering = GetComponentAtScreenPoint<Joint>(mouseScreenPos);
                 if (hovering == null)
                     hovering = CheckCachedCollisionsFor<Bone>();
+                #if TEST || UNITY_IOS || UNITY_ANDROID
+                if (hovering == null)
+                    hovering = CheckCachedSphereCollisionsFor<Bone>();
+                #endif
+
                 break;
 
             case CreatureEditor.Tool.Delete:
@@ -72,6 +80,12 @@ namespace Keiwando.Evolution {
                     hovering = CheckCachedCollisionsFor<Bone>();
                 if (hovering == null)
                     hovering = CheckCachedCollisionsFor<Muscle>();
+                #if TEST || UNITY_IOS || UNITY_ANDROID
+                if (hovering == null)
+                    hovering = CheckCachedSphereCollisionsFor<Bone>();
+                if (hovering == null)
+                    hovering = CheckCachedSphereCollisionsFor<Muscle>();
+                #endif
                 break;
 
             default: break;
@@ -153,6 +167,8 @@ namespace Keiwando.Evolution {
         }
 
         public void EndSelection() {
+
+            if (!selectionArea.gameObject.activeSelf) return;
             
             selectionArea.gameObject.SetActive(false);
 
@@ -241,12 +257,22 @@ namespace Keiwando.Evolution {
             where T: BodyComponent {
 
             GetComponentsInRect<T>(selectionArea, selection);
+            
+            // Only select a single component with a click
+            if (selectionArea.size.magnitude < TAP_THRESHOLD * 2f && selection.Count > 1) {
+                var item = selection[0];
+                selection.Clear();
+                selection.Add(item);
+            }
+
             foreach (var item in selection) {
                 item.EnableHighlight();
             }
 
-            DisableHighlightsOnNonSelected();
-            
+            if (selectionArea.size.magnitude >= TAP_THRESHOLD * 2f) {
+                DisableHighlightsOnNonSelected();
+            }
+
             return this.selection.Count > 0;
         }
 
@@ -277,17 +303,45 @@ namespace Keiwando.Evolution {
         private static T GetComponentAtScreenPoint<T>(Vector3 point) 
             where T: BodyComponent {
 
-            Ray ray = Camera.main.ScreenPointToRay(point);
+            Camera camera = Camera.main;
+            Ray ray = camera.ScreenPointToRay(point);
+            var worldPoint = camera.ScreenToWorldPoint(point);
+            worldPoint.z = 0;
             var hitCount = Physics.RaycastNonAlloc(ray, _cachedPointCollisions);
-            _cachedPointCollisionsLength = Math.Min(hitCount, 10); 
+            _cachedPointCollisionsLength = Math.Min(hitCount, 10);
 
+            #if TEST || UNITY_IOS || UNITY_ANDROID
+            T item = CheckCachedCollisionsFor<T>();
+            if (item == null) {
+                // Check again but with a larger radius
+                var originInWorld = camera.ScreenToWorldPoint(Vector3.zero);
+                var radiusInWorld = camera.ScreenToWorldPoint(new Vector3(44, 0));
+                var radius = Vector3.Distance(originInWorld, radiusInWorld);
+                
+                _cachedSphereCollisionsLength = Physics.OverlapSphereNonAlloc(worldPoint, radius, _cachedSphereCollisions);
+                _cachedPointCollisionsLength = Math.Min(_cachedPointCollisionsLength, 10);
+                return CheckCachedSphereCollisionsFor<T>();
+            }
+            return item;
+            #else
             return CheckCachedCollisionsFor<T>();
+            #endif
         }
 
         private static T CheckCachedCollisionsFor<T>() where T: BodyComponent {
             for (int i = 0; i < _cachedPointCollisionsLength; i++) {
                 if (_cachedPointCollisions[i].collider == null) return null;
                 T component = _cachedPointCollisions[i].collider.GetComponent<T>();
+                if (component == null) continue;
+                return component;
+            }
+            return null;
+        }
+
+        private static T CheckCachedSphereCollisionsFor<T>() where T: BodyComponent {
+            for (int i = 0; i < _cachedSphereCollisionsLength; i++) {
+                if (_cachedSphereCollisions[i] == null) return null;
+                T component = _cachedSphereCollisions[i].GetComponent<T>();
                 if (component == null) continue;
                 return component;
             }

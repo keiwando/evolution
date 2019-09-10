@@ -418,30 +418,6 @@ namespace Keiwando.Evolution {
 			RemoveDeletedObjects();
 		}
 
-		/// <summary>
-		/// Deletes the placed body components that are currently being
-		/// hovered over.
-		/// </summary>
-		/// <returns>Returns whether the creature design was modified.</returns>
-		public bool DeleteHoveringBodyComponent() {
-
-			BodyComponent joint = HoveringUtil.GetHoveringObject<Joint>(joints);
-			BodyComponent bone = HoveringUtil.GetHoveringObject<Bone>(bones);
-			BodyComponent muscle = HoveringUtil.GetHoveringObject<Muscle>(muscles);
-
-			BodyComponent toDelete = joint != null ? joint : ( bone != null ? bone : muscle ) ;
-
-			if (toDelete != null) {
-				toDelete.Delete();
-				RemoveDeletedObjects();
-				Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-				// The creature was modified
-				return true;
-			} else {
-				return false;
-			}
-		}
-
 		public void SetBodyComponents(List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
 			this.joints = joints;
 			this.bones = bones;
@@ -452,8 +428,6 @@ namespace Keiwando.Evolution {
 		/// Creates a Creature object from the currently placed bodyparts.
 		/// </summary>
 		public Creature Build() {
-
-			ResetHoverableColliders();
 
 			GameObject creatureObj = new GameObject();
 			creatureObj.name = "Creature";
@@ -498,31 +472,6 @@ namespace Keiwando.Evolution {
 				muscle.RemoveCollider();
 				muscle.AddCollider();
 			}
-		}
-
-		/// <summary>
-		/// Enabled / Disables highlighting on hover for the specified body components
-		/// </summary>
-		public void EnableHighlighting(bool joint, bool bone, bool muscle) {
-
-			HoveringUtil.SetShouldHighlight(this.joints, joint);
-			HoveringUtil.SetShouldHighlight(this.bones, bone);
-			HoveringUtil.SetShouldHighlight(this.muscles, muscle);
-		}
-
-		/// <summary>
-		/// Enlarges the hoverable colliders on joints and bones.
-		/// </summary>
-		public void ResetHoverableColliders() {
-
-			HoveringUtil.ResetHoverableColliders(joints);
-			HoveringUtil.ResetHoverableColliders(bones);
-		}
-
-		public void EnlargeHoverableColliders() {
-			
-			HoveringUtil.EnlargeHoverableColliders(joints);
-			HoveringUtil.EnlargeHoverableColliders(bones);
 		}
 
 		#endregion

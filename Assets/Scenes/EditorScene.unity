@@ -23359,7 +23359,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   zoomAnchor: {x: 0.5, y: 0.5}
-  zoomInLength: 4
+  zoomInLength: 7
   zoomOutLength: 10
   bottomMovementPadding: 10
   topMovementPadding: 10

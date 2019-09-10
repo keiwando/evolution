@@ -87,6 +87,10 @@ namespace Keiwando.Evolution.UI {
 
 			Refresh();
 			ScrollSelectedItemToTop();
+
+			#if !UNITY_IOS && !UNITY_ANDROID
+			searchInputField.Select();
+			#endif
 		}
 
 		public void Refresh() {
