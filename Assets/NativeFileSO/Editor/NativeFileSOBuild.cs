@@ -44,6 +44,9 @@ public class NativeFileSOBuild {
 		plist.ReadFromFile(plistPath);
 		var rootDict = plist.root;
 
+		rootDict.SetBoolean("UISupportsDocumentBrowser", false);
+		rootDict.SetBoolean("LSSupportsOpeningDocumentsInPlace", false);
+
 		var documentTypesArray = rootDict.CreateArray("CFBundleDocumentTypes");
 
 		var exportedTypesArray = rootDict.CreateArray("UTExportedTypeDeclarations");
