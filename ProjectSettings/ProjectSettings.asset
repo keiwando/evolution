@@ -163,7 +163,7 @@ PlayerSettings:
   buildNumber:
     Standalone: 1
     iOS: 2
-  AndroidBundleVersionCode: 12
+  AndroidBundleVersionCode: 14
   AndroidMinSdkVersion: 19
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 1
@@ -249,7 +249,7 @@ PlayerSettings:
   clonedFromGUID: 00000000000000000000000000000000
   templatePackageId: 
   templateDefaultScene: 
-  AndroidTargetArchitectures: 7
+  AndroidTargetArchitectures: 3
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
   AndroidKeystoreName: /Users/Keiwan/Documents/Android/Keystores/GeneralKeystore.keystore
