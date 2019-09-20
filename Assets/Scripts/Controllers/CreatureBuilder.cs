@@ -1,920 +1,512 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System;
+using System.Linq;
 
-public class CreatureBuilder : MonoBehaviour {
+namespace Keiwando.Evolution {
 
-	public enum BuildSelection {
-		Delete,
-		Move,
-		Joint, 
-		Bone, 
-		Muscle
-	}
+	public class CreatureBuilder {
 
-	//[SerializeField] private bool gridEnabled = false;
+		/// <summary>
+		/// A counter used to assign a unique id to each body component created with this CreatureBuilder.
+		/// Needs to be incremented after each use. Can be reset if needed. Starts at 0.
+		/// This needs to be updated when a creature design is loaded!
+		/// </summary>
+		private int idCounter = 0;
 
-	public ButtonManager buttonManager;
+		public string Name { get; set; } = "Unnamed";
 
-	public SettingsMenu settingsMenu;
+		/// <summary>
+		/// The joints of the creature that have been placed in the scene.
+		/// </summary>
+		private List<Joint> joints = new List<Joint>();	
+		/// <summary>
+		/// The bones that have been placed in the scene.
+		/// </summary>
+		private List<Bone> bones = new List<Bone>();
+		/// <summary>
+		/// The muscles that have been placed in the scene.
+		/// </summary>
+		private List<Muscle> muscles = new List<Muscle>();
 
-	/** The joint that can connect multiple Bones. */
-	public GameObject jointPreset;
+		/// <summary> 
+		/// The Bone that is currently being placed. 
+		/// </summary>
+		private Bone currentBone;
 
-	/** 
-	 * The connection objects that represent the skeleton of the creature. 
-	 * Bodyconnections can only be placed between two existing joints.
-	*/
-	public GameObject bonePreset;
+		/// <summary>
+		/// The Muscle that is currently being placed.
+		/// </summary>
+		private Muscle currentMuscle;
 
-	/** The material for the muscles. */
-	public Material muscleMaterial;
+		/// <summary>
+		/// The minimum distance between two joints when they are placed 
+		/// (Can be moved closer together using "Move").
+		/// </summary>
+		private float jointNonOverlapRadius = 0.6f;
 
-	public Texture2D mouseDeleteTexture;
+		/// <summary>
+		/// The bone thickness.
+		/// </summary>
+		public static float CONNECTION_WIDTH = 0.5f;
 
-	public Evolution evolution;
+		public CreatureBuilder() {}
 
-	public SaveDialog saveDialog;
+		public CreatureBuilder(CreatureDesign design) {
 
-	public Grid grid;
+			this.Name = design.Name;
 
-	//private CreatureSaver creatureSaver;
-
-
-	/** The joints of the creature that have been placed in the scene. */
-	private List<Joint> joints;
-	/** The bones that have been placed in the scene. */
-	private List<Bone> bones;
-	/** The muscles that have been placed in the scene. */
-	private List<Muscle> muscles;
-
-	private BuildSelection selectedPart;
-	public BuildSelection SelectedPart {
-		get { return selectedPart; }
-		set {
-			selectedPart = value;
-			UpdateHoverables();
-		}
-	}
-
-	/** The Bone that is currently being placed. */
-	private Bone currentBone;
-
-	/** The Muscle that is currently being placed. */
-	private Muscle currentMuscle;
-
-	/** The joint that is currently being moved. */
-	private Joint currentMovingJoint;
-
-	/// The minimum distance between two joints when they are placed (Can be moved closer together using "Move").
-	private float jointNonOverlapRadius = 0.6f;
-	public static float CONNECTION_WIDHT = 0.5f;
-	//private bool TESTING_ENABLED = true;
-
-	/// <summary>
-	/// Indicates whether it is the first time starting the program ( = no evolution has taken place yet)
-	/// </summary>
-	private static bool firstTime = true;
-	/// <summary>
-	/// The name of the last created creature
-	/// </summary>
-	private static string lastCreatureName = "Creature";
-
-	// MARK: pinch to move the camera
-	private Vector3 lastTouchPos = Vector3.zero;
-	private bool firstMovementTouch = true;
-
-	void Start () {
-
-		CreatureSaver.SetupPlayerPrefs();
-
-		// initialize arrays
-		joints = new List<Joint>();
-		bones = new List<Bone>();
-		muscles = new List<Muscle>();
-
-		// Joints are selected by default.
-		selectedPart = BuildSelection.Joint;
-
-		buttonManager.SetupDropDown();
-		//creatureSaver =  new CreatureSaver();
-		if (!firstTime) {
-			CreatureSaver.LoadCurrentCreature(this);
-			//print("Last creature name: " + lastCreatureName);
-			buttonManager.SetDropDownToValue(lastCreatureName);
-		}
-
-		firstTime = false;
-
-
-		//CreatureSaver.Test();
-		//StartCoroutine(SBPerformanceTest());
-
-	}
-
-	private IEnumerator SBPerformanceTest() {
-
-		yield return new WaitForSeconds(2f);
-
-		var builder = new System.Text.StringBuilder();
-
-		for (int i = 0; i < 100000; i++) {
-			builder.Append('0');
-		}
-
-		yield return new WaitForSeconds(1f);
-
-		var str = builder.ToString();
-
-		yield return new WaitForSeconds(1f);
-
-		builder = new System.Text.StringBuilder(str);
-
-		for (int i = 0; i < 100000; i++) {
-			builder[i] = '1';
-		}
-	}
-
-	void Update () {
-
-		HandleClicks();
-
-		HandleKeyboardInput();
-	}
-
-	private bool isPointerOverUIObject(){
-
-		PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
-		eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-
-		List<RaycastResult> results = new List<RaycastResult>();
-		EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
-
-		return results.Count > 0;
-	}
-
-	/// <summary>
-	/// Checks for click / touch events and handles them appropiately depending on the 
-	/// currently selected body part.
-	/// </summary>
-	private void HandleClicks() {
-
-		// Middle click or two touches to move the camera
-		if ( (Input.GetMouseButton(2) && Input.touchCount == 0) || Input.touchCount == 2) {
-
-			//if (EventSystem.current.IsPointerOverGameObject() || isPointerOverUIObject()) return;
-
-			var position = Input.mousePosition;
-
-			if (Input.touchCount == 2) {
-
-				position = GetPinchCenter(Input.touches[0].position, Input.touches[1].position);
+			foreach (var jointData in design.Joints) {
+				this.joints.Add(Joint.CreateFromData(jointData));
 			}
 
-			//position = ScreenToWorldPoint(position);
-
-
-			var distance = lastTouchPos - position;
-			lastTouchPos = position;
-
-			if (firstMovementTouch) { 
-				firstMovementTouch = false;
-				return; 
+			foreach (var boneData in design.Bones) {
+				CreateBoneFromData(boneData);	
 			}
 
-			firstMovementTouch = false;
+			foreach (var muscleData in design.Muscles) {
+				CreateMuscleFromData(muscleData);
+			}
 
-			// move the camera by the distance
-			distance = ScreenToWorldDistance(distance);
-			buttonManager.MoveCamera(distance);
-
-			return;
-		} else {
-			
-			firstMovementTouch = true;
-			lastTouchPos = Vector3.zero;
+			// Update the idCounter
+			int maxJointID = design.Joints.Count > 0 ? design.Joints.Max(data => data.id) : 0;
+			int maxBoneID = design.Bones.Count > 0 ? design.Bones.Max(data => data.id) : 0;
+			int maxMuscleID = design.Muscles.Count > 0 ? design.Muscles.Max(data => data.id) : 0;
+			idCounter = Mathf.Max(Mathf.Max(maxJointID, maxBoneID), maxMuscleID) + 1;
 		}
 
-		if ( Input.GetMouseButtonDown(0) ) { 	// user clicked
+		
+		#region Joint Placement
 
-			if (EventSystem.current.IsPointerOverGameObject()) return;
-			if (isPointerOverUIObject()) return;
-			
-			if (selectedPart == BuildSelection.Joint) {			// Place a JOINT
+		/// <summary>
+		/// Attempts to place a joint at the specified world position.
+		/// </summary>
+		/// <remarks>Returns whether a joint was placed.</remarks>
+		public bool TryPlacingJoint(Vector3 position) {
 
-				var pos = ScreenToWorldPoint(Input.mousePosition);
-				pos.z = 0;
-				// Grid logic
-				if (grid.gameObject.activeSelf) {
-					pos = grid.ClosestPointOnGrid(pos);
-				}
-
-				// Make sure the joint doesn't overlap another one
-				bool noOverlap = true;
-				foreach (var joint in joints) {
-					if ((joint.center - pos).magnitude < jointNonOverlapRadius) {
-						noOverlap = false;
-						break;
-					}
-				}
-
-				if (noOverlap) {
-					PlaceJoint(pos);
-				}
-
-			} else if (selectedPart == BuildSelection.Bone ) {	// Start placing BONE
-				// find the selected joint
-				Joint joint = GetHoveringObject<Joint>(joints);
-
-				if (joint != null) {
-
-					CreateBoneFromJoint(joint);
-					PlaceConnectionBetweenPoints(currentBone.gameObject, joint.center, ScreenToWorldPoint(Input.mousePosition), CONNECTION_WIDHT);
-				}
-
-			} else if (selectedPart == BuildSelection.Muscle) {	// Start placing MUSCLE
-				// find the selected bone
-				Bone bone = GetHoveringObject<Bone>(bones);
-
-				if (bone != null) {
-
-					Vector3 mousePos = ScreenToWorldPoint(Input.mousePosition);
-					MuscleJoint joint = bone.muscleJoint;
-
-					CreateMuscleFromJoint(joint);
-					//PlaceConnectionBetweenPoints(currentMuscle.gameObject, joint.position, mousePos, CONNECTION_WIDHT);
-					currentMuscle.SetLinePoints(joint.transform.position, mousePos);
-				}
-			} else if (selectedPart == BuildSelection.Delete) { // Delete selected object
-
-				//UpdateDeletedObjects();
-
-				BodyComponent joint = GetHoveringObject<Joint>(joints);
-				BodyComponent bone = GetHoveringObject<Bone>(bones);
-				BodyComponent muscle = GetHoveringObject<Muscle>(muscles);
-	
-				BodyComponent toDelete = joint != null ? joint : ( bone != null ? bone : muscle ) ;
-
-				if (toDelete != null) {
-
-					toDelete.Delete();
-					UpdateDeletedObjects();
-
-					ResetCurrentCreatureName(); // The creature was modified
-
-					Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-				}
-
-				//UpdateDeletedObjects();
-			} else if (selectedPart == BuildSelection.Move) {
-				// Make sure the user is hovering over a joint
-				Joint joint = GetHoveringObject<Joint>(joints);
-
-				if (joint != null) {
-					currentMovingJoint = joint;
-
-					ResetCurrentCreatureName(); // The creature was modified
+			// Make sure the joint doesn't overlap another one
+			bool noOverlap = true;
+			foreach (var joint in joints) {
+				if ((joint.center - position).magnitude < jointNonOverlapRadius) {
+					noOverlap = false;
+					break;
 				}
 			}
 
-		} else if (Input.GetMouseButton(0)) {
-			// Mouse click & hold
-			if (selectedPart == BuildSelection.Bone ) {
+			if (noOverlap) {
+				PlaceJoint(position);
+			}
 
-				if (currentBone != null) {
-					// check if user is hovering over an ending joint which is not the same as the starting
-					// joint of the currentBone
-					Joint joint = GetHoveringObject<Joint>(joints);
-					Vector3 endingPoint = ScreenToWorldPoint(Input.mousePosition);
+			return noOverlap;
+		}
 
-					if (joint != null && !joint.Equals(currentBone.startingJoint)) {
-						endingPoint = joint.center;
-						currentBone.endingJoint = joint;
-					} 
+		/// <summary>
+		/// Places a new joint at the specified point.
+		/// </summary>
+		private void PlaceJoint(Vector3 position) {
 
-					PlaceConnectionBetweenPoints(currentBone.gameObject, currentBone.startingPoint, endingPoint, CONNECTION_WIDHT);	
-				}	
+			var jointData = new JointData(idCounter++, position, 1f);
+			joints.Add(Joint.CreateFromData(jointData));
+		}
 
-			} else if (selectedPart == BuildSelection.Muscle) {
+		#endregion
+		#region Bone Placement
 
-				if (currentMuscle != null) {
-					// check if user is hovering over an ending joint which is not the same as the starting
-					// joint of the currentMuscle
-					Bone bone = GetHoveringObject<Bone>(bones);
-					Vector3 endingPoint = ScreenToWorldPoint(Input.mousePosition);
-
-					if(bone != null) {
-						
-						MuscleJoint joint = bone.muscleJoint;
-
-						if (!joint.Equals(currentMuscle.startingJoint)) {
-							endingPoint = joint.transform.position;
-							currentMuscle.endingJoint = joint;	
-						} else {
-							currentMuscle.endingJoint = null;
-						}
-					} else {
-						currentMuscle.endingJoint = null;
-					}
-
-					//PlaceConnectionBetweenPoints(currentMuscle.gameObject, currentMuscle.startingPoint, endingPoint, CONNECTION_WIDHT);
-					currentMuscle.SetLinePoints(currentMuscle.startingJoint.transform.position, endingPoint);
-				}
+		/// <summary>
+		/// Attempts to place a bone beginning at the current position.
+		/// </summary>
+		public void TryStartingBone(Joint joint) {
 			
-			} else if (selectedPart == BuildSelection.Move) {
-				
-				if (currentMovingJoint != null) {
+			if (joint != null) {
 
-					// Move the joint to the mouse position.
-					var newPoint = ScreenToWorldPoint(Input.mousePosition);
+				CreateBoneFromJoint(joint);
+				PlaceConnectionBetweenPoints(currentBone.gameObject, joint.center, joint.center, CONNECTION_WIDTH);
+			}
+		}
 
-					if (grid.gameObject.activeSelf) {
-						newPoint = grid.ClosestPointOnGrid(newPoint);
-					}
-					newPoint.z = 0;
-
-					currentMovingJoint.MoveTo(newPoint);
-
-					ResetCurrentCreatureName(); // The creature was modified
-				}
-			} 
-
-		} else if ( Input.GetMouseButtonUp(0) ) {
-
-			if (selectedPart == BuildSelection.Bone ) {
-				PlaceCurrentBone();	
+		/// <summary>
+		/// Instantiates a bone at the specified point.
+		/// </summary>
+		private void CreateBoneFromJoint(Joint joint){
 			
-			} else if (selectedPart == BuildSelection.Muscle) {
-				PlaceCurrentMuscle();
+			var boneData = new BoneData(idCounter++, joint.JointData.id, joint.JointData.id, 1f);
+			currentBone = Bone.CreateAtPoint(joint.center, boneData);
+			currentBone.startingJoint = joint;
+		}
 
-			} else if (selectedPart == BuildSelection.Move) {
-				currentMovingJoint = null;
+		private void CreateBoneFromData(BoneData data) {
+			// Find the connecting joints
+			var startingJoint = FindJointWithId(data.startJointID);
+			var endingJoint = FindJointWithId(data.endJointID);
+			if (startingJoint == null || endingJoint == null) {
+				Debug.Log(string.Format("The connecting joints for bone {0} were not found!", data.id));
+				return;
+			}
+			var bone = CreateBoneBetween(startingJoint, endingJoint, data);
+			bone.ConnectToJoints();
+			bones.Add(bone);
+		}
+
+		private Bone CreateBoneBetween(Joint startingJoint, Joint endingJoint, BoneData data) {
+
+			var bone = Bone.CreateAtPoint(startingJoint.center, data);
+			PlaceConnectionBetweenPoints(bone.gameObject, startingJoint.center, endingJoint.center, CONNECTION_WIDTH);
+			bone.startingJoint = startingJoint;
+			bone.endingJoint = endingJoint;
+			return bone;
+		}
+
+		/// <summary>
+		/// Updates the bone that is currently being placed to end at the 
+		/// current mouse/touch position.
+		/// </summary>
+		public void UpdateCurrentBoneEnd(Vector3 position, Joint hoveringJoint) {
+
+			if (currentBone != null) {
+				// check if user is hovering over an ending joint which is not the same as the starting
+				// joint of the currentBone
+				var endPoint = position;
+
+				if (hoveringJoint != null && !hoveringJoint.Equals(currentBone.startingJoint)) {
+					endPoint = hoveringJoint.center;
+					currentBone.endingJoint = hoveringJoint;
+					var oldData = currentBone.BoneData;
+					var newData = new BoneData(oldData.id, oldData.startJointID, hoveringJoint.JointData.id, oldData.weight);
+					currentBone.BoneData = newData;
+				} 
+
+				PlaceConnectionBetweenPoints(currentBone.gameObject, currentBone.startingPoint, endPoint, CONNECTION_WIDTH);	
+			}	
+		}
+
+		/// <summary>
+		/// Transforms the given gameObject between the specified points. 
+		/// (Points are flattened to 2D).
+		/// </summary>
+		/// <param name="connection">The object to place as between the start and end point</param>
+		/// <param name="width">The thickness of the connection.</param>
+		public static void PlaceConnectionBetweenPoints(GameObject connection, Vector3 start, Vector3 end, float width) {
+
+			// flatten the vectors to 2D
+			start.z = 0;
+			end.z = 0;
+
+			Vector3 offset = end - start;
+			Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
+			Vector3 position = start + (offset / 2.0f);
+
+			connection.transform.position = position;
+			connection.transform.up = offset;
+			connection.transform.localScale = scale;
+		}
+
+		/// <summary>
+		/// Checks to see if the current bone is valid (attached to two joints) and if so 
+		/// adds it to the list of bones.
+		/// </summary>
+		/// <returns>Returns whether the current bone was placed.</returns>
+		public bool PlaceCurrentBone() {
+
+			if (currentBone == null) return false;
+
+			if (currentBone.endingJoint == null || 
+				currentBone.endingJoint.Equals(currentBone.startingJoint)) {
+				// The connection has no connected ending -> Destroy
+				UnityEngine.Object.Destroy(currentBone.gameObject);
+				currentBone = null;
+				return false;
+			} else {
+				currentBone.ConnectToJoints();
+				bones.Add(currentBone);
+				currentBone = null;
+				// The creature was modified
+				return true;
 			}
 		} 
-	}
 
-	/** Handles all possible keyboard controls / shortcuts. */
-	private void HandleKeyboardInput() {
+		public void CancelCurrentBone() {
 
-		if (saveDialog != null && saveDialog.gameObject.activeSelf) return;
+			if (currentBone == null) return;
 
-		if (Input.anyKeyDown) {
-		
-			// J = place Joint
-			if (Input.GetKeyDown(KeyCode.J)) {
-				SelectedPart = BuildSelection.Joint;
-			}
-
-			// B = place body connection
-			else if (Input.GetKeyDown(KeyCode.B)) {
-				SelectedPart = BuildSelection.Bone;
-			}
-
-			// M = place muscle
-			else if (Input.GetKeyDown(KeyCode.M)) {
-				SelectedPart = BuildSelection.Muscle;
-			}
-
-			// D = Delete component
-			else if (Input.GetKeyDown(KeyCode.D)) {
-				SelectedPart = BuildSelection.Delete;
-			}
-
-			// S = Save Creature
-			else if (Input.GetKeyDown(KeyCode.S) && Application.platform != RuntimePlatform.WebGLPlayer) {
-				//SaveCreature();
-				//PromptCreatureSave();
-			}
-
-			// L = Load Creature
-			else if (Input.GetKeyDown(KeyCode.L)) {
-				//LoadCreature();
-			}
-
-			// E = Go to Evolution Scene
-			else if (Input.GetKeyDown(KeyCode.E)) {
-				Evolve();
-			}
-
-			// P = Print the current creature's save string
-			else if (Input.GetKeyDown(KeyCode.P)) {
-				print(CreatureSaver.CreateSaveInfoFromCreature(joints, bones, muscles));
-			}
-
-
-			buttonManager.selectButton(selectedPart);
-		}
-	}
-
-	private Vector3 GetPinchCenter(Vector2 touch1, Vector2 touch2) {
-
-		var center2D = 0.5f * (touch1 + touch2);
-
-		return new Vector3(center2D.x, center2D.y);
-	}
-
-	/**
-	 * Sets the shouldHighlight variable appropiately on every hoverable object
-	 * depending on the currently selected part.
-	 */
-	private void UpdateHoverables() {
-
-		SetMouseHoverTexture(null);
-
-		if (selectedPart == BuildSelection.Joint ) {
-			// disable Highlights
-			DisableAllHoverables();
-		} else if (selectedPart == BuildSelection.Bone || selectedPart == BuildSelection.Move) {
-			// make the joints hoverable
-			SetShouldHighlight(joints, true);
-			SetShouldHighlight(bones, false);
-			SetShouldHighlight(muscles, false);
-		} else if (selectedPart == BuildSelection.Muscle ) {
-			// make the bones hoverables
-			SetShouldHighlight(joints, false);
-			SetShouldHighlight(bones, true);
-			SetShouldHighlight(muscles, false);
-		} else if (selectedPart == BuildSelection.Delete) {
-			// make everything highlightable
-			SetShouldHighlight(joints, true);
-			SetShouldHighlight(bones, true);
-			SetShouldHighlight(muscles, true);
-
-			SetMouseHoverTexture(mouseDeleteTexture);
-		}
-	}
-
-	/** Removes the already destroyed object that are still left in the lists. */
-	private void UpdateDeletedObjects() {
-
-		bones = UpdateDeletedObjects<Bone>(bones);
-		joints = UpdateDeletedObjects<Joint>(joints);
-		muscles = UpdateDeletedObjects<Muscle>(muscles);
-	}
-
-	/** Removes the already destroyed object that are still left in the list. */
-	private List<T> UpdateDeletedObjects<T>(List<T> objects) where T: BodyComponent {
-
-		List<T> removed = new List<T>(objects);
-		foreach (T obj in objects) {
-			if (obj == null || obj.Equals(null) || obj.gameObject == null || obj.gameObject.Equals(null) || obj.deleted) {
-				//print("Removed component of type: " + typeof(T));
-				removed.Remove(obj);
-			}
-		}
-		return removed;
-	}
-
-	/// <summary>
-	/// Resets the value of the creature dropdown to Creature and 
-	/// </summary>
-	private void ResetCurrentCreatureName() {
-
-		lastCreatureName = "Creature";
-		//buttonManager.SetDropDownToValue(lastCreatureName);
-	}
-
-	/// <summary>
-	/// Deletes the currently visible creature.
-	/// </summary>
-	public void DeleteCreature() {
-		foreach(var joint in joints) {
-			joint.Delete();
+			UnityEngine.Object.Destroy(currentBone.gameObject);
+			currentBone = null;
 		}
 
-		UpdateDeletedObjects();
-	}
+		#endregion
+		#region Muscle Placement
 
-	private void DisableAllHoverables() {
+		/// <summary>
+		/// Attempts to place a muscle starting at the specified position.
+		/// </summary>
+		public void TryStartingMuscle(Bone bone) {
 
-		SetShouldHighlight(joints, false);
-		SetShouldHighlight(bones, false);
-		SetShouldHighlight(muscles, false);
-	}
-
-	private void ResetHoverableColliders() {
-
-		ResetHoverableColliders(joints);
-		ResetHoverableColliders(bones);
-	}
-
-	private void ResetHoverableColliders<T>(List<T> hoverables) where T: Hoverable {
-
-		foreach (Hoverable hov in hoverables) {
-
-			hov.ResetHitbox();
+			if (bone != null) {
+				CreateMuscleFromBone(bone);
+				var startPos = bone.Center;
+				currentMuscle.SetLinePoints(startPos, startPos);
+			}
 		}
-	} 
 
-	private void SetMouseHoverTexture(Texture2D texture) {
+		/// <summary>
+		/// Instantiates a muscle at the specified point.
+		/// </summary>
+		private void CreateMuscleFromBone(Bone bone) {
 
-		foreach (Joint joint in joints) {
-			joint.mouseHoverTexture = texture;
+			var muscleData = new MuscleData(idCounter++, bone.BoneData.id, bone.BoneData.id, Muscle.Defaults.MaxForce, true);
+			currentMuscle = Muscle.CreateFromData(muscleData);
+			currentMuscle.startingBone = bone;
+			currentMuscle.SetLinePoints(bone.Center, bone.Center);
 		}
-		foreach (Bone bone in bones) {
-			bone.mouseHoverTexture = texture;
+
+		/// <summary>
+		/// Updates the muscle that is currently being placed to end at the 
+		/// specified position
+		/// </summary>
+		public void UpdateCurrentMuscleEnd(Vector3 endPoint, Bone hoveringBone) {
+
+			if (currentMuscle != null) {
+				// Check if user is hovering over an ending joint which is not the same as the starting
+				// joint of the currentMuscle
+				var endingPoint = endPoint;
+
+				if (hoveringBone != null) {
+					
+					if (!hoveringBone.Equals(currentMuscle.startingBone)) {
+						endingPoint = hoveringBone.Center;
+						currentMuscle.endingBone = hoveringBone;	
+						var oldData = currentMuscle.MuscleData;
+						var newData = new MuscleData(
+							oldData.id, oldData.startBoneID, hoveringBone.BoneData.id, 
+							oldData.strength, oldData.canExpand
+						); 
+						currentMuscle.MuscleData = newData;
+					} else {
+						currentMuscle.endingBone = null;
+					}
+				} else {
+					currentMuscle.endingBone = null;
+				}
+
+				currentMuscle.SetLinePoints(currentMuscle.startingBone.Center, endingPoint);
+			}
 		}
-		foreach (Muscle muscle in muscles) {
-			muscle.mouseHoverTexture = texture;
+
+		/// <summary>
+		/// Checks to see if the current muscle is valid (attached to two joints) and if so
+		/// adds it to the list of muscles.
+		/// </summary>
+		/// <returns>Returns whether the current muscle was placed</returns>
+		public bool PlaceCurrentMuscle() {
+				
+			if (currentMuscle == null) return false;
+
+			if (currentMuscle.endingBone == null) {
+				// The connection has no connected ending -> Destroy
+				UnityEngine.Object.Destroy(currentMuscle.gameObject);
+				currentMuscle = null;
+				return false;
+			} else {
+
+				// Validate the muscle doesn't exist already
+				foreach (Muscle muscle in muscles) {
+					if (muscle.Equals(currentMuscle)) {
+						UnityEngine.Object.Destroy(currentMuscle.gameObject);
+						currentMuscle = null;
+						return false;
+					}
+				}
+
+				currentMuscle.ConnectToJoints();
+				currentMuscle.AddCollider();
+				muscles.Add(currentMuscle);
+				currentMuscle = null;
+				// The creature was modified
+				return true;
+			}
 		}
-	}
 
-	/** 
-	 * Sets the shouldHighlight property of a Hoverable script entry in the specified list to the boolean value specified by
-	 * shouldHighlight.
-	*/
-	private void SetShouldHighlight<T>(List<T> hoverables, bool shouldHighlight) where T: Hoverable {
-
-		foreach (var obj in hoverables) {
-
-			obj.shouldHighlight = shouldHighlight;
-		}
-	} 
-
-	/** 
-	 * Returns the Object that the mouse is currently hovering over or null if there is no such object in the given list. 
-	 * The list contains scripts that are attached to gameobjects which have a HoverableScript attached.
-	*/
-	private T GetHoveringObject<T>(List<T> objects) where T: MonoBehaviour {
-
-		foreach (T obj in objects) {
+		private void CreateMuscleFromData(MuscleData data) {
+			// Find the connecting joints
+			var startingBone = FindBoneWithId(data.startBoneID);
+			var endingBone = FindBoneWithId(data.endBoneID);
 			
-			if (obj.gameObject.GetComponent<Hoverable>().hovering) {
-				return obj;
+			if (startingBone == null || endingBone == null) {
+				Debug.Log(string.Format("The connecting joints for bone {0} were not found!", data.id));
+				return;
+			}
+			var muscle = CreateMuscleBetween(startingBone, endingBone, data);
+			muscle.ConnectToJoints();
+			muscle.AddCollider();
+			muscles.Add(muscle);
+		}
+
+		private Muscle CreateMuscleBetween(Bone startingBone, Bone endingBone, MuscleData data) {
+
+			var muscle = Muscle.CreateFromData(data);
+
+			muscle.startingBone = startingBone;
+			muscle.endingBone = endingBone;
+
+			muscle.SetLinePoints(startingBone.Center, endingBone.Center);
+			return muscle;
+		}
+
+		#endregion
+		#region Move
+
+		/// <summary>
+		/// Moves the currently selected components to the specified position.
+		/// </summary>
+		public void MoveSelection(ICollection<Joint> jointsToMove, Vector3 movement) {
+
+			foreach (var joint in jointsToMove) {
+				var newPosition = joint.transform.position + movement;
+				joint.MoveTo(newPosition);		
 			}
 		}
 
-		return null;
-	}
+		/// <summary>
+		/// Resets all properties used while moving a body component.
+		/// </summary>
+		/// <returns>Returns whether the creature design was changed.</returns>
+		public bool MoveEnded(ICollection<Joint> jointsToMove) {
 
+			if (jointsToMove == null) return false;
 
-	/** Placed a new joint object at the specified point. */
-	private void PlaceJoint(Vector3 point) {
-
-		point.z = 0;
-
-		//GameObject joint = (GameObject) Instantiate(jointPreset, point, Quaternion.identity);
-		//joints.Add(joint.GetComponent<Joint>());
-		joints.Add(Joint.CreateAtPoint(point));
-	}
-
-	/** Instantiates a muscle at the specified point. */
-	private void CreateMuscleFromJoint(MuscleJoint joint) {
-
-		Vector3 point = joint.transform.position;
-		point.z = 0;
-
-		/*GameObject muscleEmpty = new GameObject();
-		muscleEmpty.name = "Muscle";
-		currentMuscle = muscleEmpty.AddComponent<Muscle>();
-		currentMuscle.AddLineRenderer();
-		currentMuscle.SetMaterial(muscleMaterial);*/
-		//currentMuscle = ((GameObject) Instantiate(musclePreset, point, Quaternion.identity)).GetComponent<Muscle>();
-		currentMuscle = Muscle.Create();
-		currentMuscle.startingJoint = joint;
-		currentMuscle.SetLinePoints(joint.transform.position, joint.transform.position);
-	}
-
-	/** Transforms the given gameObject between the specified points. (Points flattened to 2D). */
-	public static void PlaceConnectionBetweenPoints(GameObject connection, Vector3 start, Vector3 end, float width) {
-
-		// flatten the vectors to 2D
-		start.z = 0;
-		end.z = 0;
-
-		Vector3 offset = end - start;
-		Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
-		Vector3 position = start + (offset / 2.0f);
-
-
-		connection.transform.position = position;
-		connection.transform.up = offset;
-		connection.transform.localScale = scale;
-	}
-
-	/** Instantiates a bone at the specified point. */
-	private void CreateBoneFromJoint(Joint joint){
-
-		Vector3 point = joint.center;
-		point.z = 0;
-		//currentBone = ((GameObject) Instantiate(bonePreset, point, Quaternion.identity)).GetComponent<Bone>();
-		currentBone = Bone.CreateAtPoint(point);
-		currentBone.startingJoint = joint;
-	}
-
-	/** Places the currentBone between the specified points. (Points flattened to 2D) */
-	private void PlaceBoneBetweenPoints(Vector3 start, Vector3 end, float width) {
-
-		// flatten the vectors to 2D
-		start.z = 0;
-		end.z = 0;
-
-		Vector3 offset = end - start;
-		Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
-		Vector3 position = start + (offset / 2.0f);
-
-
-		currentBone.transform.position = position;
-		currentBone.transform.up = offset;
-		currentBone.transform.localScale = scale;
-
-	}
-
-	/** 
-	 * Checks to see if the current bone is valid (attached to two joints) and if so
-	 * adds it to the list of bones.
-	 */
-	private void PlaceCurrentBone() {
-
-		if (currentBone == null) return;
-
-		if (currentBone.endingJoint == null || GetHoveringObject<Joint>(joints) == null || currentBone.endingJoint.Equals(currentBone.startingJoint)) {
-			// The connection has no connected ending -> Destroy
-			Destroy(currentBone.gameObject);
-		
-		} else {
-			currentBone.ConnectToJoints();
-			bones.Add(currentBone);
-
-			ResetCurrentCreatureName(); // The creature was modified
-		}
-
-		currentBone = null;
-	} 
-
-	/** 
-	 * Checks to see if the current muscle is valid (attached to two joints) and if so
-	 * adds it to the list of muscles.
-	 */
-	private void PlaceCurrentMuscle() {
-			
-		if (currentMuscle == null) return;
-
-		if (currentMuscle.endingJoint == null || GetHoveringObject<Bone>(bones) == null) {
-			// The connection has no connected ending -> Destroy
-			Destroy(currentMuscle.gameObject);
-		} else {
-
-			// Validate the muscle doesn't exist already
-			foreach (Muscle muscle in muscles) {
-				if (muscle.Equals(currentMuscle)) {
-					Destroy(currentMuscle.gameObject);
-					currentMuscle = null;
-					return;
+			var didChange = jointsToMove.Count > 0;
+			if (didChange) {
+				foreach (var joint in jointsToMove) {
+					var oldData = joint.JointData;
+					var newData = new JointData(oldData.id, joint.center, oldData.weight);
+					joint.JointData = newData;
 				}
 			}
-
-			currentMuscle.ConnectToJoints();
-			currentMuscle.AddCollider();
-			muscles.Add(currentMuscle);
-
-			ResetCurrentCreatureName(); // The creature was modified
+			return didChange;
 		}
 
-		currentMuscle = null;
-	}
+		#endregion
 
-	public void SetBodyComponents(List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
-		this.joints = joints;
-		this.bones = bones;
-		this.muscles = muscles;
-	}
-
-	private Vector3 ScreenToWorldPoint(Vector3 point) {
-		return Camera.main.ScreenToWorldPoint(point);
-	}
-
-	private Vector3 ScreenToWorldDistance(Vector3 distance) {
-
-		var p1 = ScreenToWorldPoint(new Vector3(0,0,0));
-		var p2 = ScreenToWorldPoint(distance);
-
-		return p2 - p1;
-	}
-
-	/** Returns the gameobject that consists of the bodyparts that have been placed in the scene */
-	public Creature BuildCreature() {
-
-		GameObject creatureObj = new GameObject();
-		creatureObj.name = "Creature";
-		Creature creature = creatureObj.AddComponent<Creature>();
-
-		foreach (Joint joint in joints) {
-			joint.transform.SetParent(creatureObj.transform);
+		public void Reset() {
+			DeleteAll();
+			Name = "Unnamed";
+			idCounter = 0;
 		}
 
-		foreach (Bone connection in bones) {
-			connection.transform.SetParent(creatureObj.transform);
+		/// <summary>
+		/// Deletes all body components placed with this builder.
+		/// </summary>
+		public void DeleteAll() {
+
+			// Deleting joints will recursively delete all connected 
+			// body parts as well
+			foreach (var joint in joints) {
+				joint.Delete();
+			}
+
+			RemoveDeletedObjects();
+			idCounter = 0;
 		}
 
-		foreach (Muscle muscle in muscles) {
-			muscle.transform.SetParent(creatureObj.transform);
+		public void Delete(List<BodyComponent> selection) {
+
+			for (int i = 0; i < selection.Count; i++) {
+				var item = selection[i];
+				if (item == null) continue;
+
+				item.Delete();
+				
+			}
+			RemoveDeletedObjects();
 		}
 
-		creature.joints = joints;
-		creature.bones = bones;
-		creature.muscles = muscles;
-
-		DisableAllHoverables();
-
-		return creature;
-	} 
-
-	/** Generates a creature and brings it to the testScene. */
-	public void TakeCreatureToTestScene() {
-
-		/*Creature creature = BuildCreature();
-		DontDestroyOnLoad(creature.gameObject);
-
-		SceneManager.LoadScene("TestingScene");*/
-	}
-
-	/// <summary>
-	/// Creates the creature and attached it to the evolution.
-	/// </summary>
-	public void AttachCreatureToEvolution(Evolution evolution) {
-
-		ResetHoverableColliders();
-
-		CreatureSaver.SaveCurrentCreature(lastCreatureName, joints, bones, muscles);
-
-		Creature creature = BuildCreature();
-		DontDestroyOnLoad(creature.gameObject);
-
-		evolution.creature = creature;
-	}
-
-	/** Generates a creature and starts the evolution simulation. */
-	public void Evolve() {
-
-		// don't attempt evolution if there is no creature
-		if (joints.Count == 0) return;
-
-		ResetHoverableColliders();
-
-		CreatureSaver.SaveCurrentCreature(lastCreatureName, joints, bones, muscles);
-
-		Creature creature = BuildCreature();
-		DontDestroyOnLoad(creature.gameObject);
-
-		//SceneManager.LoadScene("EvolutionScene");
-		AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
-		//AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("TestEvolutionScene");
-		sceneLoading.allowSceneActivation = true;
-		DontDestroyOnLoad(evolution.gameObject);
-		evolution.creature = creature;
-
-		//evolution.PopulationSize = buttonManager.GetPopulationInput();
-		//evolution.SimulationTime = buttonManager.GetSimulationTime();
-
-		var settings = settingsMenu.GetEvolutionSettings();
-
-		//evolution.PopulationSize = settings.populationSize;
-		//evolution.SimulationTime = settings.simulationTime;
-
-		//Evolution.task = buttonManager.GetTask();
-		//Evolution.task = settings.task;
-
-		evolution.Settings = settings;
-		evolution.BrainSettings = settingsMenu.GetNeuralNetworkSettings();
-
-		SetMobileNoSleep();
-
-		StartCoroutine(WaitForEvolutionSceneToLoad(sceneLoading));
-		DontDestroyOnLoad(this);
-		//evolution.StartEvolution();
-		//Time.timeScale = 5.0f;
-	}
-
-	IEnumerator WaitForEvolutionSceneToLoad(AsyncOperation loadingOperation) {
-
-		while(!loadingOperation.isDone){
-
-			//print(loadingOperation.progress);
-			yield return null;
+		public void SetBodyComponents(List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {
+			this.joints = joints;
+			this.bones = bones;
+			this.muscles = muscles;
 		}
+
+		/// <summary>
+		/// Creates a Creature object from the currently placed bodyparts.
+		/// </summary>
+		public Creature Build() {
+
+			GameObject creatureObj = new GameObject();
+			creatureObj.name = "Creature";
+			Creature creature = creatureObj.AddComponent<Creature>();
+
+			foreach (Joint joint in joints) {
+				joint.transform.SetParent(creatureObj.transform);
+			}
+
+			foreach (Bone connection in bones) {
+				connection.transform.SetParent(creatureObj.transform);
+			}
+
+			foreach (Muscle muscle in muscles) {
+				muscle.transform.SetParent(creatureObj.transform);
+			}
+
+			creature.joints = joints;
+			creature.bones = bones;
+			creature.muscles = muscles;
+
+			return creature;
+		}
+
+		/// <summary>
+		/// Returns a CreatureDesign representation of the currently placed
+		/// body parts 
+		/// </summary>
+		public CreatureDesign GetDesign() {
 			
-		Destroy(this.gameObject);
-		print("Starting Evolution");
-		evolution.StartEvolution();
-	}
-
-	/// <summary>
-	/// Changes to the evolution scene for continuing a saved simulation.
-	/// </summary>
-	public void ContinueEvolution(Evolution evolution, Action completion) {
-
-		SetMobileNoSleep();
-
-		AttachCreatureToEvolution(evolution);
-
-		AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("EvolutionScene");
-		//AsyncOperation sceneLoading = SceneManager.LoadSceneAsync("TestEvolutionScene");
-		sceneLoading.allowSceneActivation = true;
-		DontDestroyOnLoad(evolution.gameObject);
-
-		StartCoroutine(WaitForEvolutionSceneToLoadForLoad(sceneLoading, completion));
-		DontDestroyOnLoad(this);
-	}
-
-	IEnumerator WaitForEvolutionSceneToLoadForLoad(AsyncOperation loadingOperation, Action completion) {
-
-		while(!loadingOperation.isDone){
-
-			//print(loadingOperation.progress);
-			yield return null;
+			var name = this.Name;
+			var jointData = this.joints.Select(j => j.JointData).ToList();
+			var boneData = this.bones.Select(b => b.BoneData).ToList();
+			var muscleData = this.muscles.Select(m => m.MuscleData).ToList();
+			return new CreatureDesign(name, jointData, boneData, muscleData);
 		}
 
-		Destroy(this.gameObject);
-		print("Continuing Evolution");
+		#region Hover Configuration
 
-		completion();
-
-	}
-
-
-	public void PromptCreatureSave() {
-		saveDialog.gameObject.SetActive(true);
-		saveDialog.ResetErrors();
-	}
-
-	/// <summary>
-	/// Attempts to save the current creature. Shows an error screen if something went wrong.
-	/// </summary>
-	/// <param name="name">Name.</param>
-	public void SaveCreature(string name) {
-
-		saveDialog.ResetErrors();
-
-		if (name == "") {
-			saveDialog.ShowErrorMessage("The Creature name is empty.");
-			return;
+		public void RefreshMuscleColliders() {
+			foreach (Muscle muscle in muscles) {
+				muscle.RemoveCollider();
+				muscle.AddCollider();
+			}
 		}
 
-		try {
-			CreatureSaver.WriteSaveFile(name, joints, bones, muscles);
+		#endregion
 
-		} catch (IllegalFilenameException e) {
-			saveDialog.ShowErrorMessage("The name can't contain . (dots) or _ (underscores).");
-			print(e.Message);
-			return;
+		#region Utils
+
+		private Joint FindJointWithId(int id) {
+			foreach (var joint in joints) {
+				if (joint.JointData.id == id) {
+					return joint;
+				}
+			}
+			return null;
 		}
 
-		// The save was successful
-		saveDialog.gameObject.SetActive(false);
-
-		buttonManager.Refresh();
-
-	}
-
-	public void LoadCreature(Dropdown dropDown) {
-
-		DeleteCreature();
-
-		//var name = CreatureSaver.GetCreatureNames()[dropDown.value];
-		var name = ButtonManager.CreateDropDownOptions()[dropDown.value];
-		lastCreatureName = name;
-
-		// The first option in the Dropdown list is going to be an empty creature
-		if (dropDown.value == 0) {
-			return;
+		private Bone FindBoneWithId(int id) {
+			foreach (var bone in bones) {
+				if (bone.BoneData.id == id) {
+					return bone;
+				} 
+			}
+			return null;
 		}
 
-		CreatureSaver.LoadCreature(name, this);
-	}
+		/// <summary>
+		/// Removes the already destroyed object that are still left in the lists.
+		/// </summary>
+		private void RemoveDeletedObjects() {
 
-	private void TestCreatureSave() {
-
-		var filename = "Testfile.txt";
-		var saveFolder = "CreatureSaves";
-		var path = Path.Combine(Application.dataPath, saveFolder);
-		path = Path.Combine(path, filename);
-
-		if (File.Exists(path)) {
-			var reader = new StreamReader(path);
-			var contents = reader.ReadToEnd();
-			reader.Close();
-
-			print("The file exists. Content: \n" + contents);
-		} else {
-			File.WriteAllText(path, "Example Text");
-			print("The file was created.");
+			bones = BodyComponent.RemoveDeletedObjects<Bone>(bones);
+			joints = BodyComponent.RemoveDeletedObjects<Joint>(joints);
+			muscles = BodyComponent.RemoveDeletedObjects<Muscle>(muscles);
 		}
 
-	} 
-
-	private void SetMobileNoSleep() {
-		Screen.sleepTimeout = SleepTimeout.NeverSleep;
+		#endregion
 	}
-
-	private void SetMobileDefaultSleep() {
-		Screen.sleepTimeout = SleepTimeout.SystemSetting;
-	}
-
 
 }

@@ -1,0 +1,175 @@
+Evolution
+#-#-#-Text-#-#-#
+<voffset=-0.5em><b><size=40>Evolution</size></b></voffset>                      <size=75><sprite index=4></size>
+
+
+Using a set of basic components and a neural network this evolution simulator enables you to create creatures that will hopefully evolve into being able to accomplish tasks such as running, jumping, jumping over an obstacle and climbing a steep hill.
+
+
+
+
+
+#%#%#%Section%#%#%#
+The Creatures
+#-#-#-Text-#-#-#
+<voffset=-0.5em><b><size=40>The Creatures</size></b></voffset>                      <size=75><sprite index=4></size>
+
+
+The creatures are made up of three basic body parts (joints, bones & muscles) whose functions are explained below:
+
+<b><size=30>Joints:</size></b>         <size=30><sprite index=0></size>
+
+Joints are connectors between bones. Without joints you can’t place any bones in the creature building scene. Joints enable the connected bones to rotate freely around the center of the joint. 
+
+In order to place a joint click on the ”Joint“ Button or alternatively press J on your keyboard and click where you want to place the joint. The joint option is selected by default since you have to start every creature with at least two joints.
+
+You can select and change the weight of each individual joint.
+
+<b><size=30>Bones:</size></b>                     <size=20><sprite index=1></size>
+
+Bones make up the skeleton of your creatures. You can only place bones between two existing joints. Bones do not collide with each other, which means that they don’t restrict the movement of your creature in any way.
+
+In order to place a bone you have to select the “Bone“ button or press B on your keyboard. Click on the first joint and then hold and drag your mouse to the second joint.
+
+You can select and change the weight of each individual bone.
+
+<b><size=30>Muscles:</size></b>                    <size=50><sprite index=2></size>
+
+Muscles enable the creatures to move their bones autonomously. They are the only body parts that the brain of a creature can control. Muscles are always connected to the center points of two bones, so you can’t place any muscles if you haven’t already placed at least two bones in the creature building scene. 
+
+In order to place a muscle you have to select the ”Muscle“ button or press M on your keyboard. Then click on the first bone, hold down the mouse and move to the second bone. The muscle will automatically connect to the center of the bones. 
+
+Unlike real muscles these creature muscles can by default both expand and contract (You can think of them as simplified muscle pairs that go in opposite directions). Physically the muscles are spring-like, which means that they will always tend to go back into their starting position.
+
+A creature can expand and contract its muscles continuously by applying a different amount of force to them. Without any muscles a creature is not able to move at all and will therefore not be able to accomplish any of the tasks. Another thing to keep in mind while building your creatures is that both the joints and the bones have some weight to them (which is independent of the length of the bones). Therefore, the more bones and joints your creature has the more muscles you need to add to it, otherwise the muscles might not have enough strength to move the skeleton around. Keep in mind that you also can’t connect more than one muscle between the same two bones.
+
+You can select and customize the strength of each individual bone and allow them to only contract if you like.
+
+
+
+
+
+
+
+
+
+
+#%#%#%Section%#%#%#
+The Brain
+#-#-#-Text-#-#-#
+<voffset=-0.5em><b><size=40>The Brain</size></b></voffset>                         <size=75><sprite index=3></size>
+
+
+This section explains what the brain does and the basic principles of how it works.
+
+The brain is not a body part like joints, bones or muscles. You don’t need to worry about adding or setting up a brain for your creatures, this is all done automatically when you hit the “Evolve“ button. 
+
+Every creature needs a brain, which controls all of the muscles and allows the creatures to evolve at all. The brain is a neural network which takes a set of <b>inputs</b> and converts them to a set of <b>outputs</b>.
+
+The inputs include the following information:
+ - the distance of the creature from the ground
+ - the current velocity (horizontal and vertical component)
+ - the rotational velocity
+ - the number of points currently touching the ground
+ - the creature’s rotation (= the average of all bone rotations)
+
+On top of that, every creature sends out raycasts in multiple directions in order to sense the distance from its surroundings. Each such distance is an additional input to the brain. One of the raycast directions is controlled by the brain itself using an additional neural network output node.
+
+Each remaining output corresponds to exactly one muscle. The output is a floating point number between -1 and 1 and determines how far the muscle should expand/contract. Thus, a creature with just two muscles will have a brain with three outputs and a creature with ten muscles will have a brain that produces eleven outputs (one for the custom raycast direction).
+
+The brain essentially defines how the creature will interpret the inputs - which you can think of as senses - and act accordingly, meaning which muscles to contract or expand and determine the degree of contraction / expansion. Internally the brain is represented by a simple feed-forward neural network with fully-connected layers. You can customize the number of layers and number of nodes per layer in the settings.
+
+A brain can be encoded as a chromosome (an array of the neural network weights). Such chromosomes are used in the evolutionary algorithm in order to be able to create new creatures from existing ones.
+
+
+
+
+
+
+
+
+#%#%#%Section%#%#%#
+The Simulation
+#-#-#-Text-#-#-#
+
+
+<voffset=-0.5em><b><size=40>The Simulation</size></b></voffset>
+
+
+When you have finished building your creature you can click on the “Evolve“ button (or alternatively hit E on your keyboard) which will take the creature to the evolution scene. 
+
+The evolution takes place using a genetic algorithm. In the following section I’m going to outline the basic idea behind such an algorithm:
+
+The genetic algorithm executes the following steps:
+
+1. Start out with a set of creatures with completely random brains. (The size of this set can be adjusted once before starting the evolution in the creature building scene. The number has to be even.)
+
+2. Let the creatures try the selected task for a set amount of time. (This time can also be adjusted once before starting the evolution in the creature building scene)
+
+3. Evaluate how good each of the creatures was at completing the task. This is also called assigning a fitness score (between 0 and 1).
+
+4. Create a new generation of creatures. This is done by randomly picking two creatures from the set, taking their chromosomes (which uniquely identify their brains and therefore their behavior), split them and put them back together but this time using the certain parts from each of the two “parent“ creatures. The details of this procedure are defined by the selected recombination algorithm. Now we have two new chromosomes that can be turned into two brains again. We repeat this process until we reach the same number of new creatures as in the previous generation. An important aspect of this step is that by default, creatures with a higher fitness score also have a higher chance of getting picked, so the creatures that are better at completing the tasks have a higher change of passing their genes to the next generation. You can also customize this by choosing a different selection algorithm.
+
+5. Next comes the mutation. For every new chromosome there is a chance (the mutation rate) that some parts of the chromosome get randomly changed, thus introducing random behavior into some of the creatures. The chosen mutation algorithm defines how exactly the random changes are applied.
+
+6. Finally we “kill“ the old generation, replace them with the new creatures and go back to step 2.
+
+
+The fitness score of the creatures is determined based on the task. 
+
+For the running task the fitness is based on how far a creature has made it towards the right in the amount of time that it had.
+For the jumping task the fitness is calculated from the maximum jumping height of the creature. 
+For the obstacle jumping task both the maximum jumping height and the accumulated duration of joints touching the obstacle are of importance.
+For the climbing task the creature that made it the highest gets the highest fitness score.
+
+
+
+
+
+
+
+
+#%#%#%Section%#%#%#
+General Tips
+#-#-#-Text-#-#-#
+
+
+<voffset=-0.5em><b><size=40>General Tips</size></b></voffset>
+
+
+You can delete individual body part by clicking on the “Delete“ button (or pressing D on the keyboard) and clicking on the part that you want to delete. This will also delete any directly attached objects. So if you delete a bone that has a muscle attached, then that muscle will be deleted as well. Similarly, if you delete a joint, this will delete all of the directly attached bones, which in turn also delete the attached muscles. 
+
+Once you’re happy with a creature that you’ve built you can save it using the save button at the top(not available in the browser version). You can also load previously saved simulations if you click on the "Simulations" button in the top left. Use the export and import buttons to share saved creatures and simulations between your devices or with your friends.
+
+There are a couple of creatures that are available “out of the box“. As of the time of me writing this we have the Hailer, Spider, Spring, Frogger and Roo.
+
+The hailer is a simple creature with a small “body“ and a long arm that it can use to throw itself forwards. Since it is so basic it will be able to do a fairly good job at the running task relatively quickly. However, it also has some physical limitations, which means that it won’t ever be the absolute best at running. 
+
+The spider - with its four legs and eight muscles - is a much more complex creature. This is why it takes a lot longer for this one to evolve into being able to walk at a halfway decent pace, but when it does it is a lot more exciting to watch. In fact the whole evolution process is more interesting than that of the hailer.
+
+The spring is - as the name says - essentially just a spring shaped creature which can get relatively good at the jumping tasks.
+
+More default creatures are probably going to be added in the future.
+
+
+<b><size=22>What enables a creature to perform a specific task?</size></b>
+
+There are essentially two parts to each creature. One is its physical structure i.e. its body. This is something that you control, since you are the one building the creature. The body stays the same for all of the creatures during the whole course of evolution. It is possible to write a variation of this algorithm that also evolves the body of the creature into an “optimal“ shape, but that doesn’t happen here. 
+
+This means that you need to make sure that your creature is physically able to accomplish the task in some form in the first place. If you for example don’t add any (or not enough) muscles to your creature then it will never be able to move, no matter how long you let it evolve.
+
+The second aspect is the brain / behavior which is driven by evolution. You don’t have a say in this part. This is where you sit back, relax and watch your creature try out different strategies and get excited when it gets better and better over time. 
+
+
+A last quick thing to note is that this more of a simulation than a game. There are no objectives. If a creature of yours reaches 100% fitness - which is very unlikely - you don’t win anything except for (hopefully) some excitement and joy.
+
+
+Now it’s your turn to go out and be creative with your creatures and watch them try, fail, improve and succeed!
+
+
+
+
+
+
+
+

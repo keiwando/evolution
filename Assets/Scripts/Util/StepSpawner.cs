@@ -16,7 +16,6 @@ public class StepSpawner : MonoBehaviour {
 	private Vector3 spawnPosition;
 	private Vector3 spawnDistance;
 
-	// Use this for initialization
 	void Start () {
 		
 		spawnPosition = step.transform.position;
@@ -25,11 +24,6 @@ public class StepSpawner : MonoBehaviour {
 		spawnDistance = new Vector3(stepDistance, Mathf.Sin(Mathf.PI / 2) * stepDistance, 0);
 
 		SpawnSteps();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
 	}
 
 	private void SpawnSteps() {

@@ -1,55 +1,33 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
+﻿// using UnityEngine;
+// using UnityEngine.UI;
+// using System.Collections;
 
-/** Has to be attached to a camera. */
-public class CameraFollowScript : MonoBehaviour {
+// [RequireComponent(typeof(Camera))]
+// public class CameraFollowScript : MonoBehaviour {
 
-	public RenderTexture renderTexture;
+// 	public RenderTexture renderTexture;
 
-	public Creature toFollow;
+// 	public Creature toFollow;
 
-	public int currentlyWatchingIndex;
+// 	public bool DiagonalLock = false;
 
-	public bool DiagonalLock = false;
+// 	private Vector3 startPos;
 
-	new private Camera camera;
+// 	void Start () {
+// 		startPos = transform.position;
+// 	}
 
-	private Vector3 startPos;
+// 	void Update () {
 
-	// Use this for initialization
-	void Start () {
+// 		if (toFollow == null) return;
 
-		camera = GetComponent<Camera>();
-		startPos = camera.transform.position;
+// 		Vector3 newPos = transform.position;
+// 		newPos.x = toFollow.GetXPosition();
 
-		toFollow = GameObject.Find("Creature").GetComponent<Creature>();
+// 		if (true || DiagonalLock) {
+// 			newPos.y = (newPos.x - startPos.x) + startPos.y;
+// 		}
 
-		if (gameObject.tag == "SecondCamera") {
-			SwitchToMiniViewport();
-		}
-	}
-
-	// Update is called once per frame
-	void Update () {
-
-		Vector3 newPos = transform.position;
-		newPos.x = toFollow.GetXPosition();
-
-		if (DiagonalLock) {
-			newPos.y = (newPos.x - startPos.x) + startPos.y;
-		}
-
-		transform.position = newPos;
-	}
-
-	public void SwitchToMiniViewport() {
-		camera.targetTexture = renderTexture;
-	}
-
-	public void SwitchToFullscreen() {
-		camera.targetTexture = null;
-	}
-
-
-}
+// 		transform.position = newPos;
+// 	}
+// }

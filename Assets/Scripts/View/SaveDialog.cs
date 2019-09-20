@@ -1,36 +1,87 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Keiwando;
+
+
+
+public interface SaveDialogDelegate {
+	string GetSuggestedName(SaveDialog dialog);
+	void DidConfirmSave(SaveDialog dialog, string name);
+	bool CanEnterCharacter(SaveDialog dialog, int index, char c);
+	void DidChangeValue(SaveDialog dialog, string value);
+}
 
 public class SaveDialog : MonoBehaviour {
 
-	[SerializeField] private InputField InputField;
-	[SerializeField] private CreatureBuilder CreatureBuilder;
+	public static SaveDialog shared;
 
-	[SerializeField] private Text ErrorMessage;
+	public SaveDialogDelegate Delegate { get; set; }
 
-	// Use this for initialization
-	void Start () {
+	[SerializeField] private InputField inputField;
+
+	[SerializeField] private Text errorMessage;
+
+	void Awake() {
+		if (shared == null || shared == this) {
+			shared = this;
+		} else {
+			Destroy(this.gameObject);
+		}
+	}
+
+	public void Show(SaveDialogDelegate Delegate) {
+		gameObject.SetActive(true);
+		this.Delegate = Delegate;
 		ResetErrors();
+		KeyInputManager.shared.Register();
+		InputRegistry.shared.Register(InputType.All, this);
+		GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture += OnAndroidBack;
+
+		inputField.onValidateInput += delegate (string input, int charIndex, char addedChar) {
+			if (Delegate.CanEnterCharacter(this, charIndex, addedChar)) {
+				return addedChar;
+			} else {
+				return '\0';
+			}
+		};
+
+		inputField.onValueChanged.AddListener(delegate {
+			Delegate.DidChangeValue(this, inputField.text);
+		});
+
+		inputField.text = Delegate.GetSuggestedName(this);
+	}
+
+	public void Close() {
+		Delegate = null;
+		KeyInputManager.shared.Deregister();
+		InputRegistry.shared.Deregister(this);
+		GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture -= OnAndroidBack;
+		gameObject.SetActive(false);
 	}
 
 	public void OnSaveClicked() {
-		ErrorMessage.enabled = false;
-		CreatureBuilder.SaveCreature(InputField.text);
+		errorMessage.enabled = false;
+		Delegate.DidConfirmSave(this, inputField.text);
 	}
 
 	public void OnCancelClicked() {
 		ResetErrors();
-		this.gameObject.SetActive(false);
+		Close();
 	}
 
 	public void ShowErrorMessage(string message) {
-		ErrorMessage.text = message;
-		ErrorMessage.enabled = true;
+		errorMessage.text = message;
+		errorMessage.enabled = true;
 	}
 
 	public void ResetErrors() {
-		ErrorMessage.enabled = false;
+		errorMessage.enabled = false;
 	}
 
+	private void OnAndroidBack(AndroidBackButtonGestureRecognizer rec) {
+		if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this))
+			Close();
+	}
 }

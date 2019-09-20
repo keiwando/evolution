@@ -7,18 +7,10 @@ public class Joint : BodyComponent {
 	private const string PATH = "Prefabs/Joint";
 
 	public Vector3 center { 
-		get {
-			return transform.position;
-		} 
+		get { return transform.position; } 
 	}
 
-	//private Dictionary<Bone, HingeJoint> joints = new Dictionary<Bone, HingeJoint>();
-	private Dictionary<Bone, UnityEngine.Joint> joints = new Dictionary<Bone, UnityEngine.Joint>();
-
-	private bool iterating;
-
-	private Vector3 resetPosition;
-	private Quaternion resetRotation;
+	public JointData JointData { get; set; }
 
 	public Rigidbody Body {
 		get { return body; }
@@ -28,34 +20,21 @@ public class Joint : BodyComponent {
 	public bool isCollidingWithGround { get; private set; }
 	public bool isCollidingWithObstacle { get; private set; }
 
-	private static Joint InstantiateJoint(Vector3 point) {
-		return ((GameObject) Instantiate(Resources.Load(PATH), point, Quaternion.identity)).GetComponent<Joint>();
-	}
+	private Dictionary<Bone, UnityEngine.Joint> joints = new Dictionary<Bone, UnityEngine.Joint>();
 
-	public static Joint CreateAtPoint(Vector3 point) {
-		ID_COUNTER++;
-		var joint = Joint.InstantiateJoint(point);
-		joint.ID = ID_COUNTER;
-		return joint;
-	}
+	private Vector3 resetPosition;
+	private Quaternion resetRotation;
+	private bool iterating;
 
-	public static Joint CreateFromString(string data) {
+	public static Joint CreateFromData(JointData data) {
 		
-		var parts = data.Split('%');
-		//print(data);
-		// Format: ID - pos.x - pos.y - pos.z
-		var x = float.Parse(parts[1]);
-		var y = float.Parse(parts[2]);
-		var z = float.Parse(parts[3]);
-
-		var joint = Joint.InstantiateJoint(new Vector3(x,y,z));
-		joint.ID = int.Parse(parts[0]);
-		ID_COUNTER = Mathf.Max(ID_COUNTER, joint.ID);
-
+		var joint = ((GameObject) Instantiate(Resources.Load(PATH), data.position, Quaternion.identity)).GetComponent<Joint>();
+		var renderer = joint.GetComponent<MeshRenderer>();
+		renderer.sortingOrder = 2;
+		joint.JointData = data;
 		return joint;
 	}
 
-	// Use this for initialization
 	public override void Start () {
 		base.Start();
 
@@ -63,12 +42,16 @@ public class Joint : BodyComponent {
 		resetRotation = transform.rotation;
 
 		body = GetComponent<Rigidbody>();
-		//joints 
+
+		body.mass = JointData.weight;
 	}
 
 	public void Reset() {
 		transform.SetPositionAndRotation(resetPosition, resetRotation);
 		body.velocity = Vector3.zero;
+		body.angularVelocity = Vector3.zero;
+		isCollidingWithGround = false;
+		isCollidingWithObstacle = false;
 	}
 
 	/// <summary>
@@ -106,6 +89,8 @@ public class Joint : BodyComponent {
 	/** Disconnects the bone from the joint. */
 	public void Disconnect(Bone bone) {
 
+		if (!joints.ContainsKey(bone)) return;
+		
 		UnityEngine.Joint joint = joints[bone];
 		Destroy(joint);
 		if (!iterating)
@@ -142,17 +127,6 @@ public class Joint : BodyComponent {
 		body = GetComponent<Rigidbody>();
 		body.isKinematic = false;
 	}
-
-	/// <summary>
-	/// Generates a string that holds all the information needed to save and rebuild this BodyComponent.
-	/// Format: Own ID % pos.x % pos.y % pos.z
-	/// </summary>
-	/// <returns>The save string.</returns>
-	public override string GetSaveString() {
-		var pos = transform.position;
-		return string.Format("{0}%{1}%{2}%{3}", ID, pos.x, pos.y, pos.z);
-	}
-
 		
 	void OnTriggerEnter(Collider collider) {
 

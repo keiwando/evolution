@@ -1,295 +1,170 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Keiwando.Evolution.Scenes;
 
-public class BestCreaturesController : MonoBehaviour {
+namespace Keiwando.Evolution {
 
-	public ViewController viewController;
+	public class BestCreaturesController : MonoBehaviour {
 
-	/// <summary>
-	/// The camera that follows the creatures in the main evolution "scene".
-	/// </summary>
-	public CameraFollowScript MainCamera;
-	/// <summary>
-	/// The camera used to follow the best creature of the selected generation.
-	/// </summary>
-	public CameraFollowScript BCCamera;
+		#region Events
 
-	public Canvas EvolutionCanvas;
-	public Canvas BCCanvas;
+		public event Action PlaybackDidBegin;
 
-	public GameObject BCThumbScreen;
-	public InputField BCGenerationInput;
+		#endregion
 
-	public Transform floorHeight;
-	public Vector3 dropHeight;
+		[SerializeField] 
+		private TrackedCamera trackedCamera;
 
-	/// <summary>
-	/// The list of best creature brains (as chromosome strings). The index + 1 = generation Number.
-	/// </summary>
-	private List<string> BestCreatures;
-	//private List<float> BestFitness;
-	private List<CreatureStats> BestCreatureStats;
+		public Creature CurrentBest { get; private set; }
 
-	private Creature creature;
-	public Creature Creature {
-		set { creature = value; }
-	}
+		/// <summary>
+		/// The generation of the currently showing best creature.
+		/// </summary>
+		public int CurrentGeneration { get; private set; }
 
-	private Creature currentBest;
-	/// <summary>
-	/// The generation of the currently showing 
-	/// </summary>
-	private int currentGeneration;
-
-	//private bool autoplayEnabled = true;
-	private float autoplayDuration = 10f;
-	private Coroutine autoplayRoutine;
-
-	public GameObject Obstacle {
-		set {
-			this.obstacle = value;
+		public bool AutoplayEnabled { 
+			get { return autoplayEnabled; } 
+			set {
+				autoplayEnabled = value;
+				if (value) {
+					AutoPlay();
+				} else {
+					StopAutoPlay();
+				}
+			}
 		}
-	}
-	private GameObject obstacle;
+		private bool autoplayEnabled;
 
-	private Evolution evolution;
+		public int AutoplayDuration { get; set; }
 
-	// Use this for initialization
-	void Start () {
+		private Coroutine autoplayRoutine;
+		private Coroutine playbackRoutine;
 
-		evolution = GameObject.FindGameObjectWithTag("Evolution").GetComponent<Evolution>();
-		
-		BestCreatures = new List<string>();
-		BestCreatureStats = new List<CreatureStats>();
+		private Evolution evolution;
 
-		autoplayDuration = evolution.Settings.simulationTime;
-		viewController.autoplaySlider.value = autoplayDuration;
+		private UnityEngine.SceneManagement.Scene playbackScene;
+		private PhysicsScene physicsScene;
 
-		BCThumbScreen.gameObject.SetActive(false);
-	}
-	
-	// Update is called once per frame
-	void Update () {
+		void Start () {
 
-	}
+			Physics.autoSimulation = false;
 
-	public void RefreshMuscleContractionVisibility() {
-		if (currentBest != null) 
-			currentBest.RefreshMuscleContractionVisibility(PlayerPrefs.GetInt(PlayerPrefsKeys.SHOW_MUSCLE_CONTRACTION, 0) == 1);
-	}
+			evolution = FindObjectOfType<Evolution>();
 
-	public void ShowBCThumbScreen() {
-		BCThumbScreen.gameObject.SetActive(true);
-	}
+			AutoplayDuration = 10;
+			AutoplayEnabled = true;
 
-	/// <summary>
-	/// Shows the best creatures "scene".
-	/// </summary>
-	public void ShowBestCreatures() {
+			evolution.InitializationDidEnd += delegate () {
+				AutoplayDuration = evolution.Settings.SimulationTime;
+			};
 
-		EvolutionCanvas.gameObject.SetActive(false);
-		BCCanvas.gameObject.SetActive(true);
-
-		MainCamera.SwitchToMiniViewport();
-		BCCamera.SwitchToFullscreen();
-	}
-
-	/// <summary>
-	/// Shows the main evolution / simulation scene.
-	/// </summary>
-	public void ShowEvolution() {
-
-		EvolutionCanvas.gameObject.SetActive(true);
-		BCCanvas.gameObject.SetActive(false);
-
-		MainCamera.SwitchToFullscreen();
-		BCCamera.SwitchToMiniViewport();
-	}
-		
-	public void AddBestCreature(int generation, string chromosome, CreatureStats stats) {
-		
-		if (generation <= 0) throw new UnityException();
-
-		BCThumbScreen.gameObject.SetActive(true);
-
-		BestCreatures.Add(chromosome);
-
-		BestCreatureStats.Add(stats);
-
-		if (currentBest == null) {
-			ShowBestCreature(1);
-		}
-	}
-
-	/// <summary>
-	/// Only call this when loading a saved evolution simulation.
-	/// </summary>
-	public void RunBestCreatures(int generation) {
-
-		currentGeneration = generation;
-
-		ShowBestCreature(generation);
-	} 
-
-	/// <summary>
-	/// This function is called when the user finished selecting a new generation to show. 
-	/// </summary>
-	/// <param name="value">Value.</param>
-	public void GenerationSelected(string value) {
-		
-		int generation;  
-		if (!int.TryParse(value, out generation)) {
-			throw new System.FormatException("The generation number value could not be parsed to an int");
+			evolution.NewGenerationDidBegin += delegate () {
+				if (CurrentBest == null && GenerationHasBeenSimulated(1)) {
+					ShowBestCreature(evolution.SimulationData.BestCreatures.Count);
+				}
+			};
 		}
 
-		GenerationSelected(generation);
-	}
-
-	private void GenerationSelected(int generation) {
-
-		if (generation <= 0) {
-			viewController.UpdateBCGeneration(currentGeneration);
-			return;
-		}
-		
-		// check to see if the selected generation was already simulated. If not, show a message.
-		if (!GenerationSimulated(generation)) {
-
-			viewController.UpdateBCGeneration(currentGeneration);
-			viewController.ShowErrorMessage(string.Format("Generation {0} has not been simulated yet.\n\nCurrently Simulated up to Generation {1}", generation, BestCreatures.Count));
-			return;
-		} 
-
-		viewController.HideErrorMessage();
-
-		ShowBestCreature(generation);
-	}
-
-	private bool GenerationSimulated(int generation) {
-		return BestCreatures.Count >= generation;
-	}
-
-	private void ShowBestCreature(int generation) {
-		
-		var chromosome = BestCreatures[generation - 1];
-		SpawnCreature(chromosome);
-		AutoPlay();
-
-		currentGeneration = generation;
-		viewController.UpdateBCGeneration(generation);
-		viewController.UpdateStats(this.currentBest, BestCreatureStats[generation - 1]);
-	}
-
-	private void SpawnCreature(string chromosome) {
-
-		if (this.creature == null) return;
-
-		if (currentBest != null) {
-			Destroy(currentBest.gameObject);
+		void FixedUpdate() {
+			if (physicsScene != null && physicsScene.IsValid()) {
+				physicsScene.Simulate(Time.fixedDeltaTime);
+			}
 		}
 
-		var creature = evolution.CreateCreature();
-		evolution.ApplyBrain(creature, chromosome);
-	
-		BCCamera.toFollow = creature;
-		currentBest = creature;
-
-		creature.SetOnBestCreatureLayer();
-
-		// THIS IS NEEDED! DO NOT REMOVE! IMPORTANT!
-		creature.Alive = false;
-		creature.gameObject.SetActive(false);
-
-		creature.Alive = true;
-		creature.gameObject.SetActive(true);
-	}
-
-	private Creature CreateCreature(){
-
-		Creature creat = (Creature) ((GameObject) Instantiate(creature.gameObject, dropHeight, Quaternion.identity)).GetComponent<Creature>();
-		creat.RefreshLineRenderers();
-		return creat;
-	}
-
-	public void GoToNextGeneration() {
-		
-		GenerationSelected(currentGeneration + 1);
-	}
-
-	public void GoToPreviousGeneration() {
-		
-		GenerationSelected(currentGeneration - 1);
-	}
-
-	private void AutoPlay() {
-
-		if (!viewController.shouldAutoplay) {
-		
-			StopAutoPlay();
-			return;
+		public void ShowBestCreature(int generation) {
+			
+			if (this.playbackRoutine != null) 
+				StopCoroutine(this.playbackRoutine);
+			this.playbackRoutine = StartCoroutine(StartPlayback(generation));
 		}
 
-		StopAutoPlay();
-		autoplayRoutine = StartCoroutine(ShowNextAfterTime(autoplayDuration));
-	}
+		public IEnumerator StartPlayback(int generation) {
 
-	private IEnumerator ShowNextAfterTime(float time) {
-		yield return new WaitForSeconds(time);
+			var lastSimulatedGeneration = evolution.SimulationData.BestCreatures.Count;
+			if (generation < 1 || generation > lastSimulatedGeneration) {
+				Debug.LogError(string.Format("Attempted to show invalid generation: {0}. Simulated up to {1}", generation, lastSimulatedGeneration));
+				yield break;
+			}
 
-		// Check to see if the next generation has been simulated yet,
-		// otherwise wait for 1 / 3 of time again.
-		while (!GenerationSimulated(currentGeneration + 1)) {
-			yield return new WaitForSeconds(time / 3);
-		}
+			if (this.playbackScene != null && this.playbackScene.IsValid()) {
+				yield return SceneController.UnloadAsync(this.playbackScene);
+			}
 
-		GoToNextGeneration();
-	}
+			this.CurrentGeneration = generation;
 
-	private void StopAutoPlay() {
-		
-		if (autoplayRoutine != null) StopCoroutine(autoplayRoutine);
-	}
+			var sceneLoadConfig = new SceneController.SimulationSceneLoadConfig(
+				this.evolution.SimulationData.CreatureDesign,
+				1,
+				this.evolution.SimulationData.SceneDescription,
+				SceneController.SimulationSceneType.BestCreatures,
+				evolution.GetLegacySimulationOptions()
+			);
+			var context = new SceneController.SimulationSceneLoadContext();
+			var sceneContext = new PlaybackSceneContext(this.evolution.SimulationData, this);
 
-	public void AutoPlaySwitched(bool value) {
+			yield return SceneController.LoadSimulationScene(sceneLoadConfig, context, sceneContext);
+			this.physicsScene = context.PhysicsScene;
+			this.playbackScene = context.Scene;
 
-		//autoplayEnabled = value;
-		if (value) {
+			var chromosome = evolution.SimulationData.BestCreatures[generation - 1].Chromosome;
+			this.CurrentBest = context.Creatures[0];
+			evolution.ApplyBrain(this.CurrentBest, chromosome);
+
+			trackedCamera.Target = this.CurrentBest;
+			
+			this.CurrentBest.SetOnBestCreatureLayer();
+
+			this.CurrentBest.Alive = false;
+			this.CurrentBest.gameObject.SetActive(false);
+
+			this.CurrentBest.Alive = true;
+			this.CurrentBest.gameObject.SetActive(true);
+
 			AutoPlay();
-		} else {
+
+			if (PlaybackDidBegin != null) PlaybackDidBegin();
+		}
+
+		private void AutoPlay() {
+
 			StopAutoPlay();
+			if (this.CurrentBest == null) return;
+			if (!AutoplayEnabled) return;
+
+			autoplayRoutine = StartCoroutine(ShowNextGenerationAfterTime(AutoplayDuration));
 		}
 
-		viewController.ViewAutoPlaySettings(value);
-	}
+		private IEnumerator ShowNextGenerationAfterTime(float time) {
 
-	public void AutoPlayDurationChanged(float value) {
-		autoplayDuration = value;
-		viewController.UpdateAutoPlayDurationLabel(value);
-	}
+			yield return new WaitForSeconds(time);
 
-	public void SetBestChromosomes(List<ChromosomeStats> bestChroms) {
+			// Check to see if the next generation has been simulated yet,
+			// otherwise wait for a shorter period of time again.
+			while (!GenerationHasBeenSimulated(CurrentGeneration + 1)) {
+				// yield return new WaitForSeconds(time / 3);
+				yield return new WaitForSeconds(time / 30.0f);
+			}
 
-		BestCreatures.Clear();
-		BestCreatureStats.Clear();
-
-		foreach (var chromosomeInfo in bestChroms) {
-
-			BestCreatures.Add(chromosomeInfo.chromosome);
-			BestCreatureStats.Add(chromosomeInfo.stats);
-		}
-	}
-
-	public List<ChromosomeStats> GetBestChromosomes() {
-
-		var bestChroms = new List<ChromosomeStats>();
-
-		for (int i = 0; i < BestCreatures.Count; i++) {
-			bestChroms.Add(new ChromosomeStats(BestCreatures[i], BestCreatureStats[i]));
+			ShowBestCreature(CurrentGeneration + 1);
 		}
 
-		return bestChroms;
+		private void StopAutoPlay() {
+
+			if (autoplayRoutine != null) StopCoroutine(autoplayRoutine);
+		}
+
+		private bool GenerationHasBeenSimulated(int generation) {
+
+			return generation > 0 && generation <= evolution.SimulationData.BestCreatures.Count;
+		}
+
+		public void RefreshMuscleContractionVisibility(bool visible) {
+			if (CurrentBest != null) 
+				CurrentBest.RefreshMuscleContractionVisibility(visible);
+		}
 	}
 }

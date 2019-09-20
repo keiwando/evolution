@@ -31,13 +31,23 @@ public class RaycastHover : MonoBehaviour {
 		
 		} else if (hoverColliders.Count > 0) {
 			// Nothing hovered over -> exit on all
-			foreach (var collider in hoverColliders) {
-				SendOnHoverExit(collider);
-			}
-
-			hoverColliders.Clear();
+			ExitAll();
 		}
+
+		#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
+		if (hoverColliders.Count > 0 && Input.touchCount == 0) {
+			ExitAll();	
+		}
+		#endif
 	}
+
+	private void ExitAll() {
+		foreach (var collider in hoverColliders) {
+			SendOnHoverExit(collider);
+		}
+
+		hoverColliders.Clear();
+	} 
 
 	private void SendOnHover(Collider collider) {
 

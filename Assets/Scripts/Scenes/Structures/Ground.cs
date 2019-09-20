@@ -1,0 +1,34 @@
+using Keiwando.JSON;
+
+using UnityEngine;
+
+namespace Keiwando.Evolution.Scenes {
+
+    public class Ground: BaseStructure {
+
+        public const string ENCODING_ID = "evolution::structure::ground";
+
+        public Ground(Transform transform): base(transform) {}
+
+        public override string GetEncodingKey() {
+            return ENCODING_ID;
+        }
+
+        public static Ground Decode(JObject json) {
+            var transform = BaseStructure.DecodeTransform(json);
+            return new Ground(transform);
+        }
+
+        public override IStructureBuilder GetBuilder() {
+            return new GroundBuilder(this);
+        }
+
+        public class GroundBuilder: BaseStructureBuilder<Ground> {
+
+            protected override string prefabPath => "Prefabs/Structures/Ground";
+            protected override CollisionLayer collisionLayer => CollisionLayer.StaticForeground;
+
+            public GroundBuilder(Ground ground): base(ground) {}
+        }
+    }
+}
