@@ -229,7 +229,9 @@ namespace Keiwando.JSON {
             string numberAsString = encoded.SubSubstring(numberStart, i - numberStart).ToString();
             if (fractionDigitRead || exponentDigitRead) {
                 float result;
-                if (!float.TryParse(numberAsString, out result)) {
+                var style = System.Globalization.NumberStyles.Float;
+                var culture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+                if (!float.TryParse(numberAsString, style, culture, out result)) {
                     throw new System.ArgumentException("Unable to parse number from JSON: " + encoded.ToString());
                 }
                 token = new JNumber(result);

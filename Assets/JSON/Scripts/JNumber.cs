@@ -1,4 +1,5 @@
 using System.Text;
+using System.Globalization;
 
 namespace Keiwando.JSON {
 
@@ -45,7 +46,7 @@ namespace Keiwando.JSON {
             }
 
             if (this.type == Type.Float)
-                builder.Append(valueF.ToString("G9"));
+                builder.Append(valueF.ToString("G9", CultureInfo.CreateSpecificCulture("en-US")));
             else 
                 builder.Append(valueI);
         }

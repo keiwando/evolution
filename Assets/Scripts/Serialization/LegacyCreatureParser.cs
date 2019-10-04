@@ -51,9 +51,9 @@ public static class LegacyCreatureParser {
 
 		var parts = encoded.Split('%');
 		// Format: ID - pos.x - pos.y - pos.z
-		var x = float.Parse(parts[1]);
-		var y = float.Parse(parts[2]);
-		var z = float.Parse(parts[3]);
+		var x = ParseFloat(parts[1]);
+		var y = ParseFloat(parts[2]);
+		var z = ParseFloat(parts[3]);
 
 		var id = int.Parse(parts[0]);
 
@@ -80,5 +80,19 @@ public static class LegacyCreatureParser {
 		var endID = int.Parse(parts[2]);
 
 		return new MuscleData(muscleID, startID, endID, Muscle.Defaults.MaxForce, true);
+	}
+
+	private static float ParseFloat(string encoded) {
+
+		var culture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+		var style = System.Globalization.NumberStyles.Float;
+
+		var result = 0f;
+		try {
+			result = float.Parse(encoded, style, culture);
+		} catch {
+			float.TryParse(encoded, out result);
+		}
+		return result;
 	}
 }
