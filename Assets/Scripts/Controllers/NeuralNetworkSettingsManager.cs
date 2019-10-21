@@ -148,7 +148,7 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 	}
 
 	private void SaveNewSettings(NeuralNetworkSettings settings) {
-		Settings.NetworkSettings = settings.Encode().ToString(Formatting.None);;
+		EditorStateManager.NetworkSettings = settings;
 	}
 
 	public void Reset() {
@@ -160,7 +160,7 @@ public class NeuralNetworkSettingsManager : MonoBehaviour {
 
 	public static NeuralNetworkSettings GetNetworkSettings() {
 
-		return NeuralNetworkSettings.Decode(Settings.NetworkSettings);
+		return EditorStateManager.NetworkSettings;
 	}
 
 }
