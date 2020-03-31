@@ -137,10 +137,12 @@ public class CreatureEditor: MonoBehaviour,
     }
 
     public void Undo() {
+        creatureBuilder.CancelTemporaryBodyParts();
         historyManager.Undo();
     }
 
     public void Redo() {
+        creatureBuilder.CancelTemporaryBodyParts();
         historyManager.Redo();
     }
     
@@ -371,6 +373,10 @@ public class CreatureEditor: MonoBehaviour,
 
             viewController.Refresh();
         }
+
+        if (InputUtils.MouseNotDown()) {
+            creatureBuilder.CancelTemporaryBodyParts();
+        }
     }
 
     
@@ -426,18 +432,19 @@ public class CreatureEditor: MonoBehaviour,
             
             // Cmd + Z = Undo
             if (input.GetKeyDown(KeyCode.Z)) {
-                historyManager.Undo();
+                Undo();
+                
             } 
 
             // Cmd + Shift + Z = Redo
             else if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && 
                     input.GetKeyDown(KeyCode.Z)) {
-                historyManager.Redo();
+                Redo();
             }
             
             // Cmd + Y = Redo
             else if (input.GetKeyDown(KeyCode.Y)) {
-                historyManager.Redo();
+                Redo();
             }
         }
 

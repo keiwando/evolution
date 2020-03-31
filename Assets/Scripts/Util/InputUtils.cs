@@ -47,7 +47,8 @@ public static class InputUtils {
 		var allTouches = touches.Values;
 		_keysToDelete.Clear();
 		foreach (var touchInfo in allTouches) {
-			if (touchInfo.touch.phase == TouchPhase.Ended) {
+			if (touchInfo.touch.phase == TouchPhase.Ended ||
+					touchInfo.touch.phase == TouchPhase.Canceled) {
 				_keysToDelete.Add(touchInfo.touch.fingerId);
 			}
 		}
@@ -86,7 +87,10 @@ public static class InputUtils {
 	/// </summary>
 	public static bool MouseUp() {
 		return Input.GetMouseButtonUp(0) || 
-			   (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended);
+			   (Input.touchCount > 0 && 
+				 		(Input.GetTouch(0).phase == TouchPhase.Ended || 
+				  	 Input.GetTouch(0).phase == TouchPhase.Canceled)
+				 );
 	}
 
 	/// <summary>
@@ -95,7 +99,18 @@ public static class InputUtils {
 	/// </summary>
 	public static bool MouseHeld() {
 		return Input.GetMouseButton(0) ||
-			   (Input.touchCount > 0 && (Input.GetTouch(0).phase != TouchPhase.Ended 
-			   && Input.GetTouch(0).phase != TouchPhase.Ended));
+			   (Input.touchCount > 0 && 
+				 		(Input.GetTouch(0).phase != TouchPhase.Ended && 
+						 Input.GetTouch(0).phase != TouchPhase.Canceled)
+				 );
+	}
+
+	/// <summary>
+	/// Returns true if neither the left mouse button is pressed, nor any touched are
+	/// registered.
+	/// </summary>
+	/// <returns></returns>
+	public static bool MouseNotDown() {
+		return !Input.GetMouseButton(0) && Input.touchCount == 0;
 	}
 }

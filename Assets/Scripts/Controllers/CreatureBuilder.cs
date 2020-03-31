@@ -324,6 +324,14 @@ namespace Keiwando.Evolution {
 			}
 		}
 
+		public void CancelCurrentMuscle() {
+
+			if (currentMuscle == null) return;
+
+			UnityEngine.Object.Destroy(currentMuscle.gameObject);
+			currentMuscle = null;
+		}
+
 		private void CreateMuscleFromData(MuscleData data) {
 			// Find the connecting joints
 			var startingBone = FindBoneWithId(data.startBoneID);
@@ -507,6 +515,14 @@ namespace Keiwando.Evolution {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Cancels any temporary body part that has not been placed yet.
+		/// </summary>
+		public void CancelTemporaryBodyParts() {
+			CancelCurrentBone();
+			CancelCurrentMuscle();
+		}
 	}
 
 }
