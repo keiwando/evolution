@@ -6,7 +6,12 @@ using Keiwando.JSON;
 public class CreatureStats {
 
 	/// <summary>
-	/// The fitness this creature reached when during the simulation.
+	/// The unclamped fitness score of this creature as was assigned by the objective tracker.
+	/// </summary>
+	public float unclampedFitness = 0f;
+
+	/// <summary>
+	/// `unclampedFitness` clamped to the range [0-1].
 	/// </summary>
 	public float fitness = 0f;
 
@@ -44,6 +49,7 @@ public class CreatureStats {
 	#region Encode & Decode
 
 	private static class CodingKey {
+		public const string UnclampedFitness = "unclampedFitness";
 		public const string Fitness = "fitness";
 		public const string SimulationTime = "simulationTime";
 		public const string HorizontalDistance = "horizontalDistanceTravelled";
@@ -58,6 +64,7 @@ public class CreatureStats {
 	public JObject Encode() {
 
 		JObject json = new JObject();
+		json[CodingKey.UnclampedFitness] = this.unclampedFitness;
 		json[CodingKey.Fitness] = this.fitness;
 		json[CodingKey.SimulationTime] = this.simulationTime;
 		json[CodingKey.HorizontalDistance] = this.horizontalDistanceTravelled;
@@ -80,7 +87,7 @@ public class CreatureStats {
 
 	public static CreatureStats Decode(JObject json) {
 		
-		return new CreatureStats() {
+		var result = new CreatureStats() {
 			fitness = json[CodingKey.Fitness].ToFloat(),
 			simulationTime = json[CodingKey.SimulationTime].ToInt(),
 			horizontalDistanceTravelled = json[CodingKey.HorizontalDistance].ToFloat(),
@@ -91,6 +98,12 @@ public class CreatureStats {
 			numberOfMuscles = json[CodingKey.NumberOfMuscles].ToInt(),
 			averageSpeed = json[CodingKey.AverageSpeed].ToFloat()
 		};
+		if (json.ContainsKey(CodingKey.UnclampedFitness)) {
+			result.unclampedFitness = json[CodingKey.UnclampedFitness].ToFloat();
+		} else {
+			result.unclampedFitness = result.fitness;
+		}
+		return result;
 	}
 
 	public static CreatureStats DecodeV1(string encoded) {
@@ -99,6 +112,7 @@ public class CreatureStats {
 		var parts = encoded.Split('#');
 
 		stats.fitness = float.Parse(parts[1]);
+		stats.unclampedFitness = stats.fitness;
 		stats.simulationTime = int.Parse(parts[2]);
 		stats.horizontalDistanceTravelled = float.Parse(parts[3]);
 		stats.verticalDistanceTravelled = float.Parse(parts[4]);

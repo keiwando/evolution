@@ -415,7 +415,8 @@ namespace Keiwando.Evolution {
 			var objectiveTracker = GetComponent<ObjectiveTracker>();
 			var fitness = objectiveTracker.EvaluateFitness(simulationTime);
 
-			stats.fitness = fitness;
+			stats.unclampedFitness = fitness;
+			stats.fitness = Mathf.Clamp(fitness, 0f, 1f);
 			stats.horizontalDistanceTravelled = GetXPosition();
 			stats.verticalDistanceTravelled = GetYPosition();
 			stats.averageSpeed = Mathf.Sqrt(Mathf.Pow(stats.horizontalDistanceTravelled / simulationTime, 2) + Mathf.Pow(stats.verticalDistanceTravelled / simulationTime, 2));

@@ -13,7 +13,7 @@ namespace Keiwando.Evolution {
 	    private const int MAX_DISTANCE = 55;
 
         public override float EvaluateFitness(float simulationTime) {
-            return Mathf.Clamp((creature.GetXPosition() - creature.InitialPosition.x) / (MAX_DISTANCE * simulationTime), 0f, 1f);
+            return (creature.GetXPosition() - creature.InitialPosition.x) / (MAX_DISTANCE * simulationTime);
         }
     }
 } 

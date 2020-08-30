@@ -254,7 +254,7 @@ namespace Keiwando.Evolution {
 		}
 
 		private static void SortGenerationByFitness(Solution[] generation) {
-			Array.Sort(generation, delegate(Solution lhs, Solution rhs) { return rhs.Stats.fitness.CompareTo(lhs.Stats.fitness); } );
+			Array.Sort(generation, delegate(Solution lhs, Solution rhs) { return rhs.Stats.unclampedFitness.CompareTo(lhs.Stats.unclampedFitness); } );
 		}
 
 		private float[][] CreateNewChromosomes(int nextGenerationSize, Solution[] solutions, bool keepBest) {

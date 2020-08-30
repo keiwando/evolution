@@ -25,9 +25,9 @@ namespace Keiwando.Evolution {
         }
 
         public override float EvaluateFitness(float simulationTime) {
-            return Mathf.Clamp(maxWeightedAverageHeight / MAX_HEIGHT, 0f, 1f);
+            return maxWeightedAverageHeight / MAX_HEIGHT;
         }
 
 
     }
-} 
+}
