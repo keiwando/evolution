@@ -4,7 +4,8 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -14,7 +15,115 @@ MonoBehaviour:
   hashCode: 1216831892
   material: {fileID: 21317628850481550}
   materialHashCode: 0
+  m_Version: 1.1.0
   spriteSheet: {fileID: 2800000, guid: 15c4df48092dd4ddc82d257e3cee977a, type: 3}
+  m_SpriteCharacterTable:
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 0
+    m_Scale: 1
+    m_Name: help_sprites_joint
+    m_HashCode: -1283807299
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 1
+    m_Scale: 1
+    m_Name: help_sprites_bone
+    m_HashCode: 91517581
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 2
+    m_Scale: 1
+    m_Name: help_sprites_muscle
+    m_HashCode: 703307786
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 3
+    m_Scale: 1
+    m_Name: help_sprites_brain
+    m_HashCode: -1274199491
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 4
+    m_Scale: 1
+    m_Name: help_sprites_creature
+    m_HashCode: -710355192
+  m_SpriteGlyphTable:
+  - m_Index: 0
+    m_Metrics:
+      m_Width: 71
+      m_Height: 71
+      m_HorizontalBearingX: -35.5
+      m_HorizontalBearingY: 55.2
+      m_HorizontalAdvance: 71
+    m_GlyphRect:
+      m_X: 339
+      m_Y: 863
+      m_Width: 71
+      m_Height: 71
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: 21300002, guid: 15c4df48092dd4ddc82d257e3cee977a, type: 3}
+  - m_Index: 1
+    m_Metrics:
+      m_Width: 364
+      m_Height: 70
+      m_HorizontalBearingX: -182
+      m_HorizontalBearingY: 44.46
+      m_HorizontalAdvance: 364
+    m_GlyphRect:
+      m_X: 500
+      m_Y: 859
+      m_Width: 364
+      m_Height: 70
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: 21300004, guid: 15c4df48092dd4ddc82d257e3cee977a, type: 3}
+  - m_Index: 2
+    m_Metrics:
+      m_Width: 239
+      m_Height: 213
+      m_HorizontalBearingX: -119.5
+      m_HorizontalBearingY: 144.5
+      m_HorizontalAdvance: 239
+    m_GlyphRect:
+      m_X: 29
+      m_Y: 792
+      m_Width: 239
+      m_Height: 213
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: 21300000, guid: 15c4df48092dd4ddc82d257e3cee977a, type: 3}
+  - m_Index: 3
+    m_Metrics:
+      m_Width: 373
+      m_Height: 300
+      m_HorizontalBearingX: -186.5
+      m_HorizontalBearingY: 171.4
+      m_HorizontalAdvance: 373
+    m_GlyphRect:
+      m_X: 591
+      m_Y: 392
+      m_Width: 373
+      m_Height: 300
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: 21300008, guid: 15c4df48092dd4ddc82d257e3cee977a, type: 3}
+  - m_Index: 4
+    m_Metrics:
+      m_Width: 466
+      m_Height: 395
+      m_HorizontalBearingX: -233
+      m_HorizontalBearingY: 197.5
+      m_HorizontalAdvance: 466
+    m_GlyphRect:
+      m_X: 66
+      m_Y: 300
+      m_Width: 466
+      m_Height: 395
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: 21300006, guid: 15c4df48092dd4ddc82d257e3cee977a, type: 3}
   spriteInfoList:
   - id: 0
     x: 339
@@ -92,7 +201,8 @@ Material:
   serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: TextMeshPro/Sprite
   m_Shader: {fileID: 4800000, guid: cf81c85f95fe47e1a27f6ae460cf182c, type: 3}
   m_ShaderKeywords: 
