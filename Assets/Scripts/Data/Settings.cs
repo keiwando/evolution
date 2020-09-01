@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Settings {
 
@@ -24,110 +25,109 @@ public class Settings {
 	private const string LAST_CREATURE_DESIGN_KEY = "LAST_CREATURE_DESIGN_KEY";
 
 	public static bool DidMigrateCreatureSaves {
-		get { return GetBool(DID_MIGRATE_CREATURE_SAVES_KEY, false); }
-		set { SetBool(DID_MIGRATE_CREATURE_SAVES_KEY, value); }
+		get { return Store.GetBool(DID_MIGRATE_CREATURE_SAVES_KEY, false); }
+		set { Store.SetBool(DID_MIGRATE_CREATURE_SAVES_KEY, value); }
 	}
 
 	public static bool DidMigrateSimulationSaves {
-		get { return GetBool(DID_MIGRATE_SIMULATION_SAVES_KEY, false); }
-		set { SetBool(DID_MIGRATE_SIMULATION_SAVES_KEY, value); }
+		get { return Store.GetBool(DID_MIGRATE_SIMULATION_SAVES_KEY, false); }
+		set { Store.SetBool(DID_MIGRATE_SIMULATION_SAVES_KEY, value); }
 	}
 
 	public static bool ShowMuscleContraction {
-		get { return GetBool(SHOW_MUSCLE_CONTRACTION_KEY, false); }
-		set { SetBool(SHOW_MUSCLE_CONTRACTION_KEY, value); }
+		get { return Store.GetBool(SHOW_MUSCLE_CONTRACTION_KEY, false); }
+		set { Store.SetBool(SHOW_MUSCLE_CONTRACTION_KEY, value); }
 	}
 
 	public static bool ShowMuscles {
-		get { return GetBool(SHOW_MUSCLES_KEY, true); }
-		set { SetBool(SHOW_MUSCLES_KEY, value); }
+		get { return Store.GetBool(SHOW_MUSCLES_KEY, true); }
+		set { Store.SetBool(SHOW_MUSCLES_KEY, value); }
 	}
 
 	public static bool ShowOneAtATime {
-		get { return GetBool(SHOW_ONE_AT_ATIME_KEY, false); }
-		set { SetBool(SHOW_ONE_AT_ATIME_KEY, value); }
+		get { return Store.GetBool(SHOW_ONE_AT_ATIME_KEY, false); }
+		set { Store.SetBool(SHOW_ONE_AT_ATIME_KEY, value); }
 	}
 
 	public static float HiddenCreatureOpacity {
-		get { return PlayerPrefs.GetFloat(HIDDEN_CREATURE_OPACITY_KEY, 0.225f); }
-		set { PlayerPrefs.SetFloat(HIDDEN_CREATURE_OPACITY_KEY, value); Save(); }
+		get { return Store.GetFloat(HIDDEN_CREATURE_OPACITY_KEY, 0.225f); }
+		set { Store.SetFloat(HIDDEN_CREATURE_OPACITY_KEY, value); }
 	}
 
 	public static bool DontShowV2SimulationDeprecationOverlayAgain {
-		get { return GetBool(DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY, false); }
-		set { SetBool(DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY, value); }
+		get { return Store.GetBool(DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY, false); }
+		set { Store.SetBool(DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY, value); }
 	}
 
 	public static bool DontShowExitConfirmationOverlayAgain {
-		get { return GetBool(DONT_SHOW_EXIT_CONFIRMATION_OVERLAY_AGAIN_KEY, false); }
-		set { SetBool(DONT_SHOW_EXIT_CONFIRMATION_OVERLAY_AGAIN_KEY, value); }
+		get { return Store.GetBool(DONT_SHOW_EXIT_CONFIRMATION_OVERLAY_AGAIN_KEY, false); }
+		set { Store.SetBool(DONT_SHOW_EXIT_CONFIRMATION_OVERLAY_AGAIN_KEY, value); }
 	}
 
 	public static float GridSize {
-		get { return PlayerPrefs.GetFloat(GRID_SIZE_KEY, 1.0f); }
-		set { PlayerPrefs.SetFloat(GRID_SIZE_KEY, value); Save(); }
+		get { return Store.GetFloat(GRID_SIZE_KEY, 1.0f); }
+		set { Store.SetFloat(GRID_SIZE_KEY, value); }
 	}
 
 	public static bool GridEnabled {
-		get { return GetBool(GRID_ENABLED_KEY, false); }
-		set { SetBool(GRID_ENABLED_KEY, value); }
+		get { return Store.GetBool(GRID_ENABLED_KEY, false); }
+		set { Store.SetBool(GRID_ENABLED_KEY, value); }
 	}
 
 	public static bool AutoSaveEnabled {
-		get { return GetBool(AUTO_SAVE_ENABLED_KEY, false); }
-		set { SetBool(AUTO_SAVE_ENABLED_KEY, value); }
+		get { return Store.GetBool(AUTO_SAVE_ENABLED_KEY, false); }
+		set { Store.SetBool(AUTO_SAVE_ENABLED_KEY, value); }
 	}
 
 	public static int AutoSaveDistance {
-		get { return PlayerPrefs.GetInt(AUTO_SAVE_DISTANCE_KEY, 5); }
-		set { PlayerPrefs.SetInt(AUTO_SAVE_DISTANCE_KEY, value); Save(); }
+		get { return Store.GetInt(AUTO_SAVE_DISTANCE_KEY, 5); }
+		set { Store.SetInt(AUTO_SAVE_DISTANCE_KEY, value); }
 	}
 
 	public static string HelpScreenLanguage {
-		get { return PlayerPrefs.GetString(HELP_SCREEN_LANGUAGE_KEY, "LANGUAGE_ENGLISH"); }
-		set { PlayerPrefs.SetString(HELP_SCREEN_LANGUAGE_KEY, value); Save(); }
+		get { return Store.GetString(HELP_SCREEN_LANGUAGE_KEY, "LANGUAGE_ENGLISH"); }
+		set { Store.SetString(HELP_SCREEN_LANGUAGE_KEY, value); }
 	}
 
 	public static string Language {
-		get { return PlayerPrefs.GetString(LANGUAGE_KEY, "en"); }
-		set { PlayerPrefs.SetString(LANGUAGE_KEY, value); Save(); }
+		get { return Store.GetString(LANGUAGE_KEY, "en"); }
+		set { Store.SetString(LANGUAGE_KEY, value); }
 	}
 
 	public static bool HelpIndicatorShown {
-		get { return GetBool(HELP_INDICATOR_SHOWN_KEY, true); }
-		set { SetBool(HELP_INDICATOR_SHOWN_KEY, value); }
+		get { return Store.GetBool(HELP_INDICATOR_SHOWN_KEY, true); }
+		set { Store.SetBool(HELP_INDICATOR_SHOWN_KEY, value); }
 	}
 
 	public static string CreatureNames {
-		get { return PlayerPrefs.GetString(CREATURE_NAMES_KEY, ""); }
-		set { PlayerPrefs.SetString(CREATURE_NAMES_KEY, value); Save(); }
+		get { return Store.GetString(CREATURE_NAMES_KEY, ""); }
+		set { Store.SetString(CREATURE_NAMES_KEY, value); }
 	}
 
 	public static string SimulationSettings {
-		get { return PlayerPrefs.GetString(SIMULATION_SETTINGS_KEY, ""); }
-		set { PlayerPrefs.SetString(SIMULATION_SETTINGS_KEY, value); Save(); }
+		get { return Store.GetString(SIMULATION_SETTINGS_KEY, ""); }
+		set { Store.SetString(SIMULATION_SETTINGS_KEY, value); }
 	}
 
 	public static string NetworkSettings {
-		get { return PlayerPrefs.GetString(NETWORK_SETTINGS_KEY, ""); }
-		set { PlayerPrefs.SetString(NETWORK_SETTINGS_KEY, value); Save(); }
+		get { return Store.GetString(NETWORK_SETTINGS_KEY, ""); }
+		set { Store.SetString(NETWORK_SETTINGS_KEY, value); }
 	}
 
 	public static string EditorSettings {
-		get { return PlayerPrefs.GetString(EDITOR_SETTINGS_KEY, ""); }
-		set { PlayerPrefs.SetString(EDITOR_SETTINGS_KEY, value); Save(); }
+		get { return Store.GetString(EDITOR_SETTINGS_KEY, ""); }
+		set { Store.SetString(EDITOR_SETTINGS_KEY, value); }
 	}
 
 	public static string LastCreatureDesign {
-		get { return PlayerPrefs.GetString(LAST_CREATURE_DESIGN_KEY, ""); }
-		set { PlayerPrefs.SetString(LAST_CREATURE_DESIGN_KEY, value); Save(); }
+		get { return Store.GetString(LAST_CREATURE_DESIGN_KEY, ""); }
+		set { Store.SetString(LAST_CREATURE_DESIGN_KEY, value); }
 	}
 
 	static Settings() {
-		if (GetBool("ALREADY_INITIALIZED_e31cf645-7751-4a7b-ae0d-2ca38f6063b8")) { return; }
+		if (Store.GetBool("ALREADY_INITIALIZED_e31cf645-7751-4a7b-ae0d-2ca38f6063b8")) { return; }
 		Initialize();
-		SetBool("ALREADY_INITIALIZED_e31cf645-7751-4a7b-ae0d-2ca38f6063b8", true);
-		Save();
+		Store.SetBool("ALREADY_INITIALIZED_e31cf645-7751-4a7b-ae0d-2ca38f6063b8", true);
 	}
 
 	private static void Initialize() {
@@ -147,21 +147,119 @@ public class Settings {
 		Language = "en";
 	}
 
-	private static bool GetBool(string key, bool defaultValue = false) {
-		return PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) == 1;
-	}
-
-	private static void SetBool(string key, bool b) {
-		PlayerPrefs.SetInt(key, b ? 1 : 0);
-		PlayerPrefs.Save();
-	}
-	
-	public static void Save() {
-		PlayerPrefs.Save();
-	}
-	
-	public static void Reset() {
-		PlayerPrefs.DeleteAll();
+ public static void Reset() {
+		Store.DeleteAll();
 		Initialize();
 	}
+
+	public static ISettingsStore Store = new PlayerPrefsSettingsStore();
+	
+	public interface ISettingsStore {
+		void SetBool(string key, bool b);
+		void SetString(string key, string value);
+		void SetInt(string key, int value);
+		void SetFloat(string key, float value);
+
+		bool GetBool(string key, bool defaultValue = false);
+		string GetString(string key, string defaultValue = "");
+		int GetInt(string key, int defaultValue = 0);
+		float GetFloat(string key, float defaultValue = 0f);
+
+		void DeleteAll();
+	}
+
+	public class PlayerPrefsSettingsStore : ISettingsStore {
+
+		public void SetBool(string key, bool b) {
+			PlayerPrefs.SetInt(key, b ? 1 : 0);
+			PlayerPrefs.Save();
+		}
+
+		public void SetString(string key, string value) {
+			PlayerPrefs.SetString(key, value);
+			PlayerPrefs.Save();
+		}
+
+		public void SetInt(string key, int value) {
+			PlayerPrefs.SetInt(key, value);
+			PlayerPrefs.Save();
+		}
+
+		public void SetFloat(string key, float value) {
+			PlayerPrefs.SetFloat(key, value);
+			PlayerPrefs.Save();
+		}
+
+		public bool GetBool(string key, bool defaultValue = false) {
+			return PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) == 1;
+		}
+
+		public string GetString(string key, string defaultValue = "") {
+			return PlayerPrefs.GetString(key, defaultValue);
+		}
+
+		public int GetInt(string key, int defaultValue = 0) {
+			return PlayerPrefs.GetInt(key, defaultValue);
+		}
+
+		public float GetFloat(string key, float defaultValue = 0f) {
+			return PlayerPrefs.GetFloat(key, defaultValue);
+		}
+
+		public void DeleteAll() {
+			PlayerPrefs.DeleteAll();
+		}
+	}
+
+	public class DictionaryStore : ISettingsStore {
+
+		private Dictionary<string, bool> bools = new Dictionary<string, bool>();
+		private Dictionary<string, string> strings = new Dictionary<string, string>();
+		private Dictionary<string, int> ints = new Dictionary<string, int>();
+		private Dictionary<string, float> floats = new Dictionary<string, float>();
+
+		public void SetBool(string key, bool b) {
+			bools[key] = b;
+		}
+
+		public void SetString(string key, string value) {
+			strings[key] = value;
+		}
+
+		public void SetInt(string key, int value) {
+			ints[key] = value;
+		}
+
+		public void SetFloat(string key, float value) {
+			floats[key] = value;
+		}
+
+		public bool GetBool(string key, bool defaultValue = false) {
+			bool value;
+			return bools.TryGetValue(key, out value) ? value : defaultValue;
+		}
+
+		public string GetString(string key, string defaultValue = "") {
+			string value;
+			return strings.TryGetValue(key, out value) ? value : defaultValue;
+		}
+
+		public int GetInt(string key, int defaultValue = 0) {
+			int value;
+			return ints.TryGetValue(key, out value) ? value : defaultValue;
+		}
+
+		public float GetFloat(string key, float defaultValue = 0f) {
+			float value;
+			return floats.TryGetValue(key, out value) ? value : defaultValue;
+		}
+
+		public void DeleteAll() {
+			bools.Clear();
+			strings.Clear();
+			ints.Clear();
+			floats.Clear();
+		}
+	}
+	
 }

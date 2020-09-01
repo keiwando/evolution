@@ -6,7 +6,7 @@ using Keiwando.Evolution.Scenes;
 
 namespace Keiwando.Evolution {
 
-    class SceneController {
+    public class SceneController {
 
         public enum Scene {
             Editor,

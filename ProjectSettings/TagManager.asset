@@ -10,6 +10,7 @@ TagManager:
   - SettingsCanvas
   - Evolution
   - SimulationConfig
+  - Editor
   layers:
   - Default
   - TransparentFX

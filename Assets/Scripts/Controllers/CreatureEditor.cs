@@ -174,12 +174,14 @@ public class CreatureEditor: MonoBehaviour,
         StartSimulation(simulationData);
     }
 
-    public void StartSimulation(SimulationData simulationData) {
+    public void StartSimulation(SimulationData simulationData, SimulationOptions options = new SimulationOptions()) {
         
         var containerObject = new GameObject("SimulationConfig");
         containerObject.tag = "SimulationConfig";
         var configContainer = containerObject.AddComponent<SimulationConfigContainer>();
-        configContainer.SimulationData = simulationData;
+        configContainer.Config = new SimulationConfig();
+        configContainer.Config.SimulationData = simulationData;
+        configContainer.Config.Options = options;
         DontDestroyOnLoad(containerObject);
 
         InputRegistry.shared.Deregister(this);

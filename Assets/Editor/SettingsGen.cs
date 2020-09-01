@@ -28,24 +28,122 @@ public class SettingsGen {
 
 	private static readonly Regex UPPERCACSE_PATTERN = new Regex("[A-Z]+|[0-9]+");
 
-	private const string IMPORTS = "using UnityEngine;";
-	private const string HELPERS = @"	private static bool GetBool(string key, bool defaultValue = false) {
-		return PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) == 1;
+	private const string IMPORTS = "using UnityEngine;\nusing System.Collections.Generic;";
+	private const string HELPERS = @" public static void Reset() {
+		Store.DeleteAll();
+		Initialize();
 	}
 
-	private static void SetBool(string key, bool b) {
-		PlayerPrefs.SetInt(key, b ? 1 : 0);
-		PlayerPrefs.Save();
-	}
+	public static ISettingsStore Store = new PlayerPrefsSettingsStore();
 	
-	public static void Save() {
-		PlayerPrefs.Save();
+	public interface ISettingsStore {
+		void SetBool(string key, bool b);
+		void SetString(string key, string value);
+		void SetInt(string key, int value);
+		void SetFloat(string key, float value);
+
+		bool GetBool(string key, bool defaultValue = false);
+		string GetString(string key, string defaultValue = """");
+		int GetInt(string key, int defaultValue = 0);
+		float GetFloat(string key, float defaultValue = 0f);
+
+		void DeleteAll();
 	}
-	
-	public static void Reset() {
-		PlayerPrefs.DeleteAll();
-		Initialize();
-	}";
+
+	public class PlayerPrefsSettingsStore : ISettingsStore {
+
+		public void SetBool(string key, bool b) {
+			PlayerPrefs.SetInt(key, b ? 1 : 0);
+			PlayerPrefs.Save();
+		}
+
+		public void SetString(string key, string value) {
+			PlayerPrefs.SetString(key, value);
+			PlayerPrefs.Save();
+		}
+
+		public void SetInt(string key, int value) {
+			PlayerPrefs.SetInt(key, value);
+			PlayerPrefs.Save();
+		}
+
+		public void SetFloat(string key, float value) {
+			PlayerPrefs.SetFloat(key, value);
+			PlayerPrefs.Save();
+		}
+
+		public bool GetBool(string key, bool defaultValue = false) {
+			return PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) == 1;
+		}
+
+		public string GetString(string key, string defaultValue = """") {
+			return PlayerPrefs.GetString(key, defaultValue);
+		}
+
+		public int GetInt(string key, int defaultValue = 0) {
+			return PlayerPrefs.GetInt(key, defaultValue);
+		}
+
+		public float GetFloat(string key, float defaultValue = 0f) {
+			return PlayerPrefs.GetFloat(key, defaultValue);
+		}
+
+		public void DeleteAll() {
+			PlayerPrefs.DeleteAll();
+		}
+	}
+
+	public class DictionaryStore : ISettingsStore {
+
+		private Dictionary<string, bool> bools = new Dictionary<string, bool>();
+		private Dictionary<string, string> strings = new Dictionary<string, string>();
+		private Dictionary<string, int> ints = new Dictionary<string, int>();
+		private Dictionary<string, float> floats = new Dictionary<string, float>();
+
+		public void SetBool(string key, bool b) {
+			bools[key] = b;
+		}
+
+		public void SetString(string key, string value) {
+			strings[key] = value;
+		}
+
+		public void SetInt(string key, int value) {
+			ints[key] = value;
+		}
+
+		public void SetFloat(string key, float value) {
+			floats[key] = value;
+		}
+
+		public bool GetBool(string key, bool defaultValue = false) {
+			bool value;
+			return bools.TryGetValue(key, out value) ? value : defaultValue;
+		}
+
+		public string GetString(string key, string defaultValue = """") {
+			string value;
+			return strings.TryGetValue(key, out value) ? value : defaultValue;
+		}
+
+		public int GetInt(string key, int defaultValue = 0) {
+			int value;
+			return ints.TryGetValue(key, out value) ? value : defaultValue;
+		}
+
+		public float GetFloat(string key, float defaultValue = 0f) {
+			float value;
+			return floats.TryGetValue(key, out value) ? value : defaultValue;
+		}
+
+		public void DeleteAll() {
+			bools.Clear();
+			strings.Clear();
+			ints.Clear();
+			floats.Clear();
+		}
+	}
+	";
 
 	[MenuItem("Tools/SettingsGen/Generate")]
 	public static void Generate() {
@@ -116,10 +214,9 @@ public class SettingsGen {
 		var firstTimeKey = string.Format("ALREADY_INITIALIZED_{0}", uuid);
 		var builder = new StringBuilder();
 		builder.AppendFormat("\tstatic {0}() {{\n", OUTPUT_CLASS_NAME);
-		builder.AppendFormat("\t\tif (GetBool(\"{0}\")) {{ return; }}\n", firstTimeKey);
+		builder.AppendFormat("\t\tif (Store.GetBool(\"{0}\")) {{ return; }}\n", firstTimeKey);
 		builder.AppendFormat("\t\tInitialize();\n");
-		builder.AppendFormat("\t\tSetBool(\"{0}\", true);\n", firstTimeKey);
-		builder.AppendLine("\t\tSave();");
+		builder.AppendFormat("\t\tStore.SetBool(\"{0}\", true);\n", firstTimeKey);
 		builder.AppendLine("\t}");
 		builder.AppendLine("");
 		builder.AppendLine("\tprivate static void Initialize() {");
@@ -153,32 +250,32 @@ public class SettingsGen {
 	private static string GenerateBoolProperty(string propName, string key, string defaultVal) {
 		var defaultValue = defaultVal == null ? "true" : defaultVal;
 		return string.Format("\tpublic static bool {0} {{\n" +
-		                     "\t\tget {{ return GetBool({1}, {2}); }}\n" +
-		                     "\t\tset {{ SetBool({1}, value); }}\n" +
+		                     "\t\tget {{ return Store.GetBool({1}, {2}); }}\n" +
+		                     "\t\tset {{ Store.SetBool({1}, value); }}\n" +
 		                     "\t}}", propName, key, defaultValue);
 	}
 
 	private static string GenerateStringProperty(string propName, string key, string defaultVal) {
 		var defaultValue = defaultVal == null ? "\"\"" : defaultVal; 
 		return string.Format("\tpublic static string {0} {{\n" +
-		                     "\t\tget {{ return PlayerPrefs.GetString({1}, {2}); }}\n" +
-		                     "\t\tset {{ PlayerPrefs.SetString({1}, value); Save(); }}\n" +
+		                     "\t\tget {{ return Store.GetString({1}, {2}); }}\n" +
+		                     "\t\tset {{ Store.SetString({1}, value); }}\n" +
 		                     "\t}}", propName, key, defaultValue);
 	}
 
 	private static string GenerateIntProperty(string propName, string key, string defaultVal) {
 		var defaultValue = defaultVal == null ? "-1" : defaultVal;
 		return string.Format("\tpublic static int {0} {{\n" +
-		                     "\t\tget {{ return PlayerPrefs.GetInt({1}, {2}); }}\n" +
-		                     "\t\tset {{ PlayerPrefs.SetInt({1}, value); Save(); }}\n" +
+		                     "\t\tget {{ return Store.GetInt({1}, {2}); }}\n" +
+		                     "\t\tset {{ Store.SetInt({1}, value); }}\n" +
 		                     "\t}}", propName, key, defaultValue);
 	}
 
 	private static string GenerateFloatProperty(string propName, string key, string defaultVal) {
 		var defaultValue = defaultVal == null ? "-1" : defaultVal;
 		return string.Format("\tpublic static float {0} {{\n" +
-		                     "\t\tget {{ return PlayerPrefs.GetFloat({1}, {2}); }}\n" +
-		                     "\t\tset {{ PlayerPrefs.SetFloat({1}, value); Save(); }}\n" +
+		                     "\t\tget {{ return Store.GetFloat({1}, {2}); }}\n" +
+		                     "\t\tset {{ Store.SetFloat({1}, value); }}\n" +
 		                     "\t}}", propName, key, defaultValue);
 	}
 

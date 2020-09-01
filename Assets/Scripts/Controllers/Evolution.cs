@@ -12,7 +12,7 @@ namespace Keiwando.Evolution {
 
 	public class Evolution : MonoBehaviour {
 
-		private struct Solution {
+		public struct Solution {
 			public IChromosomeEncodable<float[]> Encodable;
 			public CreatureStats Stats;
 		}
@@ -49,9 +49,13 @@ namespace Keiwando.Evolution {
 		/// <value></value>
 		public int CurrentBatchSize { get { return cachedSettings.BatchSize; } }
 
+		/// <summary>
+		/// The simulation config with which the simulation was started.
+		/// </summary>
+		private SimulationConfig config;
+
 		#endregion
 		#region Global Simulation Data
-
 
 		public SimulationData SimulationData { get; private set; }
 		
@@ -109,8 +113,7 @@ namespace Keiwando.Evolution {
 				return;
 			}
 
-			var data = configContainer.SimulationData;
-			StartSimulation(data);
+			StartSimulation(configContainer.Config);
 		}
 		
 		/// <summary>
@@ -129,8 +132,10 @@ namespace Keiwando.Evolution {
 		/// <summary>
 		/// Continues the simulation from the state given by data.
 		/// </summary>
-		private void StartSimulation(SimulationData data) {
+		private void StartSimulation(SimulationConfig config) {
 
+			this.config = config;
+			var data = config.SimulationData;
 			this.SimulationData = data;
 			this.cachedSettings = Settings;
 			this.LastSavedGeneration = data.BestCreatures.Count;
@@ -232,6 +237,10 @@ namespace Keiwando.Evolution {
 		private void EvaluateSolutions(Solution[] solutions) {
 
 			SortGenerationByFitness(solutions);
+
+			if (config.Options.onEvaluatedSolutions != null) {
+				config.Options.onEvaluatedSolutions(solutions);
+			}
 
 			// Save the best solution
 			var best = solutions[0];
