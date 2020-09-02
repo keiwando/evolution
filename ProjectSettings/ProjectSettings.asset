@@ -165,6 +165,7 @@ PlayerSettings:
     Standalone: com.keiwando.Evolution
     Tizen: com.Company.ProductName
     iOS: com.keiwando.Evolution
+    iPhone: com.keiwando.Evolution
     tvOS: com.Company.ProductName
   buildNumber:
     Standalone: 1
