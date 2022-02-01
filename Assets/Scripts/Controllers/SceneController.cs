@@ -67,10 +67,11 @@ namespace Keiwando.Evolution {
             var scene = SceneManager.GetSceneByName(sceneName);
             context.PhysicsScene = scene.GetPhysicsScene();
             context.Scene = scene;
-            // We need to wait two frames before the scene and its GameObjects
+            // We need to wait before the scene and its GameObjects
             // are fully loaded
-            yield return new WaitForEndOfFrame();
-            yield return new WaitForEndOfFrame();
+            while(!scene.isLoaded) {
+                yield return new WaitForEndOfFrame();
+            }
 
             // Find setup script in the new scene
             var prevActiveScene = SceneManager.GetActiveScene();

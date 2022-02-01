@@ -44,9 +44,16 @@ public class EditorStateManager {
     private static CreatureDesign _lastCreatureDesign;
 
     static EditorStateManager() {
+        // #if UNITY_WEBGL 
+        // _editorSettings = EditorSettings.Default;
+        // _simulationSettings = SimulationSettings.Default;
+        // _networkSettings = NeuralNetworkSettings.Default;
+        // _lastCreatureDesign = new CreatureDesign();
+        // #else
         _editorSettings = EditorSettings.Decode(Settings.EditorSettings);
         _simulationSettings = SimulationSettings.Decode(Settings.SimulationSettings);
         _networkSettings = NeuralNetworkSettings.Decode(Settings.NetworkSettings);
         _lastCreatureDesign = CreatureSerializer.ParseCreatureDesign(Settings.LastCreatureDesign);
+        // #endif
     }
 }
