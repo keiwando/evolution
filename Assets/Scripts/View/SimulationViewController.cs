@@ -21,7 +21,11 @@ public class SimulationViewController : MonoBehaviour,
 		BestCreatures
 	}
 
-	const int EXIT_CONFIRMATION_SAVE_DISTANCE = 15;
+	/// <summary>
+	/// The number of seconds that have to pass since the most recent save after which a confirmation
+	/// dialog should be displayed if the user tries to exit the simulation.
+	/// </summary>
+	const int EXIT_CONFIRMATION_TIME_DELTA = 15 * 10;
 
 	private Evolution evolution;
 	private CameraFollowController cameraFollowController;
@@ -99,11 +103,13 @@ public class SimulationViewController : MonoBehaviour,
 		cameraFollowController.FocusOnPreviousCreature();
 	}
 
-	public void GoBackToEditor(bool force = false) {
+	public void GoBackToEditor() {
 		
-		int saveDistance = evolution.CurrentGenerationNumber - evolution.LastSavedGeneration;
-
-		if (force || saveDistance <= EXIT_CONFIRMATION_SAVE_DISTANCE) {
+		int fullGenerationsSinceLastSave = Math.Max(0, evolution.CurrentGenerationNumber - 1 - evolution.LastSavedGeneration); 
+		int batchesPerGeneration = evolution.Settings.SimulateInBatches ? evolution.Settings.BatchSize : 1;
+		int secondsPerGeneration = evolution.Settings.SimulationTime * batchesPerGeneration;
+		int secondsSinceLastSave = secondsPerGeneration * fullGenerationsSinceLastSave;
+		if (fullGenerationsSinceLastSave < 1 || secondsSinceLastSave < EXIT_CONFIRMATION_TIME_DELTA) {
 			evolution.Finish();
 			SceneController.LoadSync(SceneController.Scene.Editor);		
 			return;

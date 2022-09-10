@@ -2051,7 +2051,7 @@ RectTransform:
   - {fileID: 852771490}
   - {fileID: 1148533039}
   m_Father: {fileID: 1422570950}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -10808,13 +10808,13 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2024338610}
-  m_Father: {fileID: 1422570950}
-  m_RootOrder: 5
+  m_Father: {fileID: 893158430}
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -93, y: -224.2}
-  m_SizeDelta: {x: 82.96655, y: 44.15027}
+  m_AnchoredPosition: {x: -92.20004, y: -227.11}
+  m_SizeDelta: {x: 82.166595, y: 47.061783}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &817001946
 MonoBehaviour:
@@ -11788,8 +11788,9 @@ RectTransform:
   - {fileID: 994868500}
   - {fileID: 1499589620}
   - {fileID: 1263025848}
+  - {fileID: 817001944}
   m_Father: {fileID: 1422570950}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -13590,7 +13591,7 @@ RectTransform:
   - {fileID: 1341943534}
   - {fileID: 1895294885}
   m_Father: {fileID: 1422570950}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -19402,7 +19403,6 @@ RectTransform:
   - {fileID: 406721780}
   - {fileID: 359070190}
   - {fileID: 216636222}
-  - {fileID: 817001944}
   - {fileID: 893158430}
   - {fileID: 1042517361}
   - {fileID: 113354111}
@@ -20644,7 +20644,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 56.38, y: -4.7}
+  m_AnchoredPosition: {x: 56.38, y: -4.700012}
   m_SizeDelta: {x: -112.76, y: -244.63516}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1553520257
@@ -26690,7 +26690,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 7666b25a921c94c69bc48f0d0b95ee40, type: 3}
-    m_FontSize: 13
+    m_FontSize: 14
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
