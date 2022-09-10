@@ -25,6 +25,12 @@ namespace Keiwando.UI {
         [SerializeField]
         private string url;
 
+        /// <summary>
+        /// The element that should be shown instead if there is no internet connection. May be null.
+        /// </summary>
+        [SerializeField]
+        private GameObject offlineFallback;
+
         void Start() {
             var button = GetComponent<Button>();
             button.onClick.AddListener(delegate () {
@@ -33,11 +39,15 @@ namespace Keiwando.UI {
         }
 
         private void OpenLink() {
-            #if UNITY_WEBGL 
-            // _openLink(url);
-            #else 
-            Application.OpenURL(url);
-            #endif
+            if (offlineFallback != null && Application.internetReachability == NetworkReachability.NotReachable) {
+                offlineFallback.SetActive(true);
+            } else {
+                #if UNITY_WEBGL 
+                // _openLink(url);
+                #else 
+                Application.OpenURL(url);
+                #endif
+            }
         }
 
         #if UNITY_WEBGL

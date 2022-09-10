@@ -5,6 +5,9 @@ namespace Keiwando.Evolution.UI {
 
     public class CreditsViewController: MonoBehaviour {
 
+        [SerializeField]
+        private GameObject offlineImprintPage;
+
         void Start() {
 
             var androidBackButton = GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer();
@@ -17,6 +20,10 @@ namespace Keiwando.Evolution.UI {
         public void Show() {
             this.gameObject.SetActive(true);
             InputRegistry.shared.Register(InputType.AndroidBack, this);
+
+            if (offlineImprintPage != null) {
+                offlineImprintPage.SetActive(false);
+            }
         }
 
         public void Close() {
