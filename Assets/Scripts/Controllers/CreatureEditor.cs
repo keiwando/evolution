@@ -163,8 +163,6 @@ public class CreatureEditor: MonoBehaviour,
         // Don't start the simulation if the creature design is empty
         if (creatureDesign.IsEmpty) return;
 
-        EditorStateManager.LastCreatureDesign = creatureDesign;
-
         var sceneDescription = DefaultSimulationScenes.DefaultSceneForObjective(simulationSettings.Objective);
         
         var simulationData = new SimulationData(simulationSettings, 
@@ -176,6 +174,11 @@ public class CreatureEditor: MonoBehaviour,
 
     public void StartSimulation(SimulationData simulationData, SimulationOptions options = new SimulationOptions()) {
         
+        // We remember the creature design here instead of in StartSimulation so that it gets 
+        // loaded in the editor even when you load a previously saved simulation and not just 
+        // when you start one with your own creature design.
+        EditorStateManager.LastCreatureDesign = simulationData.CreatureDesign;
+
         var containerObject = new GameObject("SimulationConfig");
         containerObject.tag = "SimulationConfig";
         var configContainer = containerObject.AddComponent<SimulationConfigContainer>();
