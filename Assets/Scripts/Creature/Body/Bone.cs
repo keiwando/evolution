@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 public class Bone : BodyComponent {
@@ -61,6 +62,28 @@ public class Bone : BodyComponent {
 
 		resetPosition = transform.position;
 		resetRotation = transform.rotation;
+	}
+
+	public void FixedUpdate() {
+		if (!BoneData.isWing) { return; }
+		var localBoneVelocity = transform.InverseTransformDirection(body.velocity);
+		if (localBoneVelocity.magnitude < 1.0) { return; }
+		var localAngle = Vector3.SignedAngle(localBoneVelocity, Vector3.up, Vector3.forward);
+		if (localAngle < 0) {
+			// We make it easier to move the wing up by not generating any opposing force
+			return;
+		}
+		var maxForce = 100.0f;
+		var angleFactor = 1.0f - (Math.Abs(Math.Abs(localAngle) - 90.0f) / 90.0f);
+		var force = localBoneVelocity.magnitude * -Math.Sign(localAngle) * maxForce * angleFactor;
+
+		var forceVec = new Vector3(force, 0.0f, 0.0f);
+		body.AddRelativeForce(forceVec);
+		// DEBUG:
+		// Debug.DrawRay(transform.position, transform.TransformDirection(localBoneVelocity), Color.red, 0, false);
+		// Debug.DrawRay(transform.position, transform.TransformDirection(-0.1f * forceVec), Color.green, 0, false);
+
+		// Debug.Log("velocity.magnitude: " + localBoneVelocity.magnitude + " localAngle: " + localAngle + " angleFactor: " + angleFactor + " force: " + force);
 	}
 
 	public void Reset() {

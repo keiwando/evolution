@@ -11,6 +11,7 @@ namespace Keiwando.Evolution {
         private Bone bone;
         private AdvancedBodyControlsViewController viewController;
         private LabelledSlider weightSlider;
+        private LabelledToggle wingToggle;
 
         public BoneSettingsManager(Bone bone, AdvancedBodyControlsViewController viewController): base() {
             this.bone = bone;
@@ -23,21 +24,39 @@ namespace Keiwando.Evolution {
                 var oldData = bone.BoneData;
                 var weight = SliderToWeight(value);
                 if (weight != oldData.weight) {
+                    // FIXME: We only want to do this at the end of the drag!!
                     DataWillChange();
                 }
                 var data = new BoneData(
                     oldData.id, oldData.startJointID, oldData.endJointID,
-                    weight
+                    weight, oldData.isWing
                 );
                 bone.BoneData = data;
                 Refresh();
             };
+
+            // DEBUG:
+            wingToggle = viewController.AddToggle("Wing");
+            wingToggle.onValueChanged += delegate (bool isWing) {
+                var oldData = bone.BoneData;
+                if (isWing != oldData.isWing) {
+                    DataWillChange();
+                }
+                var data = new BoneData(
+                    oldData.id, oldData.startJointID, oldData.endJointID,
+                    oldData.weight, isWing
+                );
+                bone.BoneData = data;
+                Refresh();
+            };
+
             Refresh();
         }
 
         private void Refresh() {
             var weight = bone.BoneData.weight;
             weightSlider.Refresh(WeightToSlider(weight), string.Format("{0}x", weight.ToString("0.0")));
+            wingToggle.Refresh(bone.BoneData.isWing);
         }
 
         private float SliderToWeight(float value) {

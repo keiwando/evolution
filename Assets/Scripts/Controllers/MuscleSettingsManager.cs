@@ -24,6 +24,7 @@ namespace Keiwando.Evolution {
                 var oldData = muscle.MuscleData;
                 var strength = SliderToStrength(value);
                 if (strength != oldData.strength) {
+                    // FIXME: We only want to do this at the end of the drag!!
                     DataWillChange();
                 }
                 var data = new MuscleData(

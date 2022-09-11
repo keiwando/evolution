@@ -23,6 +23,7 @@ namespace Keiwando.Evolution {
                 var oldData = joint.JointData;
                 var weight = SliderToWeight(value);
                 if (weight != oldData.weight) {
+                    // FIXME: We only want to do this at the end of the drag!!
                     DataWillChange();
                 }
                 var data = new JointData(oldData.id, oldData.position, weight);
