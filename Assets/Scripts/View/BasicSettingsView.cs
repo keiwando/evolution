@@ -45,6 +45,10 @@ namespace Keiwando.Evolution.UI {
                 new Dropdown<int>.Data() {
                     Value = (int)Objective.Climbing,
                     Label = "Climbing"
+                },
+                new Dropdown<int>.Data() {
+                    Value = (int)Objective.Flying,
+                    Label = "Flying"
                 }
             };
             

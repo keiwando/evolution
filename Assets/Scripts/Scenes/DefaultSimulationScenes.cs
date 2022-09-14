@@ -41,11 +41,20 @@ namespace Keiwando.Evolution.Scenes {
         private static SimulationSceneDescription _climbingScene;
         // public static readonly SimulationSceneDescription RunningScene = CreateIncrementalClimbingScene();
 
+        public static SimulationSceneDescription FlyingScene {
+            get {
+                if (_flyingScene == null) _flyingScene = CreateFlyingScene();
+                return _flyingScene;
+            }
+        }
+        private static SimulationSceneDescription _flyingScene;
+
         public static SimulationSceneDescription DefaultSceneForObjective(Objective objective) {
             switch (objective) {
             case Objective.Running: return RunningScene;
             case Objective.Jumping: return JumpingScene;
             case Objective.ObstacleJump: return ObstacleJumpScene;
+            case Objective.Flying: return FlyingScene;
             case Objective.Climbing: return ClimbingScene;
             default: throw new System.ArgumentException("Invalid objective!");
             }
@@ -87,6 +96,26 @@ namespace Keiwando.Evolution.Scenes {
                 Structures = new IStructure[] { ground, distanceMarkerSpawner },
                 DropHeight = 0.5f,
                 CameraControlPoints = flatGroundControlPoints
+            };
+        }
+
+        private static SimulationSceneDescription CreateFlyingScene() {
+           
+            var groundPos = new Vector3(0.476771f, -4.8f, -2.61f);
+            var groundScale = new Vector3(1000000f, 9.56f, 29.8f);
+            var groundTransform = new Transform(groundPos, groundScale);
+            var ground = new Ground(groundTransform);
+
+            var distanceMarkerSpawner = new DistanceMarkerSpawner(
+                new Transform(new Vector3(-0.45f, 1.63f, 0), 90f), 5, 1, 90f
+            );
+
+            return new SimulationSceneDescription {
+                Version = 1,
+                Structures = new IStructure[] { ground, distanceMarkerSpawner },
+                DropHeight = 0.5f,
+                CameraControlPoints = flatGroundControlPoints
+                // CameraControlPoints = new CameraControlPoint[] {}
             };
         }
 

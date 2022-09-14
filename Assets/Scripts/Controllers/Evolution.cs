@@ -377,6 +377,8 @@ namespace Keiwando.Evolution {
 				return creature.gameObject.AddComponent<ObstacleJumpObjectiveTracker>();
 			case Objective.Climbing:
 				return creature.gameObject.AddComponent<ClimbingObjectiveTracker>();
+			case Objective.Flying:
+				return creature.gameObject.AddComponent<FlyingObjectiveTracker>();
 			}
 
 			throw new System.ArgumentException(string.Format("There is no objective tracker for the given objective {0}", objective));

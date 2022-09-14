@@ -26,6 +26,8 @@ public class Bone : BodyComponent {
 	public Rigidbody Body => body;
 	private Rigidbody body;
 
+	SpriteRenderer wingSpriteRenderer;
+
 	public static Bone CreateAtPoint(Vector3 point, BoneData data) {
 		
 		var bone = ((GameObject) Instantiate(Resources.Load(PATH), point, Quaternion.identity)).GetComponent<Bone>();
@@ -54,6 +56,8 @@ public class Bone : BodyComponent {
 			body.mass = data.weight;
 		}
 
+		bone.wingSpriteRenderer = bone.GetComponentInChildren<SpriteRenderer>();
+
 		return bone;
 	}
 	
@@ -65,7 +69,19 @@ public class Bone : BodyComponent {
 	}
 
 	public void FixedUpdate() {
-		if (!BoneData.isWing) { return; }
+
+		if (body.isKinematic) {
+			// We are in the editor, refresh the wing sprite visibility when the 
+			if (!BoneData.isWing && wingSpriteRenderer.enabled) {
+				wingSpriteRenderer.enabled = false;
+			} else if (BoneData.isWing && !wingSpriteRenderer.enabled) {
+				wingSpriteRenderer.enabled = true;
+			}
+		}
+
+		if (!BoneData.isWing) { 
+			return; 
+		}
 		var localBoneVelocity = transform.InverseTransformDirection(body.velocity);
 		if (localBoneVelocity.magnitude < 1.0) { return; }
 		var localAngle = Vector3.SignedAngle(localBoneVelocity, Vector3.up, Vector3.forward);
@@ -73,9 +89,11 @@ public class Bone : BodyComponent {
 			// We make it easier to move the wing up by not generating any opposing force
 			return;
 		}
-		var maxForce = 100.0f;
+		// The length of the wing should also contribute here!
+		var maxForce = 30.0f * transform.localScale.y;
 		var angleFactor = 1.0f - (Math.Abs(Math.Abs(localAngle) - 90.0f) / 90.0f);
-		var force = localBoneVelocity.magnitude * -Math.Sign(localAngle) * maxForce * angleFactor;
+		var velocityFactor = localBoneVelocity.magnitude; // (float)Math.Pow(localBoneVelocity.magnitude / 10.0f, 3.0f);
+		var force = velocityFactor * -Math.Sign(localAngle) * maxForce * angleFactor;
 
 		var forceVec = new Vector3(force, 0.0f, 0.0f);
 		body.AddRelativeForce(forceVec);
@@ -192,6 +210,10 @@ public class Bone : BodyComponent {
 		
 		body = GetComponent<Rigidbody>();
 		body.isKinematic = false;
+
+		if (!BoneData.isWing) {
+			Destroy(wingSpriteRenderer.gameObject);
+		}
 	}
 
 	public void SetLayer(LayerMask layer) {

@@ -4,7 +4,8 @@ public enum Objective {
 	Running = 0,
 	Jumping = 1,
 	ObstacleJump = 2,
-	Climbing = 3
+	Climbing = 3,
+	Flying = 4
 }
 
 static class ObjectiveUtil {
@@ -15,6 +16,7 @@ static class ObjectiveUtil {
 		case 1: return Objective.Jumping; 
 		case 2: return Objective.ObstacleJump; 
 		case 3: return Objective.Climbing;
+		case 4: return Objective.Flying;
 		}
 
 		return Objective.Running;
@@ -26,6 +28,7 @@ static class ObjectiveUtil {
 		case Objective.Jumping: return "Jumping"; 
 		case Objective.ObstacleJump: return "Obstacle Jump";
 		case Objective.Climbing: return "Climbing";
+		case Objective.Flying: return "Flying";
 		}
 
 		//return "Running";
@@ -37,7 +40,7 @@ static class ObjectiveUtil {
 		switch(objective.ToUpper()) {
 
 		case "Running": 
-		case "RUNNING": 
+		case "RUNNING":
 			return Objective.Running; 
 		case "Jumping":
 		case "JUMPING": 
@@ -48,6 +51,9 @@ static class ObjectiveUtil {
 		case "Climbing":
 		case "CLIMBING": 
 			return Objective.Climbing; 
+		case "Flying":
+		case "FLYING":
+			return Objective.Flying;
 
 		default: throw new System.Exception("The string cannot be converted to an Objective");
 		}

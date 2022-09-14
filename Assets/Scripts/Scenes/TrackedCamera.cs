@@ -14,6 +14,9 @@ namespace Keiwando.Evolution.Scenes {
 
         /// <summary>
         /// The control points which define the camera track.
+        /// Specifying no control points allows the camera to move freely.
+        /// Specifying one control point fixes the camera in place
+        /// Specifying two or more control points moves the camera along that path.
         /// </summary>
         public CameraControlPoint[] ControlPoints { 
             set {
@@ -23,20 +26,20 @@ namespace Keiwando.Evolution.Scenes {
                 }
                 var uniquePoints = pointMap.Values.ToArray();
 
-                if (uniquePoints.Length == 0) {
-                    this.controlPoints = new [] { 
-                        new CameraControlPoint(0, 0, 0.5f), new CameraControlPoint(1, 0, 0.5f)
-                    };
-                } else if (uniquePoints.Length == 1) {
-                    this.controlPoints = new [] {
-                        uniquePoints[0], new CameraControlPoint(uniquePoints[0].x + 1, uniquePoints[0].y, uniquePoints[0].pivot)
-                    };
-                } else {
-                    this.controlPoints = uniquePoints;
-                    Array.Sort(this.controlPoints, delegate (CameraControlPoint lhs, CameraControlPoint rhs) {
-                        return lhs.x.CompareTo(rhs.x);
-                    });
-                }
+                // if (uniquePoints.Length == 0) {
+                //     this.controlPoints = new [] { 
+                //         new CameraControlPoint(0, 0, 0.5f), new CameraControlPoint(1, 0, 0.5f)
+                //     };
+                // } else if (uniquePoints.Length == 1) {
+                //     this.controlPoints = new [] {
+                //         uniquePoints[0], new CameraControlPoint(uniquePoints[0].x + 1, uniquePoints[0].y, uniquePoints[0].pivot)
+                //     };
+                // } else {
+                this.controlPoints = uniquePoints;
+                Array.Sort(this.controlPoints, delegate (CameraControlPoint lhs, CameraControlPoint rhs) {
+                    return lhs.x.CompareTo(rhs.x);
+                });
+                // }
             }
         }
         private CameraControlPoint[] controlPoints;
@@ -82,6 +85,13 @@ namespace Keiwando.Evolution.Scenes {
         }
 
         private CameraControlPoint GetInterpolatedControlPoint(float x) {
+
+            if (controlPoints.Length == 0) {
+                return new CameraControlPoint(x, Target.GetYPosition(), 0.31f);
+            } else if (controlPoints.Length == 1) {
+                return controlPoints[0];
+            }
+
             // Find the current control point segment
             var segmentIndex = lastControlSegmentIndex;
             if (controlPoints[segmentIndex].x > x || x > controlPoints[segmentIndex + 1].x) {
