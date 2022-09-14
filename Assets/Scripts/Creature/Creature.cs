@@ -493,18 +493,6 @@ namespace Keiwando.Evolution {
 			gameObject.layer = boneLayer;
 		}
 
-		public void Reset() {
-
-			for (int i = 0; i < bones.Count; i++)
-				bones[i].Reset();
-
-			for (int i = 0; i < joints.Count; i++)
-				joints[i].Reset();
-
-			for (int i = 0; i < muscles.Count; i++)
-				muscles[i].Reset();
-		}
-
 		public void RemoveMuscleColliders() {
 			for (int i = 0; i < muscles.Count; i++) {
 				muscles[i].RemoveCollider();

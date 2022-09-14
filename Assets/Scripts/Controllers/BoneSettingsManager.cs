@@ -12,6 +12,7 @@ namespace Keiwando.Evolution {
         private AdvancedBodyControlsViewController viewController;
         private LabelledSlider weightSlider;
         private LabelledToggle wingToggle;
+        private LabelledToggle invertedToggle;
 
         public BoneSettingsManager(Bone bone, AdvancedBodyControlsViewController viewController): base() {
             this.bone = bone;
@@ -29,13 +30,12 @@ namespace Keiwando.Evolution {
                 }
                 var data = new BoneData(
                     oldData.id, oldData.startJointID, oldData.endJointID,
-                    weight, oldData.isWing
+                    weight, oldData.isWing, oldData.inverted
                 );
                 bone.BoneData = data;
                 Refresh();
             };
 
-            // DEBUG:
             wingToggle = viewController.AddToggle("Wing");
             wingToggle.onValueChanged += delegate (bool isWing) {
                 var oldData = bone.BoneData;
@@ -44,7 +44,21 @@ namespace Keiwando.Evolution {
                 }
                 var data = new BoneData(
                     oldData.id, oldData.startJointID, oldData.endJointID,
-                    oldData.weight, isWing
+                    oldData.weight, isWing, oldData.inverted
+                );
+                bone.BoneData = data;
+                Refresh();
+            };
+
+            invertedToggle = viewController.AddToggle("Invert");
+            invertedToggle.onValueChanged += delegate (bool inverted) {
+                var oldData = bone.BoneData;
+                if (inverted != oldData.inverted) {
+                    DataWillChange();
+                }
+                var data = new BoneData(
+                    oldData.id, oldData.startJointID, oldData.endJointID,
+                    oldData.weight, oldData.isWing, inverted
                 );
                 bone.BoneData = data;
                 Refresh();
@@ -57,6 +71,7 @@ namespace Keiwando.Evolution {
             var weight = bone.BoneData.weight;
             weightSlider.Refresh(WeightToSlider(weight), string.Format("{0}x", weight.ToString("0.0")));
             wingToggle.Refresh(bone.BoneData.isWing);
+            invertedToggle.Refresh(bone.BoneData.inverted);
         }
 
         private float SliderToWeight(float value) {

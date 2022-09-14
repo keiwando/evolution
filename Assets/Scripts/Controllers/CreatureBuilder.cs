@@ -170,7 +170,7 @@ namespace Keiwando.Evolution {
 					endPoint = hoveringJoint.center;
 					currentBone.endingJoint = hoveringJoint;
 					var oldData = currentBone.BoneData;
-					var newData = new BoneData(oldData.id, oldData.startJointID, hoveringJoint.JointData.id, oldData.weight, oldData.isWing);
+					var newData = new BoneData(oldData.id, oldData.startJointID, hoveringJoint.JointData.id, oldData.weight, oldData.isWing, oldData.inverted);
 					currentBone.BoneData = newData;
 				} 
 

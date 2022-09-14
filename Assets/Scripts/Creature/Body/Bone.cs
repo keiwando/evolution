@@ -70,7 +70,7 @@ public class Bone : BodyComponent {
 
 	public void FixedUpdate() {
 
-		if (body.isKinematic) {
+		if (body.isKinematic && wingSpriteRenderer != null) {
 			// We are in the editor, refresh the wing sprite visibility when the 
 			if (!BoneData.isWing && wingSpriteRenderer.enabled) {
 				wingSpriteRenderer.enabled = false;
@@ -79,13 +79,19 @@ public class Bone : BodyComponent {
 			}
 		}
 
+		if (BoneData.inverted != (transform.localScale.x < 0f)) {
+			var scale = transform.localScale;
+			scale.x *= -1f;
+			transform.localScale = scale;
+		}
+
 		if (!BoneData.isWing) { 
 			return; 
 		}
 		var localBoneVelocity = transform.InverseTransformDirection(body.velocity);
 		if (localBoneVelocity.magnitude < 1.0) { return; }
 		var localAngle = Vector3.SignedAngle(localBoneVelocity, Vector3.up, Vector3.forward);
-		if (localAngle < 0) {
+		if (BoneData.inverted != (localAngle < 0)) {
 			// We make it easier to move the wing up by not generating any opposing force
 			return;
 		}
@@ -102,20 +108,6 @@ public class Bone : BodyComponent {
 		// Debug.DrawRay(transform.position, transform.TransformDirection(-0.1f * forceVec), Color.green, 0, false);
 
 		// Debug.Log("velocity.magnitude: " + localBoneVelocity.magnitude + " localAngle: " + localAngle + " angleFactor: " + angleFactor + " force: " + force);
-	}
-
-	public void Reset() {
-		transform.SetPositionAndRotation(resetPosition, resetRotation);
-		body.velocity = Vector3.zero;
-		body.angularVelocity = Vector3.zero;
-
-		if (BoneData.legacy) {
-			var weightBody = _legacyWeightObj.GetComponent<Rigidbody>();
-			weightBody.velocity = Vector3.zero;
-			weightBody.angularVelocity = Vector3.zero;
-			_legacyWeightObj.transform.localPosition = Vector3.zero;
-			_legacyWeightObj.transform.localRotation = Quaternion.identity;
-		}
 	}
 
 	/** Places the bone between the specified points. (Points flattened to 2D) */
@@ -211,7 +203,7 @@ public class Bone : BodyComponent {
 		body = GetComponent<Rigidbody>();
 		body.isKinematic = false;
 
-		if (!BoneData.isWing) {
+		if (!BoneData.isWing && wingSpriteRenderer != null) {
 			Destroy(wingSpriteRenderer.gameObject);
 		}
 	}
@@ -220,6 +212,9 @@ public class Bone : BodyComponent {
 		this.gameObject.layer = layer;
 		if (this._legacyWeightObj != null) {
 			this._legacyWeightObj.layer = layer;
+		}
+		if (this.wingSpriteRenderer != null) {
+			this.wingSpriteRenderer.gameObject.layer = layer;
 		}
 	}
 

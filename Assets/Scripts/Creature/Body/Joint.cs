@@ -46,14 +46,6 @@ public class Joint : BodyComponent {
 		body.mass = JointData.weight;
 	}
 
-	public void Reset() {
-		transform.SetPositionAndRotation(resetPosition, resetRotation);
-		body.velocity = Vector3.zero;
-		body.angularVelocity = Vector3.zero;
-		isCollidingWithGround = false;
-		isCollidingWithObstacle = false;
-	}
-
 	/// <summary>
 	/// Moves the joint to the specified position and updates all of the connected objects.
 	/// </summary>

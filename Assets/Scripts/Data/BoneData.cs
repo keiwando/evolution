@@ -9,17 +9,18 @@ public struct BoneData: IJsonConvertible {
     public readonly int endJointID;
     
     public readonly float weight;
-// DEBUG:
     public readonly bool isWing;
+    public readonly bool inverted;
 
     public readonly bool legacy;
 
-    public BoneData(int id, int startJointID, int endJointID, float weight, bool isWing = false, bool legacy = false) {
+    public BoneData(int id, int startJointID, int endJointID, float weight, bool isWing = false, bool inverted = false, bool legacy = false) {
         this.id = id;
         this.startJointID = startJointID;
         this.endJointID = endJointID;
         this.weight = weight;
         this.isWing = isWing;
+        this.inverted = inverted;
         this.legacy = legacy;
     }
 
@@ -33,6 +34,8 @@ public struct BoneData: IJsonConvertible {
         public const string Legacy = "legacy";
         // This is optional and only set if true.
         public const string IsWing = "wing";
+        // This is optional and only set if true.
+        public const string Inverted = "inverted";
     }
 
     public JObject Encode() {
@@ -45,6 +48,9 @@ public struct BoneData: IJsonConvertible {
         if (this.isWing) {
             json[CodingKey.IsWing] = true;
         }
+        if (this.inverted) {
+            json[CodingKey.Inverted] = true;
+        }
         return json;
     }
 
@@ -56,8 +62,9 @@ public struct BoneData: IJsonConvertible {
         float weight = json[CodingKey.Weight].ToFloat();
         bool legacy = json.ContainsKey(CodingKey.Legacy) ? json[CodingKey.Legacy].ToBool() : true;
         bool isWing = json.ContainsKey(CodingKey.IsWing) ? json[CodingKey.IsWing].ToBool() : false;
+        bool inverted = json.ContainsKey(CodingKey.Inverted) ? json[CodingKey.Inverted].ToBool() : false;
 
-        return new BoneData(id, startID, endID, weight, isWing, legacy);
+        return new BoneData(id, startID, endID, weight, isWing, inverted, legacy);
     }
 
     #endregion

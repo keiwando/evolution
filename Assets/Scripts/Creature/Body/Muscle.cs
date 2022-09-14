@@ -105,13 +105,6 @@ public class Muscle : BodyComponent {
 		resetRotation = transform.rotation;
 	}
 
-	public void Reset() {
-		
-		transform.SetPositionAndRotation(resetPosition, resetRotation);	
-		currentForce = 0f;
-		living = false;
-	}
-
 	void Update () {
 
 		UpdateLinePoints();
