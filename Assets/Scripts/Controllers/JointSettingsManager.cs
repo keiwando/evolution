@@ -19,13 +19,12 @@ namespace Keiwando.Evolution {
             viewController.Reset();
             viewController.SetTitle("Joint Settings");
             weightSlider = viewController.AddSlider("Weight");
+            weightSlider.onDragWillBegin += delegate () {
+                DataWillChange();
+            };
             weightSlider.onValueChanged += delegate (float value) {
                 var oldData = joint.JointData;
                 var weight = SliderToWeight(value);
-                if (weight != oldData.weight) {
-                    // FIXME: We only want to do this at the end of the drag!!
-                    DataWillChange();
-                }
                 var data = new JointData(oldData.id, oldData.position, weight);
                 joint.JointData = data;
                 Refresh();

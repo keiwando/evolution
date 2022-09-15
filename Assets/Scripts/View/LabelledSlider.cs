@@ -7,6 +7,7 @@ namespace Keiwando.UI {
     public class LabelledSlider: MonoBehaviour {
 
         public event System.Action<float> onValueChanged;
+        public event System.Action onDragWillBegin;
 
         [SerializeField] private Slider slider;
         [SerializeField] private TMP_Text descriptionLabel;
@@ -24,6 +25,12 @@ namespace Keiwando.UI {
                     onValueChanged(value);
                 }
             });
+        }
+
+        public void OnDragWillBegin() {
+            if (this.onDragWillBegin != null) {
+                this.onDragWillBegin();
+            }
         }
 
         public void Refresh(float value, string valueText = null) {

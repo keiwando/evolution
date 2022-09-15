@@ -68,8 +68,8 @@ public class Bone : BodyComponent {
 		resetRotation = transform.rotation;
 	}
 
-	public void FixedUpdate() {
-
+	public void Update() {
+		// This has to be here and not in FixedUpdate in order to avoid flickering
 		if (body.isKinematic && wingSpriteRenderer != null) {
 			// We are in the editor, refresh the wing sprite visibility when the 
 			if (!BoneData.isWing && wingSpriteRenderer.enabled) {
@@ -78,6 +78,9 @@ public class Bone : BodyComponent {
 				wingSpriteRenderer.enabled = true;
 			}
 		}
+	}
+
+	public void FixedUpdate() {
 
 		if (BoneData.inverted != (transform.localScale.x < 0f)) {
 			var scale = transform.localScale;

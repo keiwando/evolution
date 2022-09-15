@@ -21,13 +21,12 @@ namespace Keiwando.Evolution {
             viewController.Reset();
             viewController.SetTitle("Bone Settings");
             weightSlider = viewController.AddSlider("Weight");
+            weightSlider.onDragWillBegin += delegate () {
+                DataWillChange();
+            };
             weightSlider.onValueChanged += delegate (float value) {
                 var oldData = bone.BoneData;
                 var weight = SliderToWeight(value);
-                if (weight != oldData.weight) {
-                    // FIXME: We only want to do this at the end of the drag!!
-                    DataWillChange();
-                }
                 var data = new BoneData(
                     oldData.id, oldData.startJointID, oldData.endJointID,
                     weight, oldData.isWing, oldData.inverted

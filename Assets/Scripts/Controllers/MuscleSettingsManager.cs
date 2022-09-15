@@ -20,13 +20,12 @@ namespace Keiwando.Evolution {
             viewController.Reset();
             viewController.SetTitle("Muscle Settings");
             strengthSlider = viewController.AddSlider("Strength");
+            strengthSlider.onDragWillBegin += delegate () {
+                DataWillChange();
+            };
             strengthSlider.onValueChanged += delegate (float value) {
                 var oldData = muscle.MuscleData;
                 var strength = SliderToStrength(value);
-                if (strength != oldData.strength) {
-                    // FIXME: We only want to do this at the end of the drag!!
-                    DataWillChange();
-                }
                 var data = new MuscleData(
                     oldData.id, oldData.startBoneID, oldData.endBoneID,
                     strength, oldData.canExpand
