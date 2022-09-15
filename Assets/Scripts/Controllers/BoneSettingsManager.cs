@@ -5,6 +5,9 @@ namespace Keiwando.Evolution {
 
     public class BoneSettingsManager: BodyComponentSettingsManager {
 
+        private const string WING_TOOLTIP = "Test Tooltip";
+        private const string INVERT_TOOLTIP = "TEst Invert Tooltip";
+
         private const float MIN_WEIGHT = 0.5f;
         private const float MAX_WEIGHT = 5f;
 
@@ -35,7 +38,7 @@ namespace Keiwando.Evolution {
                 Refresh();
             };
 
-            wingToggle = viewController.AddToggle("Wing");
+            wingToggle = viewController.AddToggle("Wing", WING_TOOLTIP);
             wingToggle.onValueChanged += delegate (bool isWing) {
                 var oldData = bone.BoneData;
                 if (isWing != oldData.isWing) {
@@ -49,7 +52,7 @@ namespace Keiwando.Evolution {
                 Refresh();
             };
 
-            invertedToggle = viewController.AddToggle("Invert");
+            invertedToggle = viewController.AddToggle("Invert", INVERT_TOOLTIP);
             invertedToggle.onValueChanged += delegate (bool inverted) {
                 var oldData = bone.BoneData;
                 if (inverted != oldData.inverted) {

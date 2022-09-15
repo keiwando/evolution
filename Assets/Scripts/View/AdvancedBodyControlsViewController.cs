@@ -36,12 +36,15 @@ namespace Keiwando.Evolution.UI {
             return slider;
         }
 
-        public LabelledToggle AddToggle(string title) {
+        public LabelledToggle AddToggle(string title, string tooltip = "") {
             
             var toggle = Instantiate(toggleTemplate, grid.transform);
             listItems.Add(toggle.gameObject);
             toggle.gameObject.SetActive(true);
             toggle.Description = title;
+            toggle.TooltipText = tooltip;
+            // DEBUG:
+            Debug.Log("Adding toggle with tooltip: " + tooltip);
             return toggle;
         }
 

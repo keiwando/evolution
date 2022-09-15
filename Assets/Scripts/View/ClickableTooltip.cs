@@ -14,6 +14,7 @@ namespace Keiwando.Evolution.UI {
         [SerializeField] private Transform rootContainer;
 
         [SerializeField] private GameObject tooltip;
+        [SerializeField] private Text tooltipText;
 
         private bool clickedThisFrame = false;  
         private Transform previousParent;
@@ -59,6 +60,12 @@ namespace Keiwando.Evolution.UI {
         private void HideTooltip() {
             tooltip.SetActive(false);
             tooltip.transform.SetParent(previousParent, true);
+        }
+
+        public void SetText(string text) {
+            // DEBUG:
+            Debug.Log("Setting tooltip text to " + text);
+            tooltipText.text = text;
         }
     }
 }
