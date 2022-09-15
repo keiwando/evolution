@@ -13,7 +13,12 @@ namespace Keiwando.Evolution.UI {
         [SerializeField] private LabelledSlider sliderTemplate;
         [SerializeField] private LabelledToggle toggleTemplate;
 
-        [SerializeField] private GridLayoutGroup grid;
+        // Note: We have to use a VerticalLayoutGroup instead of a GridLayout because
+        // the GridLayout has a fixed size for all children and we need the toggles to be
+        // smaller than the slider cell height.
+        // The VerticalLayoutGroup does not provide a spacing option, so we bake the trailing spacing
+        // into each cell.
+        [SerializeField] private VerticalLayoutGroup grid;
 
         private List<GameObject> listItems = new List<GameObject>();
 
