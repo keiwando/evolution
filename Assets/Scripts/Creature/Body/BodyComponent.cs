@@ -18,6 +18,12 @@ abstract public class BodyComponent: Hoverable {
 	abstract public void PrepareForEvolution();
 
 	/// <summary>
+	/// Returns the id of this component.
+	/// </summary>
+	/// <returns></returns>
+	abstract public int GetId();
+
+	/// <summary>
 	/// Removes the already destroyed object that are still left in the list.
 	/// This operation doesn't change the original list.
 	/// </summary>

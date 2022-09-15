@@ -10,6 +10,7 @@ namespace Keiwando.Evolution.UI {
         bool CanRedo(EditorViewController viewController);
         void Undo();
         void Redo();
+        void RefreshAfterUndoRedo();
     }
 
     public class EditorViewController: MonoBehaviour {
@@ -44,12 +45,12 @@ namespace Keiwando.Evolution.UI {
 
             undoButton.onClick.AddListener(delegate () {
                 Delegate.Undo();
-                RefreshUndoButtons();
+                RefreshAfterUndoRedo();
             });
 
             redoButton.onClick.AddListener(delegate () {
                 Delegate.Redo();
-                RefreshUndoButtons();
+                RefreshAfterUndoRedo();
             });
 
             CreatureSerializer.MigrationDidBegin += delegate () {
@@ -85,6 +86,11 @@ namespace Keiwando.Evolution.UI {
             RefreshUndoButtons();
             basicSettingsView.Refresh();
             creatureDesignControlsView.SetCurrentCreatureName(Delegate?.GetCreatureName() ?? "Unnamed");
+        }
+
+        private void RefreshAfterUndoRedo() {
+            RefreshUndoButtons();
+            Delegate?.RefreshAfterUndoRedo();
         }
 
         private void RefreshUndoButtons() {

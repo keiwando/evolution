@@ -214,6 +214,10 @@ public class Bone : BodyComponent {
 		}
 	}
 
+	public override int GetId() {
+		return BoneData.id;
+	}
+
 	public void SetLayer(LayerMask layer) {
 		this.gameObject.layer = layer;
 		if (this._legacyWeightObj != null) {

@@ -10,5 +10,7 @@ namespace Keiwando.Evolution {
                 dataWillChange();
             }
         }
+
+        public virtual void Refresh() {}
     }
 }

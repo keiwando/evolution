@@ -486,6 +486,15 @@ namespace Keiwando.Evolution {
 
 		#region Utils
 
+		public BodyComponent FindWithId(int id) {
+			var joint = FindJointWithId(id);
+			if (joint != null) return joint;
+			var bone = FindBoneWithId(id);
+			if (bone != null) return bone;
+			var muscle = FindMuscleWithId(id);
+			return muscle;
+		}
+
 		private Joint FindJointWithId(int id) {
 			foreach (var joint in joints) {
 				if (joint.JointData.id == id) {
@@ -500,6 +509,15 @@ namespace Keiwando.Evolution {
 				if (bone.BoneData.id == id) {
 					return bone;
 				} 
+			}
+			return null;
+		}
+
+		private Muscle FindMuscleWithId(int id) {
+			foreach (var muscle in muscles) {
+				if (muscle.MuscleData.id == id) {
+					return muscle;
+				}
 			}
 			return null;
 		}

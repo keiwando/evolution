@@ -119,6 +119,10 @@ public class Joint : BodyComponent {
 		body = GetComponent<Rigidbody>();
 		body.isKinematic = false;
 	}
+
+	public override int GetId() {
+		return JointData.id;
+	}
 		
 	void OnTriggerEnter(Collider collider) {
 

@@ -365,6 +365,10 @@ public class Muscle : BodyComponent {
 		living = true;
 	}
 
+	public override int GetId() {
+		return MuscleData.id;
+	}
+
 	/// <summary>
 	/// Deletes the muscle gameObject and the sprint joint
 	/// </summary>

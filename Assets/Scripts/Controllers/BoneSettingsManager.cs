@@ -66,7 +66,7 @@ namespace Keiwando.Evolution {
             Refresh();
         }
 
-        private void Refresh() {
+        public override void Refresh() {
             var weight = bone.BoneData.weight;
             weightSlider.Refresh(WeightToSlider(weight), string.Format("{0}x", weight.ToString("0.0")));
             wingToggle.Refresh(bone.BoneData.isWing);

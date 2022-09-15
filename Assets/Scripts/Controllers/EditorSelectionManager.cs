@@ -66,7 +66,7 @@ namespace Keiwando.Evolution {
                 hovering = GetComponentAtScreenPoint<Joint>(mouseScreenPos);
                 if (hovering == null)
                     hovering = CheckCachedCollisionsFor<Bone>();
-                #if TEST || UNITY_IOS || UNITY_ANDROID
+                #if TEST || UNITY_IOS || UNITY_ANDROID
                 if (hovering == null)
                     hovering = CheckCachedSphereCollisionsFor<Bone>();
                 #endif
@@ -80,7 +80,7 @@ namespace Keiwando.Evolution {
                     hovering = CheckCachedCollisionsFor<Bone>();
                 if (hovering == null)
                     hovering = CheckCachedCollisionsFor<Muscle>();
-                #if TEST || UNITY_IOS || UNITY_ANDROID
+                #if TEST || UNITY_IOS || UNITY_ANDROID
                 if (hovering == null)
                     hovering = CheckCachedSphereCollisionsFor<Bone>();
                 if (hovering == null)
@@ -198,6 +198,20 @@ namespace Keiwando.Evolution {
                 item.DisableHighlight();
             }
             selection.Clear();
+        }
+
+        // Undo / Redo will cause the body to be reinstantiated so we need to refresh the selection
+        // references here
+        public void RefreshSelectionAfterUndoRedo() {
+            var newSelection = new List<BodyComponent>();
+            for (int i = 0; i < selection.Count; i++) {
+                var component = selection[i];
+                var newComponent = editor.FindBodyComponentWithId(component.GetId());
+                if (newComponent != null) {
+                    newSelection.Add(newComponent);
+                }
+            }
+            this.selection = newSelection;
         }
 
         public bool IsAnythingSelected() {

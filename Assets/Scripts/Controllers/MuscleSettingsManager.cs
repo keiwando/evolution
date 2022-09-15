@@ -53,7 +53,7 @@ namespace Keiwando.Evolution {
             Refresh();
         }
 
-        private void Refresh() {
+        public override void Refresh() {
             var visualStrength = muscle.MuscleData.strength / 1500f;
             strengthSlider.Refresh(StrengthToSlider(muscle.MuscleData.strength), string.Format("{0}x", visualStrength.ToString("0.0")));
             canExpandToggle.Refresh(muscle.MuscleData.canExpand);

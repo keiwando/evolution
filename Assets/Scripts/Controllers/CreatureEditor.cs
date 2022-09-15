@@ -484,6 +484,26 @@ public class CreatureEditor: MonoBehaviour,
     }
 
     private void OnSelectionEnded() {
+        ReloadSettingsControls();
+    }
+
+    private void DeleteCurrentSelection() {
+
+        if (selectionManager.IsAnythingSelected()) {
+            var oldDesign = creatureBuilder.GetDesign();
+            var deleted = selectionManager.DeleteSelection(this.creatureBuilder);
+            if (deleted) {
+                historyManager.Push(oldDesign);
+                viewController.Refresh();
+            }
+        }
+    }
+
+    public BodyComponent FindBodyComponentWithId(int id) {
+        return creatureBuilder.FindWithId(id);
+    }
+
+    private void ReloadSettingsControls() {
         // Check if we need to show the advanced body settings UI
         var selection = selectionManager.GetSelection();
         if (selection.Count != 1) {
@@ -507,18 +527,6 @@ public class CreatureEditor: MonoBehaviour,
         };
     }
 
-    private void DeleteCurrentSelection() {
-
-        if (selectionManager.IsAnythingSelected()) {
-            var oldDesign = creatureBuilder.GetDesign();
-            var deleted = selectionManager.DeleteSelection(this.creatureBuilder);
-            if (deleted) {
-                historyManager.Push(oldDesign);
-                viewController.Refresh();
-            }
-        }
-    }
-
     #endregion
     #region IEditorViewControllerDelegate 
 
@@ -528,6 +536,14 @@ public class CreatureEditor: MonoBehaviour,
 
     public bool CanRedo(EditorViewController viewController) {
         return historyManager.CanRedo();
+    }
+
+    public void RefreshAfterUndoRedo() {
+        // Refresh the current body part instance of the advancedSettingsManager if necessary
+        selectionManager.RefreshSelectionAfterUndoRedo();
+        if (advancedSettingsManager != null) {
+            ReloadSettingsControls();
+        }
     }
 
     #endregion

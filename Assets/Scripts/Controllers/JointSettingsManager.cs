@@ -32,7 +32,7 @@ namespace Keiwando.Evolution {
             Refresh();
         }
 
-        private void Refresh() {
+        public override void Refresh() {
             var weight = joint.JointData.weight;
             weightSlider.Refresh(WeightToSlider(weight), string.Format("{0}x", weight.ToString("0.0")));
         }
