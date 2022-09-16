@@ -119,25 +119,13 @@ public class CreatureEditor: MonoBehaviour,
     }
     
     /// <summary>
-    /// Saves the current creature design to a local file
-    /// </summary>
-    public void SaveCurrentDesign() {
-        
-        SaveDesign(creatureBuilder.GetDesign());
-    }
-
-    /// <summary>
     /// Saves the current creature design to a local file with the given name.
     /// </summary>
     public void SaveCurrentDesign(string name) {
         creatureBuilder.Name = name;
         var design = creatureBuilder.GetDesign();
-        SaveDesign(design);
+        CreatureSerializer.SaveCreatureDesign(design, true);
         viewController.Refresh();
-    }
-
-    public void SaveDesign(CreatureDesign design) {
-        CreatureSerializer.SaveCreatureDesign(design);
     }
 
     public void Undo() {
