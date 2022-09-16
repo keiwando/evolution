@@ -5,6 +5,7 @@ namespace Keiwando.Evolution {
 
     public class BoneSettingsManager: BodyComponentSettingsManager {
 
+        // FIXME: THe last word here is getting cut off
         private const string WING_TOOLTIP = "These wings generate force when they are moved in the direction of their feathers.";
         private const string INVERT_TOOLTIP = "Flips the wing and therefore the direction of the force that it generates.";
 
