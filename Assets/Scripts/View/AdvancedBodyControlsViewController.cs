@@ -43,8 +43,6 @@ namespace Keiwando.Evolution.UI {
             toggle.gameObject.SetActive(true);
             toggle.Description = title;
             toggle.TooltipText = tooltip;
-            // DEBUG:
-            Debug.Log("Adding toggle with tooltip: " + tooltip);
             return toggle;
         }
 

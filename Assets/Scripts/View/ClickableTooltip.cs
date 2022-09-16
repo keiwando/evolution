@@ -63,8 +63,6 @@ namespace Keiwando.Evolution.UI {
         }
 
         public void SetText(string text) {
-            // DEBUG:
-            Debug.Log("Setting tooltip text to " + text);
             tooltipText.text = text;
         }
     }
