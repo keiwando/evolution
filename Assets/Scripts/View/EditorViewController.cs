@@ -82,6 +82,10 @@ namespace Keiwando.Evolution.UI {
             return advancedBodyControlsViewController;
         }
 
+        public bool IsShowingBasicSettingsControls() {
+            return settingsControlsContainer.LastSlideDirection == SlidingContainer.Direction.Left;
+        }
+
         public void Refresh() {
             RefreshUndoButtons();
             basicSettingsView.Refresh();

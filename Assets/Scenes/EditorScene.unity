@@ -8786,6 +8786,11 @@ PrefabInstance:
       propertyPath: rootContainer
       value: 
       objectReference: {fileID: 44314773}
+    - target: {fileID: 7028291651971815407, guid: 6dedbf8c94a074d1ab8fb2357c973346,
+        type: 3}
+      propertyPath: tooltip
+      value: 
+      objectReference: {fileID: 1596508048}
     - target: {fileID: 7028291653577406798, guid: 6dedbf8c94a074d1ab8fb2357c973346,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -21925,6 +21930,12 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 5
   m_TargetDisplay: 0
+--- !u!1 &1596508048 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7028291651565176436, guid: 6dedbf8c94a074d1ab8fb2357c973346,
+    type: 3}
+  m_PrefabInstance: {fileID: 561906515}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1614398316
 MonoBehaviour:
   m_ObjectHideFlags: 0

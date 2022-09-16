@@ -35,7 +35,7 @@ namespace Keiwando.Evolution.UI {
                 }
             });
 
-            tooltip.gameObject.SetActive(false);
+            tooltip.SetActive(false);
             previousParent = tooltip.transform.parent;
         }
 
@@ -51,10 +51,18 @@ namespace Keiwando.Evolution.UI {
             }
         }
 
+        void OnDestroy() {
+            // Make sure that the tooltip gets cleaned up properly even if it is parented to something else 
+            // while it's being shown.
+            if (tooltip != null && tooltip.transform.parent != previousParent) {
+                Destroy(tooltip);
+            }
+        }
+
         private void ShowTooltip() {
             tooltip.transform.SetParent(rootContainer, true);
             tooltip.transform.SetAsLastSibling();
-            tooltip.gameObject.SetActive(true);
+            tooltip.SetActive(true);
         }
 
         private void HideTooltip() {

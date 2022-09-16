@@ -232,6 +232,14 @@ namespace Keiwando.Evolution {
             return result;
         }
 
+        public HashSet<int> GetSelectedIds() {
+            var result = new HashSet<int>();
+            foreach (var part in selection) {
+                result.Add(part.GetId());
+            }
+            return result;
+        }
+
         public bool DeleteSelection(CreatureBuilder builder) {
 
             bool creatureChanged = this.selection.Count > 0;

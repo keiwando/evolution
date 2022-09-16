@@ -44,6 +44,7 @@ public class CreatureEditor: MonoBehaviour,
     private HistoryManager<CreatureDesign> historyManager;
 
     private EditorSelectionManager selectionManager;
+    private HashSet<int> selectionAtBeginningOfDrag = new HashSet<int>();
     private BodyComponentSettingsManager advancedSettingsManager;
 
     // MARK: - Movement
@@ -92,6 +93,9 @@ public class CreatureEditor: MonoBehaviour,
     void Update() {
 
         InputUtils.UpdateTouches();
+        if (selectedTool == Tool.Select && Input.GetMouseButtonDown(0)) {
+            this.selectionAtBeginningOfDrag = selectionManager.GetSelectedIds();
+        }
         selectionManager.Update(Input.mousePosition);
         HandleClicks();
         HandleKeyboardInput();
@@ -363,7 +367,11 @@ public class CreatureEditor: MonoBehaviour,
 
             case Tool.Select:
                 selectionManager.EndSelection(); 
-                OnSelectionEnded();
+                var newSelection = selectionManager.GetSelectedIds();
+                if (viewController.IsShowingBasicSettingsControls () || 
+                    !newSelection.SetEquals(this.selectionAtBeginningOfDrag)) {
+                    OnSelectionChanged();
+                }
                 break;
 
             default: break;
@@ -429,6 +437,7 @@ public class CreatureEditor: MonoBehaviour,
 
         else if (input.GetKeyDown(KeyCode.Escape)) {
             selectionManager.DeselectAll();
+            OnSelectionChanged();
         }
 
         
@@ -470,6 +479,7 @@ public class CreatureEditor: MonoBehaviour,
     private void OnToolChanged(Tool tool) {
         if (tool == Tool.Joint || tool == Tool.Bone || tool == Tool.Muscle) {
             selectionManager.DeselectAll();
+            OnSelectionChanged();
         }
         if (tool == Tool.Delete) {
             DeleteCurrentSelection();
@@ -483,7 +493,7 @@ public class CreatureEditor: MonoBehaviour,
         }
     }
 
-    private void OnSelectionEnded() {
+    private void OnSelectionChanged() {
         ReloadSettingsControls();
     }
 
@@ -493,6 +503,7 @@ public class CreatureEditor: MonoBehaviour,
             var oldDesign = creatureBuilder.GetDesign();
             var deleted = selectionManager.DeleteSelection(this.creatureBuilder);
             if (deleted) {
+                OnSelectionChanged();
                 historyManager.Push(oldDesign);
                 viewController.Refresh();
             }
