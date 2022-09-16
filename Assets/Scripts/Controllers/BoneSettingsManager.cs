@@ -5,8 +5,8 @@ namespace Keiwando.Evolution {
 
     public class BoneSettingsManager: BodyComponentSettingsManager {
 
-        private const string WING_TOOLTIP = "Test Tooltip";
-        private const string INVERT_TOOLTIP = "TEst Invert Tooltip";
+        private const string WING_TOOLTIP = "These wings generate force when they are moved in the direction of their feathers.";
+        private const string INVERT_TOOLTIP = "Flips the wing and therefore the direction of the force that it generates.";
 
         private const float MIN_WEIGHT = 0.5f;
         private const float MAX_WEIGHT = 5f;

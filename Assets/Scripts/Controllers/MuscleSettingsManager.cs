@@ -5,6 +5,8 @@ namespace Keiwando.Evolution {
 
     public class MuscleSettingsManager: BodyComponentSettingsManager {
 
+        private const string CAN_EXPAND_TOOLTIP = "Whether the muscle should be able to expand or only contract.";
+
         private const float MIN_STRENGTH = 0f;
         private const float MAX_STRENGTH = 4500f;
 
@@ -36,7 +38,7 @@ namespace Keiwando.Evolution {
             };
 
             // DEBUG: Tooltip just for testing
-            canExpandToggle = viewController.AddToggle("Can Expand", "Test");
+            canExpandToggle = viewController.AddToggle("Can Expand", CAN_EXPAND_TOOLTIP);
             canExpandToggle.onValueChanged += delegate (bool canExpand) {
                 var oldData = muscle.MuscleData;
                 if (canExpand != oldData.canExpand) {
