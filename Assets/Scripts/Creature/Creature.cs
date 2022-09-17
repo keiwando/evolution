@@ -438,6 +438,7 @@ namespace Keiwando.Evolution {
 						}
 					}
 			}
+			fitness = Mathf.Max(0.0f, fitness);
 
 			stats.unclampedFitness = fitness;
 			stats.fitness = Mathf.Clamp(fitness, 0f, 1f);
