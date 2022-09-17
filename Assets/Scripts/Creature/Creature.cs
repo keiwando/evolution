@@ -47,6 +47,9 @@ namespace Keiwando.Evolution {
 
 		private float maxJumpingHeight;
 
+		private bool containsPenaltyJoints = false;
+		private HashSet<int> jointIdsWithPenalty = new HashSet<int>();
+
 		//public bool DEBUG = false;
 
 		void Start() {
@@ -61,6 +64,14 @@ namespace Keiwando.Evolution {
 			if (Alive) {
 				var jumpHeight = GetLowestPoint().y - InitialPosition.y;
 				maxJumpingHeight = Mathf.Max(maxJumpingHeight, jumpHeight);
+
+				if (containsPenaltyJoints) {
+					foreach (Joint joint in joints) {
+						if (joint.JointData.fitnessPenaltyForTouchingGround > 0 && joint.isCollidingWithGround) {	
+							jointIdsWithPenalty.Add(joint.JointData.id);
+						}
+					}
+				}
 			}
 			//currentLowest = GetLowestPoint();
 		}
@@ -77,9 +88,14 @@ namespace Keiwando.Evolution {
 		}
 
 		public void PrepareForEvolution() {
+			this.containsPenaltyJoints = false;
+			this.jointIdsWithPenalty.Clear();
 
 			foreach (Joint joint in joints) {
 				joint.PrepareForEvolution();
+				if (joint.JointData.fitnessPenaltyForTouchingGround > 0) {
+					this.containsPenaltyJoints = true;
+				}
 			}
 
 			foreach (Bone bone in bones) {
@@ -413,7 +429,15 @@ namespace Keiwando.Evolution {
 			var stats = new CreatureStats();
 
 			var objectiveTracker = GetComponent<ObjectiveTracker>();
-			var fitness = objectiveTracker.EvaluateFitness(simulationTime);
+			float fitness = objectiveTracker.EvaluateFitness(simulationTime);
+			// Apply the fitness penalty if necessary
+			if (jointIdsWithPenalty.Count > 0) {
+				foreach (Joint joint in joints) {
+						if (jointIdsWithPenalty.Contains(joint.JointData.id)) {	
+							fitness -= joint.JointData.fitnessPenaltyForTouchingGround;
+						}
+					}
+			}
 
 			stats.unclampedFitness = fitness;
 			stats.fitness = Mathf.Clamp(fitness, 0f, 1f);

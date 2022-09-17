@@ -37,7 +37,6 @@ namespace Keiwando.Evolution {
                 Refresh();
             };
 
-            // DEBUG: Tooltip just for testing
             canExpandToggle = viewController.AddToggle("Can Expand", new TooltipData(CAN_EXPAND_TOOLTIP));
             canExpandToggle.onValueChanged += delegate (bool canExpand) {
                 var oldData = muscle.MuscleData;

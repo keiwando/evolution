@@ -69,8 +69,6 @@ namespace Keiwando.Evolution {
 			muscle.SetContractionForce(Math.Abs(percent));
 		}
 
-		// public abstract void EvaluateFitness();
-
 		public string ToChromosomeString() {
 			return Network.ToBinaryString();
 		}
