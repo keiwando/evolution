@@ -33,6 +33,8 @@ In order to place a bone you have to select the “Bone“ button or press B on 
 
 You can select and change the weight of each individual bone.
 
+You can also turn bones into wings, which show feathers on one side of the bone. Such wings will generate an opposite force when they are moved in the direction perpendicular to their feathers.
+
 <b><size=30>Muscles:</size></b>                    <size=50><sprite index=2></size>
 
 Muscles enable the creatures to move their bones autonomously. They are the only body parts that the brain of a creature can control. Muscles are always connected to the center points of two bones, so you can’t place any muscles if you haven’t already placed at least two bones in the creature building scene. 
@@ -121,7 +123,7 @@ For the running task the fitness is based on how far a creature has made it towa
 For the jumping task the fitness is calculated from the maximum jumping height of the creature. 
 For the obstacle jumping task both the maximum jumping height and the accumulated duration of joints touching the obstacle are of importance.
 For the climbing task the creature that made it the highest gets the highest fitness score.
-
+For the flying task the fitness is based on a weighted average of the maximum distance of a creature from the ground and the percentage of its simulation time during which it did not touch the ground.
 
 
 
