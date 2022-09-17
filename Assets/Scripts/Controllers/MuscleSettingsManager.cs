@@ -6,6 +6,8 @@ namespace Keiwando.Evolution {
     public class MuscleSettingsManager: BodyComponentSettingsManager {
 
         private const string CAN_EXPAND_TOOLTIP = "Whether the muscle should be able to expand or only contract.";
+        // FIXME: Write a proper tooltip here
+        private const string USER_ID_TOOLTIP = "TEst";
 
         private const float MIN_STRENGTH = 0f;
         private const float MAX_STRENGTH = 4500f;
@@ -14,6 +16,7 @@ namespace Keiwando.Evolution {
         private AdvancedBodyControlsViewController viewController;
         private LabelledSlider strengthSlider;
         private LabelledToggle canExpandToggle;
+        private LabelledInput userIdInput;
 
         public MuscleSettingsManager(Muscle muscle, AdvancedBodyControlsViewController viewController): base() {
             this.muscle = muscle;
@@ -30,7 +33,7 @@ namespace Keiwando.Evolution {
                 var strength = SliderToStrength(value);
                 var data = new MuscleData(
                     oldData.id, oldData.startBoneID, oldData.endBoneID,
-                    strength, oldData.canExpand
+                    strength, oldData.canExpand, oldData.userId
                 );
 
                 muscle.MuscleData = data;
@@ -45,7 +48,21 @@ namespace Keiwando.Evolution {
                 }
                 var data = new MuscleData(
                     oldData.id, oldData.startBoneID, oldData.endBoneID,
-                    oldData.strength, canExpand
+                    oldData.strength, canExpand, oldData.userId
+                );
+
+                muscle.MuscleData = data;
+                Refresh();
+            };
+
+            userIdInput = viewController.AddInput("Id", new TooltipData(USER_ID_TOOLTIP));
+            userIdInput.onValueChanged += delegate (string userId) {
+                if (userId == null) { userId = ""; }
+                var oldData = muscle.MuscleData;
+                DataWillChange();
+                var data = new MuscleData(
+                    oldData.id, oldData.startBoneID, oldData.endBoneID,
+                    oldData.strength, oldData.canExpand, userId
                 );
 
                 muscle.MuscleData = data;
@@ -59,6 +76,7 @@ namespace Keiwando.Evolution {
             var visualStrength = muscle.MuscleData.strength / 1500f;
             strengthSlider.Refresh(StrengthToSlider(muscle.MuscleData.strength), string.Format("{0}x", visualStrength.ToString("0.0")));
             canExpandToggle.Refresh(muscle.MuscleData.canExpand);
+            userIdInput.Refresh(muscle.MuscleData.userId);
         }
 
         private float SliderToStrength(float value) {

@@ -80,8 +80,14 @@ namespace Keiwando.Evolution.UI {
         }
 
         public void SetData(TooltipData data) {
-            tooltipText.text = data.text;
-            (tooltip.transform as RectTransform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, data.height);
+
+            if ((data == null) == gameObject.activeSelf) {
+                gameObject.SetActive(data != null);
+            }
+            if (gameObject.activeSelf) {
+                tooltipText.text = data.text;
+                (tooltip.transform as RectTransform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, data.height);
+            }
         }
     }
 }

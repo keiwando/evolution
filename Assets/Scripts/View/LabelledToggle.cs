@@ -33,15 +33,7 @@ namespace Keiwando.UI {
 
         public void Refresh(bool enabled) {
             toggle.isOn = enabled;
-
-            if (tooltip != null) {
-                if ((TooltipData == null) == tooltip.gameObject.activeSelf) {
-                    tooltip.gameObject.SetActive(TooltipData != null);
-                }
-                if (tooltip.gameObject.activeSelf) {
-                    tooltip.SetData(TooltipData);
-                }
-            }
+            tooltip?.SetData(TooltipData);
         }
     }
 }

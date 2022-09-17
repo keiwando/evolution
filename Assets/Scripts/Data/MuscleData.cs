@@ -10,13 +10,15 @@ public struct MuscleData: IJsonConvertible {
 
     public readonly float strength;
     public readonly bool canExpand;
+    public readonly string userId;
 
-    public MuscleData(int id, int startBoneID, int endBoneID, float strength, bool canExpand) {
+    public MuscleData(int id, int startBoneID, int endBoneID, float strength, bool canExpand, string userId) {
         this.id = id;
         this.startBoneID = startBoneID;
         this.endBoneID = endBoneID;
         this.strength = strength;
         this.canExpand = canExpand;
+        this.userId = userId;
     }
 
     #region Encode & Decode
@@ -27,6 +29,8 @@ public struct MuscleData: IJsonConvertible {
         public const string EndBoneID = "endBoneID";
         public const string Strength = "strength";
         public const string CanExpand = "canExpand";
+        // This is optional and only serialized if not ""
+        public const string UserID = "userID";
     }
 
     public JObject Encode() {
@@ -36,6 +40,9 @@ public struct MuscleData: IJsonConvertible {
         json[CodingKey.EndBoneID] = this.endBoneID;
         json[CodingKey.Strength] = this.strength;
         json[CodingKey.CanExpand] = this.canExpand;
+        if (string.IsNullOrEmpty(userId)) {
+            json[CodingKey.UserID] = userId;
+        }
         return json;
     }
 
@@ -52,8 +59,9 @@ public struct MuscleData: IJsonConvertible {
         int endID = json[CodingKey.EndBoneID].ToInt();
         float strength = json[CodingKey.Strength].ToInt();
         bool canExpand = json[CodingKey.CanExpand].ToBool();
+        string userId = json.ContainsKey(CodingKey.UserID) ? json[CodingKey.UserID].ToString() : "";
 
-        return new MuscleData(id, startID, endID, strength, canExpand);
+        return new MuscleData(id, startID, endID, strength, canExpand, userId);
     }
 
     #endregion

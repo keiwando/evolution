@@ -12,6 +12,7 @@ namespace Keiwando.Evolution.UI {
         
         [SerializeField] private LabelledSlider sliderTemplate;
         [SerializeField] private LabelledToggle toggleTemplate;
+        [SerializeField] private LabelledInput inputTemplate;
 
         // Note: We have to use a VerticalLayoutGroup instead of a GridLayout because
         // the GridLayout has a fixed size for all children and we need the toggles to be
@@ -25,6 +26,7 @@ namespace Keiwando.Evolution.UI {
         void Start() {
             sliderTemplate.gameObject.SetActive(false);
             toggleTemplate.gameObject.SetActive(false);
+            inputTemplate.gameObject.SetActive(false);
         }
 
         public LabelledSlider AddSlider(string title, TooltipData tooltip = null) {
@@ -45,6 +47,16 @@ namespace Keiwando.Evolution.UI {
             toggle.Description = title;
             toggle.TooltipData = tooltip;
             return toggle;
+        }
+
+        public LabelledInput AddInput(string title, TooltipData tooltip = null) {
+             
+             var input = Instantiate(inputTemplate, grid.transform);
+             listItems.Add(input.gameObject);
+             input.gameObject.SetActive(true);
+             input.Description = title;
+             input.TooltipData = tooltip;
+             return input;
         }
 
         public void SetTitle(string title) {

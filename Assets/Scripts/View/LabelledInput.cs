@@ -5,14 +5,12 @@ using Keiwando.Evolution.UI;
 
 namespace Keiwando.UI {
 
-    public class LabelledSlider: MonoBehaviour {
+    public class LabelledInput: MonoBehaviour {
 
-        public event System.Action<float> onValueChanged;
-        public event System.Action onDragWillBegin;
+        public event System.Action<string> onValueChanged;
 
-        [SerializeField] private Slider slider;
+        [SerializeField] private TMP_InputField input;
         [SerializeField] private TMP_Text descriptionLabel;
-        [SerializeField] private TMP_Text valueLabel;
         [SerializeField] private ClickableTooltip tooltip;
 
         public string Description {
@@ -24,7 +22,7 @@ namespace Keiwando.UI {
 
         void Start() {
 
-            this.slider.onValueChanged.AddListener(delegate (float value) {
+            this.input.onEndEdit.AddListener(delegate (string value) {
                 if (this.onValueChanged != null) {
                     onValueChanged(value);
                 }
@@ -34,20 +32,8 @@ namespace Keiwando.UI {
             }
         }
 
-        public void OnDragWillBegin() {
-            if (this.onDragWillBegin != null) {
-                this.onDragWillBegin();
-            }
-        }
-
-        public void Refresh(float value, string valueText = null) {
-            slider.value = value;
-            if (valueText == null) {
-                valueLabel.text = value.ToString();
-            } else {
-                valueLabel.text = valueText;
-            }
-
+        public void Refresh(string value) {
+            input.text = value;
             tooltip?.SetData(TooltipData);
         }
     }

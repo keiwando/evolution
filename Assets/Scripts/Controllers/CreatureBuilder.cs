@@ -251,7 +251,7 @@ namespace Keiwando.Evolution {
 		/// </summary>
 		private void CreateMuscleFromBone(Bone bone) {
 
-			var muscleData = new MuscleData(idCounter++, bone.BoneData.id, bone.BoneData.id, Muscle.Defaults.MaxForce, true);
+			var muscleData = new MuscleData(idCounter++, bone.BoneData.id, bone.BoneData.id, Muscle.Defaults.MaxForce, true, "");
 			currentMuscle = Muscle.CreateFromData(muscleData);
 			currentMuscle.startingBone = bone;
 			currentMuscle.SetLinePoints(bone.Center, bone.Center);
@@ -276,7 +276,7 @@ namespace Keiwando.Evolution {
 						var oldData = currentMuscle.MuscleData;
 						var newData = new MuscleData(
 							oldData.id, oldData.startBoneID, hoveringBone.BoneData.id, 
-							oldData.strength, oldData.canExpand
+							oldData.strength, oldData.canExpand, oldData.userId
 						); 
 						currentMuscle.MuscleData = newData;
 					} else {

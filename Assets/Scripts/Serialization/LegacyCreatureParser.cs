@@ -79,7 +79,7 @@ public static class LegacyCreatureParser {
 		var startID = int.Parse(parts[1]);
 		var endID = int.Parse(parts[2]);
 
-		return new MuscleData(muscleID, startID, endID, Muscle.Defaults.MaxForce, true);
+		return new MuscleData(muscleID, startID, endID, Muscle.Defaults.MaxForce, true, "");
 	}
 
 	private static float ParseFloat(string encoded) {
