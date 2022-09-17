@@ -227,7 +227,7 @@ namespace Keiwando.JSON {
 
             JNumber token = null;
             string numberAsString = encoded.SubSubstring(numberStart, i - numberStart).ToString();
-            if (fractionDigitRead || exponentDigitRead) {
+            if (fractionDigitRead || exponentDigitRead) {
                 float result;
                 var style = System.Globalization.NumberStyles.Float;
                 var culture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
@@ -304,7 +304,7 @@ namespace Keiwando.JSON {
         }
 
         private static bool IsDigit(char c) {
-            return c == '0' || IsDigit1to9(c);
+            return c == '0' || IsDigit1to9(c);
         }
 
         private static bool IsDigit1to9(char c) {

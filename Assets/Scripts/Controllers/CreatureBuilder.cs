@@ -137,7 +137,7 @@ namespace Keiwando.Evolution {
 			// Find the connecting joints
 			var startingJoint = FindJointWithId(data.startJointID);
 			var endingJoint = FindJointWithId(data.endJointID);
-			if (startingJoint == null || endingJoint == null) {
+			if (startingJoint == null || endingJoint == null) {
 				Debug.Log(string.Format("The connecting joints for bone {0} were not found!", data.id));
 				return;
 			}

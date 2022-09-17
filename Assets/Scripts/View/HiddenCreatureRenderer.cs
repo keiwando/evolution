@@ -17,7 +17,7 @@ public class HiddenCreatureRenderer: MonoBehaviour {
         this.camera = GetComponent<Camera>();
         this.hiddenCamera = Instantiate(camera.gameObject, transform.position, transform.rotation, transform).GetComponent<Camera>();
         hiddenCamera.targetTexture = new RenderTexture(Screen.width, Screen.height, 0);
-        hiddenCamera.cullingMask = (1 << 11) | (1 << 8);
+        hiddenCamera.cullingMask = (1 << 11) | (1 << 8);
         hiddenCamera.backgroundColor = Color.clear;
         Destroy(hiddenCamera.GetComponent<HiddenCreatureRenderer>());
         Destroy(hiddenCamera.GetComponent<TrackedCamera>());

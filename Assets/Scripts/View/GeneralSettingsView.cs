@@ -62,7 +62,7 @@ namespace Keiwando.Evolution.UI {
             public string Label { get; set; }
         }
 
-        private readonly DropdownData<SelectionAlgorithm>[] selectionAlgorithms = new [] {
+        private readonly DropdownData<SelectionAlgorithm>[] selectionAlgorithms = new [] {
             new DropdownData<SelectionAlgorithm>() { 
                 Index = 0,
                 Value = SelectionAlgorithm.FitnessProportional,

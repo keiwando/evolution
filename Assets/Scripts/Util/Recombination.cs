@@ -51,7 +51,7 @@ namespace Keiwando.Evolution {
             T[] result0 = new T[length];
             T[] result1 = new T[length];
 
-            for (int i = 0; i < splitIndex; i++) {
+            for (int i = 0; i < splitIndex; i++) {
                 result0[i] = lhs[i];
                 result1[i] = rhs[i];
             }

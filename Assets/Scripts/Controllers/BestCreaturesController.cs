@@ -85,7 +85,7 @@ namespace Keiwando.Evolution {
 		public IEnumerator StartPlayback(int generation) {
 
 			var lastSimulatedGeneration = evolution.SimulationData.BestCreatures.Count;
-			if (generation < 1 || generation > lastSimulatedGeneration) {
+			if (generation < 1 || generation > lastSimulatedGeneration) {
 				Debug.LogError(string.Format("Attempted to show invalid generation: {0}. Simulated up to {1}", generation, lastSimulatedGeneration));
 				yield break;
 			}

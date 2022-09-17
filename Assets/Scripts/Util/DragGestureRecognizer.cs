@@ -30,7 +30,7 @@ namespace Keiwando {
 
         void Update() {
             
-            #if UNITY_IOS || UNITY_ANDROID
+            #if UNITY_IOS || UNITY_ANDROID
             if (MouseButton == 0) {
                 UpdateForTouches();
             }
