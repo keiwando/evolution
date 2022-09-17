@@ -6,8 +6,7 @@ namespace Keiwando.Evolution {
     public class MuscleSettingsManager: BodyComponentSettingsManager {
 
         private const string CAN_EXPAND_TOOLTIP = "Whether the muscle should be able to expand or only contract.";
-        // FIXME: Write a proper tooltip here
-        private const string USER_ID_TOOLTIP = "TEst";
+        private const string USER_ID_TOOLTIP = "All muscles with the same id expand and contract at the same time.";
 
         private const float MIN_STRENGTH = 0f;
         private const float MAX_STRENGTH = 4500f;

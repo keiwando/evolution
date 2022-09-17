@@ -40,8 +40,8 @@ public struct MuscleData: IJsonConvertible {
         json[CodingKey.EndBoneID] = this.endBoneID;
         json[CodingKey.Strength] = this.strength;
         json[CodingKey.CanExpand] = this.canExpand;
-        if (string.IsNullOrEmpty(userId)) {
-            json[CodingKey.UserID] = userId;
+        if (!string.IsNullOrEmpty(this.userId)) {
+            json[CodingKey.UserID] = this.userId;
         }
         return json;
     }

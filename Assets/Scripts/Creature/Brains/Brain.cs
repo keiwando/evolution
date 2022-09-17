@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Keiwando.Evolution {
 
@@ -10,7 +11,14 @@ namespace Keiwando.Evolution {
 		public FeedForwardNetwork Network { get; protected set; }
 
 		abstract public int NumberOfInputs { get; }
-		virtual public int NumberOfOutputs => muscles.Length;
+		virtual public int NumberOfOutputs => numberOfUniqueMuscleIds;
+
+		private int numberOfUniqueMuscleIds = 0;
+		
+		/// <summary>
+		/// For each muscle, contains the index of the brain output that should be applied to this muscle.
+		/// </summary>
+		private int[] muscleToOutputIndex;
 
 		private Muscle[] muscles;
 
@@ -23,6 +31,26 @@ namespace Keiwando.Evolution {
 		public void Init(NeuralNetworkSettings settings, Muscle[] muscles, float[] chromosome = null) {
 
 			this.muscles = muscles;
+			this.muscleToOutputIndex = new int[muscles.Length];
+			this.numberOfUniqueMuscleIds = 0;
+			Dictionary<string, int> userIdToFirstCorrespondingMuscleIndex = null;
+			for (int i = 0; i < muscles.Length; i++) {
+				var muscle = muscles[i];
+				int outputIndex = numberOfUniqueMuscleIds;
+				if (muscle.MuscleData.userId == "") {
+					numberOfUniqueMuscleIds++;
+				} else {
+					if (userIdToFirstCorrespondingMuscleIndex == null) {
+						userIdToFirstCorrespondingMuscleIndex = new Dictionary<string, int>();
+					}
+					if (!userIdToFirstCorrespondingMuscleIndex.TryGetValue(muscle.MuscleData.userId, out outputIndex)) {
+						outputIndex = numberOfUniqueMuscleIds++;
+						userIdToFirstCorrespondingMuscleIndex.Add(muscle.MuscleData.userId, outputIndex);
+					}
+				}
+				this.muscleToOutputIndex[i] = outputIndex;
+			}
+
 			this.Network = new FeedForwardNetwork(NumberOfInputs, NumberOfOutputs, settings, chromosome);
 		}
 
@@ -48,7 +76,8 @@ namespace Keiwando.Evolution {
 		protected virtual void ApplyOutputs(float[] outputs) {
 
 			for (int i = 0; i < muscles.Length; i++) {
-				float output = float.IsNaN(outputs[i]) ? 0 : outputs[i];
+				int outputIndex = this.muscleToOutputIndex[i];
+				float output = float.IsNaN(outputs[outputIndex]) ? 0 : outputs[outputIndex];
 				ApplyOutputToMuscle(output, muscles[i]);
 			}
 		}
