@@ -5,7 +5,6 @@ namespace Keiwando.Evolution {
 
     public class BoneSettingsManager: BodyComponentSettingsManager {
 
-        // FIXME: THe last word here is getting cut off
         private const string WING_TOOLTIP = "These wings generate force when they are moved in the direction of their feathers.";
         private const string INVERT_TOOLTIP = "Flips the wing and therefore the direction of the force that it generates.";
 
@@ -39,7 +38,7 @@ namespace Keiwando.Evolution {
                 Refresh();
             };
 
-            wingToggle = viewController.AddToggle("Wing", WING_TOOLTIP);
+            wingToggle = viewController.AddToggle("Wing", new TooltipData(WING_TOOLTIP, 90f));
             wingToggle.onValueChanged += delegate (bool isWing) {
                 var oldData = bone.BoneData;
                 if (isWing != oldData.isWing) {
@@ -53,7 +52,7 @@ namespace Keiwando.Evolution {
                 Refresh();
             };
 
-            invertedToggle = viewController.AddToggle("Invert", INVERT_TOOLTIP);
+            invertedToggle = viewController.AddToggle("Invert", new TooltipData(INVERT_TOOLTIP));
             invertedToggle.onValueChanged += delegate (bool inverted) {
                 var oldData = bone.BoneData;
                 if (inverted != oldData.inverted) {

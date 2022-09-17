@@ -9,11 +9,13 @@ public struct JointData: IJsonConvertible {
 
     public readonly Vector2 position;
     public readonly float weight;
+    public readonly float fitnessPenaltyForTouchingGround;
 
-    public JointData(int id, Vector2 position, float weight) {
+    public JointData(int id, Vector2 position, float weight, float penalty) {
         this.id = id;
         this.position = position;
         this.weight = weight;
+        this.fitnessPenaltyForTouchingGround = penalty;
     }
 
     #region Encode & Decode
@@ -23,6 +25,8 @@ public struct JointData: IJsonConvertible {
         public const string X = "x";
         public const string Y = "y";
         public const string Weight = "weight";
+        // This is optional and only serialized if != 0.0f
+        public const string Penalty = "penalty";
     }
 
     public JObject Encode() {
@@ -31,6 +35,9 @@ public struct JointData: IJsonConvertible {
         json[CodingKey.X] = this.position.x;
         json[CodingKey.Y] = this.position.y;
         json[CodingKey.Weight] = this.weight;
+        if (fitnessPenaltyForTouchingGround != 0.0f) {
+            json[CodingKey.Penalty] = fitnessPenaltyForTouchingGround;
+        }
         return json;
     }
 
@@ -46,8 +53,9 @@ public struct JointData: IJsonConvertible {
         float x = json[CodingKey.X].ToFloat();
         float y = json[CodingKey.Y].ToFloat();
         float weight = json[CodingKey.Weight].ToFloat();
+        float penalty = json.ContainsKey(CodingKey.Penalty) ? json[CodingKey.Penalty].ToFloat() : 0.0f;
 
-        return new JointData(id, new Vector2(x, y), weight);
+        return new JointData(id, new Vector2(x, y), weight, penalty);
     }
 
     #endregion

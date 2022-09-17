@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Keiwando.Evolution.UI;
 
 namespace Keiwando.UI {
 
@@ -12,11 +13,14 @@ namespace Keiwando.UI {
         [SerializeField] private Slider slider;
         [SerializeField] private TMP_Text descriptionLabel;
         [SerializeField] private TMP_Text valueLabel;
+        [SerializeField] private ClickableTooltip tooltip;
 
         public string Description {
             get { return descriptionLabel?.text ?? ""; }
             set { if (descriptionLabel != null) descriptionLabel.text = value; }
         }
+
+        public TooltipData TooltipData { get; set; }
 
         void Start() {
 
@@ -25,6 +29,9 @@ namespace Keiwando.UI {
                     onValueChanged(value);
                 }
             });
+            if (TooltipData == null) {
+                this.tooltip.gameObject.SetActive(false);
+            }
         }
 
         public void OnDragWillBegin() {
@@ -39,6 +46,15 @@ namespace Keiwando.UI {
                 valueLabel.text = value.ToString();
             } else {
                 valueLabel.text = valueText;
+            }
+
+            if (tooltip != null) {
+                if ((TooltipData == null) == tooltip.gameObject.activeSelf) {
+                    tooltip.gameObject.SetActive(TooltipData != null);
+                }
+                if (tooltip.gameObject.activeSelf) {
+                    tooltip.SetData(TooltipData);
+                }
             }
         }
     }

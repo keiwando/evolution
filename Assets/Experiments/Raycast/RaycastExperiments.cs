@@ -16,7 +16,7 @@ public class RaycastExperiments: MonoBehaviour {
     private IEnumerator TestGroundDistance() {
 
         var joints = new List<JointData>() {
-            new JointData(0, new Vector2(0, 2f), 1f)
+            new JointData(0, new Vector2(0, 2f), 1f, 0f)
         };
 
         var config = new SceneController.SimulationSceneLoadConfig(

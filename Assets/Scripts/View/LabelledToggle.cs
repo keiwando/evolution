@@ -18,7 +18,7 @@ namespace Keiwando.UI {
             set { if (descriptionLabel != null) descriptionLabel.text = value; }
         }
 
-        public string TooltipText { get; set; }
+        public TooltipData TooltipData { get; set; }
 
         void Start() {
             this.toggle.onValueChanged.AddListener(delegate (bool enabled) {
@@ -26,7 +26,7 @@ namespace Keiwando.UI {
                     onValueChanged(enabled);
                 }
             });
-            if (TooltipText == "") {
+            if (TooltipData == null) {
                 this.tooltip.gameObject.SetActive(false);
             }
         }
@@ -35,11 +35,11 @@ namespace Keiwando.UI {
             toggle.isOn = enabled;
 
             if (tooltip != null) {
-                if ((TooltipText == "") == tooltip.gameObject.activeSelf) {
-                    tooltip.gameObject.SetActive(TooltipText != "");
+                if ((TooltipData == null) == tooltip.gameObject.activeSelf) {
+                    tooltip.gameObject.SetActive(TooltipData != null);
                 }
                 if (tooltip.gameObject.activeSelf) {
-                    tooltip.SetText(TooltipText);
+                    tooltip.SetData(TooltipData);
                 }
             }
         }

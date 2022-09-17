@@ -19,7 +19,8 @@ public class SharedMaterialTest : MonoBehaviour {
             new JointData(
                 0, 
                 new Vector2(0, 0),
-                1f
+                1f,
+                0f
             )
         );
 

@@ -3,6 +3,15 @@ using UnityEngine.UI;
 
 namespace Keiwando.Evolution.UI {
 
+    public class TooltipData {
+        public readonly string text;
+        public readonly float height;
+
+        public TooltipData(string text = "", float height = 70.0f) {
+            this.text = text; this.height = height;
+        }
+    }
+
     [RequireComponent(typeof(Button))]
     public class ClickableTooltip: MonoBehaviour {
 
@@ -70,8 +79,9 @@ namespace Keiwando.Evolution.UI {
             tooltip.transform.SetParent(previousParent, true);
         }
 
-        public void SetText(string text) {
-            tooltipText.text = text;
+        public void SetData(TooltipData data) {
+            tooltipText.text = data.text;
+            (tooltip.transform as RectTransform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, data.height);
         }
     }
 }

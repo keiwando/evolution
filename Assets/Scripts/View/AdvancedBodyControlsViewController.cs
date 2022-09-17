@@ -27,22 +27,23 @@ namespace Keiwando.Evolution.UI {
             toggleTemplate.gameObject.SetActive(false);
         }
 
-        public LabelledSlider AddSlider(string title) {
+        public LabelledSlider AddSlider(string title, TooltipData tooltip = null) {
             
             var slider = Instantiate(sliderTemplate, grid.transform);
             listItems.Add(slider.gameObject);
             slider.gameObject.SetActive(true);
             slider.Description = title;
+            slider.TooltipData = tooltip;
             return slider;
         }
 
-        public LabelledToggle AddToggle(string title, string tooltip = "") {
+        public LabelledToggle AddToggle(string title, TooltipData tooltip = null) {
             
             var toggle = Instantiate(toggleTemplate, grid.transform);
             listItems.Add(toggle.gameObject);
             toggle.gameObject.SetActive(true);
             toggle.Description = title;
-            toggle.TooltipText = tooltip;
+            toggle.TooltipData = tooltip;
             return toggle;
         }
 
