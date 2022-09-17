@@ -44,16 +44,33 @@ public class EditorStateManager {
     private static CreatureDesign _lastCreatureDesign;
 
     static EditorStateManager() {
-        // #if UNITY_WEBGL 
-        // _editorSettings = EditorSettings.Default;
-        // _simulationSettings = SimulationSettings.Default;
-        // _networkSettings = NeuralNetworkSettings.Default;
-        // _lastCreatureDesign = new CreatureDesign();
-        // #else
-        _editorSettings = EditorSettings.Decode(Settings.EditorSettings);
-        _simulationSettings = SimulationSettings.Decode(Settings.SimulationSettings);
-        _networkSettings = NeuralNetworkSettings.Decode(Settings.NetworkSettings);
-        _lastCreatureDesign = CreatureSerializer.ParseCreatureDesign(Settings.LastCreatureDesign);
-        // #endif
+        
+        try {
+            _editorSettings = EditorSettings.Decode(Settings.EditorSettings);
+        } catch {
+            Settings.EditorSettings = EditorSettings.Default.Encode().ToString(Formatting.None);
+            _editorSettings = EditorSettings.Default;
+        }
+        
+        try {
+            _simulationSettings = SimulationSettings.Decode(Settings.SimulationSettings);
+        } catch {
+            Settings.SimulationSettings = SimulationSettings.Default.Encode().ToString(Formatting.None);
+            _simulationSettings = SimulationSettings.Default;
+        }
+        
+        try {
+            _networkSettings = NeuralNetworkSettings.Decode(Settings.NetworkSettings);
+        } catch {
+            Settings.NetworkSettings = NeuralNetworkSettings.Default.Encode().ToString(Formatting.None);
+            _networkSettings = NeuralNetworkSettings.Default;
+        }
+        
+        try {
+            _lastCreatureDesign = CreatureSerializer.ParseCreatureDesign(Settings.LastCreatureDesign);
+        } catch {
+            Settings.LastCreatureDesign = CreatureDesign.Empty.Encode().ToString(Formatting.None);
+            _lastCreatureDesign = CreatureDesign.Empty;
+        }
     }
 }

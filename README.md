@@ -15,9 +15,7 @@ A sandbox game/simulator that demonstrates machine learning with evolutionary al
 
 ## Support this Project
 
-This simulator is available for free on every platform. There are no ads, in-app purchases, subscriptions or other types of monetization and I currently have no plans to change this.
-
-If you enjoy this project and would like to support its development, you have the option to [pay  what you think is fair](https://keiwan.itch.io/evolution/purchase). Thank you so much to everybody who has supported this project over the years, whether financially or just by downloading, sharing and leaving reviews. I appreciate it a lot!
+While you are able to download the source code and build the game for yourself for free, you can also support this project by purchasing copies of it for macOS and Windows on [itch.io](https://keiwan.itch.io/evolution/purchase) or purchasing the iOS version on the App Store. Thank you so much to everybody who has supported this project over the years, whether financially or just by downloading, sharing and leaving reviews. I appreciate it a lot!
 
 
 ## Feedback & More
