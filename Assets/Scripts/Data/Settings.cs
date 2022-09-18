@@ -17,7 +17,7 @@ public class Settings {
 	private const string AUTO_SAVE_DISTANCE_KEY = "AUTO_SAVE_DISTANCE_KEY";
 	private const string HELP_SCREEN_LANGUAGE_KEY = "HELP_SCREEN_LANGUAGE";
 	private const string LANGUAGE_KEY = "LANGUAGE_KEY";
-	private const string HELP_INDICATOR_SHOWN_KEY = "FIRST_TIME";
+	private const string SHOW_ONBOARDING_KEY = "SHOW_ONBOARDING_KEY";
 	private const string CREATURE_NAMES_KEY = "_CreatureNames";
 	private const string SIMULATION_SETTINGS_KEY = "EVOLUTION_SETTINGS";
 	private const string NETWORK_SETTINGS_KEY = "NEURAL NETWORK SETTINGS";
@@ -94,9 +94,9 @@ public class Settings {
 		set { Store.SetString(LANGUAGE_KEY, value); }
 	}
 
-	public static bool HelpIndicatorShown {
-		get { return Store.GetBool(HELP_INDICATOR_SHOWN_KEY, true); }
-		set { Store.SetBool(HELP_INDICATOR_SHOWN_KEY, value); }
+	public static bool ShowOnboarding {
+		get { return Store.GetBool(SHOW_ONBOARDING_KEY, true); }
+		set { Store.SetBool(SHOW_ONBOARDING_KEY, value); }
 	}
 
 	public static string CreatureNames {
@@ -145,6 +145,7 @@ public class Settings {
 		AutoSaveDistance = 5;
 		HelpScreenLanguage = "LANGUAGE_ENGLISH";
 		Language = "en";
+		ShowOnboarding = true;
 	}
 
  public static void Reset() {

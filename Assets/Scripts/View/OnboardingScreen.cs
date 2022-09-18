@@ -46,9 +46,9 @@ public class OnboardingScreen : MonoBehaviour {
 
 	void Start () {
 
-		if (!Settings.HelpIndicatorShown) {
+		if (Settings.ShowOnboarding) {
 			Show();
-			Settings.HelpIndicatorShown = true;
+			Settings.ShowOnboarding = false;
 		}
 	}
 

@@ -1,3 +1,7 @@
+## v3.1.0
+
+- 
+
 ## v3.0.6
 
 - Fixed Web build in Safari by forcing the use of WebGL 1.0
