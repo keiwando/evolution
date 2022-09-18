@@ -5,7 +5,7 @@ namespace Keiwando.Evolution {
 
     public class BoneSettingsManager: BodyComponentSettingsManager {
 
-        private const string WING_TOOLTIP = "These wings generate force when they are moved in the direction of their feathers.";
+        private const string WING_TOOLTIP = "These wings generate force when they are moved in the direction of their feathers.\nTip: Reduce the weight of wing bones and increase their connected muscle strengths for better results.";
         private const string INVERT_TOOLTIP = "Flips the wing and therefore the direction of the force that it generates.";
 
         private const float MIN_WEIGHT = 0.5f;
@@ -38,7 +38,7 @@ namespace Keiwando.Evolution {
                 Refresh();
             };
 
-            wingToggle = viewController.AddToggle("Wing", new TooltipData(WING_TOOLTIP, 90f));
+            wingToggle = viewController.AddToggle("Wing", new TooltipData(WING_TOOLTIP, 146f));
             wingToggle.onValueChanged += delegate (bool isWing) {
                 var oldData = bone.BoneData;
                 if (isWing != oldData.isWing) {

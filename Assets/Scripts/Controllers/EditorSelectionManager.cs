@@ -91,8 +91,8 @@ namespace Keiwando.Evolution {
             default: break;
             }
 
-            lastHovering = currentHovering;
-            currentHovering = hovering;
+            this.lastHovering = currentHovering;
+            this.currentHovering = hovering;
         }
 
         private void UpdateSelectionHighlights() {
@@ -278,13 +278,14 @@ namespace Keiwando.Evolution {
         private bool SelectInArea<T>(Rect selectionArea, List<BodyComponent> selection)
             where T: BodyComponent {
 
-            GetComponentsInRect<T>(selectionArea, selection);
-            
             // Only select a single component with a click
-            if (selectionArea.size.magnitude < TAP_THRESHOLD * 2f && selection.Count > 1) {
-                var item = selection[0];
+            if (selectionArea.size.magnitude < TAP_THRESHOLD * 2f) {
                 selection.Clear();
-                selection.Add(item);
+                if (this.currentHovering != null) {
+                    selection.Add(this.currentHovering);
+                }
+            } else {
+                GetComponentsInRect<T>(selectionArea, selection);
             }
 
             foreach (var item in selection) {
@@ -320,6 +321,14 @@ namespace Keiwando.Evolution {
                     result.Add(bodyComponent);
                 }
             }
+        }
+
+        private static BodyComponent GetAnyComponentAtScreenPoint(Vector3 point) {
+            Joint joint = GetComponentAtScreenPoint<Joint>(point);
+            if (joint != null) { return joint; }
+            Bone bone = GetComponentAtScreenPoint<Bone>(point);
+            if (bone != null) { return bone; }
+            return GetComponentAtScreenPoint<Muscle>(point);
         }
 
         private static T GetComponentAtScreenPoint<T>(Vector3 point) 
