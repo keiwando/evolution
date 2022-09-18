@@ -1,6 +1,11 @@
 ## v3.1.0
 
-- 
+- Added wings and a flying task
+- Define a fitness penalty if certain joints touch the ground
+- Assign IDs to muscles that should expand and contract at the same time
+- Exiting a simulation will now load its creature design into the editor
+- Bug fixes
+- Stability improvements
 
 ## v3.0.6
 
