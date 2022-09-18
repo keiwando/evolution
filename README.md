@@ -28,6 +28,11 @@ While you are able to download the source code and build the game for yourself f
 * [@keiwando](https://twitter.com/keiwando)
 
 
+## Building the Code
+
+In order to build Evolution from its source code you need to download Unity 2018.4.36f1 (including its iOS build support modules). Then, you can just open the folder in Unity, select a platform (command + shift + B) and build the application for that platform.
+
+
 ## License
 
 Copyright (c) Keiwan Donyagard. All rights reserved.
