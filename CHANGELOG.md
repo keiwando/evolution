@@ -1,3 +1,7 @@
+## v3.1.1
+
+- Fixed launch crash on Android 12
+
 ## v3.1.0
 
 - Added wings and a flying task

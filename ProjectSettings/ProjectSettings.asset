@@ -72,7 +72,7 @@ PlayerSettings:
   macRetinaSupport: 1
   runInBackground: 1
   captureSingleScreen: 0
-  muteOtherAudioSources: 0
+  muteOtherAudioSources: 1
   Prepare IOS For Recording: 0
   Force IOS Speakers When Recording: 0
   deferSystemGesturesMode: 14
@@ -123,7 +123,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 0
-  bundleVersion: 3.1.0
+  bundleVersion: 3.1.1
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -170,7 +170,7 @@ PlayerSettings:
   buildNumber:
     Standalone: 1
     iOS: 1
-  AndroidBundleVersionCode: 18
+  AndroidBundleVersionCode: 19
   AndroidMinSdkVersion: 24
   AndroidTargetSdkVersion: 31
   AndroidPreferredInstallLocation: 1
