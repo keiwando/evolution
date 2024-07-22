@@ -32,8 +32,7 @@ public class NativeFileSOBuild {
 		PBXProject project = new PBXProject();
 		project.ReadFromFile(pathToProject);
 
-		var targetName = PBXProject.GetUnityTargetName();
-		var targetGUID = project.TargetGuidByName(targetName);
+		var targetGUID = project.GetUnityMainTargetGuid();
 
 		AddFrameworks(project, targetGUID);
 		project.WriteToFile(pathToProject);
