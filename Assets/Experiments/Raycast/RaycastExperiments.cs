@@ -8,7 +8,7 @@ public class RaycastExperiments: MonoBehaviour {
 
     void Awake() {
 
-        Physics.autoSimulation = false;
+        Physics.simulationMode = SimulationMode.Script;
 
         StartCoroutine(TestGroundDistance());
     }
@@ -19,16 +19,17 @@ public class RaycastExperiments: MonoBehaviour {
             new JointData(0, new Vector2(0, 2f), 1f, 0f)
         };
 
-        var config = new SceneController.SimulationSceneLoadConfig(
-            new CreatureDesign("Unnamed", joints, new List<BoneData>(), new List<MuscleData>()),
-            1,
-            DefaultSimulationScenes.DefaultSceneForObjective(Objective.Running),
-            SceneController.SimulationSceneType.Simulation,
-            new LegacySimulationOptions()
-        );
         var context = new SceneController.SimulationSceneLoadContext();
 
-        yield return SceneController.LoadSimulationScene(config, context, null);
+        yield return SceneController.LoadSimulationScene(
+            creatureDesign: new CreatureDesign("Unnamed", joints, new List<BoneData>(), new List<MuscleData>()),
+            creatureSpawnCount: 1,
+            sceneDescription: DefaultSimulationScenes.DefaultSceneForObjective(Objective.Running),
+            sceneType: SceneController.SimulationSceneType.Simulation,
+            legacyOptions: new LegacySimulationOptions(),
+            context: context, 
+            sceneContext: null
+        );
 
         Debug.Log("TestGroundDistance");
 

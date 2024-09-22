@@ -8,8 +8,8 @@ namespace Keiwando.Evolution {
         private SimulationViewController viewController;
 
         void Start() {
-            evolution = FindObjectOfType<Evolution>();
-            viewController = FindObjectOfType<SimulationViewController>();
+            evolution = FindAnyObjectByType<Evolution>();
+            viewController = FindAnyObjectByType<SimulationViewController>();
 
             InputRegistry.shared.Register(InputType.AndroidBack, this); 
             var androidRecognizer = GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer();

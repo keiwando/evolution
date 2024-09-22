@@ -23,7 +23,7 @@ namespace Keiwando.Evolution.UI {
 
         void Start() {
 
-            var evolution = FindObjectOfType<Evolution>();
+            var evolution = FindAnyObjectByType<Evolution>();
             this.settingsManager = new SettingsManager(evolution);
 
             continueButton.onClick.AddListener(delegate () {

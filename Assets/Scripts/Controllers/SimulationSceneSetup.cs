@@ -32,7 +32,7 @@ namespace Keiwando.Evolution {
             SimulationSceneBuilder.Build(scene, context);
             SetupPhysics(scene.PhysicsConfiguration);
 
-            var trackedCameras = FindObjectsOfType<TrackedCamera>();
+            var trackedCameras = FindObjectsByType<TrackedCamera>(FindObjectsSortMode.None);
             foreach (var trackedCamera in trackedCameras) {
                 trackedCamera.ControlPoints = scene.CameraControlPoints;
             }

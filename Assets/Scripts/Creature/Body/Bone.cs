@@ -41,7 +41,7 @@ public class Bone : BodyComponent {
 			var weightObj = new GameObject();
 			var weightBody = weightObj.AddComponent<Rigidbody>();
 			weightBody.mass = 1f;
-			weightBody.angularDrag = 0.05f;
+			weightBody.angularDamping = 0.05f;
 			var fixedJoint = weightObj.AddComponent<FixedJoint>();
 			fixedJoint.connectedBody = body;
 			fixedJoint.enablePreprocessing = false;
@@ -83,7 +83,7 @@ public class Bone : BodyComponent {
 		if (!BoneData.isWing) { 
 			return; 
 		}
-		var localBoneVelocity = transform.InverseTransformDirection(body.velocity);
+		var localBoneVelocity = transform.InverseTransformDirection(body.linearVelocity);
 		if (localBoneVelocity.magnitude < 1.0) { return; }
 		var localAngle = Vector3.SignedAngle(localBoneVelocity, Vector3.up, Vector3.forward);
 		if (BoneData.inverted != (localAngle < 0)) {

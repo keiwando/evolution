@@ -181,7 +181,7 @@ public class CreatureEditor: MonoBehaviour,
 
         InputRegistry.shared.Deregister(this);
 
-        Physics.autoSimulation = false;
+        Physics.simulationMode = SimulationMode.Script;
         Physics.autoSyncTransforms = false;
         
         // Load simulation scene

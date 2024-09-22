@@ -31,7 +31,7 @@ namespace Keiwando.Evolution.UI {
 		// Use this for initialization
 		void Start () {
 
-			evolution = FindObjectOfType<Evolution>();
+			evolution = FindAnyObjectByType<Evolution>();
 
 			Setup();
 		}

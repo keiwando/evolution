@@ -51,9 +51,9 @@ namespace Keiwando.Evolution {
 
 		void Start () {
 
-			Physics.autoSimulation = false;
+			Physics.simulationMode = SimulationMode.Script;
 
-			evolution = FindObjectOfType<Evolution>();
+			evolution = FindAnyObjectByType<Evolution>();
 
 			AutoplayDuration = 10;
 			AutoplayEnabled = true;
@@ -96,17 +96,18 @@ namespace Keiwando.Evolution {
 
 			this.CurrentGeneration = generation;
 
-			var sceneLoadConfig = new SceneController.SimulationSceneLoadConfig(
-				this.evolution.SimulationData.CreatureDesign,
-				1,
-				this.evolution.SimulationData.SceneDescription,
-				SceneController.SimulationSceneType.BestCreatures,
-				evolution.GetLegacySimulationOptions()
-			);
 			var context = new SceneController.SimulationSceneLoadContext();
 			var sceneContext = new PlaybackSceneContext(this.evolution.SimulationData, this);
 
-			yield return SceneController.LoadSimulationScene(sceneLoadConfig, context, sceneContext);
+			yield return SceneController.LoadSimulationScene(
+				creatureDesign: this.evolution.SimulationData.CreatureDesign,
+				creatureSpawnCount: 1,
+				sceneDescription: this.evolution.SimulationData.SceneDescription,
+				sceneType: SceneController.SimulationSceneType.BestCreatures,
+				legacyOptions: evolution.GetLegacySimulationOptions(),
+				context: context, 
+				sceneContext: sceneContext
+			);
 			this.physicsScene = context.PhysicsScene;
 			this.playbackScene = context.Scene;
 

@@ -49,9 +49,9 @@ public class SimulationViewController : MonoBehaviour,
 
 	void Start () {
 
-		bestCreatureController = FindObjectOfType<BestCreaturesController>();
-		cameraFollowController = FindObjectOfType<CameraFollowController>();
-		evolution = FindObjectOfType<Evolution>();
+		bestCreatureController = FindAnyObjectByType<BestCreaturesController>();
+		cameraFollowController = FindAnyObjectByType<CameraFollowController>();
+		evolution = FindAnyObjectByType<Evolution>();
 
 		evolutionOverlayView.Delegate = this;
 		bestCreatureOverlayView.Delegate = this;

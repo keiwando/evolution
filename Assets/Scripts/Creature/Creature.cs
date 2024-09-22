@@ -158,8 +158,8 @@ namespace Keiwando.Evolution {
 					minJointY = jointPos.y;
 
 				// Accumulate the velocity
-				velocityX += joint.Body.velocity.x;
-				velocityY += joint.Body.velocity.y;
+				velocityX += joint.Body.linearVelocity.x;
+				velocityY += joint.Body.linearVelocity.y;
 
 				// Check if the joint is touching the ground
 				jointsCountTouchingGround += joint.isCollidingWithGround ? 1f : 0f;
@@ -271,7 +271,7 @@ namespace Keiwando.Evolution {
 			int jointsCount = joints.Count;
 
 			for (int i = 0; i < jointsCount; i++) {
-				var jointVel = joints[i].Body.velocity;
+				var jointVel = joints[i].Body.linearVelocity;
 				velX += jointVel.x;
 				velY += jointVel.y;
 				velZ += jointVel.z;

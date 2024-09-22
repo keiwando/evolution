@@ -5,7 +5,16 @@ EditorUserSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 4
   m_ConfigSettings:
+    GraphicsSettingsInspector_UserSettings:
+      value: 18134705175a055722080a3115371d4a0d55006876786860616b0471b8b07a68ffab74f9ee2a3a30300cea1a11320d0beb1a0c25f7060f494b4cdf1b18f3045e38cb5ad8
+      flags: 0
     RecentlyUsedSceneGuid-0:
+      value: 01015257065650585859592445770c12404e4d2b7e7b76357e7d4837bbe33068
+      flags: 0
+    RecentlyUsedSceneGuid-1:
+      value: 5401570051565a035b5c5d7611770c12404e4a2f7979706475794962b2b7356f
+      flags: 0
+    RecentlyUsedSceneGuid-2:
       value: 515505075d540b0f5e0c0d26447708144e16407e7c2b70362f2d4a65e1b1666c
       flags: 0
     UnityRemoteCompression:
@@ -34,4 +43,6 @@ EditorUserSettings:
   m_VCHierarchyOverlayIcons: 1
   m_VCOtherOverlayIcons: 1
   m_VCAllowAsyncUpdate: 0
+  m_VCScanLocalPackagesOnConnect: 1
   m_ArtifactGarbageCollection: 1
+  m_CompressAssetsOnImport: 1

@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using Keiwando;
 using Keiwando.Evolution.Scenes;
+using UnityEngine.EventSystems;
 
 namespace Keiwando.Evolution {
 
@@ -16,29 +17,6 @@ namespace Keiwando.Evolution {
         public enum SimulationSceneType {
             Simulation,
             BestCreatures
-        }
-
-        public class SimulationSceneLoadConfig {
-
-            public readonly CreatureDesign CreatureDesign;
-            public readonly int CreatureSpawnCount;
-            public readonly SimulationSceneDescription SceneDescription;
-            public readonly SimulationSceneType SceneType;
-            public readonly LegacySimulationOptions LegacyOptions;
-
-            public SimulationSceneLoadConfig(
-                CreatureDesign design,
-                int spawnCount,
-                SimulationSceneDescription sceneDescription,
-                SimulationSceneType sceneType,
-                LegacySimulationOptions legacyOptions
-            ) {
-                this.CreatureDesign = design;
-                this.CreatureSpawnCount = spawnCount;
-                this.SceneDescription = sceneDescription;
-                this.SceneType = sceneType;
-                this.LegacyOptions = legacyOptions;
-            }
         }
 
         public class SimulationSceneLoadContext {
@@ -57,10 +35,18 @@ namespace Keiwando.Evolution {
             yield return SceneManager.UnloadSceneAsync(scene);
         }
 
-        public static IEnumerator LoadSimulationScene(SimulationSceneLoadConfig config, SimulationSceneLoadContext context, ISceneContext sceneContext) {
+        public static IEnumerator LoadSimulationScene(
+            CreatureDesign creatureDesign,
+            int creatureSpawnCount,
+            SimulationSceneDescription sceneDescription,
+            SimulationSceneType sceneType,
+            LegacySimulationOptions legacyOptions,
+            SimulationSceneLoadContext context, 
+            ISceneContext sceneContext
+        ) {
             
             // Load Scene
-            var sceneName = NameForScene(config.SceneType);
+            var sceneName = NameForScene(sceneType);
             var options = new LoadSceneParameters(LoadSceneMode.Additive, LocalPhysicsMode.Physics3D);
 
             SceneManager.LoadScene(sceneName, options);
@@ -85,7 +71,7 @@ namespace Keiwando.Evolution {
             }
 
             // Create the structures
-            sceneSetup.BuildScene(config.SceneDescription, sceneContext);
+            sceneSetup.BuildScene(sceneDescription, sceneContext);
 
             SceneManager.SetActiveScene(prevActiveScene);
             yield return new WaitForFixedUpdate();
@@ -93,12 +79,12 @@ namespace Keiwando.Evolution {
 
             // Spawn Creatures
             var spawnOptions = new SimulationSpawnConfig(
-                config.CreatureDesign, 
-                config.CreatureSpawnCount,
+                creatureDesign, 
+                creatureSpawnCount,
                 context.PhysicsScene,
                 sceneContext,
-                config.LegacyOptions,
-                config.SceneDescription
+                legacyOptions,
+                sceneDescription
             );
             var creatures = sceneSetup.SpawnBatch(spawnOptions);
             SceneManager.SetActiveScene(prevActiveScene);

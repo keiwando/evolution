@@ -101,13 +101,13 @@ namespace Keiwando.Evolution {
 		
 		void Start() {
 			
-			Physics.autoSimulation = false;
+			Physics.simulationMode = SimulationMode.Script;
 			Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
 			this.AutoSaver = new AutoSaver();
 
 			// Find the configuration
-			var configContainer = FindObjectOfType<SimulationConfigContainer>();
+			var configContainer = FindAnyObjectByType<SimulationConfigContainer>();
 			if (configContainer == null) {
 				Debug.LogError("No simulation config was found");
 				return;
@@ -173,18 +173,18 @@ namespace Keiwando.Evolution {
 				int remainingCreatures = Settings.PopulationSize - (i * actualBatchSize);
 				int currentBatchSize = Math.Min(actualBatchSize, remainingCreatures);
 
-				var sceneLoadConfig = new SceneController.SimulationSceneLoadConfig(
-					this.SimulationData.CreatureDesign,
-					currentBatchSize,
-					this.SimulationData.SceneDescription,
-					SceneController.SimulationSceneType.Simulation,
-					GetLegacySimulationOptions()
-				);
-
 				var context = new SceneController.SimulationSceneLoadContext();
 				var sceneContext = new SimulationSceneContext(this.SimulationData);
 
-				yield return SceneController.LoadSimulationScene(sceneLoadConfig, context, sceneContext);
+				yield return SceneController.LoadSimulationScene(
+					creatureDesign: this.SimulationData.CreatureDesign,
+					creatureSpawnCount: currentBatchSize,
+					sceneDescription: this.SimulationData.SceneDescription,
+					sceneType: SceneController.SimulationSceneType.Simulation,
+					legacyOptions: GetLegacySimulationOptions(),
+					context: context, 
+					sceneContext: sceneContext
+				);
 				
 				this.batchPhysicsScene = context.PhysicsScene;
 				
