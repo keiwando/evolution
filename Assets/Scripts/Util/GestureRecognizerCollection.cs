@@ -10,6 +10,7 @@ namespace Keiwando {
         private ScrollGestureRecognizer scrollGestureRecognizer;
         private Dictionary<int, DragGestureRecognizer> dragGestureRecognizers = new Dictionary<int, DragGestureRecognizer>();
         private PinchGestureRecognizer pinchGestureRecognizer;
+        private ClickGestureRecognizer clickGestureRecognizer;
         private AndroidBackButtonGestureRecognizer androidBackButtonGestureRecognizer;
 
         public ScrollGestureRecognizer GetScrollGestureRecognizer() {
@@ -32,6 +33,16 @@ namespace Keiwando {
                 pinchGestureRecognizer = gameObject.AddComponent<PinchGestureRecognizer>();
             return pinchGestureRecognizer;
         }
+
+        public void CreateClickGestureRecognizerIfNecessary() {
+            if (clickGestureRecognizer == null)
+                clickGestureRecognizer = gameObject.AddComponent<ClickGestureRecognizer>();
+        }
+
+        public ClickGestureRecognizer GetClickGestureRecognizer() {
+            CreateClickGestureRecognizerIfNecessary();
+            return clickGestureRecognizer;
+        }        
 
         public AndroidBackButtonGestureRecognizer GetAndroidBackButtonGestureRecognizer() {
             if (androidBackButtonGestureRecognizer == null)

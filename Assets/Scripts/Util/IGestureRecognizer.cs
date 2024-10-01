@@ -3,6 +3,7 @@ namespace Keiwando {
     public delegate void GestureCallback<T>(T recognizer) where T: IGestureRecognizer<T>;
 
     public enum GestureRecognizerState {
+        Possible,
         Began,
         Changed,
         Cancelled,

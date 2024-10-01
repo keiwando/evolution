@@ -82,6 +82,11 @@ public static class InputUtils {
 	// 	return results.Count > 0;
 	// }
 
+	public static bool MouseDown() {
+		return Input.GetMouseButtonDown(0) || 
+			   (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began);
+	}
+
 	/// <summary>
 	/// Returns true if the mouse/touch input ended on this frame.
 	/// </summary>

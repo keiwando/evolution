@@ -85,6 +85,8 @@ public class CreatureEditor: MonoBehaviour,
             if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this))
                 Application.Quit();
         };
+        
+        GestureRecognizerCollection.shared.CreateClickGestureRecognizerIfNecessary();
 
         // Physics.autoSimulation = true;
         Physics.autoSyncTransforms = true;
@@ -319,7 +321,9 @@ public class CreatureEditor: MonoBehaviour,
                 #if UNITY_IOS || UNITY_ANDROID
                 if (Input.touchCount == 0) return;
                 #endif
-                creatureEdited = creatureBuilder.TryPlacingJoint(clickWorldPos); 
+                if (GestureRecognizerCollection.shared.GetClickGestureRecognizer().ClickEndedOnThisFrame()) {
+                    creatureEdited = creatureBuilder.TryPlacingJoint(clickWorldPos); 
+                }
                 break;
 
             case Tool.Bone:
