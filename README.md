@@ -22,10 +22,9 @@ While you are able to download the source code and build the game for yourself f
 
 * [FAQ](http://keiwando.com/evolution/faq)
 * [Submit a Bug](https://github.com/keiwando/evolution/issues)
-* [Gif Collection](http://keiwando.com/evolution/gifs)
-* [Submit a Gif](https://itch.io/t/164239/evolution-gif-collection)
+* [GIF Collection](http://keiwando.com/evolution/gifs)
+* [Submit a GIF](https://itch.io/t/164239/evolution-gif-collection)
 * [Forum](https://keiwan.itch.io/evolution/community)
-* [@keiwando](https://twitter.com/keiwando)
 
 
 ## Building the Code

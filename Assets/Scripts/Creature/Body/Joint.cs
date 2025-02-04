@@ -5,6 +5,9 @@ using System.Collections.Generic;
 public class Joint : BodyComponent {
 
 	private const string PATH = "Prefabs/Joint";
+	private const string GOOGLY_EYE_PATH = "Prefabs/Googly Eye";
+	
+	private const float GOOGLY_EYE_SCALE = 1.3f;
 
 	public Vector3 center { 
 		get { return transform.position; } 
@@ -22,6 +25,8 @@ public class Joint : BodyComponent {
 
 	private Dictionary<Bone, UnityEngine.Joint> joints = new Dictionary<Bone, UnityEngine.Joint>();
 
+	private SpriteRenderer[] googlyEyesSpriteRenderers = null;
+
 	private Vector3 resetPosition;
 	private Quaternion resetRotation;
 	private bool iterating;
@@ -32,6 +37,15 @@ public class Joint : BodyComponent {
 		var renderer = joint.GetComponent<MeshRenderer>();
 		renderer.sortingOrder = 2;
 		joint.JointData = data;
+
+		if (data.isGooglyEye) {
+			var eye = ((GameObject) Instantiate(Resources.Load(GOOGLY_EYE_PATH), joint.transform)).transform;
+			eye.localPosition = new Vector3(0, 0, -1f);
+			eye.localRotation = Quaternion.identity;
+			eye.localScale = new Vector3(GOOGLY_EYE_SCALE, GOOGLY_EYE_SCALE, 1f);
+			joint.googlyEyesSpriteRenderers = eye.GetComponentsInChildren<SpriteRenderer>();
+		}
+
 		return joint;
 	}
 
@@ -122,6 +136,15 @@ public class Joint : BodyComponent {
 
 	public override int GetId() {
 		return JointData.id;
+	}
+
+	public void SetLayer(LayerMask layer) {
+		this.gameObject.layer = layer;
+		if (googlyEyesSpriteRenderers != null) {
+			foreach (var renderer in googlyEyesSpriteRenderers) {
+				renderer.gameObject.layer = layer;
+			}
+		}
 	}
 		
 	void OnTriggerEnter(Collider collider) {

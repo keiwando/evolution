@@ -318,8 +318,10 @@ public class CreatureEditor: MonoBehaviour,
             case Tool.Joint:
                 if (isPointerOverUI) return;
                 if (Input.touchCount > 1) return;
+                #if !UNITY_EDITOR
                 #if UNITY_IOS || UNITY_ANDROID
                 if (Input.touchCount == 0) return;
+                #endif
                 #endif
                 if (GestureRecognizerCollection.shared.GetClickGestureRecognizer().ClickEndedOnThisFrame()) {
                     creatureEdited = creatureBuilder.TryPlacingJoint(clickWorldPos); 

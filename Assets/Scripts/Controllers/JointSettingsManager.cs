@@ -6,6 +6,7 @@ namespace Keiwando.Evolution {
     public class JointSettingsManager: BodyComponentSettingsManager {
 
         private const string PENALTY_TOOLTIP = "The fitness of the creature is reduced by this amount if this joint ever touches the ground.";
+        private const string GOOGLY_EYE_TOOLTIP = "Displays the Joint as a Googly Eye.";
 
         private const float MIN_WEIGHT = 0.2f;
         private const float MAX_WEIGHT = 5f;
@@ -14,6 +15,7 @@ namespace Keiwando.Evolution {
         private AdvancedBodyControlsViewController viewController;
         private LabelledSlider weightSlider;
         private LabelledSlider penaltySlider;
+        private LabelledToggle googlyEyeToggle;
 
         public JointSettingsManager(Joint joint, AdvancedBodyControlsViewController viewController): base() {
             this.joint = joint;
@@ -29,7 +31,7 @@ namespace Keiwando.Evolution {
             weightSlider.onValueChanged += delegate (float value) {
                 var oldData = joint.JointData;
                 var weight = SliderToWeight(value);
-                var data = new JointData(oldData.id, oldData.position, weight, oldData.fitnessPenaltyForTouchingGround);
+                var data = new JointData(oldData.id, oldData.position, weight, oldData.fitnessPenaltyForTouchingGround, oldData.isGooglyEye);
                 joint.JointData = data;
                 Refresh();
             };
@@ -40,7 +42,18 @@ namespace Keiwando.Evolution {
             };
             penaltySlider.onValueChanged += delegate (float penalty) {
                 var oldData = joint.JointData;
-                var data = new JointData(oldData.id, oldData.position, oldData.weight, penalty);
+                var data = new JointData(oldData.id, oldData.position, oldData.weight, penalty, oldData.isGooglyEye);
+                joint.JointData = data;
+                Refresh();
+            };
+
+            googlyEyeToggle = viewController.AddToggle("Googly Eye", new TooltipData(GOOGLY_EYE_TOOLTIP, 60f));
+            googlyEyeToggle.onValueChanged += delegate (bool isGooglyEye) {
+                var oldData = joint.JointData;
+                if (isGooglyEye != oldData.isGooglyEye) {
+                    DataWillChange();
+                }
+                var data = new JointData(oldData.id, oldData.position, oldData.weight, oldData.fitnessPenaltyForTouchingGround, isGooglyEye);
                 joint.JointData = data;
                 Refresh();
             };
@@ -53,6 +66,7 @@ namespace Keiwando.Evolution {
             weightSlider.Refresh(WeightToSlider(weight), string.Format("{0}x", weight.ToString("0.0")));
             var penalty = joint.JointData.fitnessPenaltyForTouchingGround;
             penaltySlider.Refresh(penalty, string.Format("{0}%", (int)(penalty * 100.0f)));
+            googlyEyeToggle.Refresh(joint.JointData.isGooglyEye);
         }
 
         private float SliderToWeight(float value) {

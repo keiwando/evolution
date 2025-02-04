@@ -466,7 +466,7 @@ namespace Keiwando.Evolution {
 
 			foreach (var joint in joints) {
 				if (joint == null) continue;
-				joint.gameObject.layer = jointLayer;
+				joint.SetLayer(jointLayer);
 			}
 
 			foreach (var muscle in muscles) {
@@ -488,7 +488,7 @@ namespace Keiwando.Evolution {
 			}
 
 			foreach (var joint in joints) {
-				joint.gameObject.layer = jointLayer;
+				joint.SetLayer(jointLayer);
 			}
 
 			foreach (var muscle in muscles) {
@@ -508,7 +508,7 @@ namespace Keiwando.Evolution {
 			}
 
 			foreach (var joint in joints) {
-				joint.gameObject.layer = jointLayer;
+				joint.SetLayer(jointLayer);
 			}
 
 			foreach (var muscle in muscles) {
