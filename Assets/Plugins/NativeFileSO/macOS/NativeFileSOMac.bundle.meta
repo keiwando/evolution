@@ -1,40 +1,62 @@
 fileFormatVersion: 2
 guid: d85c44712b96b4fc7af0c963a31bdad4
-folderAsset: yes
 PluginImporter:
   externalObjects: {}
-  serializedVersion: 2
+  serializedVersion: 3
   iconMap: {}
   executionOrder: {}
+  defineConstraints: []
   isPreloaded: 0
   isOverridable: 0
+  isExplicitlyReferenced: 0
+  validateReferences: 1
   platformData:
-  - first:
-      '': OSXIntel
-    second:
-      enabled: 1
-      settings: {}
-  - first:
-      '': OSXIntel64
-    second:
-      enabled: 1
-      settings: {}
-  - first:
-      Any: 
-    second:
+    Android:
       enabled: 0
-      settings: {}
-  - first:
-      Editor: Editor
-    second:
+      settings:
+        AndroidLibraryDependee: UnityLibrary
+        AndroidSharedLibraryType: Executable
+        CPU: ARMv7
+    Any:
+      enabled: 0
+      settings:
+        Exclude Android: 1
+        Exclude Editor: 0
+        Exclude Linux64: 1
+        Exclude OSXUniversal: 0
+        Exclude WebGL: 1
+        Exclude Win: 1
+        Exclude Win64: 1
+        Exclude iOS: 1
+    Editor:
       enabled: 1
       settings:
+        CPU: AnyCPU
         DefaultValueInitialized: true
-  - first:
-      Standalone: OSXUniversal
-    second:
+        OS: AnyOS
+    Linux64:
+      enabled: 0
+      settings:
+        CPU: x86_64
+    OSXUniversal:
       enabled: 1
-      settings: {}
+      settings:
+        CPU: AnyCPU
+    Win:
+      enabled: 0
+      settings:
+        CPU: x86
+    Win64:
+      enabled: 0
+      settings:
+        CPU: None
+    iOS:
+      enabled: 0
+      settings:
+        AddToEmbeddedBinaries: false
+        CPU: AnyCPU
+        CompileFlags: 
+        FrameworkDependencies: 
   userData: 
   assetBundleName: 
   assetBundleVariant: 

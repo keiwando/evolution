@@ -1,9 +1,15 @@
-﻿using System.IO;
+﻿// 	Copyright (c) 2019 Keiwan Donyagard
+// 
+//  This Source Code Form is subject to the terms of the Mozilla Public
+//  License, v. 2.0. If a copy of the MPL was not distributed with this
+//  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Keiwando.NativeFileSO.Samples {
+namespace Keiwando.NFSO.Samples {
 
 	public class TestController : MonoBehaviour {
 
@@ -137,6 +143,18 @@ namespace Keiwando.NativeFileSO.Samples {
 				SavePathDesktopSyncTest();
 			});
 
+			var savePathMultipleMimeTypesDesktopButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+			SetButtonTitle(savePathMultipleMimeTypesDesktopButton, "Select save path with multiple file types");
+			savePathMultipleMimeTypesDesktopButton.onClick.AddListener(delegate () {
+				SavePathMultiFileTypesDesktopTest();
+			});
+
+			var savePathSyncMultipleMimeTypesDesktopButton = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+			SetButtonTitle(savePathSyncMultipleMimeTypesDesktopButton, "Select save path with multiple file types (sync)");
+			savePathSyncMultipleMimeTypesDesktopButton.onClick.AddListener(delegate () {
+				SavePathMultiFileTypesDesktopSyncTest();
+			});
+
 			buttonTemplate.gameObject.SetActive(false);
 		}
 
@@ -219,14 +237,14 @@ namespace Keiwando.NativeFileSO.Samples {
 
 			FileWriter.WriteTestFile(Application.persistentDataPath);
 			NativeFileSOMacWin.shared.SaveFile(GetFileToSave(), testTitle, testDirectory);
-			FileWriter.DeleteTestFile(Application.persistentDataPath);
+			// FileWriter.DeleteTestFile(Application.persistentDataPath);
 		}
 
 		private void SavePathDesktopTest() {
 			
 			NativeFileSOMacWin.shared.SelectSavePath(GetFileToSave(), testTitle, testDirectory, delegate (bool didSelectPath, string savePath) {
 				if (didSelectPath) {
-					textField.text = string.Format("Selected paths:\n{0}", savePath);
+					textField.text = string.Format("Selected path:\n{0}", savePath);
 				} else {
 					textField.text = "Path selection was cancelled.";
 				}
@@ -236,12 +254,32 @@ namespace Keiwando.NativeFileSO.Samples {
 		private void SavePathDesktopSyncTest() {
 			var path = NativeFileSOMacWin.shared.SelectSavePathSync(GetFileToSave(), "Save Path Sync", testDirectory);
 			if (path != null) {
-				textField.text = string.Format("Selected paths:\n{0}", path);
+				textField.text = string.Format("Selected path:\n{0}", path);
 			} else {
 				textField.text = "Path selection was cancelled.";
 			}
 		}
 
+		private void SavePathMultiFileTypesDesktopTest() {
+			SupportedFileType[] fileTypes = {SupportedFileType.PlainText, SupportedFileType.PDF, SupportedFileType.GIF, SupportedFileType.PNG};
+			NativeFileSOMacWin.shared.SelectSavePath(fileTypes, "Unnamed", testTitle, testDirectory, delegate (bool didSelectPath, string savePath) {
+				if (didSelectPath) {
+					textField.text = string.Format("Selected path:\n{0}", savePath);
+				} else {
+					textField.text = "Path selection was cancelled.";
+				}
+			});	
+		}
+
+		private void SavePathMultiFileTypesDesktopSyncTest() {
+			SupportedFileType[] fileTypes = {SupportedFileType.PlainText, SupportedFileType.PDF, SupportedFileType.GIF, SupportedFileType.PNG};
+			var path = NativeFileSOMacWin.shared.SelectSavePathSync(fileTypes, "Unnamed", testTitle, testDirectory);
+			if (path != null) {
+				textField.text = string.Format("Selected path:\n{0}", path);
+			} else {
+				textField.text = "Path selection was cancelled.";
+			}
+		}
 
 		private FileToSave GetFileToSave() {
 			var testFilePath = Path.Combine(Application.persistentDataPath, "NativeFileSOTest.txt");

@@ -1,4 +1,10 @@
-﻿//#define UNITY_STANDALONE_WIN
+﻿// 	Copyright (c) 2019 Keiwan Donyagard
+// 
+//  This Source Code Form is subject to the terms of the Mozilla Public
+//  License, v. 2.0. If a copy of the MPL was not distributed with this
+//  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+//#define UNITY_STANDALONE_WIN
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
 
 using System;
@@ -10,7 +16,7 @@ using System.Windows.Forms;
 using Ookii.Dialogs;
 using UnityEngine;
 
-namespace Keiwando.NativeFileSO {
+namespace Keiwando.NFSO {
 
 	public class NativeFileSOWindows: INativeFileSODesktop {
 
@@ -170,6 +176,25 @@ namespace Keiwando.NativeFileSO {
 		public string SelectSavePathSync(FileToSave file,
 								  		 string title,
 										 string directory) {
+				return SelectSavePathSync(new SupportedFileType[] { file.FileType }, file.Name, title, directory);
+		}
+
+		public void SelectSavePath(SupportedFileType[] fileTypes, 
+												string defaultFileName,
+												string title,
+												string directory,
+												Action<bool, string> onCompletion) {
+
+			var path = SelectSavePathSync(fileTypes, defaultFileName, title, directory);
+			if (onCompletion != null) {
+				onCompletion(path != null, path);
+			}		
+		}
+
+		public string SelectSavePathSync(SupportedFileType[] fileTypes,
+															string defaultFileName,
+															string title,
+															string directory) {
 
 			if (isBusy) { return null; }
 			isBusy = true;
@@ -178,18 +203,19 @@ namespace Keiwando.NativeFileSO {
 
 			if (string.IsNullOrEmpty(directory)) {
 				dialog.RestoreDirectory = true;
-				dialog.FileName = file.Name;
+				dialog.FileName = defaultFileName;
 			} else {
-				dialog.FileName = CreateFilenameForSaveDialog(directory, file.Name);
+				dialog.FileName = CreateFilenameForSaveDialog(directory, defaultFileName);
 			}
 
-			dialog.DefaultExt = file.Extension;
+			if (fileTypes.Length > 0) {
+				dialog.DefaultExt = fileTypes[0].Extension;
+
+				dialog.Filter = EncodeFilters(fileTypes);
+			}
 			if (dialog.DefaultExt.Length > 0) {
 				dialog.AddExtension = true;
 				dialog.SupportMultiDottedExtensions = true;
-			}
-			if (file.FileType != null) {
-				dialog.Filter = EncodeFilters(new[] { file.FileType });
 			}
 
 			dialog.Title = title;

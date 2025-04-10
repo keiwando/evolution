@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Keiwando.NativeFileSO;
+using Keiwando.NFSO;
 using Keiwando.Evolution.UI;
 
 namespace Keiwando.Evolution {
@@ -194,7 +194,7 @@ namespace Keiwando.Evolution {
 				CustomEvolutionFileType.creat
 			};
 
-			NativeFileSO.NativeFileSO.shared.OpenFiles(supportedFileTypes,
+			NativeFileSO.shared.OpenFiles(supportedFileTypes,
 			delegate (bool filesWereOpened, OpenedFile[] files) {
 				if (filesWereOpened) {
 					TryImport(files);
@@ -209,7 +209,7 @@ namespace Keiwando.Evolution {
 
 			FileToSave file = new FileToSave(path, CustomEvolutionFileType.creat);
 
-			NativeFileSO.NativeFileSO.shared.SaveFile(file);
+			NativeFileSO.shared.SaveFile(file);
 		}
 
 		public void DeleteButtonClicked(FileSelectionViewController controller) {

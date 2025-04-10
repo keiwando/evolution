@@ -1,8 +1,14 @@
-﻿using System;
+﻿// 	Copyright (c) 2019 Keiwan Donyagard
+// 
+//  This Source Code Form is subject to the terms of the Mozilla Public
+//  License, v. 2.0. If a copy of the MPL was not distributed with this
+//  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+using System;
 using System.IO;
 using UnityEngine;
 
-namespace Keiwando.NativeFileSO { 
+namespace Keiwando.NFSO { 
 
 	/// <summary>
 	/// Provides methods for native file import and export functionality
@@ -13,7 +19,7 @@ namespace Keiwando.NativeFileSO {
 	/// class in order to copy/export a file from an existing path to a new location
 	/// chosen by the user.</para>
 	/// <code>
-	/// using Keiwando.NativeFileSO;
+	/// using Keiwando.NFSO;
 	/// 
 	/// public class SaveTest {
 	///
@@ -34,7 +40,7 @@ namespace Keiwando.NativeFileSO {
 	/// <para>The following example demonstrates how to use the <see cref="NativeFileSO"/>
 	/// class in order to let the user choose a text file and handle its loaded contents.</para>
 	/// <code>
-	/// using Keiwando.NativeFileSO;
+	/// using Keiwando.NFSO;
 	/// 
 	/// public class OpenTest {
 	/// 	

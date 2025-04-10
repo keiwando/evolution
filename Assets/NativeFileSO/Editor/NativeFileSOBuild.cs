@@ -1,4 +1,10 @@
-﻿using System.Collections.Generic;
+﻿// 	Copyright (c) 2019 Keiwan Donyagard
+// 
+//  This Source Code Form is subject to the terms of the Mozilla Public
+//  License, v. 2.0. If a copy of the MPL was not distributed with this
+//  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
@@ -6,7 +12,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
-using Keiwando.NativeFileSO;
+using Keiwando.NFSO;
 
 public class NativeFileSOBuild {
 
@@ -32,7 +38,12 @@ public class NativeFileSOBuild {
 		PBXProject project = new PBXProject();
 		project.ReadFromFile(pathToProject);
 
-		var targetGUID = project.GetUnityMainTargetGuid();
+		#if UNITY_2019_3_OR_NEWER
+		var targetGUID = project.GetUnityFrameworkTargetGuid();
+		#else
+		var targetName = PBXProject.GetUnityTargetName();
+		var targetGUID = project.TargetGuidByName(targetName);
+		#endif
 
 		AddFrameworks(project, targetGUID);
 		project.WriteToFile(pathToProject);

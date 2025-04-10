@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using UnityEngine;
 using Keiwando;
-using Keiwando.NativeFileSO;
+using Keiwando.NFSO;
 using Keiwando.Evolution.UI;
 
 namespace Keiwando.Evolution {
@@ -135,7 +135,7 @@ namespace Keiwando.Evolution {
 				CustomEvolutionFileType.evol
 			};
 
-			NativeFileSO.NativeFileSO.shared.OpenFiles(supportedFileTypes,
+			NativeFileSO.shared.OpenFiles(supportedFileTypes,
 			delegate (bool filesWereOpened, OpenedFile[] files) { 
 				if (filesWereOpened) {
 					TryImport(files);
@@ -150,7 +150,7 @@ namespace Keiwando.Evolution {
 
 			FileToSave file = new FileToSave(path, CustomEvolutionFileType.evol);
 
-			NativeFileSO.NativeFileSO.shared.SaveFile(file);
+			NativeFileSO.shared.SaveFile(file);
 		}
 
 		public void DeleteButtonClicked(FileSelectionViewController controller) {

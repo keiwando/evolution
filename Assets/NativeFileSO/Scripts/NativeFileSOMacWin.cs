@@ -1,9 +1,15 @@
-﻿using System;
+﻿// 	Copyright (c) 2019 Keiwan Donyagard
+// 
+//  This Source Code Form is subject to the terms of the Mozilla Public
+//  License, v. 2.0. If a copy of the MPL was not distributed with this
+//  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Keiwando.NativeFileSO {
+namespace Keiwando.NFSO {
 
 	/// <summary>
 	/// Provides methods for native file open and save functionality which is
@@ -13,7 +19,7 @@ namespace Keiwando.NativeFileSO {
 	/// The following example demonstrates how to use the <see cref="NativeFileSOMacWin"/>
 	/// class in order to allow the user to select multiple paths of files to be opened.
 	/// <code>
-	/// using Keiwando.NativeFileSO;
+	/// using Keiwando.NFSO;
 	/// 
 	/// public class OpenPathsTest {
 	///
@@ -313,6 +319,48 @@ namespace Keiwando.NativeFileSO {
 			return nativeFileSO.SelectSavePathSync(file, title, directory);
 		}
 
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select a save
+		/// location for the specified file.
+		/// </summary>
+		/// <param name="fileTypes">The file types used to filter the available files paths shown 
+		/// to the user.</param>
+		/// <param name="defaultName">The user-editable default name of the file to be saved.</param>
+		/// <param name="title">The title of the dialog. Note: The title is not
+		/// shown on macOS 10.11 and above.</param>
+		/// <param name="directory">The default directory in which file navigation
+		/// should start. If this value is empty, the panel will remember the 
+		/// last visited directory.</param>
+		/// <param name="onCompletion">A callback for when the presented dialog
+		/// has been dismissed. The first parameter of the callback specifies whether 
+		/// a path was selected or the selection was cancelled.</param>
+		public void SelectSavePath (SupportedFileType[] fileTypes,
+																string defaultName,
+								   string title,
+								   string directory,
+								   Action<bool, string> onCompletion) {
+			nativeFileSO.SelectSavePath(fileTypes, defaultName, title, directory, onCompletion);
+		}
+
+		/// <summary>
+		/// Presents a native dialog to the user which allows them to select a save
+		/// location for the specified file.
+		/// </summary>
+		/// <returns>The selected save location. Returns <c>null</c> if no path was selected.</returns>
+		/// <param name="fileTypes">The file types used to filter the available files paths shown 
+		/// to the user.</param>
+		/// <param name="defaultName">The user-editable default name of the file to be saved.</param>
+		/// <param name="title">The title of the dialog. Note: The title is not
+		/// shown on macOS 10.11 and above.</param>
+		/// <param name="directory">The default directory in which file navigation
+		/// should start. If this value is empty, the panel will remember the 
+		/// last visited directory.</param>
+		public string SelectSavePathSync (SupportedFileType[] fileTypes,
+																			string defaultName,
+																			string title,
+										 									string directory) {
+			return nativeFileSO.SelectSavePathSync(fileTypes, defaultName, title, directory);
+		}
 
 		/// <summary>
 		/// Loads the contents of a file at the specified path into an instance

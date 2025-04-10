@@ -1,11 +1,17 @@
-﻿#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
+﻿// 	Copyright (c) 2019 Keiwan Donyagard
+// 
+//  This Source Code Form is subject to the terms of the Mozilla Public
+//  License, v. 2.0. If a copy of the MPL was not distributed with this
+//  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Linq;
 using UnityEngine;
 
-namespace Keiwando.NativeFileSO {
+namespace Keiwando.NFSO {
 
 	public class NativeFileSOMac: INativeFileSODesktop {
 
@@ -26,15 +32,15 @@ namespace Keiwando.NativeFileSO {
 
 		[DllImport("NativeFileSOMac")]
 		private static extern void pluginSaveFile(string name, 
-		                                          string extension, 
+		                                          string extensions, 
 		                                          string title, 
 		                                          string directory);
 
 		[DllImport("NativeFileSOMac")]
 		private static extern IntPtr pluginSaveFileSync(string name,
-												  	  string extension,
-												 	  string title,
-												  	  string directory);
+												  	  											string extensions,
+												 	  												string title,
+												  	  											string directory);					
 
 		[DllImport("NativeFileSOMac")]
 		private static extern void pluginFreeMemory();
@@ -172,6 +178,40 @@ namespace Keiwando.NativeFileSO {
 			isBusy = true;
 
 			var pathPtr = pluginSaveFileSync(file.Name, file.Extension, title, directory);
+			pluginFreeMemory();
+			isBusy = false;
+
+			return Marshal.PtrToStringAnsi(pathPtr);
+		}
+
+		public void SelectSavePath(SupportedFileType[] fileTypes, 
+												string defaultFileName,
+												string title,
+												string directory,
+												Action<bool, string> onCompletion) {
+
+			if (isBusy) { return; }
+			isBusy = true;	
+
+			pluginSetCallback(DidSelectPathsForPathsCB);
+
+			_pathsCallback = delegate (bool selected, string[] paths) {
+				var path = paths.Length > 0 ? paths[0] : null;
+				onCompletion(selected, path);
+			};
+
+			pluginSaveFile(defaultFileName, EncodeExtensions(fileTypes), title, directory);
+		}
+
+		public string SelectSavePathSync(SupportedFileType[] fileTypes,
+															string defaultFileName,
+															string title,
+															string directory) {
+
+			if (isBusy) { return null; }
+			isBusy = true;
+
+			var pathPtr = pluginSaveFileSync(defaultFileName, EncodeExtensions(fileTypes), title, directory);
 			pluginFreeMemory();
 			isBusy = false;
 
