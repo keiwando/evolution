@@ -69,6 +69,8 @@ namespace Keiwando.Evolution.UI {
 				LanguageSelected(id);	
 			};
 			this.languageSelectionDropdown = languageDropdown;
+
+			helpPagesViewTemplate.gameObject.SetActive(false);
 			
 			// Create all help page views
 			foreach (var language in languages) {

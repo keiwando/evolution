@@ -65,7 +65,7 @@ namespace Keiwando.Evolution.UI {
                     ShowSection(section);
                 });
 
-                container.text = page.Text;
+                container.SetText(page.Text);
                 buttonLabel.text = page.Title;
 
                 sectionTextContainers[i] = container;
