@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 using UnityEngine.UI;
  
 namespace Keiwando.UI {
@@ -37,7 +36,6 @@ namespace Keiwando.UI {
  
         public override void CalculateLayoutInputVertical() {
             
-            float width = rectTransform.rect.size.x;
             float minSpace = padding.vertical + (cellHeight + spacing) * rectChildren.Count - spacing;
             SetLayoutInputForAxis(minSpace, minSpace, -1, 1);
         }
