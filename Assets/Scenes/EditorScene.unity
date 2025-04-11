@@ -27641,7 +27641,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: -7.35791}
+  m_SizeDelta: {x: -196.22052, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1771504741
 MonoBehaviour:
@@ -34109,6 +34109,11 @@ PrefabInstance:
       propertyPath: rootContainer
       value: 
       objectReference: {fileID: 428474183}
+    - target: {fileID: 2084737220842153042, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2169138562641110213, guid: ddba5d3d97b9c407b8551ce8581fa97a,
         type: 3}
       propertyPath: rootContainer
@@ -34119,62 +34124,6 @@ PrefabInstance:
       propertyPath: rootContainer
       value: 
       objectReference: {fileID: 428474183}
-    - target: {fileID: 2808836619867664945, guid: ddba5d3d97b9c407b8551ce8581fa97a,
-        type: 3}
-      propertyPath: m_Text
-      value: '<size=20><b>Mutation Algorithm</b></size>
-
-
-        Defines how random
-        changes are applied to offspring chromosomes
-
-
-        <b>Chunk</b>
-
-        Changes
-        a random number of consecutive values in the chromosome
-
-
-        <b>Global</b>
-
-        Changes
-        the value at each index with a random probability
-
-
-        <b>Inversion</b>
-
-        Chooses
-        a random start and end index and inverts the order of values inbetween'
-      objectReference: {fileID: 0}
-    - target: {fileID: 2808836621106590131, guid: ddba5d3d97b9c407b8551ce8581fa97a,
-        type: 3}
-      propertyPath: m_Text
-      value: '<size=20><b>Recombination Algorithm</b></size>
-
-
-        Defines how
-        two parent chromosomes are recombined into one offspring
-
-
-        <b>One
-        Point</b>
-
-        Cuts the parent chromosomes at the same random index and
-        uses one part from each parent
-
-
-        <b>Multi Point</b>
-
-        Cuts
-        the parent chromosomes at multiple random indices and alternatingly chooses
-        parts from the parent chromosomes
-
-
-        <b>Uniform</b>
-
-        Chooses
-        each bit at random from either parent chromosome'
-      objectReference: {fileID: 0}
     - target: {fileID: 2808836621478703562, guid: ddba5d3d97b9c407b8551ce8581fa97a,
         type: 3}
       propertyPath: rootContainer
