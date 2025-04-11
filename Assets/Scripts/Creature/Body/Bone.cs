@@ -98,7 +98,6 @@ public class Bone : BodyComponent {
 
 		var forceVec = new Vector3(force, 0.0f, 0.0f);
 		body.AddRelativeForce(forceVec);
-		// DEBUG:
 		// Debug.DrawRay(transform.position, transform.TransformDirection(localBoneVelocity), Color.red, 0, false);
 		// Debug.DrawRay(transform.position, transform.TransformDirection(-0.1f * forceVec), Color.green, 0, false);
 

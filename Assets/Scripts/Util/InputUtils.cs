@@ -118,4 +118,14 @@ public static class InputUtils {
 	public static bool MouseNotDown() {
 		return !Input.GetMouseButton(0) && Input.touchCount == 0;
 	}
+
+	public static Vector2 GetMousePosition() {
+		// Apparently, Input.mousePosition returns the average of all touches, which is generally not
+		// what we want. It leads to jumps in the mouse position on the first frame when you start pinching to zoom.
+		if (Input.touchCount > 0) {
+			return Input.GetTouch(0).position;
+		} else {
+			return Input.mousePosition;
+		}
+	}
 }

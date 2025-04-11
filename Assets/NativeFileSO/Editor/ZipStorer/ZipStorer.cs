@@ -29,7 +29,6 @@
 
 using System.Collections.Generic;
 using System.Text;
-// DEBUG:
 using UnityEngine;
 
 #if NET45

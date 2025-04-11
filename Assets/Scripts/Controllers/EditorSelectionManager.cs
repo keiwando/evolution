@@ -91,6 +91,12 @@ namespace Keiwando.Evolution {
             default: break;
             }
 
+            #if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
+            if (Input.touchCount != 1) {
+                hovering = null;
+            }
+            #endif
+
             this.lastHovering = currentHovering;
             this.currentHovering = hovering;
         }
@@ -191,6 +197,11 @@ namespace Keiwando.Evolution {
 
             selectionArea.localScale = Vector3.zero;
         } 
+
+        public void CancelSelection() {
+            EndSelection();
+            DeselectAll();
+        }
 
         public void DeselectAll() {
 

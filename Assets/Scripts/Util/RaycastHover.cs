@@ -1,37 +1,48 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 public class RaycastHover : MonoBehaviour {
 
-	//private bool hovering = false;
 	private HashSet<Collider> hoverColliders = new HashSet<Collider>();
+	private HashSet<Collider> _newHoverColliders = new HashSet<Collider>();
+	private RaycastHit[] _hits = new RaycastHit[100];
 
 	void Update () {
 
-		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		var hits = Physics.RaycastAll(ray);
+		bool canHover = true;
+		#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
+		canHover = Input.touchCount > 0;
+		#endif
 
-		if (hits.Length > 0) {
+		if (canHover) {
 
-			foreach (var hit in hits) {
-				SendOnHover(hit.collider);
+			Ray ray = Camera.main.ScreenPointToRay(InputUtils.GetMousePosition());
+			int hitsLength = Physics.RaycastNonAlloc(ray, _hits);
 
-				hoverColliders.Add(hit.collider);
+			if (hitsLength > 0) {
+
+				_newHoverColliders.Clear();
+				for (int i = 0; i < hitsLength; i++) {
+					var hit = _hits[i];
+					SendOnHover(hit.collider);
+
+					_newHoverColliders.Add(hit.collider);
+				}
+
+				foreach (var collider in hoverColliders) {
+					if (!_newHoverColliders.Contains(collider)) {
+						SendOnHoverExit(collider);
+					}
+				}
+
+				var tmp = hoverColliders;
+				hoverColliders = _newHoverColliders;
+				_newHoverColliders = tmp;
+			
+			} else if (hoverColliders.Count > 0) {
+				// Nothing hovered over -> exit on all
+				ExitAll();
 			}
-
-			var hitSet = new HashSet<Collider>(hits.Select(hit => hit.collider));
-
-			foreach (var collider in hoverColliders.Except(hitSet)) {
-				SendOnHoverExit(collider);
-			}
-
-			hoverColliders = hitSet;
-		
-		} else if (hoverColliders.Count > 0) {
-			// Nothing hovered over -> exit on all
-			ExitAll();
 		}
 
 		#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR

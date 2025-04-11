@@ -98,7 +98,7 @@ public class CreatureEditor: MonoBehaviour,
         if (selectedTool == Tool.Select && Input.GetMouseButtonDown(0)) {
             this.selectionAtBeginningOfDrag = selectionManager.GetSelectedIds();
         }
-        selectionManager.Update(Input.mousePosition);
+        selectionManager.Update(InputUtils.GetMousePosition());
         HandleClicks();
         HandleKeyboardInput();
     }
@@ -212,7 +212,16 @@ public class CreatureEditor: MonoBehaviour,
     private void HandleClicks() {
 
         var pinchRecognizer = GestureRecognizerCollection.shared.GetPinchGestureRecognizer();
-        if (pinchRecognizer.State != GestureRecognizerState.Ended) return;
+        if (pinchRecognizer.State != GestureRecognizerState.Ended) {
+            selectionManager.CancelSelection();
+            creatureBuilder.CancelTemporaryBodyParts();
+            bool needsCreatureReset = jointsToMove.Count > 0;
+            jointsToMove.Clear();
+            if (needsCreatureReset) {
+                SetState(creatureBuilder.GetDesign());
+            }
+            return;
+        }
 
         if (!InputRegistry.shared.MayHandle(InputType.Click | InputType.Touch, this)) return;
 
@@ -222,7 +231,7 @@ public class CreatureEditor: MonoBehaviour,
             isPointerOverUI |= InputUtils.IsTouchOverUI(Input.GetTouch(0).fingerId);
         }
 
-        var clickWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        var clickWorldPos = Camera.main.ScreenToWorldPoint(InputUtils.GetMousePosition());
         clickWorldPos.z = 0;
 
         // Snap to grid for joints and movement
