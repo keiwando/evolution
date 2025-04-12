@@ -48,21 +48,27 @@ namespace Keiwando.Evolution {
             template.Alive = false;
             template.gameObject.SetActive(true);
 
+            bool sceneContainsStairs = false;
+            foreach (var structure in options.SceneDescription.Structures) {
+                if (structure.GetEncodingKey() == Stairstep.ENCODING_ID) {
+                    sceneContainsStairs = true;
+                    break;
+                }
+            }
+
             // Determine the spawn position
             // Update safe drop offset
             // Ensures that the creature isn't spawned into the ground
             var lowestY = template.GetLowestPoint().y;
             var safeHeightOffset = lowestY < 0 ? -lowestY + 1f : 0f;
-
             // Calculate the drop height
-            // float distanceFromGround = template.DistanceFromGround();
             
             var spawnPosition = template.transform.position;
             if (options.LegacyOptions.LegacyClimbingDropCalculation) {
                 spawnPosition.y -= template.DistanceFromGround();
                 spawnPosition.y += 0.5f;    
             } else {
-                spawnPosition.y -= template.SemiSafeDistanceFromGround();
+                spawnPosition.y -= template.SemiSafeDistanceFromGround(sceneContainsStairs: sceneContainsStairs);
                 spawnPosition.y += safeHeightOffset;
                 spawnPosition.y += options.SceneDescription.DropHeight;
             }

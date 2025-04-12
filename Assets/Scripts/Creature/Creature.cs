@@ -242,7 +242,7 @@ namespace Keiwando.Evolution {
 		/// Should be used if the ground is uneven.
 		/// Does not guarantee that there is no other joint with a smaller distance to the ground.
 		/// </summary>
-		public float SemiSafeDistanceFromGround() {
+		public float SemiSafeDistanceFromGround(bool sceneContainsStairs) {
 			int jointCount = System.Math.Min(5, joints.Count);
 			var sortedJoints = new List<Joint>(joints);
 			sortedJoints.Sort((lhs, rhs) => lhs.center.y.CompareTo(rhs.center.y));
@@ -250,6 +250,34 @@ namespace Keiwando.Evolution {
 			for (int i = 0; i < jointCount; i++) {
 				var distance = DistanceFromGround(sortedJoints[i].center);
 				minDistance = System.Math.Min(minDistance, distance);
+			}
+			if (sceneContainsStairs && joints.Count > 0) {
+				// Find the lowest point when the creature is rotated by 45°, then check the distance
+				// from that point, to make sure that it doesn't get spawned into the stairs.
+				int lowestRotatedJointIndex = 0;
+				float lowestRotatedJointY = float.MaxValue;
+				float sin45 = (float)System.Math.Sin(-0.25 * System.Math.PI);
+				float cos45 = (float)System.Math.Cos(-0.25 * System.Math.PI);
+				for (int i = 0; i < joints.Count; i++) {
+					var joint = joints[i];
+					var jointX = joint.center.x;
+					var jointY = joint.center.y;
+					var rotatedY = jointY * cos45 + jointX * sin45;
+					if (rotatedY < lowestRotatedJointY) {
+						lowestRotatedJointIndex = i;
+						lowestRotatedJointY = rotatedY;
+					}
+				}
+				// Since there can be many different situations that are annoying to deal with and we can't just raycast
+				// upwards in case the joint is already inside of the ground since the ray will hit the bottom of the stair
+				// colliders, which is not the proper distance we are looking for. 
+				// Instead we just use the understanding here that the top of the stairs is effectively at
+				// (0, 3.36) and the stairs ascend at a 45° angle.
+				var lowestRotatedJointPosition = joints[lowestRotatedJointIndex].center;
+				var stairHeightAtLowestRotatedJoint = 3.36f + lowestRotatedJointPosition.x; 
+				var lowestRotatedJointDistToStairs = lowestRotatedJointPosition.y - stairHeightAtLowestRotatedJoint;
+
+				minDistance = System.Math.Min(minDistance, lowestRotatedJointDistToStairs);
 			}
 			return minDistance;
 		}
