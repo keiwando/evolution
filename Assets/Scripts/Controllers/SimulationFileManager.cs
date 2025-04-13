@@ -6,6 +6,7 @@ using UnityEngine;
 using Keiwando;
 using Keiwando.NFSO;
 using Keiwando.Evolution.UI;
+using System;
 
 namespace Keiwando.Evolution {
 
@@ -102,9 +103,17 @@ namespace Keiwando.Evolution {
 
 				var extension = file.Extension.ToLower();
 				if (extension.Equals(".evol")) {
+					// DEBUG:
+					var timeBeforeToUTF8String = DateTime.Now;
 					var encoded = file.ToUTF8String();
+					// DEBUG:
+					Debug.Log($"file.ToUTF8String took {(DateTime.Now - timeBeforeToUTF8String).TotalSeconds}s");
 					try {
+						// DEBUG:
+						var timeBeforeParseSimulationData = DateTime.Now;
 						var simulationData = SimulationSerializer.ParseSimulationData(encoded, file.Name);
+						// DEBUG:
+						Debug.Log($"SimulationSerializer.ParseSimulationData took {(DateTime.Now - timeBeforeParseSimulationData).TotalSeconds}s");
 						// SimulationSerializer.SaveSimulation(simulationData);
 					} catch {
 						failedImport = true;
@@ -134,9 +143,8 @@ namespace Keiwando.Evolution {
 			SupportedFileType[] supportedFileTypes = {
 				CustomEvolutionFileType.evol
 			};
-
 			NativeFileSO.shared.OpenFiles(supportedFileTypes,
-			delegate (bool filesWereOpened, OpenedFile[] files) { 
+			delegate (bool filesWereOpened, OpenedFile[] files) {
 				if (filesWereOpened) {
 					TryImport(files);
 				}

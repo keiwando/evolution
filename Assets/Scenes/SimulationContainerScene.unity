@@ -5690,8 +5690,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11c8cbae0ccff4c0db1527d5ec7a7636, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  drawBackgroundGrid: 1
+  backgroundGridMaterial: {fileID: 2100000, guid: 7a01b3eea9da64332a89ffe1b3ecb40f,
+    type: 2}
   debugRenderTexture: {fileID: 8400000, guid: 81752a2d0e26a4279a38bcc72a1c0dda, type: 2}
-  material: {fileID: 2100000, guid: 0b3f73d96a4b54ae1b63e94f8aaa5992, type: 2}
+  backgroundCreatureMaterial: {fileID: 2100000, guid: 0b3f73d96a4b54ae1b63e94f8aaa5992,
+    type: 2}
+  backgroundColor: {r: 0.93, g: 0.93, b: 0.93, a: 1}
 --- !u!20 &956411639
 Camera:
   m_ObjectHideFlags: 0
@@ -5775,6 +5780,7 @@ MonoBehaviour:
   zoomOutLength: 15
   RenderTexture: {fileID: 8400000, guid: 9df058a82577d40c680ff3618910c18a, type: 2}
   Target: {fileID: 0}
+  allowVerticalFollow: 1
 --- !u!1 &1005633099
 GameObject:
   m_ObjectHideFlags: 0
@@ -10713,6 +10719,7 @@ MonoBehaviour:
   zoomOutLength: 15
   RenderTexture: {fileID: 8400000, guid: 5fd56a39dc81b44dca0e0c137288786f, type: 2}
   Target: {fileID: 0}
+  allowVerticalFollow: 1
 --- !u!124 &1661777022
 Behaviour:
   m_ObjectHideFlags: 0

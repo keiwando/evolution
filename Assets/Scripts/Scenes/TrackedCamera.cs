@@ -59,6 +59,17 @@ namespace Keiwando.Evolution.Scenes {
         /// </summary>
         private int lastControlSegmentIndex = 0;
 
+        // TODO: Should this always be true or only for the flying and jumping tasks?
+        public bool allowVerticalFollow = true;
+        /// <summary>
+        /// The viewport height percentage (bottom up) at which vertical tracking should start
+        /// </summary>
+        private float verticalTrackStartYPercent = 0.25f;
+        /// <summary>
+        /// The viewport height percentage (bottom up) at which vertical tracking should fully apply 
+        /// </summary>
+        private float verticalTrackEndYPercent = 0.4f;
+
         void Start() {
             this.camera = GetComponent<Camera>();
             base.Start(camera);
@@ -70,7 +81,24 @@ namespace Keiwando.Evolution.Scenes {
 
             var controlPoint = GetInterpolatedControlPoint(Target.GetXPosition());
             this.zoomAnchor = new Vector2(0.5f, controlPoint.pivot);
-            camera.transform.position = CalculateCameraPosition(camera, controlPoint);
+            Vector3 cameraPositionOnTrack = CalculateCameraPosition(camera, controlPoint);
+            if (allowVerticalFollow) {
+                float targetYInWorldSpace = Target.GetYPosition();
+                float viewportTopInWorldSpace = Camera.main.ViewportToWorldPoint(new Vector3(0, 1)).y;
+                float viewportBottomInWorldSpace = Camera.main.ViewportToWorldPoint(new Vector3(0, 0)).y;
+                float viewportHeightInWorldSpace = Math.Abs(viewportTopInWorldSpace - viewportBottomInWorldSpace);
+                float verticalTrackStartYInWorldSpace = cameraPositionOnTrack.y + verticalTrackStartYPercent * viewportHeightInWorldSpace;
+                float verticalTrackEndYInWorldSpace = cameraPositionOnTrack.y + verticalTrackEndYPercent * viewportHeightInWorldSpace;
+                float verticalTrackingLerpT = Math.Clamp(
+                    (targetYInWorldSpace - verticalTrackStartYInWorldSpace) / (verticalTrackEndYInWorldSpace - verticalTrackStartYInWorldSpace),
+                    0, 1
+                );
+                float easedVerticalTrackingLerpT = Easing.EaseInOutQuad(verticalTrackingLerpT);
+                float unclampedY = Mathf.Lerp(cameraPositionOnTrack.y, targetYInWorldSpace, easedVerticalTrackingLerpT);
+                
+                cameraPositionOnTrack.y = Math.Max(cameraPositionOnTrack.y, unclampedY);
+            }
+            camera.transform.position = cameraPositionOnTrack;
         }
 
         protected override void OnAfterZoom() {
