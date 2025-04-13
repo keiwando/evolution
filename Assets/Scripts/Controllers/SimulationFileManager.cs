@@ -103,18 +103,9 @@ namespace Keiwando.Evolution {
 
 				var extension = file.Extension.ToLower();
 				if (extension.Equals(".evol")) {
-					// DEBUG:
-					var timeBeforeToUTF8String = DateTime.Now;
 					var encoded = file.ToUTF8String();
-					// DEBUG:
-					Debug.Log($"file.ToUTF8String took {(DateTime.Now - timeBeforeToUTF8String).TotalSeconds}s");
 					try {
-						// DEBUG:
-						var timeBeforeParseSimulationData = DateTime.Now;
 						var simulationData = SimulationSerializer.ParseSimulationData(encoded, file.Name);
-						// DEBUG:
-						Debug.Log($"SimulationSerializer.ParseSimulationData took {(DateTime.Now - timeBeforeParseSimulationData).TotalSeconds}s");
-						// SimulationSerializer.SaveSimulation(simulationData);
 					} catch {
 						failedImport = true;
 						Debug.LogError(string.Format("Failed to parse .evol file contents: {0}", encoded));
