@@ -59,7 +59,6 @@ namespace Keiwando.Evolution.Scenes {
         /// </summary>
         private int lastControlSegmentIndex = 0;
 
-        // TODO: Should this always be true or only for the flying and jumping tasks?
         public bool allowVerticalFollow = true;
         /// <summary>
         /// The viewport height percentage (bottom up) at which vertical tracking should start

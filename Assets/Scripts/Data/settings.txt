@@ -5,6 +5,8 @@ bool ShowMuscleContraction = false (showMuscleContraction)
 bool ShowMuscles = true
 bool ShowOneAtATime = false
 float HiddenCreatureOpacity = 0.225f
+float DefaultGridVisibility = 0.0f
+float FlyingGridVisibility = 0.5f
 
 bool DontShowV2SimulationDeprecationOverlayAgain = false
 bool DontShowExitConfirmationOverlayAgain = false

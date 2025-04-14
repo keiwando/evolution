@@ -279,6 +279,17 @@ public class SimulationViewController : MonoBehaviour,
 
 	#region ISimulationVisibilityOptionsViewDelegate 
 
+	public void GridVisibilityDidChange(SimulationVisibilityOptionsView view, float visibility) {
+		if (evolution == null) {
+			return;
+		}
+		if (evolution.SimulationData.Settings.Objective == Objective.Flying) {
+			Settings.FlyingGridVisibility = Mathf.Clamp(visibility, 0.0f, 1.0f);
+		} else {
+			Settings.DefaultGridVisibility = Mathf.Clamp(visibility, 0.0f, 1.0f);
+		}
+	}
+
 	public void HiddenCreatureOpacityDidChange(SimulationVisibilityOptionsView view, float opacity) {
 		
 		Settings.HiddenCreatureOpacity = opacity;
@@ -296,6 +307,16 @@ public class SimulationViewController : MonoBehaviour,
 		cameraFollowController.RefreshVisibleCreatures();
 	}
 
+	public float GetGridVisibility(SimulationVisibilityOptionsView view) {
+		if (evolution == null) {
+			return 0;
+		}
+		if (evolution.SimulationData.Settings.Objective == Objective.Flying) {
+			return Settings.FlyingGridVisibility;
+		} else {
+			return Settings.DefaultGridVisibility;
+		}
+	}
 
 	public float GetHiddenCreatureOpacity(SimulationVisibilityOptionsView view) {
 		return Settings.HiddenCreatureOpacity;

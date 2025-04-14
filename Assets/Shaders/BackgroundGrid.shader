@@ -37,7 +37,7 @@ Shader "Unlit/BackgroundGrid"
             float _GridVisibility;
 
             static const fixed4 backgroundColor = fixed4(0.93, 0.93, 0.93, 1.0);
-            static const fixed4 gridColor = fixed4(0.85, 0.85, 0.85, 1.0);
+            static const fixed4 gridColor = fixed4(0.7, 0.7, 0.7, 1.0);
             static const float GRID_SCALE = 2.0;
             static const float GRID_LINE_PIXEL_WIDTH = 4.0;
             

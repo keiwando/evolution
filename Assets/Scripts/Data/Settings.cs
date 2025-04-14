@@ -9,6 +9,8 @@ public class Settings {
 	private const string SHOW_MUSCLES_KEY = "SHOW_MUSCLES_KEY";
 	private const string SHOW_ONE_AT_ATIME_KEY = "SHOW_ONE_AT_ATIME_KEY";
 	private const string HIDDEN_CREATURE_OPACITY_KEY = "HIDDEN_CREATURE_OPACITY_KEY";
+	private const string DEFAULT_GRID_VISIBILITY_KEY = "DEFAULT_GRID_VISIBILITY_KEY";
+	private const string FLYING_GRID_VISIBILITY_KEY = "FLYING_GRID_VISIBILITY_KEY";
 	private const string DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY = "DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY";
 	private const string DONT_SHOW_EXIT_CONFIRMATION_OVERLAY_AGAIN_KEY = "DONT_SHOW_EXIT_CONFIRMATION_OVERLAY_AGAIN_KEY";
 	private const string GRID_SIZE_KEY = "GRID_SIZE";
@@ -52,6 +54,16 @@ public class Settings {
 	public static float HiddenCreatureOpacity {
 		get { return Store.GetFloat(HIDDEN_CREATURE_OPACITY_KEY, 0.225f); }
 		set { Store.SetFloat(HIDDEN_CREATURE_OPACITY_KEY, value); }
+	}
+
+	public static float DefaultGridVisibility {
+		get { return Store.GetFloat(DEFAULT_GRID_VISIBILITY_KEY, 0.0f); }
+		set { Store.SetFloat(DEFAULT_GRID_VISIBILITY_KEY, value); }
+	}
+
+	public static float FlyingGridVisibility {
+		get { return Store.GetFloat(FLYING_GRID_VISIBILITY_KEY, 0.5f); }
+		set { Store.SetFloat(FLYING_GRID_VISIBILITY_KEY, value); }
 	}
 
 	public static bool DontShowV2SimulationDeprecationOverlayAgain {
@@ -137,6 +149,8 @@ public class Settings {
 		ShowMuscles = true;
 		ShowOneAtATime = false;
 		HiddenCreatureOpacity = 0.225f;
+		DefaultGridVisibility = 0.0f;
+		FlyingGridVisibility = 0.5f;
 		DontShowV2SimulationDeprecationOverlayAgain = false;
 		DontShowExitConfirmationOverlayAgain = false;
 		GridSize = 1.0f;

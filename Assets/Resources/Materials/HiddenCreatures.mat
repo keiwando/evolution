@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HiddenCreatureRenderer
+  m_Name: HiddenCreatures
   m_Shader: {fileID: 4800000, guid: f465b106b669946b5b153e3cd9ab9c69, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0

@@ -1,49 +1,55 @@
 using UnityEngine;
 using UnityEngine.Rendering;
+using Keiwando.Evolution;
 using Keiwando.Evolution.Scenes;
 
 [RequireComponent(typeof(Camera))]
-public class HiddenCreatureRenderer: MonoBehaviour {
+public class SimulationBackgroundRenderer: MonoBehaviour {
 
-    // TODO: Control whether this should be on or not. User setting? Only for flying task?
-    public bool drawBackgroundGrid = true;
+    [SerializeField] private bool renderHiddenCreatures;
+
     [SerializeField] private Material backgroundGridMaterial;
+    [SerializeField] private Material backgroundCreatureMaterial;
+    [SerializeField] private Evolution evolution;
 
-    [SerializeField] private RenderTexture debugRenderTexture;
+    private Color backgroundColor = new Color(0.93f, 0.93f, 0.93f);
 
     private new Camera camera;
     private Camera hiddenCamera;
-
-    [SerializeField]
-    private Material backgroundCreatureMaterial;
-
-    public Color backgroundColor = new Color(0.93f, 0.93f, 0.93f);
-
     private Mesh quad;
     private CommandBuffer commandBuffer;
+
     void Start() {
         this.camera = GetComponent<Camera>();
-        this.hiddenCamera = Instantiate(camera.gameObject, transform.position, transform.rotation, transform).GetComponent<Camera>();
-        hiddenCamera.targetTexture = new RenderTexture(Screen.width, Screen.height, 0);
-        hiddenCamera.cullingMask = (1 << 11) | (1 << 8);
-        hiddenCamera.backgroundColor = Color.clear;
-        Destroy(hiddenCamera.GetComponent<HiddenCreatureRenderer>());
-        Destroy(hiddenCamera.GetComponent<TrackedCamera>());
+        if (this.renderHiddenCreatures) {
+            this.hiddenCamera = Instantiate(camera.gameObject, transform.position, transform.rotation, transform).GetComponent<Camera>();
+            hiddenCamera.targetTexture = new RenderTexture(Screen.width, Screen.height, 0);
+            hiddenCamera.cullingMask = (1 << 11) | (1 << 8);
+            hiddenCamera.backgroundColor = Color.clear;
+            Destroy(hiddenCamera.GetComponent<SimulationBackgroundRenderer>());
+            Destroy(hiddenCamera.GetComponent<TrackedCamera>());
+            
+            backgroundCreatureMaterial.SetTexture("_MainTex", hiddenCamera.targetTexture);
+        }
         
         commandBuffer = new CommandBuffer();
         camera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, commandBuffer);
         
         quad = CreateQuad();
-        backgroundCreatureMaterial.SetTexture("_MainTex", hiddenCamera.targetTexture);
     }
 
     void Update() {
-        hiddenCamera.orthographicSize = camera.orthographicSize;
+        if (renderHiddenCreatures && hiddenCamera != null) {
+            hiddenCamera.orthographicSize = camera.orthographicSize;
+            this.backgroundCreatureMaterial.SetFloat("_Opacity", Settings.HiddenCreatureOpacity);
+            this.backgroundCreatureMaterial.SetColor("_BackgroundColor", backgroundColor);
+        }
+
+        Objective task = evolution.SimulationData.Settings.Objective;
+        float gridVisibility = task == Objective.Flying ? Settings.FlyingGridVisibility : Settings.DefaultGridVisibility;
         
-        this.backgroundCreatureMaterial.SetFloat("_Opacity", Settings.HiddenCreatureOpacity);
-        this.backgroundCreatureMaterial.SetColor("_BackgroundColor", backgroundColor);
         this.backgroundGridMaterial.SetColor("_BackgroundColor", backgroundColor); 
-        this.backgroundGridMaterial.SetFloat("_GridVisibility", drawBackgroundGrid ? 1.0f : 0.0f);
+        this.backgroundGridMaterial.SetFloat("_GridVisibility", gridVisibility);
         
         commandBuffer.Clear();
 
@@ -61,8 +67,10 @@ public class HiddenCreatureRenderer: MonoBehaviour {
         commandBuffer.SetViewProjectionMatrices(view: viewMat, proj: projMat);
         commandBuffer.DrawMesh(quad, quadScaleMat, backgroundGridMaterial);
 
-        commandBuffer.SetViewProjectionMatrices(view: Matrix4x4.Scale(new Vector3(2f, 2f)), proj: Matrix4x4.identity);
-        commandBuffer.DrawMesh(quad, Matrix4x4.identity, backgroundCreatureMaterial);
+        if (renderHiddenCreatures && backgroundCreatureMaterial != null) {
+            commandBuffer.SetViewProjectionMatrices(view: Matrix4x4.Scale(new Vector3(2f, 2f)), proj: Matrix4x4.identity);
+            commandBuffer.DrawMesh(quad, Matrix4x4.identity, backgroundCreatureMaterial);
+        }
     }
 
     private static Mesh CreateQuad() {
