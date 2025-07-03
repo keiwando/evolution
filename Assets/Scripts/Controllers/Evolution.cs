@@ -15,6 +15,7 @@ namespace Keiwando.Evolution {
 		public struct Solution {
 			public IChromosomeEncodable<float[]> Encodable;
 			public CreatureStats Stats;
+			public CreatureRecording Recording;
 		}
 
 		#region Events
@@ -199,6 +200,14 @@ namespace Keiwando.Evolution {
 				firstChromosomeIndex += batch.Length;
 				ApplyBrains(batch, chromosomes);
 
+				// DEBUG:
+				foreach (Creature creature in batch) {
+					creature.recording = new CreatureRecording(
+						recordingDurationInSeconds: (int)Math.Min(10f, cachedSettings.SimulationTime),
+						numberOfJoints: creature.joints.Count
+					);
+				}
+
 				yield return SimulateBatch();
 
 				// Evaluate creatures and destroy the scene after extracting all 
@@ -207,7 +216,8 @@ namespace Keiwando.Evolution {
 					var creature = batch[j];
 					solutions[solutionIndex++] = new Solution() { 
 						Encodable = creature.brain.Network,
-						Stats = creature.GetStatistics(this.cachedSettings.SimulationTime)
+						Stats = creature.GetStatistics(this.cachedSettings.SimulationTime),
+						Recording = creature.recording
 					};
 				}
 				
@@ -245,6 +255,9 @@ namespace Keiwando.Evolution {
 			// Save the best solution
 			var best = solutions[0];
 			SimulationData.BestCreatures.Add(new ChromosomeData(best.Encodable.ToChromosome(), best.Stats));
+
+			// DEBUG:
+			SimulationData.BestCreatureRecording = best.Recording;
 
 			// Autosave if necessary
 			bool saved = AutoSaver.Update(this.currentGenerationNumber, this);

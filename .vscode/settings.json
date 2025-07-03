@@ -52,5 +52,8 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Evolution.sln"
+    "dotnet.defaultSolution": "Evolution.sln",
+    "[csharp]": {
+        "editor.formatOnType": false
+    }
 }

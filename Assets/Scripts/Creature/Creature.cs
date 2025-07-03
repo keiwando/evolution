@@ -32,7 +32,7 @@ namespace Keiwando.Evolution {
 					PrepareForEvolution();
 				} 
 				alive = value;
-				SetKinematic(!alive);
+				SetKinematic(!alive || PlayRecording);
 				UpdateMuscleAliveness(alive);
 			}
 		}
@@ -49,6 +49,11 @@ namespace Keiwando.Evolution {
 
 		private bool containsPenaltyJoints = false;
 		private HashSet<int> jointIdsWithPenalty = new HashSet<int>();
+
+		// DEBUG:
+		public CreatureRecording recording;
+		public bool PlayRecording = false;
+		public float PlaybackStartTime = 0.0f;
 
 		//public bool DEBUG = false;
 
@@ -69,6 +74,30 @@ namespace Keiwando.Evolution {
 					foreach (Joint joint in joints) {
 						if (joint.JointData.fitnessPenaltyForTouchingGround > 0 && joint.isCollidingWithGround) {	
 							jointIdsWithPenalty.Add(joint.JointData.id);
+						}
+					}
+				}
+
+				if (recording != null) {
+					if (PlayRecording) {
+						float relativePlaybackTime = Time.time - PlaybackStartTime;
+						recording.seekPlaybackToTime(relativePlaybackTime);
+						for (int jointIndex = 0; jointIndex < joints.Count; jointIndex++) { 
+							joints[jointIndex].transform.position = recording.getRecordedJointPosition(jointIndex);
+						}
+						foreach (Bone bone in bones) {
+							bone.RefreshBonePlacement();
+						}
+						foreach (Muscle muscle in muscles) {
+							muscle.UpdateLinePoints();
+						}
+					} else {
+						if (recording.shouldRecordNewSample()) {
+							recording.beginRecordingSample();
+							for (int jointIndex = 0; jointIndex < joints.Count; jointIndex++) {
+								recording.recordJointPosition(jointIndex, joints[jointIndex].center);
+							}
+							recording.endRecordingSample();
 						}
 					}
 				}

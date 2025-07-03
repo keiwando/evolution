@@ -20,6 +20,9 @@ namespace Keiwando.Evolution {
         public List<ChromosomeData> BestCreatures { get; set; }
         public float[][] CurrentChromosomes { get; set; }
 
+        // DEBUG:
+        public CreatureRecording BestCreatureRecording { get; set; }
+
         public readonly int LastV2SimulatedGeneration;
 
         public SimulationData(

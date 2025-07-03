@@ -150,17 +150,6 @@ public class Bone : BodyComponent {
 		PlaceBetweenPoints(jPos1, jPos2, width);
 	}
 
-	public void RefreshBonePlacement3D() {
-
-		if (startingJoint == null || endingJoint == null) return;
-
-		var width = transform.localScale.z;
-		var jPos1 = startingJoint.transform.position;
-		var jPos2 = endingJoint.transform.position;
-
-		PlaceBetweenPoints3D(jPos1, jPos2, width);
-	}
-
 	/** Connects the gameobject to the starting end endingJoint */
 	public void ConnectToJoints() {
 
