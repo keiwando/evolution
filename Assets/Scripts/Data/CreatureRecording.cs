@@ -8,6 +8,7 @@ public class CreatureRecording {
 
   public float[] sampleTimestamps;
   public Vector2[,] jointPositions;
+  public float[,] muscleForces;
 
   private int sampleCapacity;
   private int validSampleCount = 0;
@@ -20,7 +21,8 @@ public class CreatureRecording {
   private float currentPlaybackSampleInterpolationT = 0f;
 
   public CreatureRecording(int recordingDurationInSeconds, 
-                           int numberOfJoints) {
+                           int numberOfJoints,
+                           int numberOfMuscles) {
     int sampleCount = SAMPLES_PER_SECOND * recordingDurationInSeconds;
     this.sampleCapacity = sampleCount;
     this.sampleTimestamps = new float[sampleCount];
@@ -31,6 +33,7 @@ public class CreatureRecording {
         jointPositions[jointIndex, sampleIndex] = new Vector2(0, 0);
       }
     }
+    this.muscleForces = new float[numberOfMuscles, sampleCount];
   }
 
   public bool shouldRecordNewSample() {
@@ -58,6 +61,18 @@ public class CreatureRecording {
     }
 
     jointPositions[jointIndex, nextSampleIndexToRecord] = jointPosition;
+  }
+
+  public void recordMuscleForce(int muscleIndex, float force) {
+    if (nextSampleIndexToRecord >= sampleCapacity) {
+      return;
+    }
+    if (muscleIndex < 0 || muscleIndex >= muscleForces.GetLength(0)) {
+      Debug.Log($"Invalid muscle index {muscleIndex} for recording");
+      return;
+    }
+
+    muscleForces[muscleIndex, nextSampleIndexToRecord] = force;
   }
 
   public void endRecordingSample() {
@@ -103,5 +118,9 @@ public class CreatureRecording {
     } else {
       return currentJointPosition;
     }
+  }
+
+  public float getRecordedMuscleForce(int muscleIndex) {
+    return muscleForces[muscleIndex, currentPlaybackSample];
   }
 }

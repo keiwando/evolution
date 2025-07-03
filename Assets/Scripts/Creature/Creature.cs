@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,17 +86,26 @@ namespace Keiwando.Evolution {
 						for (int jointIndex = 0; jointIndex < joints.Count; jointIndex++) { 
 							joints[jointIndex].transform.position = recording.getRecordedJointPosition(jointIndex);
 						}
+						for (int muscleIndex = 0; muscleIndex < muscles.Count; muscleIndex++) {
+							float signedForce = recording.getRecordedMuscleForce(muscleIndex);
+							muscles[muscleIndex].muscleAction = signedForce >= 0 ? Muscle.MuscleAction.CONTRACT : Muscle.MuscleAction.EXPAND;
+							muscles[muscleIndex].currentForce = Math.Abs(signedForce);
+						}
 						foreach (Bone bone in bones) {
 							bone.RefreshBonePlacement();
-						}
-						foreach (Muscle muscle in muscles) {
-							muscle.UpdateLinePoints();
 						}
 					} else {
 						if (recording.shouldRecordNewSample()) {
 							recording.beginRecordingSample();
 							for (int jointIndex = 0; jointIndex < joints.Count; jointIndex++) {
 								recording.recordJointPosition(jointIndex, joints[jointIndex].center);
+							}
+							for (int muscleIndex = 0; muscleIndex < muscles.Count; muscleIndex++) {
+								float signedForce = muscles[muscleIndex].currentForce;
+								if (muscles[muscleIndex].muscleAction == Muscle.MuscleAction.EXPAND) {
+									signedForce *= -1;
+								}
+								recording.recordMuscleForce(muscleIndex, signedForce);
 							}
 							recording.endRecordingSample();
 						}

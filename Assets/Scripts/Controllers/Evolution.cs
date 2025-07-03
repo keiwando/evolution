@@ -204,7 +204,8 @@ namespace Keiwando.Evolution {
 				foreach (Creature creature in batch) {
 					creature.recording = new CreatureRecording(
 						recordingDurationInSeconds: (int)Math.Min(10f, cachedSettings.SimulationTime),
-						numberOfJoints: creature.joints.Count
+						numberOfJoints: creature.joints.Count,
+						numberOfMuscles: creature.muscles.Count
 					);
 				}
 
