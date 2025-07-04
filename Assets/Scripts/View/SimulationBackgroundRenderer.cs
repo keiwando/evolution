@@ -38,6 +38,12 @@ public class SimulationBackgroundRenderer: MonoBehaviour {
         quad = CreateQuad();
     }
 
+    void OnDestroy() {
+        if (this.hiddenCamera != null && this.hiddenCamera.targetTexture != null) {
+            this.hiddenCamera.targetTexture.Release();
+        }
+    }
+
     void Update() {
         if (renderHiddenCreatures && hiddenCamera != null) {
             hiddenCamera.orthographicSize = camera.orthographicSize;

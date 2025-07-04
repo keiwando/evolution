@@ -6,6 +6,6 @@ namespace Keiwando.Evolution.UI {
   public class GalleryGridCell : MonoBehaviour {
 
     [SerializeField]
-    private RawImage rawImage;
+    public RawImage rawImage;
   }
 }

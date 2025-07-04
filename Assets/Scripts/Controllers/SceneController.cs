@@ -58,7 +58,6 @@ namespace Keiwando.Evolution {
             while(!scene.isLoaded) {
                 yield return new WaitForEndOfFrame();
             }
-
             // Find setup script in the new scene
             var prevActiveScene = SceneManager.GetActiveScene();
             SceneManager.SetActiveScene(scene);
