@@ -130,20 +130,24 @@ public class SimulationViewController : MonoBehaviour,
 		pauseViewController.Show();
 	}
 
+	private void SaveToGallery() {
+		evolution.SaveToGallery();
+	}
+
 	private void SaveSimulation() {
 		evolution.SaveSimulation();
 	}
 
-    private void ConnectCameraOutputs() {
-        
-        if (visibleScreen == VisibleScreen.Simulation) {
-            simulationCamera.targetTexture = null;
-            bestCreatureCamera.targetTexture = evolutionOverlayView.GetPipRenderTexture();
-        } else {
-            simulationCamera.targetTexture = bestCreatureOverlayView.GetPipRenderTexture();
-            bestCreatureCamera.targetTexture = null;
-        }
-    }
+	private void ConnectCameraOutputs() {
+			
+			if (visibleScreen == VisibleScreen.Simulation) {
+					simulationCamera.targetTexture = null;
+					bestCreatureCamera.targetTexture = evolutionOverlayView.GetPipRenderTexture();
+			} else {
+					simulationCamera.targetTexture = bestCreatureOverlayView.GetPipRenderTexture();
+					bestCreatureCamera.targetTexture = null;
+			}
+	}
 	
 
 	#region ISharedSimulationOverlayViewDelegate
@@ -156,15 +160,19 @@ public class SimulationViewController : MonoBehaviour,
 		return (evolution.SimulationData?.LastV2SimulatedGeneration ?? 0) > 0;
 	}
 
-    public void PauseButtonClicked(SharedSimulationOverlayView view) {
+  public void PauseButtonClicked(SharedSimulationOverlayView view) {
 		Pause();
 	}
 
-    public void BackButtonClicked(SharedSimulationOverlayView view) {
+  public void BackButtonClicked(SharedSimulationOverlayView view) {
 		GoBackToEditor();
 	}
 
-    public void SaveButtonClicked(SharedSimulationOverlayView view) {
+	public void SaveToGalleryButtonClicked(SharedSimulationOverlayView view) {
+		SaveToGallery();
+	}
+
+  public void SaveButtonClicked(SharedSimulationOverlayView view) {
 		SaveSimulation();
 	}
 
@@ -172,7 +180,7 @@ public class SimulationViewController : MonoBehaviour,
 		v2PlaybackNoticePopup.Show(true);
 	}
     
-    public void AutosaveToggled(SharedSimulationOverlayView view, bool autosaveEnabled) {
+  public void AutosaveToggled(SharedSimulationOverlayView view, bool autosaveEnabled) {
 		evolution.AutoSaver.Enabled = autosaveEnabled;
 	}
 
@@ -185,23 +193,23 @@ public class SimulationViewController : MonoBehaviour,
 		Refresh();
 	}
 
-    public int GetCurrentGenerationNumber(EvolutionOverlayView view) {
+  public int GetCurrentGenerationNumber(EvolutionOverlayView view) {
 		return evolution.CurrentGenerationNumber;
 	}
 
-    public int GetGurrentBestOfGenerationNumber(EvolutionOverlayView view) {
+  public int GetGurrentBestOfGenerationNumber(EvolutionOverlayView view) {
 		return bestCreatureController.CurrentGeneration;
 	}
 
-    public int GetCurrentBatchNumber(EvolutionOverlayView view) {
+  public int GetCurrentBatchNumber(EvolutionOverlayView view) {
 		return evolution.CurrentBatchNumber;
 	}
 
-    public int GetTotalBatchCount(EvolutionOverlayView view) {
+  public int GetTotalBatchCount(EvolutionOverlayView view) {
 		return (int)Math.Ceiling(((float)evolution.Settings.PopulationSize / evolution.CurrentCreatureBatch.Length));
 	}
 
-    public bool IsSimulatingInBatches(EvolutionOverlayView view) {
+  public bool IsSimulatingInBatches(EvolutionOverlayView view) {
 		return evolution.IsSimulatingInBatches;
 	}
 

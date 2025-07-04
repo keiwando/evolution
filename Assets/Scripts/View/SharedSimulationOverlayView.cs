@@ -11,6 +11,7 @@ public interface ISharedSimulationOverlayViewDelegate {
     void InaccuratePlaybackButtonClicked(SharedSimulationOverlayView view);
     void PauseButtonClicked(SharedSimulationOverlayView view);
     void BackButtonClicked(SharedSimulationOverlayView view);
+    void SaveToGalleryButtonClicked(SharedSimulationOverlayView view);
     void SaveButtonClicked(SharedSimulationOverlayView view);
     
     void AutosaveToggled(SharedSimulationOverlayView view, bool autosaveEnabled);
@@ -26,6 +27,11 @@ public class SharedSimulationOverlayView: MonoBehaviour {
 
     [SerializeField] private Toggle autosaveToggle;
     [SerializeField] private Button saveButton;
+    [SerializeField] private GameObject saveMenu;
+    [SerializeField] private Button saveToGalleryButton;
+    [SerializeField] private Button saveSimulationButton;
+    [SerializeField] private Button aboutSavingButton;
+    [SerializeField] private Button cancelSaveMenuButton;
     [SerializeField] private Text successfulSaveLabel;
 
     [SerializeField] private Button backButton;
@@ -34,6 +40,8 @@ public class SharedSimulationOverlayView: MonoBehaviour {
     private Coroutine savedLabelFadeRoutine;
 
     void Start() {
+
+        this.saveMenu.gameObject.SetActive(false);
 
         backButton.onClick.AddListener(delegate () {
             Delegate.BackButtonClicked(this);
@@ -44,22 +52,47 @@ public class SharedSimulationOverlayView: MonoBehaviour {
         });
 
         saveButton.onClick.AddListener(delegate () {
-            Delegate.SaveButtonClicked(this);
+            ToggleSaveMenu();
         });
 
-        inaccuratePlaybackButton.onClick.AddListener(delegate () {
-            Delegate.InaccuratePlaybackButtonClicked(this);
+        saveToGalleryButton.onClick.AddListener(delegate () {
+            Delegate.SaveToGalleryButtonClicked(this);
+            HideSaveMenu();
+        });
+
+        saveSimulationButton.onClick.AddListener(delegate () {
+            Delegate.SaveButtonClicked(this);
+            HideSaveMenu();
         });
 
         autosaveToggle.onValueChanged.AddListener(delegate (bool value) {
             Delegate.AutosaveToggled(this, value);
         });
+
+        cancelSaveMenuButton.onClick.AddListener(delegate () {
+            HideSaveMenu();
+        });
+
+        inaccuratePlaybackButton.onClick.AddListener(delegate () {
+            Delegate.InaccuratePlaybackButtonClicked(this);
+        });
+        successfulSaveLabel.gameObject.SetActive(false);
+
+        Refresh();
     }
 
     public void Refresh() {
 
         autosaveToggle.isOn = Delegate.IsAutoSaveEnabled(this);
         inaccuratePlaybackButton.gameObject.SetActive(Delegate.IsPlaybackPossiblyInaccurate(this));
+    }
+
+    private void ToggleSaveMenu() {
+        this.saveMenu.gameObject.SetActive(!this.saveMenu.gameObject.activeSelf);
+    }
+
+    private void HideSaveMenu() {
+        this.saveMenu.gameObject.SetActive(false);
     }
 
     public void ShowSuccessfulSaveAlert() {

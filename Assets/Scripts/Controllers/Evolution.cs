@@ -425,6 +425,10 @@ namespace Keiwando.Evolution {
 			return new LegacySimulationOptions();
 		}
 
+		public void SaveToGallery() {
+			// TODO: Implement
+		}
+
 		public string SaveSimulation() {
 			var savefileName = SimulationSerializer.SaveSimulation(SimulationData);
 			this.LastSavedGeneration = currentGenerationNumber;
