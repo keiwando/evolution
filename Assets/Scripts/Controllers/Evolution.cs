@@ -23,6 +23,7 @@ namespace Keiwando.Evolution {
 		public event Action NewGenerationDidBegin;
 		public event Action NewBatchDidBegin;
 		public event Action SimulationWasSaved;
+		public event Action CreatureWasSavedToGallery;
 		public event Action InitializationDidEnd;
 
 		#endregion
@@ -478,6 +479,7 @@ namespace Keiwando.Evolution {
 					createdDate = DateTime.Now,
 					loadedData = new LoadedCreatureGalleryEntry(this.SimulationData.BestCreatureRecording)
 				});
+				if (CreatureWasSavedToGallery != null) CreatureWasSavedToGallery();
 			}
 		}
 

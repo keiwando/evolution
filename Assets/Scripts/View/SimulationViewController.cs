@@ -11,7 +11,6 @@ using Keiwando.Evolution.UI;
 
 public class SimulationViewController : MonoBehaviour, 
 										IEvolutionOverlayViewDelegate, 
-										ISharedSimulationOverlayViewDelegate,
 										IBestCreaturesOverlayViewDelegate,
 										ISimulationVisibilityOptionsViewDelegate,
 										IPauseViewControllerDelegate  {
@@ -55,7 +54,7 @@ public class SimulationViewController : MonoBehaviour,
 
 		evolutionOverlayView.Delegate = this;
 		bestCreatureOverlayView.Delegate = this;
-		sharedOverlayView.Delegate = this;
+		sharedOverlayView.simulationViewController = this;
 		visibilityOptionsView.Delegate = this;
 
 		evolution.NewBatchDidBegin += delegate () {
@@ -63,6 +62,10 @@ public class SimulationViewController : MonoBehaviour,
 		};
 
 		evolution.SimulationWasSaved += delegate () {
+			sharedOverlayView.ShowSuccessfulSaveAlert();
+		};
+
+		evolution.CreatureWasSavedToGallery += delegate () {
 			sharedOverlayView.ShowSuccessfulSaveAlert();
 		};
 
@@ -149,42 +152,42 @@ public class SimulationViewController : MonoBehaviour,
 			}
 	}
 	
-
-	#region ISharedSimulationOverlayViewDelegate
-
-	public bool IsAutoSaveEnabled(SharedSimulationOverlayView view) {
+	public bool IsAutoSaveEnabled() {
 		return evolution.AutoSaver.Enabled;
 	}
 
-	public bool IsPlaybackPossiblyInaccurate(SharedSimulationOverlayView view) {
+	public bool SaveToGalleryIsPossible() {
+		return evolution.SimulationData.BestCreatureRecording != null;
+	}
+
+	public bool IsPlaybackPossiblyInaccurate() {
 		return (evolution.SimulationData?.LastV2SimulatedGeneration ?? 0) > 0;
 	}
 
-  public void PauseButtonClicked(SharedSimulationOverlayView view) {
+  public void PauseButtonClicked() {
 		Pause();
 	}
 
-  public void BackButtonClicked(SharedSimulationOverlayView view) {
+  public void BackButtonClicked() {
 		GoBackToEditor();
 	}
 
-	public void SaveToGalleryButtonClicked(SharedSimulationOverlayView view) {
+	public void SaveToGalleryButtonClicked() {
 		SaveToGallery();
 	}
 
-  public void SaveButtonClicked(SharedSimulationOverlayView view) {
+  public void SaveButtonClicked() {
 		SaveSimulation();
 	}
 
-	public void InaccuratePlaybackButtonClicked(SharedSimulationOverlayView view) {
+	public void InaccuratePlaybackButtonClicked() {
 		v2PlaybackNoticePopup.Show(true);
 	}
     
-  public void AutosaveToggled(SharedSimulationOverlayView view, bool autosaveEnabled) {
+  public void AutosaveToggled(bool autosaveEnabled) {
 		evolution.AutoSaver.Enabled = autosaveEnabled;
 	}
 
-	#endregion
 	#region IEvolutionOverlayViewDelegate
 
 	public void DidClickOnPipView(EvolutionOverlayView view) {

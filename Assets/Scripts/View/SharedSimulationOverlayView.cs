@@ -2,24 +2,11 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-
-public interface ISharedSimulationOverlayViewDelegate {   
-    
-    bool IsAutoSaveEnabled(SharedSimulationOverlayView view);
-    bool IsPlaybackPossiblyInaccurate(SharedSimulationOverlayView view);
-
-    void InaccuratePlaybackButtonClicked(SharedSimulationOverlayView view);
-    void PauseButtonClicked(SharedSimulationOverlayView view);
-    void BackButtonClicked(SharedSimulationOverlayView view);
-    void SaveToGalleryButtonClicked(SharedSimulationOverlayView view);
-    void SaveButtonClicked(SharedSimulationOverlayView view);
-    
-    void AutosaveToggled(SharedSimulationOverlayView view, bool autosaveEnabled);
-}
+using TMPro;
 
 public class SharedSimulationOverlayView: MonoBehaviour {
 
-    public ISharedSimulationOverlayViewDelegate Delegate { get; set; }
+    public SimulationViewController simulationViewController { get; set; }
 
     [SerializeField] private Button inaccuratePlaybackButton;
 
@@ -30,6 +17,7 @@ public class SharedSimulationOverlayView: MonoBehaviour {
     [SerializeField] private GameObject saveMenu;
     [SerializeField] private Button saveToGalleryButton;
     [SerializeField] private Button saveSimulationButton;
+    [SerializeField] private TMP_Text saveToGalleryWaitingForSimulationLabel;
     [SerializeField] private Button aboutSavingButton;
     [SerializeField] private Button cancelSaveMenuButton;
     [SerializeField] private Text successfulSaveLabel;
@@ -44,11 +32,11 @@ public class SharedSimulationOverlayView: MonoBehaviour {
         this.saveMenu.gameObject.SetActive(false);
 
         backButton.onClick.AddListener(delegate () {
-            Delegate.BackButtonClicked(this);
+            simulationViewController.BackButtonClicked();
         });
 
         pauseButton.onClick.AddListener(delegate () {
-            Delegate.PauseButtonClicked(this);
+            simulationViewController.PauseButtonClicked();
         });
 
         saveButton.onClick.AddListener(delegate () {
@@ -56,17 +44,17 @@ public class SharedSimulationOverlayView: MonoBehaviour {
         });
 
         saveToGalleryButton.onClick.AddListener(delegate () {
-            Delegate.SaveToGalleryButtonClicked(this);
+            simulationViewController.SaveToGalleryButtonClicked();
             HideSaveMenu();
         });
 
         saveSimulationButton.onClick.AddListener(delegate () {
-            Delegate.SaveButtonClicked(this);
+            simulationViewController.SaveButtonClicked();
             HideSaveMenu();
         });
 
         autosaveToggle.onValueChanged.AddListener(delegate (bool value) {
-            Delegate.AutosaveToggled(this, value);
+            simulationViewController.AutosaveToggled(value);
         });
 
         cancelSaveMenuButton.onClick.AddListener(delegate () {
@@ -74,17 +62,21 @@ public class SharedSimulationOverlayView: MonoBehaviour {
         });
 
         inaccuratePlaybackButton.onClick.AddListener(delegate () {
-            Delegate.InaccuratePlaybackButtonClicked(this);
+            simulationViewController.InaccuratePlaybackButtonClicked();
         });
         successfulSaveLabel.gameObject.SetActive(false);
 
+        // Can't refresh here. The simulationViewController reference is not set yet. The view controller
+        // calls refresh when ready.
         // Refresh();
     }
 
     public void Refresh() {
 
-        autosaveToggle.isOn = Delegate.IsAutoSaveEnabled(this);
-        inaccuratePlaybackButton.gameObject.SetActive(Delegate.IsPlaybackPossiblyInaccurate(this));
+        saveToGalleryButton.interactable = simulationViewController.SaveToGalleryIsPossible();
+        saveToGalleryWaitingForSimulationLabel.gameObject.SetActive(!saveToGalleryButton.interactable);
+        autosaveToggle.isOn = simulationViewController.IsAutoSaveEnabled();
+        inaccuratePlaybackButton.gameObject.SetActive(simulationViewController.IsPlaybackPossiblyInaccurate());
     }
 
     private void ToggleSaveMenu() {
