@@ -16,5 +16,7 @@ namespace Keiwando.Evolution {
         /// being incorrect
         /// </summary>
         public bool LegacyClimbingDropCalculation = false;
+
+        public static LegacySimulationOptions Default = new LegacySimulationOptions();
     }
 }

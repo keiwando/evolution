@@ -33,7 +33,7 @@ namespace Keiwando.Evolution {
 					PrepareForEvolution();
 				} 
 				alive = value;
-				SetKinematic(!alive || PlayRecording);
+				SetKinematic(!alive || recordingPlayer != null);
 				UpdateMuscleAliveness(alive);
 			}
 		}
@@ -51,12 +51,8 @@ namespace Keiwando.Evolution {
 		private bool containsPenaltyJoints = false;
 		private HashSet<int> jointIdsWithPenalty = new HashSet<int>();
 
-		// DEBUG:
-		public CreatureRecording recording;
-		public bool PlayRecording = false;
-		public float PlaybackStartTime = 0.0f;
-
-		//public bool DEBUG = false;
+		public CreatureRecorder recorder;
+		public CreatureRecordingPlayer recordingPlayer;
 
 		void Start() {
 			this.InitialPosition = new Vector3(
@@ -79,37 +75,35 @@ namespace Keiwando.Evolution {
 					}
 				}
 
-				if (recording != null) {
-					if (PlayRecording) {
-						float relativePlaybackTime = Time.time - PlaybackStartTime;
-						recording.seekPlaybackToTime(relativePlaybackTime);
-						for (int jointIndex = 0; jointIndex < joints.Count; jointIndex++) { 
-							joints[jointIndex].transform.position = recording.getRecordedJointPosition(jointIndex);
-						}
-						for (int muscleIndex = 0; muscleIndex < muscles.Count; muscleIndex++) {
-							float signedForce = recording.getRecordedMuscleForce(muscleIndex);
-							muscles[muscleIndex].muscleAction = signedForce >= 0 ? Muscle.MuscleAction.CONTRACT : Muscle.MuscleAction.EXPAND;
-							muscles[muscleIndex].currentForce = Math.Abs(signedForce);
-						}
-						foreach (Bone bone in bones) {
-							bone.RefreshBonePlacement();
-						}
-					} else {
-						if (recording.shouldRecordNewSample()) {
-							recording.beginRecordingSample();
+				if (recorder != null) {
+						if (recorder.shouldRecordNewSample()) {
+							recorder.beginRecordingSample();
 							for (int jointIndex = 0; jointIndex < joints.Count; jointIndex++) {
-								recording.recordJointPosition(jointIndex, joints[jointIndex].center);
+								recorder.recordJointPosition(jointIndex, joints[jointIndex].center);
 							}
 							for (int muscleIndex = 0; muscleIndex < muscles.Count; muscleIndex++) {
 								float signedForce = muscles[muscleIndex].currentForce;
 								if (muscles[muscleIndex].muscleAction == Muscle.MuscleAction.EXPAND) {
 									signedForce *= -1;
 								}
-								recording.recordMuscleForce(muscleIndex, signedForce);
+								recorder.recordMuscleForce(muscleIndex, signedForce);
 							}
-							recording.endRecordingSample();
+							recorder.endRecordingSample();
 						}
-					}
+				}
+				if (recordingPlayer != null) {
+						recordingPlayer.seekPlaybackToAbsoluteTime(Time.time);
+						for (int jointIndex = 0; jointIndex < joints.Count; jointIndex++) { 
+							joints[jointIndex].transform.position = recordingPlayer.getRecordedJointPosition(jointIndex);
+						}
+						for (int muscleIndex = 0; muscleIndex < muscles.Count; muscleIndex++) {
+							float signedForce = recordingPlayer.getRecordedMuscleForce(muscleIndex);
+							muscles[muscleIndex].muscleAction = signedForce >= 0 ? Muscle.MuscleAction.CONTRACT : Muscle.MuscleAction.EXPAND;
+							muscles[muscleIndex].currentForce = Math.Abs(signedForce);
+						}
+						foreach (Bone bone in bones) {
+							bone.RefreshBonePlacement();
+						}
 				}
 			}
 			//currentLowest = GetLowestPoint();

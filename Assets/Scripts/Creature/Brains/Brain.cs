@@ -56,7 +56,7 @@ namespace Keiwando.Evolution {
 
 		virtual public void FixedUpdate() {
 
-			if (Network != null && creature.Alive && !creature.PlayRecording) {
+			if (Network != null && creature.Alive && creature.recordingPlayer == null) {
 				
 				UpdateInputs();
 				var outputs = Network.CalculateOutputs();

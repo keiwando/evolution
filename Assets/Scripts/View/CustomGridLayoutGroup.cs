@@ -79,11 +79,11 @@ namespace Keiwando.UI {
  
             for (int i = 0; i < rectChildren.Count; i++) {
                 if (axis == 0) {
-                  int positionX = i / columnCount;
+                  int positionX = i % columnCount;
                   float cellX = startOffset.x + (cellWidth + horizontalSpacing) * positionX;
                   SetChildAlongAxis(rectChildren[i], 0, cellX, cellWidth);
                 } else {
-                  int positionY = i % columnCount;
+                  int positionY = i / columnCount;
                   float cellY = startOffset.y + (cellHeight + verticalSpacing) * positionY;
                   SetChildAlongAxis(rectChildren[i], 1, cellY, cellHeight);
                 }

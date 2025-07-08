@@ -78,7 +78,7 @@ public class SharedSimulationOverlayView: MonoBehaviour {
         });
         successfulSaveLabel.gameObject.SetActive(false);
 
-        Refresh();
+        // Refresh();
     }
 
     public void Refresh() {

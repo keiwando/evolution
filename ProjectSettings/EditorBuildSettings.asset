@@ -20,5 +20,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DummyScene.unity
     guid: 4b5cf0fdbbf234d4f9ff941edfa15a58
+  - enabled: 1
+    path: Assets/Scenes/GalleryPlaybackScene.unity
+    guid: 18111d8effe584b3fb7ac656c7e2b47d
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

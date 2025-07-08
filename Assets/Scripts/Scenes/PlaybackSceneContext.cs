@@ -26,4 +26,34 @@ namespace Keiwando.Evolution.Scenes {
             return this.controller.CurrentGeneration;
         }
     }
+
+    public class GalleryPlaybackSceneContext: ISceneContext {
+
+        protected string backgroundLayerName => "PlaybackBackground";
+        protected string staticForegroundLayerName => "PlaybackStaticForeground";
+        protected string dynamicForegroundLayerName => "PlaybackDynamicForeground";
+
+        private readonly LayerMask backgroundLayer;
+        private readonly LayerMask staticForegroundLayer;
+        private readonly LayerMask dynamicForegroundLayer;
+
+        public GalleryPlaybackSceneContext() {
+            this.backgroundLayer = LayerMask.NameToLayer(backgroundLayerName);
+            this.staticForegroundLayer = LayerMask.NameToLayer(staticForegroundLayerName);
+            this.dynamicForegroundLayer = LayerMask.NameToLayer(dynamicForegroundLayerName);
+        }
+        
+        public LayerMask GetBackgroundLayer() { return backgroundLayer; }
+        public LayerMask GetStaticForegroundLayer() { return staticForegroundLayer; }
+        public LayerMask GetDynamicForegroundLayer() { return dynamicForegroundLayer; }
+
+        public CreatureStats GetStatsForBestOfGeneration(int generation) {
+            // TODO: Implement
+            return new CreatureStats();
+        }
+
+        public float GetDistanceOfBest() {
+            return 0;
+        }
+    }
 }

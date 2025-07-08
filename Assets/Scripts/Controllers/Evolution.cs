@@ -15,7 +15,7 @@ namespace Keiwando.Evolution {
 		public struct Solution {
 			public IChromosomeEncodable<float[]> Encodable;
 			public CreatureStats Stats;
-			public CreatureRecording Recording;
+			public CreatureRecorder Recorder;
 		}
 
 		#region Events
@@ -99,6 +99,8 @@ namespace Keiwando.Evolution {
 		public int LastSavedGeneration { get; private set; }
 
 		private Coroutine simulationRoutine;
+
+		private List<CreatureRecorder> recorders = new List<CreatureRecorder>();
 		
 		void Start() {
 			
@@ -201,12 +203,48 @@ namespace Keiwando.Evolution {
 				ApplyBrains(batch, chromosomes);
 
 				// DEBUG:
-				foreach (Creature creature in batch) {
-					creature.recording = new CreatureRecording(
-						recordingDurationInSeconds: (int)Math.Min(10f, cachedSettings.SimulationTime),
-						numberOfJoints: creature.joints.Count,
-						numberOfMuscles: creature.muscles.Count
-					);
+				// Create missing or remove excessive recorders
+				int missingRecorders = actualBatchSize - recorders.Count;
+				if (missingRecorders > 0) {
+					for (int missingRecorderIndex = 0; missingRecorderIndex < missingRecorders; missingRecorderIndex++) {
+						recorders.Add(null);
+					}
+				}
+				int excessiveRecorders = recorders.Count - actualBatchSize;
+				if (excessiveRecorders > 0) {
+					recorders.RemoveRange(recorders.Count - excessiveRecorders, excessiveRecorders);
+				}
+				if (batch.Length > 0) {
+					int numberOfJoints = batch[0].joints.Count;
+					int numberOfMuscles = batch[0].muscles.Count;
+					int recordingDurationInSeconds = (int)Math.Min(10f, cachedSettings.SimulationTime);
+					for (int recorderIndex = 0; recorderIndex < recorders.Count; recorderIndex++) {
+						bool needsNewRecorder = false; 
+						if (recorders[recorderIndex] == null) {
+							needsNewRecorder = true;
+						} else {
+							needsNewRecorder |= recorders[recorderIndex].recordingDurationInSeconds != recordingDurationInSeconds;
+							needsNewRecorder |= recorders[recorderIndex].numberOfJoints != numberOfJoints;
+							needsNewRecorder |= recorders[recorderIndex].numberOfMuscles != numberOfMuscles;
+						}
+						if (needsNewRecorder) {
+							recorders[recorderIndex] = new CreatureRecorder(
+								recordingDurationInSeconds: recordingDurationInSeconds,
+								numberOfJoints: numberOfJoints,
+								numberOfMuscles: numberOfMuscles
+							);
+						}
+					}
+				}
+
+				for (int creatureIndex = 0; creatureIndex < batch.Length; creatureIndex++) {
+					// Assign the recorder to the creature
+					if (creatureIndex < recorders.Count) {
+						batch[creatureIndex].recorder = recorders[creatureIndex];
+						batch[creatureIndex].recorder.reset();
+					} else {
+						batch[creatureIndex].recorder = null;
+					}
 				}
 
 				yield return SimulateBatch();
@@ -218,7 +256,7 @@ namespace Keiwando.Evolution {
 					solutions[solutionIndex++] = new Solution() { 
 						Encodable = creature.brain.Network,
 						Stats = creature.GetStatistics(this.cachedSettings.SimulationTime),
-						Recording = creature.recording
+						Recorder = creature.recorder
 					};
 				}
 				
@@ -258,7 +296,12 @@ namespace Keiwando.Evolution {
 			SimulationData.BestCreatures.Add(new ChromosomeData(best.Encodable.ToChromosome(), best.Stats));
 
 			// DEBUG:
-			SimulationData.BestCreatureRecording = best.Recording;
+			CreatureRecordingMovementData recordedMovementData = best.Recorder.toRecordingMovementData();
+			SimulationData.BestCreatureRecording = new CreatureRecording(
+				creatureDesign: SimulationData.CreatureDesign,
+				sceneDescription: SimulationData.SceneDescription,
+				movementData: recordedMovementData
+			);
 
 			// Autosave if necessary
 			bool saved = AutoSaver.Update(this.currentGenerationNumber, this);
@@ -427,6 +470,15 @@ namespace Keiwando.Evolution {
 
 		public void SaveToGallery() {
 			// TODO: Implement
+			// TODO: Disable the button when the first generation hasn't finished yet.
+			if (this.SimulationData.BestCreatureRecording != null) {
+				// DEBUG:
+				CreatureGalleryManager.dbg_entries.Add(new CreatureGalleryEntry {
+					filePath = "",
+					createdDate = DateTime.Now,
+					loadedData = new LoadedCreatureGalleryEntry(this.SimulationData.BestCreatureRecording)
+				});
+			}
 		}
 
 		public string SaveSimulation() {

@@ -29710,8 +29710,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -10}
-  m_SizeDelta: {x: 20, y: 40}
+  m_AnchoredPosition: {x: 0, y: -12.3086}
+  m_SizeDelta: {x: 20, y: 35.3828}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1791084867
 MonoBehaviour:
@@ -29869,7 +29869,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2780983
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -30795,8 +30795,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -10}
-  m_SizeDelta: {x: 20, y: 40}
+  m_AnchoredPosition: {x: 0, y: 4.300003}
+  m_SizeDelta: {x: 20, y: 11.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1887978784
 MonoBehaviour:

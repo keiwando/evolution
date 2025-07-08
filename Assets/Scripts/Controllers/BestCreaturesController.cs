@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Keiwando.Evolution.Scenes;
@@ -116,11 +115,12 @@ namespace Keiwando.Evolution {
 
 			// DEBUG:
 			if (evolution.SimulationData.BestCreatureRecording != null) {
-				this.CurrentBest.PlayRecording = true;
-				this.CurrentBest.PlaybackStartTime = Time.time;
-				this.CurrentBest.recording = evolution.SimulationData.BestCreatureRecording;
+				this.CurrentBest.recordingPlayer = new CreatureRecordingPlayer(
+					recording: evolution.SimulationData.BestCreatureRecording.movementData
+				);
+				this.CurrentBest.recordingPlayer.beginPlayback();
 			} else {
-				this.CurrentBest.PlayRecording = false;
+				this.CurrentBest.recordingPlayer = null;
 			}
 			evolution.ApplyBrain(this.CurrentBest, chromosome);
 

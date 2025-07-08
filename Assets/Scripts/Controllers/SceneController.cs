@@ -16,7 +16,8 @@ namespace Keiwando.Evolution {
 
         public enum SimulationSceneType {
             Simulation,
-            BestCreatures
+            BestCreatures,
+            GalleryPlayback
         }
 
         public class SimulationSceneLoadContext {
@@ -49,8 +50,8 @@ namespace Keiwando.Evolution {
             var sceneName = NameForScene(sceneType);
             var options = new LoadSceneParameters(LoadSceneMode.Additive, LocalPhysicsMode.Physics3D);
 
-            SceneManager.LoadScene(sceneName, options);
-            var scene = SceneManager.GetSceneByName(sceneName);
+            var scene = SceneManager.LoadScene(sceneName, options);
+            // var scene = SceneManager.GetSceneByName(sceneName);
             context.PhysicsScene = scene.GetPhysicsScene();
             context.Scene = scene;
             // We need to wait before the scene and its GameObjects
@@ -103,6 +104,7 @@ namespace Keiwando.Evolution {
             switch (scene) {
             case SimulationSceneType.Simulation: return "SimulationScene";
             case SimulationSceneType.BestCreatures: return "BestCreaturesScene";
+            case SimulationSceneType.GalleryPlayback: return "GalleryPlaybackScene";
             default: 
                 throw new System.ArgumentException("Unhandled scene type!");
             }
