@@ -159,22 +159,18 @@ namespace Keiwando.Evolution.UI {
             });
           }
         }
-        // DEBUG:
         foreach (GameObject rootObject in rootObjects) {
           if (rootObject.name == "Main Camera") {
             Camera mainCamera = rootObject.GetComponent<Camera>();
             RenderTexture renderTexture = renderTextures[cellIndex];
             if (renderTexture == null) {
               Canvas canvas = GetComponent<Canvas>();
-              CanvasScaler canvasScaler = GetComponent<CanvasScaler>();
               RectTransform cellTransform = cell.transform as RectTransform;
-              // Rect cellPixelRect = RectTransformUtility.PixelAdjustRect(cellTransform, canvas);
               renderTexture = new RenderTexture(
-                width: (int)(cellTransform.sizeDelta.x * canvasScaler.scaleFactor),
-                height: (int)(cellTransform.sizeDelta.y * canvasScaler.scaleFactor),
+                width: (int)(cellTransform.sizeDelta.x * canvas.transform.localScale.x),
+                height: (int)(cellTransform.sizeDelta.y * canvas.transform.localScale.y),
                 depth: 0
               );
-              // renderTexture = new RenderTexture(width: (int)cellPixelRect.x, height: (int)cellPixelRect.y, 0);
               renderTextures[cellIndex] = renderTexture;
             }
             mainCamera.targetTexture = renderTexture;
