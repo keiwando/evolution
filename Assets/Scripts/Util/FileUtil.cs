@@ -47,3 +47,27 @@ public static class FileUtil {
         return availableName;
     }
 }
+
+public static class StreamUtil {
+
+    public static bool CanRead(this BinaryReader binaryReader, long byteCount) {
+        var bs = binaryReader.BaseStream;
+        return bs.Position + byteCount <= bs.Length;
+    }
+	
+    public static void WriteDummyBlockLength(this BinaryWriter writer) {
+		writer.Write((uint)0);
+	}
+	
+    public static void WriteBlockLengthToOffset(this BinaryWriter writer, long offset) {
+		long currentOffset = writer.Seek(0, SeekOrigin.Current);
+		long blockLength = offset - (currentOffset + 8);
+		writer.Seek((int)offset, SeekOrigin.Begin);
+		writer.Write((uint)blockLength);
+		writer.Seek((int)currentOffset, SeekOrigin.Begin);
+	}
+
+    public static uint ReadBlockLength(this BinaryReader reader) {
+        return reader.ReadUInt32();
+    }
+}

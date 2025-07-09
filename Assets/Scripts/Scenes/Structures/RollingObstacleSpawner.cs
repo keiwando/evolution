@@ -1,3 +1,4 @@
+using System.IO;
 using Keiwando.JSON;
 using UnityEngine;
 
@@ -21,6 +22,33 @@ namespace Keiwando.Evolution.Scenes {
             this.ObstacleLifetime = obstacleLifetime;
             this.ForceMultiplier = forceMultiplier;
         } 
+        
+        public override StructureType GetStructureType() {
+            return StructureType.RollingObstacleSpawner;
+        }
+
+        public void Encode(BinaryWriter writer) {
+            this.Transform.Encode(writer);
+            ushort flags = 0; // No flags currently used
+            writer.Write(flags);
+            writer.Write(SpawnInterval);
+            writer.Write(ObstacleLifetime);
+            writer.Write(ForceMultiplier);
+        }
+
+        public static RollingObstacleSpawner Decode(BinaryReader reader) {
+            var transform = Transform.Decode(reader);
+            ushort flags = reader.ReadUInt16(); // Read flags, currently unused
+            var spawnInterval = reader.ReadSingle();
+            var obstacleLifetime = reader.ReadSingle();
+            var forceMultiplier = reader.ReadSingle();
+            return new RollingObstacleSpawner(
+                transform: transform,
+                spawnInterval: spawnInterval,
+                obstacleLifetime: obstacleLifetime,
+                forceMultiplier: forceMultiplier
+            );
+        }
 
         public override string GetEncodingKey() {
             return ENCODING_ID;

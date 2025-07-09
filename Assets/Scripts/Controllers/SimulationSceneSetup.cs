@@ -50,7 +50,7 @@ namespace Keiwando.Evolution {
 
             bool sceneContainsStairs = false;
             foreach (var structure in options.SceneDescription.Structures) {
-                if (structure.GetEncodingKey() == Stairstep.ENCODING_ID) {
+                if (structure != null && structure.GetEncodingKey() == Stairstep.ENCODING_ID) {
                     sceneContainsStairs = true;
                     break;
                 }

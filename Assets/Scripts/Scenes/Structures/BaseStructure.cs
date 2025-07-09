@@ -12,6 +12,7 @@ namespace Keiwando.Evolution.Scenes {
             this.Transform = transform;
         }
 
+        abstract public StructureType GetStructureType();
         abstract public string GetEncodingKey();
         public abstract IStructureBuilder GetBuilder();
 

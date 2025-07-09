@@ -7,8 +7,10 @@ namespace Keiwando.Evolution.Scenes {
 
         public static void Build(SimulationSceneDescription scene, ISceneContext context) {
             for (int i = 0; i < scene.Structures.Length; i++) {
-
-                scene.Structures[i].GetBuilder().Build(context);
+                IStructure structure = scene.Structures[i];
+                if (structure != null) {
+                   structure.GetBuilder().Build(context);
+                };
             }
         }
     }

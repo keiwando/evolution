@@ -1,5 +1,5 @@
+using System.IO;
 using Keiwando.JSON;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
@@ -21,6 +21,33 @@ namespace Keiwando.Evolution.Scenes {
             this.MarkerDistance = markerDistance;
             this.DistanceAngleFactor = angleFactor;
             this.BestMarkerRotation = bestMarkerRotation;
+        }
+
+        public override StructureType GetStructureType() {
+            return StructureType.DistanceMarkerSpawner;
+        }
+
+        public void Encode(BinaryWriter writer) {
+            this.Transform.Encode(writer);
+            ushort flags = 0;
+            writer.Write(flags);
+            writer.Write(MarkerDistance);
+            writer.Write(DistanceAngleFactor);
+            writer.Write(BestMarkerRotation);
+        }
+
+        public static DistanceMarkerSpawner Decode(BinaryReader reader) {
+            var transform = Transform.Decode(reader);
+            ushort flags = reader.ReadUInt16();
+            var markerDistance = reader.ReadSingle();
+            var angleFactor = reader.ReadSingle();
+            var bestMarkerRotation = reader.ReadSingle();
+            return new DistanceMarkerSpawner(
+                transform: transform, 
+                markerDistance: markerDistance, 
+                angleFactor: angleFactor, 
+                bestMarkerRotation: bestMarkerRotation
+            );
         }
 
         public override string GetEncodingKey() {

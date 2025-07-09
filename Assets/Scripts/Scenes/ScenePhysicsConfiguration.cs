@@ -1,3 +1,4 @@
+using System.IO;
 using Keiwando.JSON;
 
 namespace Keiwando.Evolution.Scenes {
@@ -71,6 +72,56 @@ namespace Keiwando.Evolution.Scenes {
         public bool AutoSyncTransforms { get; set; } = false;
 
         #region Encode & Decode
+
+        public void Encode(BinaryWriter writer) {
+            long lengthOffset = writer.Seek(0, SeekOrigin.Current);
+            writer.WriteDummyBlockLength();
+
+            ushort flags = 0;
+            writer.Write(flags);
+            writer.Write(this.Gravity);
+            writer.Write(this.BounceThreshold);
+            writer.Write(this.SleepThreshold);
+            writer.Write(this.DefaultContactOffset);
+            writer.Write(this.DefaultSolverIterations);
+            writer.Write(this.DefaultSolverVelocityIterations);
+            writer.Write(this.QueriesHitBackfaces);
+            writer.Write(this.QueriesHitTriggers);
+            writer.Write(this.AutoSyncTransforms);
+
+            writer.WriteBlockLengthToOffset(lengthOffset);
+        } 
+
+        public static ScenePhysicsConfiguration Decode(BinaryReader reader) {
+
+            uint dataLength = reader.ReadUInt32();
+            long expectedEndByte = reader.BaseStream.Position + dataLength;
+
+            ushort flags = reader.ReadUInt16();
+            float gravity = reader.ReadSingle();
+            float bounceThreshold = reader.ReadSingle();
+            float sleepThreshold = reader.ReadSingle();
+            float defaultContactOffset = reader.ReadSingle();
+            int defaultSolverIterations = reader.ReadInt32();
+            int defaultSolverVelocityIterations = reader.ReadInt32();
+            bool queriesHitBackfaces = reader.ReadBoolean();
+            bool queriesHitTriggers = reader.ReadBoolean();
+            bool autoSyncTransforms = reader.ReadBoolean();
+
+            reader.BaseStream.Seek(expectedEndByte, SeekOrigin.Begin);
+            
+            return new ScenePhysicsConfiguration {
+                Gravity = gravity,
+                BounceThreshold = bounceThreshold,
+                SleepThreshold = sleepThreshold,
+                DefaultContactOffset = defaultContactOffset,
+                DefaultSolverIterations = defaultSolverIterations,
+                DefaultSolverVelocityIterations = defaultSolverVelocityIterations,
+                QueriesHitBackfaces = queriesHitBackfaces,
+                QueriesHitTriggers = queriesHitTriggers,
+                AutoSyncTransforms = autoSyncTransforms
+            };
+        }
 
         private static class CodingKey {
             public const string Gravity = "gravity";

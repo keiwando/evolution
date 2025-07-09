@@ -1,3 +1,4 @@
+using System.IO;
 using Keiwando.JSON;
 
 using UnityEngine;
@@ -9,6 +10,22 @@ namespace Keiwando.Evolution.Scenes {
         public const string ENCODING_ID = "evolution::structure::ground";
 
         public Ground(Transform transform): base(transform) {}
+        
+        public override StructureType GetStructureType() {
+            return StructureType.Ground;
+        }
+
+        public void Encode(BinaryWriter writer) {
+            this.Transform.Encode(writer);
+            ushort flags = 0;
+            writer.Write(flags);
+        }
+
+        public static Ground Decode(BinaryReader reader) {
+            var transform = Transform.Decode(reader);
+            ushort flags = reader.ReadUInt16();
+            return new Ground(transform);
+        }
 
         public override string GetEncodingKey() {
             return ENCODING_ID;

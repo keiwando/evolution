@@ -1,3 +1,4 @@
+using System.IO;
 using Keiwando.JSON;
 
 namespace Keiwando.Evolution.Scenes {
@@ -25,6 +26,31 @@ namespace Keiwando.Evolution.Scenes {
         }
 
         #region Encode & Decode
+
+        public void Encode(BinaryWriter writer) {
+            long dataLengthOffset = writer.Seek(0, SeekOrigin.Current);
+            writer.WriteDummyBlockLength();
+            ushort flags = 0;
+            writer.Write(flags);
+            writer.Write(x);
+            writer.Write(y);
+            writer.Write(pivot);
+            writer.WriteBlockLengthToOffset(dataLengthOffset);
+        }
+
+        public static CameraControlPoint Decode(BinaryReader reader) {
+            uint dataLength = reader.ReadUInt32();
+            long expectedEndByte = reader.BaseStream.Position + (long)dataLength;
+
+            ushort flags = reader.ReadUInt16();
+            float x = reader.ReadSingle();
+            float y = reader.ReadSingle();
+            float pivot = reader.ReadSingle();
+
+            reader.BaseStream.Seek(expectedEndByte, SeekOrigin.Begin);
+
+            return new CameraControlPoint(x, y, pivot);
+        }
 
         public static class CodingKey {
             public const string x = "x";

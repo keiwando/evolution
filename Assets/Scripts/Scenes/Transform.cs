@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEngine;
 using Keiwando.JSON;
 
@@ -19,6 +20,31 @@ namespace Keiwando.Evolution.Scenes {
         }
 
         #region Encode & Decode
+
+        public void Encode(BinaryWriter writer) {
+            writer.Write(this.Position.x);
+            writer.Write(this.Position.y);
+            writer.Write(this.Position.z);
+            writer.Write(this.Rotation);
+            writer.Write(this.Scale.x);
+            writer.Write(this.Scale.y);
+            writer.Write(this.Scale.z);
+        }
+
+        public static Transform Decode(BinaryReader reader) {
+            float x = reader.ReadSingle();
+            float y = reader.ReadSingle();
+            float z = reader.ReadSingle();
+            float rotation = reader.ReadSingle();
+            float sX = reader.ReadSingle();
+            float sY = reader.ReadSingle();
+            float sZ = reader.ReadSingle();
+            return new Transform(
+                new Vector3(x, y, z),
+                rotation,
+                new Vector3(sX, sY, sZ)
+            );
+        }
 
         private static class CodingKey {
             public const string X = "x";
