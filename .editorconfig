@@ -3,7 +3,9 @@
 # fields.
 dotnet_diagnostic.IDE0002.severity = none
 dotnet_diagnostic.IDE0003.severity = none
+dotnet_diagnostic.IDE0004.severity = none
 dotnet_diagnostic.IDE0017.severity = none
 dotnet_diagnostic.IDE0009.severity = none
+dotnet_diagnostic.IDE0047.severity = none
 dotnet_diagnostic.IDE0059.severity = none
 dotnet_diagnostic.IDE0251.severity = none

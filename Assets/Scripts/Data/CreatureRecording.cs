@@ -1,5 +1,5 @@
-using UnityEngine;
 using System;
+using UnityEngine;
 using Keiwando.Evolution.Scenes;
 
 public class CreatureRecordingMovementData {
@@ -19,13 +19,18 @@ public class CreatureRecording {
   public CreatureDesign creatureDesign;
   public SimulationSceneDescription sceneDescription;
   public CreatureRecordingMovementData movementData;
+  public int generation;
+  public DateTime date;
 
   public CreatureRecording(CreatureDesign creatureDesign,
                            SimulationSceneDescription sceneDescription,
-                           CreatureRecordingMovementData movementData) {
+                           CreatureRecordingMovementData movementData,
+                           int generation) {
     this.creatureDesign = creatureDesign;
+    this.generation = generation;
     this.sceneDescription = sceneDescription;
     this.movementData = movementData;
+    this.date = DateTime.Now;
   }
 }
 

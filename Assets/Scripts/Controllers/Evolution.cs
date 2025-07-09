@@ -301,7 +301,8 @@ namespace Keiwando.Evolution {
 			SimulationData.BestCreatureRecording = new CreatureRecording(
 				creatureDesign: SimulationData.CreatureDesign,
 				sceneDescription: SimulationData.SceneDescription,
-				movementData: recordedMovementData
+				movementData: recordedMovementData,
+				generation: this.currentGenerationNumber
 			);
 
 			// Autosave if necessary

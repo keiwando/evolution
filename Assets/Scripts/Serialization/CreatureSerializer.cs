@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using Keiwando.JSON;
+using Keiwando.Evolution;
 
 public class IllegalFilenameException: IOException {
 
@@ -63,6 +64,379 @@ public class CreatureSerializer {
 
 		CreateSaveFolder();
 		File.WriteAllText(path, encoded);
+	}
+
+	private enum TaggedBlockType: short {
+		Joints = 0,
+		Bones = 1,
+		Muscles = 2
+	}
+	private const short TaggedBlockType_MAX_VALUE = 2;
+	private const ushort SERIALIZATION_VERSION = 1;
+
+	public static void WriteCreatureDesign(CreatureDesign design, BinaryWriter writer) {
+
+		// ### Header ###
+
+		// Magic Bytes
+    writer.Write((char)'E');
+    writer.Write((char)'V');
+    writer.Write((char)'O');
+    writer.Write((char)'L');
+    writer.Write((char)'D');
+    writer.Write((char)'S');
+    writer.Write((char)'G');
+    writer.Write((char)'N');
+
+		// Version
+		writer.Write(SERIALIZATION_VERSION);
+
+		// ### Content ###
+
+		// Name
+		writer.Write(design.Name);
+
+		// Tagged blocks defining different aspects of the creature design
+
+		// Joints
+		{
+			long lengthOffset = writer.Seek(0, SeekOrigin.Current);
+			WriteDummyBlockLength(writer);
+
+			writer.Write((short)TaggedBlockType.Joints);
+			writer.Write((uint)design.Joints.Count);
+			foreach (JointData joint in design.Joints) {
+				WriteJointData(joint, writer);
+			}
+
+			WriteBlockLengthToOffset(lengthOffset, writer);
+		}
+
+		// Bones
+		{
+			long lengthOffset = writer.Seek(0, SeekOrigin.Current);
+			WriteDummyBlockLength(writer);
+
+			writer.Write((short)TaggedBlockType.Bones);
+			writer.Write((uint)design.Bones.Count);
+			foreach (BoneData bone in design.Bones) {
+				WriteBoneData(bone, writer);
+			}
+
+			WriteBlockLengthToOffset(lengthOffset, writer);
+		}
+
+		// Muscles
+		{
+			long lengthOffset = writer.Seek(0, SeekOrigin.Current);
+			WriteDummyBlockLength(writer);
+
+			writer.Write((short)TaggedBlockType.Muscles);
+			writer.Write((uint)design.Muscles.Count);
+			foreach (MuscleData muscle in design.Muscles) {
+				WriteMuscleData(muscle, writer);
+			}
+
+			WriteBlockLengthToOffset(lengthOffset, writer);
+		}
+	}
+
+	public static CreatureDesign ReadCreatureDesign(BinaryReader reader, long maxBytes) {
+		try {
+			long expectedEndByte = reader.BaseStream.Position + maxBytes;
+
+			if (
+				reader.ReadChar() != 'E' ||
+				reader.ReadChar() != 'V' ||
+				reader.ReadChar() != 'O' ||
+				reader.ReadChar() != 'L' ||
+				reader.ReadChar() != 'D' ||
+				reader.ReadChar() != 'S' ||
+				reader.ReadChar() != 'G' ||
+				reader.ReadChar() != 'N'
+			) {
+				return null;
+			}
+			
+			ushort version = reader.ReadUInt16();
+			if (version > SERIALIZATION_VERSION) {
+				Debug.Log($"Unknown serialization format {version} for Creature Design");
+				return null;
+			}
+
+			string name = reader.ReadString();
+			List<JointData> joints = new List<JointData>();
+			List<BoneData> bones = new List<BoneData>();
+			List<MuscleData> muscles = new List<MuscleData>();
+
+			while (reader.BaseStream.Position < expectedEndByte) {
+				// Read tagged blocks
+				uint blockLength = reader.ReadUInt32();
+				long expectedBlockEndByte = reader.BaseStream.Position + (long)blockLength;
+				short rawBlockType = reader.ReadInt16();
+				if (rawBlockType < 0 || rawBlockType > TaggedBlockType_MAX_VALUE) {
+					reader.BaseStream.Seek(expectedBlockEndByte, SeekOrigin.Begin);
+					continue;
+				}
+				TaggedBlockType blockType = (TaggedBlockType)rawBlockType;
+				switch (blockType) {
+					case TaggedBlockType.Joints: {
+						int jointCount = (int)reader.ReadUInt32();
+						for (int i = 0; i < jointCount; i++) {
+							JointData jointData = ReadJointData(reader);
+							joints.Add(jointData);
+						}
+						break;
+					}
+					
+					case TaggedBlockType.Bones: {
+						int boneCount = (int)reader.ReadUInt32();
+						for (int i = 0; i < boneCount; i++) {
+							BoneData boneData = ReadBoneData(reader);
+							bones.Add(boneData);
+						}
+						break;
+					}
+
+					case TaggedBlockType.Muscles: {
+						int muscleCount = (int)reader.ReadUInt32();
+						for (int i = 0; i < muscleCount; i++) {
+							MuscleData muscleData = ReadMuscleData(reader);
+							muscles.Add(muscleData);
+						}
+						break;
+					}
+
+					default:
+						Debug.LogError("Unknown blockType. This block should have been skipped before the switch.");
+						break;
+				}
+			}
+
+			return new CreatureDesign(
+				name: name,
+				joints: joints,
+				bones: bones,
+				muscles: muscles
+			);
+		} catch {
+			return null;
+		}
+	}
+
+	private static void WriteJointData(JointData jointData, BinaryWriter writer) {
+		// Two bytes length so the reader can be forwards compatible and just jump
+		// to the next joint without knowing all the properties
+		long lengthOffset = writer.Seek(0, SeekOrigin.Current);
+		writer.Write((ushort)0);
+		// Two byte bitfield that defines which of the optional properties are serialized.
+		ushort optPropertyFlags = 0;
+		bool serializeWeight = jointData.weight != 1;
+		bool serializeFitnessPenalty = jointData.fitnessPenaltyForTouchingGround != 0;
+		if (serializeWeight) {
+			optPropertyFlags |= (1 << 0);
+		}
+		if (serializeFitnessPenalty) {
+			optPropertyFlags |= (1 << 1);
+		}
+		writer.Write(optPropertyFlags);
+		writer.Write((int)jointData.id);
+		writer.Write(jointData.position.x);
+		writer.Write(jointData.position.y);
+		if (serializeWeight) {
+			writer.Write(jointData.weight);
+		}
+		if (serializeFitnessPenalty) {
+			writer.Write(jointData.fitnessPenaltyForTouchingGround);
+		}
+
+		long nextOffset = writer.Seek(0, SeekOrigin.Current);
+		writer.Seek((int)lengthOffset, SeekOrigin.Begin);
+		writer.Write((ushort)(nextOffset - lengthOffset - 2));
+		writer.Seek((int)nextOffset, SeekOrigin.Begin);
+	}
+
+	private static JointData ReadJointData(BinaryReader reader) {
+		ushort dataLength = reader.ReadUInt16();
+		long endByte = reader.BaseStream.Position + dataLength;
+
+		ushort flags = reader.ReadUInt16();
+		bool weightIsSerialized = (flags & (1 << 0)) != 0;
+		bool fitnessPenaltyIsSerialized = (flags & (1 << 1)) != 0;
+		int id = reader.ReadInt32();
+		float positionX = reader.ReadSingle();
+		float positionY = reader.ReadSingle();
+		float weight = 1;
+		if (weightIsSerialized) {
+			weight = reader.ReadSingle();
+		}
+		float fitnessPenalty = 0;
+		if (fitnessPenaltyIsSerialized) {
+			fitnessPenalty = reader.ReadSingle();
+		}
+
+		reader.BaseStream.Seek(endByte, SeekOrigin.Begin);
+
+		return new JointData(
+			id: id,
+			position: new Vector2(positionX, positionY),
+			weight: weight,
+			penalty: fitnessPenalty,
+			isGooglyEye: false
+		);
+	}
+
+	private static void WriteBoneData(BoneData boneData, BinaryWriter writer) {
+		// Two bytes length so the reader can be forwards compatible and just jump
+		// to the next bone without knowing all the properties
+		long lengthOffset = writer.Seek(0, SeekOrigin.Current);
+		writer.Write((ushort)0);	
+
+		// Two byte bitfield that defines which optional properties are serialized and contains
+		// boolean property values.
+		ushort flags = 0;
+		bool serializeWeight = boneData.weight != 1;
+		if (serializeWeight) {
+			flags |= (1 << 0);
+		}
+		if (boneData.isWing) {
+			flags |= (1 << 1);
+		}
+		if (boneData.inverted) {
+			flags |= (1 << 2);
+		}
+		if (boneData.legacy) {
+			flags |= (1 << 3);
+		}
+		writer.Write(flags);
+		writer.Write((int)boneData.id);
+		writer.Write((int)boneData.startJointID);
+		writer.Write((int)boneData.endJointID);
+		if (serializeWeight) {
+			writer.Write(boneData.weight);
+		}
+
+		long nextOffset = writer.Seek(0, SeekOrigin.Current);
+		writer.Seek((int)lengthOffset, SeekOrigin.Begin);
+		writer.Write((ushort)(nextOffset - lengthOffset - 2));
+		writer.Seek((int)nextOffset, SeekOrigin.Begin);
+	}
+
+	private static BoneData ReadBoneData(BinaryReader reader) {
+		ushort dataLength = reader.ReadUInt16();
+		long endByte = reader.BaseStream.Position + dataLength;
+
+		ushort flags = reader.ReadUInt16();
+		bool weightIsSerialized = (flags & (1 << 0)) != 0;
+		bool isWing = (flags & (1 << 1)) != 0;
+		bool inverted = (flags & (1 << 2)) != 0;
+		bool legacy = (flags & (1 << 3)) != 0;
+
+		int id = reader.ReadInt32();
+		int startJointID = reader.ReadInt32();
+		int endJointID = reader.ReadInt32();
+		float weight = 1;
+		if (weightIsSerialized) {
+			weight = reader.ReadSingle();
+		}
+	
+		reader.BaseStream.Seek(endByte, SeekOrigin.Begin);
+
+		return new BoneData(
+			id: id,
+			startJointID: startJointID,
+			endJointID: endJointID,
+			weight: weight,
+			isWing: isWing,
+			inverted: inverted,
+			legacy: legacy
+		);
+	}
+
+	private static void WriteMuscleData(MuscleData muscleData, BinaryWriter writer) {
+		// Two bytes length so the reader can be forwards compatible and just jump
+		// to the next muscle without knowing all the properties
+		long lengthOffset = writer.Seek(0, SeekOrigin.Current);
+		writer.Write((ushort)0);	
+
+		// Two byte bitfield that defines which optional properties are serialized and contains
+		// boolean property values.
+		ushort flags = 0;
+		bool serializeStrength = muscleData.strength != 1;
+		bool serializeUserId = !string.IsNullOrEmpty(muscleData.userId);
+		if (serializeStrength) {
+			flags |= (1 << 0);
+		}
+		if (muscleData.canExpand) {
+			flags |= (1 << 1);
+		}
+		if (serializeUserId) {
+			flags |= (1 << 2);
+		}
+		writer.Write(flags);
+		writer.Write((int)muscleData.id);
+		writer.Write((int)muscleData.startBoneID);
+		writer.Write((int)muscleData.endBoneID);
+		if (serializeStrength) {
+			writer.Write(muscleData.strength);
+		}
+		if (serializeUserId) {
+			string userId = muscleData.userId;
+			if (userId.Length > 10000) {
+				userId = userId.Substring(0, 10000);
+			}
+			writer.Write(userId);
+		}
+
+		long nextOffset = writer.Seek(0, SeekOrigin.Current);
+		writer.Seek((int)lengthOffset, SeekOrigin.Begin);
+		writer.Write((ushort)(nextOffset - lengthOffset - 2));
+		writer.Seek((int)nextOffset, SeekOrigin.Begin);
+	}
+
+	private static MuscleData ReadMuscleData(BinaryReader reader) {
+		ushort dataLength = reader.ReadUInt16();
+		long endByte = reader.BaseStream.Position + dataLength;
+
+		ushort flags = reader.ReadUInt16();
+		bool strengthIsSerialized = (flags & (1 << 0)) != 0;
+		bool canExpand = (flags & (1 << 1)) != 0;
+		bool userIdIsSerialized = (flags & (1 << 2)) != 0;
+
+		int id = reader.ReadInt32();
+		int startBoneID = reader.ReadInt32();
+		int endBoneID = reader.ReadInt32();
+		float strength = 1;
+		if (strengthIsSerialized) {
+			strength = reader.ReadSingle();
+		}
+		string userId = "";
+		if (userIdIsSerialized) {
+			userId = reader.ReadString();
+		}
+
+		reader.BaseStream.Seek(endByte, SeekOrigin.Begin);
+
+		return new MuscleData(
+			id: id,
+			startBoneID: startBoneID,
+			endBoneID: endBoneID,
+			strength: strength,
+			canExpand: canExpand,
+			userId: userId
+		);
+	}
+
+	private static void WriteBlockLengthToOffset(long offset, BinaryWriter writer) {
+		long currentOffset = writer.Seek(0, SeekOrigin.Current);
+		long blockLength = offset - (currentOffset + 8);
+		writer.Seek((int)offset, SeekOrigin.Begin);
+		writer.Write((uint)blockLength);
+		writer.Seek((int)currentOffset, SeekOrigin.Begin);
+	}
+
+	private static void WriteDummyBlockLength(BinaryWriter writer) {
+		writer.Write((uint)0);
 	}
 
 	/// <summary>

@@ -104,7 +104,7 @@ namespace Keiwando.Evolution {
 		/// </summary>
 		private void PlaceJoint(Vector3 position) {
 
-			var jointData = new JointData(idCounter++, position, 1f, 0f, false);
+			var jointData = new JointData(id: idCounter++, position: position, weight: 1f, penalty: 0f, false);
 			joints.Add(Joint.CreateFromData(jointData));
 		}
 

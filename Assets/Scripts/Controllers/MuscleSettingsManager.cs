@@ -10,6 +10,7 @@ namespace Keiwando.Evolution {
 
         private const float MIN_STRENGTH = 0f;
         private const float MAX_STRENGTH = 4500f;
+        private const int MAX_USER_ID_STR_LENGTH = 1000;
 
         private Muscle muscle;
         private AdvancedBodyControlsViewController viewController;
@@ -57,6 +58,9 @@ namespace Keiwando.Evolution {
             userIdInput = viewController.AddInput("Id", new TooltipData(USER_ID_TOOLTIP));
             userIdInput.onValueChanged += delegate (string userId) {
                 if (userId == null) { userId = ""; }
+                if (userId.Length > MAX_USER_ID_STR_LENGTH) {
+                    userId = userId.Substring(0, MAX_USER_ID_STR_LENGTH);
+                }
                 var oldData = muscle.MuscleData;
                 DataWillChange();
                 var data = new MuscleData(
