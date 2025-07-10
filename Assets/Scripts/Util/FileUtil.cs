@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -69,5 +70,18 @@ public static class StreamUtil {
 
     public static uint ReadBlockLength(this BinaryReader reader) {
         return reader.ReadUInt32();
+    }
+
+    public static void WriteUTF8String(this BinaryWriter writer, string str) {
+        byte[] bytes = Encoding.UTF8.GetBytes(str);
+        uint length = (uint)bytes.Length;
+        writer.Write(length);
+        writer.Write(bytes);
+    }
+
+    public static string ReadUTF8String(this BinaryReader reader) {
+        uint length = reader.ReadUInt32();
+        byte[] bytes = reader.ReadBytes((int)length);
+        return Encoding.UTF8.GetString(bytes);
     }
 }

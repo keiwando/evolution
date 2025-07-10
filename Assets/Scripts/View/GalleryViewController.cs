@@ -45,7 +45,6 @@ namespace Keiwando.Evolution.UI {
 
     void Start() {
 
-      galleryManager.loadGalleryEntries();
       hiddenLayer = LayerMask.NameToLayer("Hidden");
 
       int numberOfItemsPerPage = grid.ColumnCount * grid.RowCount;
@@ -80,7 +79,7 @@ namespace Keiwando.Evolution.UI {
 
     public void Refresh() {
       if (!initialized) { return; }
-
+      
       int numberOfItemsPerPage = Math.Max(1, grid.ColumnCount * grid.RowCount);
       int totalItemCount = galleryManager.gallery.entries.Count;
       int totalNumberOfPages = Math.Max(1, (totalItemCount + numberOfItemsPerPage - 1) / numberOfItemsPerPage);
@@ -101,6 +100,7 @@ namespace Keiwando.Evolution.UI {
 
       bool needsSceneLoading = sceneLoadingInitiatedForPageIndex != currentPageIndex;
       if (needsSceneLoading) {
+        unloadScenes();
         if (sceneLoadingCoroutine != null) {
           StopCoroutine(sceneLoadingCoroutine);
         }
@@ -119,9 +119,11 @@ namespace Keiwando.Evolution.UI {
         if (cell == null) {
           continue;
         }
-        LoadedCreatureGalleryEntry galleryEntry = this.galleryManager.gallery.entries[firstItemIndexOnPage + cellIndex].loadedData;
+        int galleryEntryIndex = firstItemIndexOnPage + cellIndex;
+        galleryManager.loadGalleryEntry(galleryEntryIndex);
+        LoadedCreatureGalleryEntry galleryEntry = this.galleryManager.gallery.entries[galleryEntryIndex].loadedData;
         if (galleryEntry == null) {
-          Debug.LogWarning($"Gallery entry for cell {cellIndex} not loaded in time!");
+          Debug.LogWarning($"Gallery entry for cell {cellIndex} not loaded!");
           continue;
         }
         CreatureRecording recording = galleryEntry.recording;
@@ -264,6 +266,7 @@ namespace Keiwando.Evolution.UI {
           scenes[i] = null;
         }
       }
+      galleryManager.unloadAllGalleryEntries();
       for (int i = 0; i < cameras.Length; i++) {
         this.cameras[i] = null;
       }
@@ -278,6 +281,8 @@ namespace Keiwando.Evolution.UI {
         gameObject.SetActive(true);
         InputRegistry.shared.Register(InputType.AndroidBack, this);
         GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture += OnAndroidBack;
+        
+        galleryManager.shallowLoadGalleryEntries();
         Refresh();
     }
 

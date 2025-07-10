@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using UnityEngine;
+using Keiwando.Evolution.Scenes;
 
 public class CreatureRecordingSerializer {
 
@@ -13,6 +14,7 @@ public class CreatureRecordingSerializer {
   public static readonly Regex EXTENSION_PATTERN = new Regex(FILE_EXTENSION);
 
   public static string RESOURCE_PATH = Path.Combine(Application.persistentDataPath, SAVE_FOLDER);
+  private const ushort LATEST_SERIALIZATION_VERSION = 1;
 
   public static void SaveCreatureRecordingFile(CreatureRecording recording) {
 
@@ -41,6 +43,32 @@ public class CreatureRecordingSerializer {
     }
   }
 
+  public static CreatureRecording LoadCreatureRecording(string name) {
+
+    var path = PathToCreatureRecordingSave(name);
+    if (!File.Exists(path)) {
+      return null;
+    }
+
+    using (var stream = File.Open(path, FileMode.Open))
+    using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8)) {
+      return DecodeCreatureRecording(reader);
+    }
+  }
+
+  public static DateTime? LoadCreatureRecordingDate(string name) {
+
+    var path = PathToCreatureRecordingSave(name);
+    if (!File.Exists(path)) {
+      return null;
+    }
+
+    using (var stream = File.Open(path, FileMode.Open))
+    using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8)) {
+      return ReadDateOfCreatureRecordingFile(reader);
+    }
+  }
+
   private static void WriteCreatureRecording(CreatureRecording recording, BinaryWriter writer) {
 
     // ### Header ###
@@ -56,7 +84,7 @@ public class CreatureRecordingSerializer {
     writer.Write((char)'L');
 
     // Version
-    ushort version = 1;
+    ushort version = LATEST_SERIALIZATION_VERSION;
     writer.Write(version);
     
     // ### Content ###
@@ -74,12 +102,103 @@ public class CreatureRecordingSerializer {
     WriteBlockLengthToOffset(creatureDesignStartOffset, writer);
 
     // Scene Description
-    
+    recording.sceneDescription.Encode(writer);
+
+    recording.movementData.Encode(writer);
+  }
+
+  private static CreatureRecording DecodeCreatureRecording(BinaryReader reader) {
+
+    try {
+      if (
+        reader.ReadChar() != 'E' ||
+        reader.ReadChar() != 'V' ||
+        reader.ReadChar() != 'O' ||
+        reader.ReadChar() != 'L' ||
+        reader.ReadChar() != 'G' ||
+        reader.ReadChar() != 'A' ||
+        reader.ReadChar() != 'L' ||
+        reader.ReadChar() != 'L'
+      ) {
+        return null;
+      }
+
+      ushort version = reader.ReadUInt16();
+      if (version > LATEST_SERIALIZATION_VERSION) {
+        Debug.Log($"Unknown CreatureRecording serialization version {version}");
+        return null;
+      }
+
+      int generation = reader.ReadInt32();
+      long dateValue = reader.ReadInt64();
+      DateTime date = DateTime.FromBinary(dateValue);
+
+      uint creatureDesignDataLength = reader.ReadBlockLength();
+      long byteAfterCreatureDesignData = reader.BaseStream.Position + (long)creatureDesignDataLength;
+      CreatureDesign creatureDesign = CreatureSerializer.DecodeCreatureDesign(reader, creatureDesignDataLength);
+      if (creatureDesign == null) {
+        return null;
+      }
+      reader.BaseStream.Seek(byteAfterCreatureDesignData, SeekOrigin.Begin);
+
+      SimulationSceneDescription sceneDescription = SimulationSceneDescription.Decode(reader);
+      if (sceneDescription == null) {
+        return null;
+      }
+
+      CreatureRecordingMovementData movementData = CreatureRecordingMovementData.Decode(reader);
+      if (movementData == null) {
+        return null;
+      }
+
+      CreatureRecording recording = new CreatureRecording(
+        creatureDesign: creatureDesign,
+        generation: generation,
+        sceneDescription: sceneDescription,
+        movementData: movementData
+      );
+      recording.date = date;
+      return recording;
+
+    } catch {
+      return null;
+    }
+  }
+
+  private static DateTime? ReadDateOfCreatureRecordingFile(BinaryReader reader) {
+
+   try {
+      if (
+        reader.ReadChar() != 'E' ||
+        reader.ReadChar() != 'V' ||
+        reader.ReadChar() != 'O' ||
+        reader.ReadChar() != 'L' ||
+        reader.ReadChar() != 'G' ||
+        reader.ReadChar() != 'A' ||
+        reader.ReadChar() != 'L' ||
+        reader.ReadChar() != 'L'
+      ) {
+        return null;
+      }
+
+      ushort version = reader.ReadUInt16();
+      if (version > LATEST_SERIALIZATION_VERSION) {
+        Debug.Log($"Unknown CreatureRecording serialization version {version}");
+        return null;
+      }
+
+      int generation = reader.ReadInt32();
+      long dateValue = reader.ReadInt64();
+      DateTime date = DateTime.FromBinary(dateValue);
+      return date;
+    } catch {
+      return null;
+    } 
   }
 
   private static void WriteBlockLengthToOffset(long offset, BinaryWriter writer) {
 		long currentOffset = writer.Seek(0, SeekOrigin.Current);
-		long blockLength = offset - (currentOffset + 8);
+		long blockLength = currentOffset - (offset + 8);
 		writer.Seek((int)offset, SeekOrigin.Begin);
 		writer.Write((uint)blockLength);
 		writer.Seek((int)currentOffset, SeekOrigin.Begin);

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using UnityEngine;
 using Keiwando.Evolution.Scenes;
 
@@ -11,6 +12,95 @@ public class CreatureRecordingMovementData {
       sampleTimestamps = new float[validSampleCount];
       jointPositions = new Vector2[numberOfJoints, validSampleCount];
       muscleForces = new float[numberOfMuscles, validSampleCount];
+  }
+
+  public CreatureRecordingMovementData(
+    float[] sampleTimestamps,
+    Vector2[,] jointPositions,
+    float[,] muscleForces
+  ) {
+    if (sampleTimestamps.Length != jointPositions.Length || jointPositions.GetLength(1) != muscleForces.GetLength(1)) {
+      this.sampleTimestamps = new float[0];
+      this.jointPositions = new Vector2[jointPositions.GetLength(0), 0];
+      this.muscleForces = new float[muscleForces.GetLength(0), 0];
+      return;
+    }
+
+    this.sampleTimestamps = sampleTimestamps;
+    this.jointPositions = jointPositions;
+    this.muscleForces = muscleForces;
+  }
+
+  public void Encode(BinaryWriter writer) {
+    long lengthOffset = writer.Seek(0, SeekOrigin.Current);
+    writer.WriteDummyBlockLength();
+
+    ushort flags = 0;
+    writer.Write(flags);
+
+    int sampleCount = sampleTimestamps.Length;
+    writer.Write(sampleCount);
+    
+    foreach (float timestamp in sampleTimestamps) {
+      writer.Write(timestamp);
+    }
+    
+    int numberOfJoints = jointPositions.GetLength(0);
+    writer.Write(numberOfJoints);
+    for (int jointIndex = 0; jointIndex < numberOfJoints; jointIndex++) {
+      for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
+        Vector2 jointPosition = jointPositions[jointIndex, sampleIndex];
+        writer.Write(jointPosition.x);
+        writer.Write(jointPosition.y);
+      }
+    }
+    
+    int numberOfMuscles = muscleForces.GetLength(0);
+    writer.Write(numberOfMuscles);
+    for (int muscleIndex = 0; muscleIndex < numberOfMuscles; muscleIndex++) {
+      for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
+        writer.Write(muscleForces[muscleIndex, sampleIndex]);
+      }
+    }
+
+    writer.WriteBlockLengthToOffset(lengthOffset);
+  }
+
+  public static CreatureRecordingMovementData Decode(BinaryReader reader) {
+    uint dataLength = reader.ReadBlockLength();
+    long expectedEndByte = reader.BaseStream.Position + (long)dataLength;
+
+    ushort flags = reader.ReadUInt16();
+
+    int sampleCount = reader.ReadInt32();
+    float[] sampleTimestamps = new float[sampleCount];
+    for (int i = 0; i < sampleCount; i++) {
+      sampleTimestamps[i] = reader.ReadSingle();
+    }
+    int numberOfJoints = reader.ReadInt32();
+    Vector2[,] jointPositions = new Vector2[numberOfJoints, sampleCount];
+    for (int jointIndex = 0; jointIndex < numberOfJoints; jointIndex++) {
+      for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
+        float x = reader.ReadSingle();
+        float y = reader.ReadSingle();
+        jointPositions[jointIndex, sampleIndex] = new Vector2(x, y);
+      }
+    }
+    int numberOfMuscles = reader.ReadInt32();
+    float[,] muscleForces = new float[numberOfMuscles, sampleCount];
+    for (int muscleIndex = 0; muscleIndex < numberOfMuscles; muscleIndex++) {
+      for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
+        muscleForces[muscleIndex, sampleIndex] = reader.ReadSingle();
+      }
+    }
+
+    reader.BaseStream.Seek(expectedEndByte, SeekOrigin.Begin);
+
+    return new CreatureRecordingMovementData(
+      sampleTimestamps: sampleTimestamps,
+      jointPositions: jointPositions,
+      muscleForces: muscleForces
+    );
   }
 }
 

@@ -473,13 +473,16 @@ namespace Keiwando.Evolution {
 		public void SaveToGallery() {
 			// TODO: Implement
 			// TODO: Disable the button when the first generation hasn't finished yet.
-			if (this.SimulationData.BestCreatureRecording != null) {
+			CreatureRecording recording = this.SimulationData.BestCreatureRecording;
+			if (recording != null) {
 				// DEBUG:
-				CreatureGalleryManager.dbg_entries.Add(new CreatureGalleryEntry {
-					filePath = "",
-					createdDate = DateTime.Now,
-					loadedData = new LoadedCreatureGalleryEntry(this.SimulationData.BestCreatureRecording)
-				});
+
+				CreatureRecordingSerializer.SaveCreatureRecordingFile(recording);
+				// CreatureGalleryManager.dbg_entries.Add(new CreatureGalleryEntry {
+				// 	filePath = "",
+				// 	createdDate = DateTime.Now,
+				// 	loadedData = new LoadedCreatureGalleryEntry(this.SimulationData.BestCreatureRecording)
+				// });
 				if (CreatureWasSavedToGallery != null) CreatureWasSavedToGallery();
 			}
 		}

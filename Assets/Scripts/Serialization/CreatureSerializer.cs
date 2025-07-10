@@ -94,7 +94,7 @@ public class CreatureSerializer {
 		// ### Content ###
 
 		// Name
-		writer.Write(design.Name);
+		writer.WriteUTF8String(design.Name);
 
 		// Tagged blocks defining different aspects of the creature design
 
@@ -141,9 +141,9 @@ public class CreatureSerializer {
 		}
 	}
 
-	public static CreatureDesign ReadCreatureDesign(BinaryReader reader, long maxBytes) {
+	public static CreatureDesign DecodeCreatureDesign(BinaryReader reader, uint maxBytes) {
 		try {
-			long expectedEndByte = reader.BaseStream.Position + maxBytes;
+			long expectedEndByte = reader.BaseStream.Position + (long)maxBytes;
 
 			if (
 				reader.ReadChar() != 'E' ||
@@ -164,7 +164,7 @@ public class CreatureSerializer {
 				return null;
 			}
 
-			string name = reader.ReadString();
+			string name = reader.ReadUTF8String();
 			List<JointData> joints = new List<JointData>();
 			List<BoneData> bones = new List<BoneData>();
 			List<MuscleData> muscles = new List<MuscleData>();
@@ -385,7 +385,7 @@ public class CreatureSerializer {
 			if (userId.Length > 10000) {
 				userId = userId.Substring(0, 10000);
 			}
-			writer.Write(userId);
+			writer.WriteUTF8String(userId);
 		}
 
 		long nextOffset = writer.Seek(0, SeekOrigin.Current);
@@ -412,7 +412,7 @@ public class CreatureSerializer {
 		}
 		string userId = "";
 		if (userIdIsSerialized) {
-			userId = reader.ReadString();
+			userId = reader.ReadUTF8String();
 		}
 
 		reader.BaseStream.Seek(endByte, SeekOrigin.Begin);
