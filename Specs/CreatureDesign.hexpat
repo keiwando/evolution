@@ -1,4 +1,4 @@
-#pragma description Evolution CreatureRecording file
+#pragma description Evolution CreatureDesign file
 
 #pragma endian little
 
@@ -20,16 +20,6 @@ struct String {
 fn string_to_string(auto var) {
   return var.text;
 };
-
-struct Vector2 {
-  float x;
-  float y;
-} [[format("vector2_to_string")]];
-fn vector2_to_string(auto var) {
-  return std::format("({}, {})", var.x, var.y);
-};
-
-// CreatureDesign
 
 enum CreatureDesignDataBlockType: s16 {
   Joints = 0,
@@ -149,24 +139,3 @@ struct CreatureDesign {
 
   CreatureDesignDataBlock dataBlocks[while($ < expectedEndByte)];
 };
-
-// End CreatureDesign
-
-struct CreatureRecording {
-  char signature[8];
-  u16 version;
-  s32 generation;
-  s64 encodedDate;
-
-  u32 creatureDesignBlockLength;
-  g_byteAfterCreatureDesign = $ + creatureDesignBlockLength;
-  CreatureDesign creatureDesign;
-
-  SimulationSceneDescription sceneDescription;
-
-  CreatureRecordingMovementData movementData;
-
-  $ = g_byteAfterCreatureDesign;
-};
-
-CreatureRecording recording @ 0x0 [[inline]];

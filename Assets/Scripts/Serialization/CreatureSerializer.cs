@@ -91,6 +91,9 @@ public class CreatureSerializer {
 		// Version
 		writer.Write(SERIALIZATION_VERSION);
 
+		long dataLengthOffset = writer.Seek(0, SeekOrigin.Current);
+		writer.WriteDummyBlockLength();
+
 		// ### Content ###
 
 		// Name
@@ -139,12 +142,12 @@ public class CreatureSerializer {
 
 			writer.WriteBlockLengthToOffset(lengthOffset);
 		}
+
+		writer.WriteBlockLengthToOffset(dataLengthOffset);
 	}
 
-	public static CreatureDesign DecodeCreatureDesign(BinaryReader reader, uint maxBytes) {
+	public static CreatureDesign DecodeCreatureDesign(BinaryReader reader) {
 		try {
-			long expectedEndByte = reader.BaseStream.Position + (long)maxBytes;
-
 			if (
 				reader.ReadChar() != 'E' ||
 				reader.ReadChar() != 'V' ||
@@ -163,6 +166,9 @@ public class CreatureSerializer {
 				Debug.Log($"Unknown serialization format {version} for Creature Design");
 				return null;
 			}
+
+			uint dataLength = reader.ReadBlockLength();
+			long expectedEndByte = reader.BaseStream.Position + dataLength;
 
 			string name = reader.ReadUTF8String();
 			List<JointData> joints = new List<JointData>();
@@ -212,6 +218,8 @@ public class CreatureSerializer {
 						break;
 				}
 			}
+
+			reader.BaseStream.Seek(expectedEndByte, SeekOrigin.Begin);
 
 			return new CreatureDesign(
 				name: name,

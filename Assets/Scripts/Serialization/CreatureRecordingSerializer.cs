@@ -95,15 +95,8 @@ public class CreatureRecordingSerializer {
     long dateValue = recording.date.ToBinary();
     writer.Write(dateValue);
 
-    // Creature Design
-    long creatureDesignStartOffset = writer.Seek(0, SeekOrigin.Current);
-    writer.WriteDummyBlockLength();
     CreatureSerializer.WriteCreatureDesign(recording.creatureDesign, writer);
-    writer.WriteBlockLengthToOffset(creatureDesignStartOffset);
-
-    // Scene Description
     recording.sceneDescription.Encode(writer);
-
     recording.movementData.Encode(writer);
   }
 
@@ -133,13 +126,10 @@ public class CreatureRecordingSerializer {
       long dateValue = reader.ReadInt64();
       DateTime date = DateTime.FromBinary(dateValue);
 
-      uint creatureDesignDataLength = reader.ReadBlockLength();
-      long byteAfterCreatureDesignData = reader.BaseStream.Position + (long)creatureDesignDataLength;
-      CreatureDesign creatureDesign = CreatureSerializer.DecodeCreatureDesign(reader, creatureDesignDataLength);
+      CreatureDesign creatureDesign = CreatureSerializer.DecodeCreatureDesign(reader);
       if (creatureDesign == null) {
         return null;
       }
-      reader.BaseStream.Seek(byteAfterCreatureDesignData, SeekOrigin.Begin);
 
       SimulationSceneDescription sceneDescription = SimulationSceneDescription.Decode(reader);
       if (sceneDescription == null) {
