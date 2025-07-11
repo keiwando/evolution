@@ -62,7 +62,7 @@ public static class StreamUtil {
 	
     public static void WriteBlockLengthToOffset(this BinaryWriter writer, long offset) {
 		long currentOffset = writer.Seek(0, SeekOrigin.Current);
-		long blockLength = offset - (currentOffset + 8);
+		long blockLength = currentOffset - (offset + 4);
 		writer.Seek((int)offset, SeekOrigin.Begin);
 		writer.Write((uint)blockLength);
 		writer.Seek((int)currentOffset, SeekOrigin.Begin);

@@ -97,9 +97,9 @@ public class CreatureRecordingSerializer {
 
     // Creature Design
     long creatureDesignStartOffset = writer.Seek(0, SeekOrigin.Current);
-    WriteDummyBlockLength(writer);
+    writer.WriteDummyBlockLength();
     CreatureSerializer.WriteCreatureDesign(recording.creatureDesign, writer);
-    WriteBlockLengthToOffset(creatureDesignStartOffset, writer);
+    writer.WriteBlockLengthToOffset(creatureDesignStartOffset);
 
     // Scene Description
     recording.sceneDescription.Encode(writer);
@@ -195,18 +195,6 @@ public class CreatureRecordingSerializer {
       return null;
     } 
   }
-
-  private static void WriteBlockLengthToOffset(long offset, BinaryWriter writer) {
-		long currentOffset = writer.Seek(0, SeekOrigin.Current);
-		long blockLength = currentOffset - (offset + 8);
-		writer.Seek((int)offset, SeekOrigin.Begin);
-		writer.Write((uint)blockLength);
-		writer.Seek((int)currentOffset, SeekOrigin.Begin);
-	}
-
-	private static void WriteDummyBlockLength(BinaryWriter writer) {
-		writer.Write((uint)0);
-	}
 
   private static string GetAvailableCreatureRecordingName(string suggestedName) {
 

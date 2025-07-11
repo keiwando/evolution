@@ -19,7 +19,7 @@ public class CreatureRecordingMovementData {
     Vector2[,] jointPositions,
     float[,] muscleForces
   ) {
-    if (sampleTimestamps.Length != jointPositions.Length || jointPositions.GetLength(1) != muscleForces.GetLength(1)) {
+    if (sampleTimestamps.Length != jointPositions.GetLength(1) || jointPositions.GetLength(1) != muscleForces.GetLength(1)) {
       this.sampleTimestamps = new float[0];
       this.jointPositions = new Vector2[jointPositions.GetLength(0), 0];
       this.muscleForces = new float[muscleForces.GetLength(0), 0];

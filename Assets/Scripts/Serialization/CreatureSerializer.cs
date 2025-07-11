@@ -101,7 +101,7 @@ public class CreatureSerializer {
 		// Joints
 		{
 			long lengthOffset = writer.Seek(0, SeekOrigin.Current);
-			WriteDummyBlockLength(writer);
+			writer.WriteDummyBlockLength();
 
 			writer.Write((short)TaggedBlockType.Joints);
 			writer.Write((uint)design.Joints.Count);
@@ -109,13 +109,13 @@ public class CreatureSerializer {
 				WriteJointData(joint, writer);
 			}
 
-			WriteBlockLengthToOffset(lengthOffset, writer);
+			writer.WriteBlockLengthToOffset(lengthOffset);
 		}
 
 		// Bones
 		{
 			long lengthOffset = writer.Seek(0, SeekOrigin.Current);
-			WriteDummyBlockLength(writer);
+			writer.WriteDummyBlockLength();
 
 			writer.Write((short)TaggedBlockType.Bones);
 			writer.Write((uint)design.Bones.Count);
@@ -123,13 +123,13 @@ public class CreatureSerializer {
 				WriteBoneData(bone, writer);
 			}
 
-			WriteBlockLengthToOffset(lengthOffset, writer);
+			writer.WriteBlockLengthToOffset(lengthOffset);
 		}
 
 		// Muscles
 		{
 			long lengthOffset = writer.Seek(0, SeekOrigin.Current);
-			WriteDummyBlockLength(writer);
+			writer.WriteDummyBlockLength();
 
 			writer.Write((short)TaggedBlockType.Muscles);
 			writer.Write((uint)design.Muscles.Count);
@@ -137,7 +137,7 @@ public class CreatureSerializer {
 				WriteMuscleData(muscle, writer);
 			}
 
-			WriteBlockLengthToOffset(lengthOffset, writer);
+			writer.WriteBlockLengthToOffset(lengthOffset);
 		}
 	}
 
@@ -425,18 +425,6 @@ public class CreatureSerializer {
 			canExpand: canExpand,
 			userId: userId
 		);
-	}
-
-	private static void WriteBlockLengthToOffset(long offset, BinaryWriter writer) {
-		long currentOffset = writer.Seek(0, SeekOrigin.Current);
-		long blockLength = offset - (currentOffset + 8);
-		writer.Seek((int)offset, SeekOrigin.Begin);
-		writer.Write((uint)blockLength);
-		writer.Seek((int)currentOffset, SeekOrigin.Begin);
-	}
-
-	private static void WriteDummyBlockLength(BinaryWriter writer) {
-		writer.Write((uint)0);
 	}
 
 	/// <summary>

@@ -21,6 +21,40 @@ fn string_to_string(auto var) {
   return var.text;
 };
 
+struct Vector2 {
+  float x;
+  float y;
+} [[format("vector2_to_string")]];
+fn vector2_to_string(auto var) {
+  return std::format("({}, {})", var.x, var.y);
+};
+
+struct CreatureRecordingMovementData {
+  u32 dataLength;
+  auto byteAfterMovementData = $ + dataLength;
+
+  u16 flags;
+  s32 sampleCount;
+
+  float timestamps[sampleCount];
+
+  s32 numberOfJoints;
+  Vector2 jointPositions[numberOfJoints * sampleCount];
+
+  s32 numberOfMuscles;
+  float muscleForces[numberOfMuscles * sampleCount];
+
+  $ = byteAfterMovementData;
+};
+
+struct SimulationSceneDescription {
+  u16 binaryVersion;
+  u32 dataLength;
+  auto byteAfterSceneDescription = $ + dataLength;
+
+  $ = byteAfterSceneDescription;
+};
+
 enum CreatureDesignDataBlockType: s16 {
   Joints = 0,
   Bones = 1,
@@ -92,11 +126,11 @@ struct MuscleData {
   if (flags.strengthSerialized) {
     float strength;
   }
-  if (flags.userIDSerialized) {
+  if (flags.userIdSerialized) {
     String userID;
   }
 
-  $ = byteAfterBoneData;
+  $ = byteAfterMuscleData;
 };
 
 struct CreatureDesignJointsData {
@@ -147,6 +181,10 @@ struct CreatureRecording {
   u32 creatureDesignBlockLength;
   g_byteAfterCreatureDesign = $ + creatureDesignBlockLength;
   CreatureDesign creatureDesign;
+
+  SimulationSceneDescription sceneDescription;
+
+  CreatureRecordingMovementData movementData;
 
   $ = g_byteAfterCreatureDesign;
 };
