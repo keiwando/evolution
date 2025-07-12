@@ -114,7 +114,7 @@ namespace Keiwando.Evolution.UI {
 
 		private HelpPages LoadHelpPagesForLanguage(Language lang, TMPro.TMP_FontAsset font) {
 			
-			var fileContents = Resources.Load<TextAsset>(string.Format("Help/{0}", lang.id)).text;
+			var fileContents = Resources.Load<TextAsset>(string.Format("Text/Help/{0}", lang.id)).text;
 			var pages = HelpPageParser.Parse(fileContents);
 
 			return new HelpPages () {

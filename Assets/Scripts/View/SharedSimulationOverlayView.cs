@@ -19,6 +19,7 @@ public class SharedSimulationOverlayView: MonoBehaviour {
     [SerializeField] private Button saveSimulationButton;
     [SerializeField] private TMP_Text saveToGalleryWaitingForSimulationLabel;
     [SerializeField] private Button aboutSavingButton;
+    [SerializeField] private BasicTextInfoView aboutSavingInfoView;
     [SerializeField] private Button cancelSaveMenuButton;
     [SerializeField] private Text successfulSaveLabel;
 
@@ -55,6 +56,10 @@ public class SharedSimulationOverlayView: MonoBehaviour {
 
         autosaveToggle.onValueChanged.AddListener(delegate (bool value) {
             simulationViewController.AutosaveToggled(value);
+        });
+
+        aboutSavingButton.onClick.AddListener(delegate () {
+            aboutSavingInfoView.Show();
         });
 
         cancelSaveMenuButton.onClick.AddListener(delegate () {

@@ -1,6 +1,7 @@
 [*.cs]
 # These warn about "unnecessary" usage of "this." or when specifying the type when accessing static
 # fields.
+dotnet_diagnostic.IDE0001.severity = none
 dotnet_diagnostic.IDE0002.severity = none
 dotnet_diagnostic.IDE0003.severity = none
 dotnet_diagnostic.IDE0004.severity = none

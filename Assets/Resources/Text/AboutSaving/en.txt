@@ -1,0 +1,34 @@
+<b><size=40>About Saving</size></b>
+
+There are two main ways in which you can save your creature's learned behaviour and they have different trade-offs and consequences, so you should be aware of the differences.
+
+
+<b><size=30>Save Simulation</size></b>
+
+When you use the "Save Simulation" button manually or when autosave is enabled, the full ongoing simulation will be saved and added to your list of simulation saves. 
+
+Each of these saves includes all the information necessary to be able to load the simulation up again and continue running it at a later time. That includes the neural network (brain) of every creature in the population (of the latest generation) and the neural networks of the best creature of every simulated generation so far.
+
+Treat these saves as a temporary short-term ability to interrupt and then continue a running simulation, e.g. in case you need to close the application or to prevent a loss of your progress in case of an unexpected crash. Do not rely on simulation saves as a way to replay and view your favourite simulation results in the long-term future. 
+
+Here is why that is:
+(If you are not interested in the technical details, you can skip to the "Save To Gallery" section)
+
+When you run a simulation, your creatures are placed in a virtual world with a physics simulation within which they try to learn to master a certain task. At each point in time, their neural network brain takes in different pieces of information about the creature's current state and uses that to calculate a new contraction or expansion force for each muscle. Then the physics simulation runs and determines the consequences of all of these new muscle forces on the creature, and then the cycle repeats. This means that the learned behaviour of a creature relies on the physics simulation running in the exact same way each time.
+
+If the physics simulation changes how it does its calculations, then the same creature muscle forces can result in slightly different consequences for the creature, resulting in different inputs to the neural network, resulting in different new muscle forces etc. Even ever so slight differences in physics behaviour can therefore quickly lead to significantly different movement result. In most cases this would result in a fitness drop in your creature. For example, a creature that was able to run 10 meters in 10 seconds might now fall over after only 3 meters if the physics simulation behaviour changes ever so slightly, even if its brain / neural network stays the same. 
+
+Unfortunately, the exact behaviour of the physics simulation in Evolution cannot be guaranteed to stay the same across different updates of the game. This is because the game engine that is used to make Evolution (Unity) frequently makes changes to its physics engine implementation with new Unity updates. In order to remain compatible with the latest operating systems versions, Evolution has to update to a newer version of Unity every once in a while, at which point the changes to the physics engine will result in previously saved creatures now behaving differently, as explained above.
+
+
+<b><size=30>Save To Gallery</size></b>
+
+The "Save To Gallery" option works differently. It simply saves a recording of the movement of the best creature of the current simulation to the gallery, where you can later viewa replay of this recording.
+
+This is distinctly different from the "Save Simulation" option since it does not save a creature's neural network at all, which means that the creature movement playback in the gallery does not rely on the physics simulation at all and is therefore guaranteed to stay the same across all future updates of the game.
+
+In addition to that, the gallery lets you view the recorded behaviour of multiple creatures on screen all at once, without having to load an entire simulation save file.
+
+Therefore, the "Save To Gallery" option should be your preferred way to save your favourite behaviour results of creature simulations for future playback.
+
+The "Save To Gallery" is not available until at least one new generation of creatures finishes simulating after the current simulation is started or loaded from a previous save.
