@@ -58,7 +58,7 @@ namespace Keiwando.Evolution.Scenes {
             return staticForegroundLayer;
         }
 
-        protected static float GetDistanceForObjective(CreatureStats stats, Objective objective) {
+        public static float GetDistanceForObjective(CreatureStats stats, Objective objective) {
             if (stats == null) return float.NaN;
             switch (objective) {
             case Objective.Running: 

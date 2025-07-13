@@ -20,6 +20,8 @@ namespace Keiwando.Evolution.UI {
     [SerializeField] private Button prevPageButton;
     [SerializeField] private Button nextPageButton;
     [SerializeField] private Button closeButton;
+    [SerializeField] private Material defaultBackgroundGridMaterial;
+    [SerializeField] private Material flyingTaskBackgroundGridMaterial;
 
     private GalleryGridCell[] cells;
     private RenderTexture[] renderTextures;
@@ -150,7 +152,7 @@ namespace Keiwando.Evolution.UI {
           sceneType: SceneController.SimulationSceneType.GalleryPlayback,
           legacyOptions: LegacySimulationOptions.Default,
           context: sceneLoadContext,
-          sceneContext: new GalleryPlaybackSceneContext()
+          sceneContext: new GalleryPlaybackSceneContext(recording.stats, recording.task)
         );
         var scene = sceneLoadContext.Scene;
         this.scenes[cellIndex] = scene;
@@ -195,6 +197,9 @@ namespace Keiwando.Evolution.UI {
             mainCamera.scene = scene;
             this.cameras[cellIndex] = mainCamera;
 
+            SimulationBackgroundRenderer backgroundRenderer = mainCamera.GetComponent<SimulationBackgroundRenderer>();
+            backgroundRenderer.task = recording.task;
+
           } else if (rootObject.name == "GalleryPlaybackController") {
             GalleryPlaybackController playbackController = rootObject.GetComponent<GalleryPlaybackController>();
             CreatureRecordingPlayer player = new CreatureRecordingPlayer(recording: recording.movementData);
@@ -227,6 +232,9 @@ namespace Keiwando.Evolution.UI {
         }
       }
       for (int sceneIndex = 0; sceneIndex < numberOfItemsOnCurrentPage; sceneIndex++) {
+        if (fullscreenSceneIndex.HasValue && sceneIndex != fullscreenSceneIndex.Value){
+          continue;
+        }
         Camera camera = this.cameras[sceneIndex];
         if (camera == null) {
           continue;

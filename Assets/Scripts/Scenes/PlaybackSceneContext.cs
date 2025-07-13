@@ -33,11 +33,16 @@ namespace Keiwando.Evolution.Scenes {
         protected string staticForegroundLayerName => "PlaybackStaticForeground";
         protected string dynamicForegroundLayerName => "PlaybackDynamicForeground";
 
+        private CreatureStats stats;
+        private Objective task;
+
         private readonly LayerMask backgroundLayer;
         private readonly LayerMask staticForegroundLayer;
         private readonly LayerMask dynamicForegroundLayer;
 
-        public GalleryPlaybackSceneContext() {
+        public GalleryPlaybackSceneContext(CreatureStats stats, Objective task) {
+            this.stats = stats;
+            this.task = task;
             this.backgroundLayer = LayerMask.NameToLayer(backgroundLayerName);
             this.staticForegroundLayer = LayerMask.NameToLayer(staticForegroundLayerName);
             this.dynamicForegroundLayer = LayerMask.NameToLayer(dynamicForegroundLayerName);
@@ -48,12 +53,11 @@ namespace Keiwando.Evolution.Scenes {
         public LayerMask GetDynamicForegroundLayer() { return dynamicForegroundLayer; }
 
         public CreatureStats GetStatsForBestOfGeneration(int generation) {
-            // TODO: Implement
-            return new CreatureStats();
+            return stats;
         }
 
         public float GetDistanceOfBest() {
-            return 0;
+            return BaseSceneContext.GetDistanceForObjective(stats, task);
         }
     }
 }

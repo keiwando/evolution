@@ -11,6 +11,8 @@ public class SimulationBackgroundRenderer: MonoBehaviour {
     [SerializeField] private Material backgroundGridMaterial;
     [SerializeField] private Material backgroundCreatureMaterial;
     [SerializeField] private Evolution evolution;
+    [SerializeField] private bool useUniqueGridMaterialInstance;
+    public Objective task;
 
     private Color backgroundColor = new Color(0.93f, 0.93f, 0.93f);
 
@@ -34,6 +36,10 @@ public class SimulationBackgroundRenderer: MonoBehaviour {
         
         commandBuffer = new CommandBuffer();
         camera.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, commandBuffer);
+
+        if (useUniqueGridMaterialInstance) {
+            backgroundGridMaterial = Instantiate(backgroundGridMaterial);
+        }
         
         quad = CreateQuad();
     }
@@ -51,7 +57,7 @@ public class SimulationBackgroundRenderer: MonoBehaviour {
             this.backgroundCreatureMaterial.SetColor("_BackgroundColor", backgroundColor);
         }
 
-        Objective task = evolution.SimulationData.Settings.Objective;
+        Objective task = evolution != null ? evolution.SimulationData.Settings.Objective : this.task;
         float gridVisibility = task == Objective.Flying ? Settings.FlyingGridVisibility : Settings.DefaultGridVisibility;
         
         this.backgroundGridMaterial.SetColor("_BackgroundColor", backgroundColor); 

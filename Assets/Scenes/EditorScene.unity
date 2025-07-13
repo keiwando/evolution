@@ -23962,6 +23962,10 @@ MonoBehaviour:
   prevPageButton: {fileID: 1944102907}
   nextPageButton: {fileID: 1047342111}
   closeButton: {fileID: 470716797}
+  defaultBackgroundGridMaterial: {fileID: 2100000, guid: 7a01b3eea9da64332a89ffe1b3ecb40f,
+    type: 2}
+  flyingTaskBackgroundGridMaterial: {fileID: 2100000, guid: 913c049d50e7042d99e2e1d7e50ebf2a,
+    type: 2}
 --- !u!1 &1396849619
 GameObject:
   m_ObjectHideFlags: 0
