@@ -28,9 +28,9 @@ enum CreatureDesignDataBlockType: s16 {
 };
 
 bitfield JointDataFlags {
-  padding: 14;
-  fitnessPenaltySerialized : 1;
   weightSerialized : 1;
+  fitnessPenaltySerialized : 1;
+  padding: 14;
 };
 
 struct JointData {
@@ -52,11 +52,11 @@ struct JointData {
 };
 
 bitfield BoneDataFlags {
-  padding : 12;
-  legacy : 1;
-  inverted : 1;
-  isWing : 1;
   weightSerialized : 1;
+  isWing : 1;
+  inverted : 1;
+  legacy : 1;
+  padding : 12;
 };
 
 struct BoneData {
@@ -75,10 +75,10 @@ struct BoneData {
 };
 
 bitfield MuscleDataFlags {
-  padding : 13;
-  userIdSerialized : 1;
-  canExpand : 1;
   strengthSerialized : 1;
+  canExpand : 1;
+  userIdSerialized : 1;
+  padding: 13;
 };
 
 struct MuscleData {

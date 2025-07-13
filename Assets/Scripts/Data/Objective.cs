@@ -1,5 +1,5 @@
 ﻿
-public enum Objective {
+public enum Objective: byte {
 
 	Running = 0,
 	Jumping = 1,
@@ -9,6 +9,8 @@ public enum Objective {
 }
 
 static class ObjectiveUtil {
+
+	public const Objective LAST_OBJECTIVE = Objective.Flying;
 
 	public static Objective ObjectiveForNumber(int n) {
 		switch(n) {

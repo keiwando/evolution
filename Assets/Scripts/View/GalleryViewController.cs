@@ -12,11 +12,14 @@ namespace Keiwando.Evolution.UI {
 
   public class GalleryViewController: MonoBehaviour {
 
-    [SerializeField]
-    private CustomGridLayoutGroup grid;
-
-    [SerializeField]
-    private GalleryGridCell templateGridCell;
+    [SerializeField] private CustomGridLayoutGroup grid;
+    [SerializeField] private GalleryGridCell templateGridCell;
+    [SerializeField] private GameObject fullscreenView;
+    [SerializeField] private RawImage fullscreenRawImage;
+    [SerializeField] private Button fullscreenCloseButton;
+    [SerializeField] private Button prevPageButton;
+    [SerializeField] private Button nextPageButton;
+    [SerializeField] private Button closeButton;
 
     private GalleryGridCell[] cells;
     private RenderTexture[] renderTextures;
@@ -32,12 +35,11 @@ namespace Keiwando.Evolution.UI {
     private int currentPageIndex = 0;
     private int numberOfItemsOnCurrentPage = 0;
     private int sceneLoadingInitiatedForPageIndex = -1;
+    private int fullscreenRenderTextureIndex = -1;
+    private int? fullscreenSceneIndex = null;
     private Coroutine sceneLoadingCoroutine;
 
     private int hiddenLayer;
-
-    [SerializeField]
-    private Button closeButton;
 
     private CreatureGalleryManager galleryManager = new CreatureGalleryManager();
 
@@ -49,7 +51,9 @@ namespace Keiwando.Evolution.UI {
 
       int numberOfItemsPerPage = grid.ColumnCount * grid.RowCount;
       this.cells = new GalleryGridCell[numberOfItemsPerPage];
-      this.renderTextures = new RenderTexture[numberOfItemsPerPage];
+      // The last index is the fullscreen texture
+      this.renderTextures = new RenderTexture[numberOfItemsPerPage + 1];
+      this.fullscreenRenderTextureIndex = this.renderTextures.Length - 1;
       this.scenes = new Scene?[numberOfItemsPerPage];
       this.cameras = new Camera[numberOfItemsPerPage];
       this.allObjectsPerScene = new List<PerObjectData>[numberOfItemsPerPage];
@@ -61,11 +65,19 @@ namespace Keiwando.Evolution.UI {
         var cell = Instantiate(templateGridCell, grid.transform);
         cell.gameObject.SetActive(true);
         cells[i] = cell;
+
+        int cellIndex = i;
+        cell.button.onClick.AddListener(delegate () {
+          enterFullscreen(sceneIndex: cellIndex);
+        });
       }
       templateGridCell.gameObject.SetActive(false);
 
       closeButton.onClick.AddListener(delegate () {
           Hide();
+      });
+      fullscreenCloseButton.onClick.AddListener(delegate () {
+          exitFullscreen();
       });
 
       initialized = true;
@@ -96,7 +108,8 @@ namespace Keiwando.Evolution.UI {
         }
       }
 
-      // TODO: load the gallery entries of the current page
+      prevPageButton.interactable = currentPageIndex > 0;
+      nextPageButton.interactable = currentPageIndex < totalNumberOfPages - 1;
 
       bool needsSceneLoading = sceneLoadingInitiatedForPageIndex != currentPageIndex;
       if (needsSceneLoading) {
@@ -275,6 +288,48 @@ namespace Keiwando.Evolution.UI {
           this.allObjectsPerScene[i].Clear();
         }
       }
+    }
+
+    private void enterFullscreen(int sceneIndex) {
+      if (this.fullscreenSceneIndex.HasValue) {
+        if (this.fullscreenSceneIndex.Value == sceneIndex) {
+          return;
+        }
+        exitFullscreen();
+      }
+
+      Camera camera = this.cameras[sceneIndex];
+      if (camera == null) {
+        return;
+      }
+      if (this.renderTextures[this.fullscreenRenderTextureIndex] == null) {
+        this.renderTextures[this.fullscreenRenderTextureIndex] = new RenderTexture(
+          width: Screen.width,
+          height: Screen.height,
+          depth: 0
+        ); 
+        this.fullscreenRawImage.texture = this.renderTextures[this.fullscreenRenderTextureIndex];
+      }
+
+      camera.targetTexture = this.renderTextures[this.fullscreenRenderTextureIndex];
+      fullscreenView.gameObject.SetActive(true);
+
+      this.fullscreenSceneIndex = sceneIndex;
+    }
+
+    private void exitFullscreen() {
+      if (!this.fullscreenSceneIndex.HasValue) {
+        return;
+      }
+      int sceneIndex = this.fullscreenSceneIndex.Value;
+
+      Camera camera = this.cameras[sceneIndex];
+      if (camera != null) {
+        RenderTexture previewRenderTexture = this.renderTextures[sceneIndex];
+        camera.targetTexture = previewRenderTexture;
+      }
+      fullscreenView.gameObject.SetActive(false);
+      this.fullscreenSceneIndex = null;
     }
     
     public void Show() {

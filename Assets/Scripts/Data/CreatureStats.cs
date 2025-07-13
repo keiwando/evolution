@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Keiwando.JSON;
+﻿using Keiwando.JSON;
+using System;
+using System.IO;
 
 public class CreatureStats {
 
@@ -47,6 +46,60 @@ public class CreatureStats {
 	public float averageSpeed = 0f;
 
 	#region Encode & Decode
+
+	public void Encode(BinaryWriter writer) {
+		long dataLengthOffset = writer.Seek(0, SeekOrigin.Current);
+		writer.WriteDummyBlockLength();
+		ushort flags = 0;
+		writer.Write(flags);
+
+		writer.Write(unclampedFitness);
+		writer.Write(fitness);
+		writer.Write(simulationTime);
+		writer.Write(horizontalDistanceTravelled);
+		writer.Write(verticalDistanceTravelled);
+		writer.Write(maxJumpingHeight);
+		writer.Write(weight);
+		writer.Write(numberOfBones);
+		writer.Write(numberOfMuscles);
+		writer.Write(averageSpeed);
+
+		writer.WriteBlockLengthToOffset(dataLengthOffset);
+	}
+
+	public static CreatureStats Decode(BinaryReader reader) {
+
+		uint dataLength = reader.ReadBlockLength();
+		long expectedEndByte = reader.BaseStream.Position + (long)dataLength;
+
+		ushort flags = reader.ReadUInt16();
+
+		float unclampedFitness = reader.ReadSingle();
+		float fitness = reader.ReadSingle();
+		int simulationTime = reader.ReadInt32();
+		float horizontalDistanceTravelled = reader.ReadSingle();
+		float verticalDistanceTravelled = reader.ReadSingle();
+		float maxJumpingHeight = reader.ReadSingle();
+		float weight = reader.ReadSingle();
+		int numberOfBones = reader.ReadInt32();
+		int numberOfMuscles = reader.ReadInt32();
+		float averageSpeed = reader.ReadSingle();
+
+		reader.BaseStream.Seek(expectedEndByte, SeekOrigin.Begin);
+
+		return new CreatureStats() {
+			unclampedFitness = unclampedFitness,
+			fitness = fitness,
+			simulationTime = simulationTime,
+			horizontalDistanceTravelled = horizontalDistanceTravelled,
+			verticalDistanceTravelled = verticalDistanceTravelled,
+			maxJumpingHeight = maxJumpingHeight,
+			weight = weight,
+			numberOfBones = numberOfBones,
+			numberOfMuscles = numberOfMuscles,
+			averageSpeed = averageSpeed
+		};
+	}
 
 	private static class CodingKey {
 		public const string UnclampedFitness = "unclampedFitness";

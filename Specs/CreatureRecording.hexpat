@@ -38,9 +38,9 @@ enum CreatureDesignDataBlockType: s16 {
 };
 
 bitfield JointDataFlags {
-  padding: 14;
-  fitnessPenaltySerialized : 1;
   weightSerialized : 1;
+  fitnessPenaltySerialized : 1;
+  padding: 14;
 };
 
 struct JointData {
@@ -62,11 +62,11 @@ struct JointData {
 };
 
 bitfield BoneDataFlags {
-  padding : 12;
-  legacy : 1;
-  inverted : 1;
-  isWing : 1;
   weightSerialized : 1;
+  isWing : 1;
+  inverted : 1;
+  legacy : 1;
+  padding : 12;
 };
 
 struct BoneData {
@@ -85,10 +85,10 @@ struct BoneData {
 };
 
 bitfield MuscleDataFlags {
-  padding : 13;
-  userIdSerialized : 1;
-  canExpand : 1;
   strengthSerialized : 1;
+  canExpand : 1;
+  userIdSerialized : 1;
+  padding: 13;
 };
 
 struct MuscleData {
@@ -152,21 +152,89 @@ struct CreatureDesign {
 
 // End CreatureDesign
 
+struct CreatureRecordingMovementData {
+  u32 dataLength;
+  auto byteAfterMovementData = $ + dataLength;
+
+  u16 flags;
+  s32 sampleCount;
+
+  float timestamps[sampleCount];
+
+  s32 numberOfJoints;
+  Vector2 jointPositions[numberOfJoints * sampleCount];
+
+  s32 numberOfMuscles;
+  float muscleForces[numberOfMuscles * sampleCount];
+
+  $ = byteAfterMovementData;
+};
+
+struct SimulationSceneDescription {
+  u16 binaryVersion;
+  u32 dataLength;
+  auto byteAfterSceneDescription = $ + dataLength;
+
+  $ = byteAfterSceneDescription;
+};
+
+// End SimulationSceneDescription
+
+enum Objective: u8 {
+  Running = 0,
+  Jumping = 1,
+  ObstacleJump = 2,
+  Climbing = 3,
+  Flying = 4
+};
+
+struct CreatureStats {
+  u32 dataLength;
+  auto byteAfterData = $ + dataLength;
+
+  u16 flags;
+  float unclampedFitness;
+  float fitness;
+  s32 simulationTime;
+  float horizontalDistanceTravelled;
+  float verticalDistanceTravelled;
+  float maxJumpHeight;
+  float weight;
+  s32 numberOfBones;
+  s32 numberOfMuscles;
+  float averageSpeed;
+
+  $ = byteAfterData;
+};
+
+struct NeuralNetworkSettings {
+  u32 dataLength;
+  auto byteAfterData = $ + dataLength;
+  u16 flags;
+  s32 nodesPerIntermediateLayerLength;
+  s32 nodesPerIntermediateLayer[nodesPerIntermediateLayerLength];
+  $ = byteAfterData;
+};
+
 struct CreatureRecording {
   char signature[8];
   u16 version;
+
+  u32 metadataBlockLength;
+  auto byteAfterMetadataBlock = $ + metadataBlockLength;
   s32 generation;
   s64 encodedDate;
+  Objective objective;
+  CreatureStats stats;
+  s32 networkInputCount;
+  s32 networkOutputCount;
+  NeuralNetworkSettings networkSettings;
 
-  u32 creatureDesignBlockLength;
-  g_byteAfterCreatureDesign = $ + creatureDesignBlockLength;
+  $ = byteAfterMetadataBlock;
+
   CreatureDesign creatureDesign;
-
   SimulationSceneDescription sceneDescription;
-
   CreatureRecordingMovementData movementData;
-
-  $ = g_byteAfterCreatureDesign;
 };
 
 CreatureRecording recording @ 0x0 [[inline]];

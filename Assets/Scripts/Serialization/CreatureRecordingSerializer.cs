@@ -89,11 +89,21 @@ public class CreatureRecordingSerializer {
     
     // ### Content ###
 
+    long metadataBlockLengthOffset = writer.Seek(0, SeekOrigin.Current);
+    writer.WriteDummyBlockLength();
     // Metadata
     int generation = recording.generation;
     writer.Write(generation);
     long dateValue = recording.date.ToBinary();
     writer.Write(dateValue);
+    byte task = (byte)recording.task;
+    writer.Write(task);
+    recording.stats.Encode(writer);
+    writer.Write(recording.networkInputCount);
+    writer.Write(recording.networkOutputCount);
+    recording.networkSettings.Encode(writer);
+
+    writer.WriteBlockLengthToOffset(metadataBlockLengthOffset);
 
     CreatureSerializer.WriteCreatureDesign(recording.creatureDesign, writer);
     recording.sceneDescription.Encode(writer);
@@ -122,9 +132,23 @@ public class CreatureRecordingSerializer {
         return null;
       }
 
+      uint metadataBlockLengthOffset = reader.ReadBlockLength();
+      long byteAfterMetadata = reader.BaseStream.Position + (long)metadataBlockLengthOffset;
+      
       int generation = reader.ReadInt32();
       long dateValue = reader.ReadInt64();
       DateTime date = DateTime.FromBinary(dateValue);
+      byte rawObjective = reader.ReadByte();
+      Objective task = Objective.Running;
+      if (rawObjective <= (byte)ObjectiveUtil.LAST_OBJECTIVE) {
+        task = (Objective)rawObjective;
+      }
+      CreatureStats creatureStats = CreatureStats.Decode(reader);
+      int networkInputCount = reader.ReadInt32();
+      int networkOutputCount = reader.ReadInt32();
+      NeuralNetworkSettings settings = NeuralNetworkSettings.Decode(reader);
+
+      reader.BaseStream.Seek(byteAfterMetadata, SeekOrigin.Begin);
 
       CreatureDesign creatureDesign = CreatureSerializer.DecodeCreatureDesign(reader);
       if (creatureDesign == null) {
@@ -143,9 +167,14 @@ public class CreatureRecordingSerializer {
 
       CreatureRecording recording = new CreatureRecording(
         creatureDesign: creatureDesign,
-        generation: generation,
         sceneDescription: sceneDescription,
-        movementData: movementData
+        movementData: movementData,
+        task: task,
+        generation: generation,
+        stats: creatureStats,
+        networkInputCount: networkInputCount,
+        networkOutputCount: networkOutputCount,
+        networkSettings: settings
       );
       recording.date = date;
       return recording;

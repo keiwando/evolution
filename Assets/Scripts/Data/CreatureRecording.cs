@@ -109,17 +109,32 @@ public class CreatureRecording {
   public CreatureDesign creatureDesign;
   public SimulationSceneDescription sceneDescription;
   public CreatureRecordingMovementData movementData;
+  public Objective task;
   public int generation;
   public DateTime date;
+  public CreatureStats stats;
+  public int networkInputCount;
+  public int networkOutputCount;
+  public NeuralNetworkSettings networkSettings;
 
   public CreatureRecording(CreatureDesign creatureDesign,
                            SimulationSceneDescription sceneDescription,
                            CreatureRecordingMovementData movementData,
-                           int generation) {
+                           Objective task,
+                           int generation,
+                           CreatureStats stats,
+                           int networkInputCount,
+                           int networkOutputCount,
+                           NeuralNetworkSettings networkSettings) {
     this.creatureDesign = creatureDesign;
-    this.generation = generation;
     this.sceneDescription = sceneDescription;
     this.movementData = movementData;
+    this.task = task;
+    this.generation = generation;
+    this.stats = stats;
+    this.networkInputCount = networkInputCount;
+    this.networkOutputCount = networkOutputCount;
+    this.networkSettings = networkSettings;
     this.date = DateTime.Now;
   }
 }

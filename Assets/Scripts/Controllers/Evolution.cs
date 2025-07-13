@@ -15,6 +15,7 @@ namespace Keiwando.Evolution {
 		public struct Solution {
 			public IChromosomeEncodable<float[]> Encodable;
 			public CreatureStats Stats;
+			public int NumberOfNetworkOutputs;
 			public CreatureRecorder Recorder;
 		}
 
@@ -202,8 +203,7 @@ namespace Keiwando.Evolution {
 				}
 				firstChromosomeIndex += batch.Length;
 				ApplyBrains(batch, chromosomes);
-
-				// DEBUG:
+				
 				// Create missing or remove excessive recorders
 				int missingRecorders = actualBatchSize - recorders.Count;
 				if (missingRecorders > 0) {
@@ -257,6 +257,7 @@ namespace Keiwando.Evolution {
 					solutions[solutionIndex++] = new Solution() { 
 						Encodable = creature.brain.Network,
 						Stats = creature.GetStatistics(this.cachedSettings.SimulationTime),
+						NumberOfNetworkOutputs = creature.brain.Network.NumberOfOutputs,
 						Recorder = creature.recorder
 					};
 				}
@@ -293,16 +294,20 @@ namespace Keiwando.Evolution {
 			}
 
 			// Save the best solution
-			var best = solutions[0];
+			Solution best = solutions[0];
 			SimulationData.BestCreatures.Add(new ChromosomeData(best.Encodable.ToChromosome(), best.Stats));
 
-			// DEBUG:
 			CreatureRecordingMovementData recordedMovementData = best.Recorder.toRecordingMovementData();
 			SimulationData.BestCreatureRecording = new CreatureRecording(
 				creatureDesign: SimulationData.CreatureDesign,
 				sceneDescription: SimulationData.SceneDescription,
 				movementData: recordedMovementData,
-				generation: this.currentGenerationNumber
+				task: SimulationData.Settings.Objective,
+				generation: this.currentGenerationNumber,
+				stats: best.Stats,
+				networkInputCount: GetNumberOfCurrentBrainInputs(),
+				networkOutputCount: best.NumberOfNetworkOutputs,
+				networkSettings: SimulationData.NetworkSettings
 			);
 
 			// Autosave if necessary
