@@ -8,8 +8,6 @@ public class SharedSimulationOverlayView: MonoBehaviour {
 
     public SimulationViewController simulationViewController { get; set; }
 
-    [SerializeField] private Button inaccuratePlaybackButton;
-
     [SerializeField] private Button pauseButton;
 
     [SerializeField] private Toggle autosaveToggle;
@@ -66,9 +64,6 @@ public class SharedSimulationOverlayView: MonoBehaviour {
             HideSaveMenu();
         });
 
-        inaccuratePlaybackButton.onClick.AddListener(delegate () {
-            simulationViewController.InaccuratePlaybackButtonClicked();
-        });
         successfulSaveLabel.gameObject.SetActive(false);
 
         // Can't refresh here. The simulationViewController reference is not set yet. The view controller
@@ -81,7 +76,6 @@ public class SharedSimulationOverlayView: MonoBehaviour {
         saveToGalleryButton.interactable = simulationViewController.SaveToGalleryIsPossible();
         saveToGalleryWaitingForSimulationLabel.gameObject.SetActive(!saveToGalleryButton.interactable);
         autosaveToggle.isOn = simulationViewController.IsAutoSaveEnabled();
-        inaccuratePlaybackButton.gameObject.SetActive(simulationViewController.IsPlaybackPossiblyInaccurate());
     }
 
     private void ToggleSaveMenu() {

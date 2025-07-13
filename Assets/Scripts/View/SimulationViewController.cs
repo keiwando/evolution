@@ -38,7 +38,6 @@ public class SimulationViewController : MonoBehaviour,
 
 	[SerializeField] private SimulationVisibilityOptionsView visibilityOptionsView;
 
-	[SerializeField] private V2PlaybackNoticeOverlayView v2PlaybackNoticePopup;
 	[SerializeField] private SimulationExitConfirmationView exitConfirmationPopup;
 
     [SerializeField] private Camera simulationCamera;
@@ -71,13 +70,6 @@ public class SimulationViewController : MonoBehaviour,
 
 		bestCreatureController.PlaybackDidBegin += delegate () {
 			Refresh();
-		};
-
-		evolution.InitializationDidEnd += delegate () {
-			if (!Settings.DontShowV2SimulationDeprecationOverlayAgain 
-			&& evolution.SimulationData.LastV2SimulatedGeneration > 0) {
-				v2PlaybackNoticePopup.Show();
-			}
 		};
 	}
 
@@ -160,10 +152,6 @@ public class SimulationViewController : MonoBehaviour,
 		return evolution.SimulationData.BestCreatureRecording != null;
 	}
 
-	public bool IsPlaybackPossiblyInaccurate() {
-		return (evolution.SimulationData?.LastV2SimulatedGeneration ?? 0) > 0;
-	}
-
   public void PauseButtonClicked() {
 		Pause();
 	}
@@ -180,10 +168,6 @@ public class SimulationViewController : MonoBehaviour,
 		SaveSimulation();
 	}
 
-	public void InaccuratePlaybackButtonClicked() {
-		v2PlaybackNoticePopup.Show(true);
-	}
-    
   public void AutosaveToggled(bool autosaveEnabled) {
 		evolution.AutoSaver.Enabled = autosaveEnabled;
 	}
