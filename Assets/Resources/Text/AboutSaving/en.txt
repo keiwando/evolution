@@ -24,7 +24,7 @@ Unfortunately, the exact behaviour of the physics simulation in Evolution cannot
 
 <b><size=30>Save to Gallery</size></b>
 
-The "Save to Gallery" option works differently. It simply saves a recording of the movement of the best creature in the current simulation to the gallery, where you can later view a replay of this recording.
+The "Save to Gallery" option works differently. It simply saves a recording of the movement of the best creature in the current simulation to the gallery, where you can later view a replay of this recording. Each recording is up to 10 seconds long.
 
 This is distinctly different from the "Save Simulation" option since it does not save a creature's neural network at all, which means that the creature movement playback in the gallery does not rely on the physics simulation and is therefore guaranteed to stay the same across all future updates of the game.
 

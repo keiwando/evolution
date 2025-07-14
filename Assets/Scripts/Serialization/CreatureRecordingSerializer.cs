@@ -206,6 +206,7 @@ public class CreatureRecordingSerializer {
         return null;
       }
 
+      reader.ReadBlockLength();
       int generation = reader.ReadInt32();
       long dateValue = reader.ReadInt64();
       DateTime date = DateTime.FromBinary(dateValue);

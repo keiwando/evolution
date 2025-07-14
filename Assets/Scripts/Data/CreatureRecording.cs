@@ -200,7 +200,9 @@ public class CreatureRecorder {
   }
 
   public bool shouldRecordNewSample() {
-    return Time.time - currentSampleTime > 0.8f * SECONDS_PER_SAMPLE;
+    float expectedNextSampleTime = firstSampleTime + nextSampleIndexToRecord * SECONDS_PER_SAMPLE;
+    float earliestAllowedSampleTime = expectedNextSampleTime - 0.2f * SECONDS_PER_SAMPLE;
+    return Time.time - earliestAllowedSampleTime > 0;
   }
 
   public void beginRecordingSample() {
