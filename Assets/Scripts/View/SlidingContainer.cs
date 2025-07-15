@@ -24,17 +24,11 @@ namespace Keiwando.UI {
     
         public Direction LastSlideDirection { get; protected set; }
 
-        private RectTransform rectTransform;
-        
         /// The animation target positions. Needed so that the animation can be finished 
         /// instantly when a running coroutine is stopped.
         private Vector2 targetPosition;
         private Coroutine coroutine;
         public float AnimationProgress { get; protected set; } = 1f;
-
-        protected virtual void Start() {
-            this.rectTransform = GetComponent<RectTransform>();
-        }
 
         public void Slide(Direction direction, float duration = 0f, bool ignoreProgress = true) {
 
@@ -44,6 +38,7 @@ namespace Keiwando.UI {
         }
 
         private IEnumerator SlideAnimation(Direction direction, float duration, float startProgress) {
+            var rectTransform = transform as RectTransform;
 
             var elapsed = startProgress * duration;
 
@@ -91,7 +86,7 @@ namespace Keiwando.UI {
         private void FinishAnimation() {
             if (coroutine != null) {
                 StopCoroutine(coroutine);
-                rectTransform.localPosition = targetPosition;
+                transform.localPosition = targetPosition;
                 this.AnimationProgress = 1f;
             }
         }

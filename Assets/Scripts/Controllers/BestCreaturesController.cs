@@ -172,9 +172,9 @@ namespace Keiwando.Evolution {
 			return generation > 0 && generation <= evolution.SimulationData.BestCreatures.Count;
 		}
 
-		public void RefreshMuscleContractionVisibility(bool visible) {
+		public void RefreshMuscleContractionVisibility() {
 			if (CurrentBest != null) 
-				CurrentBest.RefreshMuscleContractionVisibility(visible);
+				CurrentBest.RefreshMuscleContractionVisibility(Settings.ShowMuscleContraction);
 		}
 	}
 }

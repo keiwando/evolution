@@ -6,15 +6,10 @@ namespace Keiwando.Evolution.UI {
 
     public interface ISimulationVisibilityOptionsViewDelegate {
 
-        void GridVisibilityDidChange(SimulationVisibilityOptionsView view, float visibility);
-        void HiddenCreatureOpacityDidChange(SimulationVisibilityOptionsView view, float opacity);
         void ShowMuscleContractionDidChange(SimulationVisibilityOptionsView view, bool showMuscleContraction);
         void ShowMusclesDidChange(SimulationVisibilityOptionsView view, bool showMuscles);
 
-        float GetGridVisibility(SimulationVisibilityOptionsView view);
-        float GetHiddenCreatureOpacity(SimulationVisibilityOptionsView view);
-        bool ShouldShowMuscleContraction(SimulationVisibilityOptionsView view);
-        bool ShouldShowMuscles(SimulationVisibilityOptionsView view);
+        Objective GetCurrentTask(SimulationVisibilityOptionsView view);
     }
 
     [RequireComponent(typeof(SlidingContainer))]
@@ -42,21 +37,28 @@ namespace Keiwando.Evolution.UI {
             slidingContainer = GetComponent<SlidingContainer>();
 
             GridVisibilitySlider.onValueChanged.AddListener(delegate (float value) {
-                Delegate.GridVisibilityDidChange(this, value);
+                Objective task = Delegate.GetCurrentTask(this);
+                if (task == Objective.Flying) {
+                    Settings.FlyingGridVisibility = Mathf.Clamp(value, 0.0f, 1.0f);
+                } else {
+                    Settings.DefaultGridVisibility = Mathf.Clamp(value, 0.0f, 1.0f);
+                }
                 Refresh();
             });
 
             HiddenCreatureOpacitySlider.onValueChanged.AddListener(delegate (float value) {
-                Delegate.HiddenCreatureOpacityDidChange(this, value);
+                Settings.HiddenCreatureOpacity = Mathf.Clamp(value, 0, 1);
                 Refresh();
             });
 
             ShowMuscleContractionToggle.onValueChanged.AddListener(delegate (bool value) {
+		        Settings.ShowMuscleContraction = value;
                 Delegate.ShowMuscleContractionDidChange(this, value);
                 Refresh();
             });
 
             ShowMusclesToggle.onValueChanged.AddListener(delegate (bool value) {
+		        Settings.ShowMuscles = value;
                 Delegate.ShowMusclesDidChange(this, value);
                 Refresh();
             });
@@ -84,10 +86,18 @@ namespace Keiwando.Evolution.UI {
                 return;
             }
 
-            GridVisibilitySlider.value = Delegate.GetGridVisibility(this);
-            HiddenCreatureOpacitySlider.value = Delegate.GetHiddenCreatureOpacity(this);
-            ShowMusclesToggle.isOn = Delegate.ShouldShowMuscles(this);
-            ShowMuscleContractionToggle.isOn = Delegate.ShouldShowMuscleContraction(this);
+            Objective task = Delegate.GetCurrentTask(this);
+            float gridVisibility = 1.0f;
+            if (task == Objective.Flying) {
+                gridVisibility = Settings.FlyingGridVisibility;
+            } else {
+                gridVisibility = Settings.DefaultGridVisibility;
+            }
+
+            GridVisibilitySlider.value = gridVisibility;
+            HiddenCreatureOpacitySlider.value = Settings.HiddenCreatureOpacity;
+            ShowMusclesToggle.isOn = Settings.ShowMuscles;
+            ShowMuscleContractionToggle.isOn = Settings.ShowMuscleContraction;
 
             // Update UI elements that depend on each other's values
             ShowMuscleContractionToggle.enabled = ShowMusclesToggle.isOn;

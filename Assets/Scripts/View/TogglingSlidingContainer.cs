@@ -6,8 +6,7 @@ namespace Keiwando.UI {
 
         [SerializeField] private Direction initialDirection;
 
-        protected override void Start() {
-            base.Start();
+        protected void Start() {
 
             LastSlideDirection = Opposite(initialDirection);
             AnimationProgress = 1f;

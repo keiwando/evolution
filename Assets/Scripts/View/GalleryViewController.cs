@@ -1,16 +1,19 @@
 using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 using Keiwando;
 using Keiwando.UI;
 using Keiwando.Evolution.Scenes;
+using Keiwando.NFSO;
 
 namespace Keiwando.Evolution.UI {
 
-  public class GalleryViewController: MonoBehaviour {
+  public class GalleryViewController: MonoBehaviour, ISimulationVisibilityOptionsViewDelegate {
 
     [SerializeField] private CustomGridLayoutGroup grid;
     [SerializeField] private GalleryGridCell templateGridCell;
@@ -20,13 +23,24 @@ namespace Keiwando.Evolution.UI {
     [SerializeField] private Button prevPageButton;
     [SerializeField] private Button nextPageButton;
     [SerializeField] private Button closeButton;
-    [SerializeField] private Material defaultBackgroundGridMaterial;
-    [SerializeField] private Material flyingTaskBackgroundGridMaterial;
+    [SerializeField] private SimulationVisibilityOptionsView visibilityOptionsView;
+    [SerializeField] private Button showStatsButton;
+    [SerializeField] private TMP_Text statsLabel;
+    [SerializeField] private Button fullscreenMoreButton;
+    [SerializeField] private Button galleryMoreButton;
+    [SerializeField] private Button deleteButton;
+    [SerializeField] private Button exportButton;
+    [SerializeField] private Button importButton;
+		[SerializeField] private UIFade successfulImportIndicator;
+		[SerializeField] private UIFade failedImportIndicator;
+
+    // TODO: Don't show the Hidden Creature Opacity slider in the gallery 
 
     private GalleryGridCell[] cells;
     private RenderTexture[] renderTextures;
     private Scene?[] scenes;
     private Camera[] cameras;
+    private Creature[] creatures;
     struct PerObjectData {
       public int layer;
       public GameObject gameObject;
@@ -44,6 +58,9 @@ namespace Keiwando.Evolution.UI {
     private int hiddenLayer;
 
     private CreatureGalleryManager galleryManager = new CreatureGalleryManager();
+    private SupportedFileType[] supportedFileTypesForImportAndExport = {
+      CustomEvolutionFileType.evolutiongallery
+    };
 
     private bool initialized = false;
 
@@ -58,6 +75,7 @@ namespace Keiwando.Evolution.UI {
       this.fullscreenRenderTextureIndex = this.renderTextures.Length - 1;
       this.scenes = new Scene?[numberOfItemsPerPage];
       this.cameras = new Camera[numberOfItemsPerPage];
+      this.creatures = new Creature[numberOfItemsPerPage];
       this.allObjectsPerScene = new List<PerObjectData>[numberOfItemsPerPage];
       for (int i = 0; i < numberOfItemsPerPage; i++) {
         this.allObjectsPerScene[i] = new List<PerObjectData>();
@@ -80,6 +98,37 @@ namespace Keiwando.Evolution.UI {
       });
       fullscreenCloseButton.onClick.AddListener(delegate () {
           exitFullscreen();
+      });
+
+      visibilityOptionsView.Delegate = this;
+
+      showStatsButton.onClick.AddListener(delegate () {
+        refreshStatsLabel();
+        statsLabel.gameObject.SetActive(!statsLabel.gameObject.activeSelf);
+      });
+      statsLabel.gameObject.SetActive(false);
+
+      GameObject galleryMoreMenu = importButton.transform.parent.gameObject;
+      GameObject fullscreenMoreMenu = exportButton.transform.parent.gameObject;
+
+      galleryMoreMenu.gameObject.SetActive(false);
+      fullscreenMoreMenu.gameObject.SetActive(false);
+
+      galleryMoreButton.onClick.AddListener(delegate () {
+        galleryMoreMenu.gameObject.SetActive(!galleryMoreMenu.activeSelf);
+      });
+      fullscreenMoreButton.onClick.AddListener(delegate () {
+        fullscreenMoreMenu.gameObject.SetActive(!galleryMoreMenu.activeSelf);
+      });
+
+      importButton.onClick.AddListener(delegate () {
+        onImportClicked();
+      });
+      exportButton.onClick.AddListener(delegate () {
+        onExportClicked();
+      });
+      deleteButton.onClick.AddListener(delegate () {
+        onDeleteClicked();
       });
 
       initialized = true;
@@ -124,24 +173,41 @@ namespace Keiwando.Evolution.UI {
       }
     }
 
-    private IEnumerator loadGalleryScenes() {
-      
+    private CreatureGalleryEntry getAndLoadGalleryEntryForSceneIndex(int sceneIndex) {
       int numberOfItemsPerPage = Math.Max(1, grid.ColumnCount * grid.RowCount);
       int firstItemIndexOnPage = currentPageIndex * numberOfItemsPerPage;
+      int galleryEntryIndex = firstItemIndexOnPage + sceneIndex;
+      galleryManager.loadGalleryEntry(galleryEntryIndex);
+      return this.galleryManager.gallery.entries[galleryEntryIndex];
+    }
+
+    private CreatureRecording getRecordingForSceneIndex(int sceneIndex) {
+      CreatureGalleryEntry galleryEntry = getAndLoadGalleryEntryForSceneIndex(sceneIndex);
+      if (galleryEntry.loadedData == null) {
+        return null;
+      }
+      return galleryEntry.loadedData.recording;
+    }
+
+    private Creature getFullscreenPlaybackCreature() {
+      if (!this.fullscreenSceneIndex.HasValue) {
+        return null;
+      }
+      return this.creatures[this.fullscreenSceneIndex.Value];
+    }
+
+    private IEnumerator loadGalleryScenes() {
 
       for (int cellIndex = 0; cellIndex < this.numberOfItemsOnCurrentPage; cellIndex++) {
         GalleryGridCell cell = cells[cellIndex];
         if (cell == null) {
           continue;
         }
-        int galleryEntryIndex = firstItemIndexOnPage + cellIndex;
-        galleryManager.loadGalleryEntry(galleryEntryIndex);
-        LoadedCreatureGalleryEntry galleryEntry = this.galleryManager.gallery.entries[galleryEntryIndex].loadedData;
-        if (galleryEntry == null) {
+        CreatureRecording recording = getRecordingForSceneIndex(cellIndex);
+        if (recording == null) {
           Debug.LogWarning($"Gallery entry for cell {cellIndex} not loaded!");
           continue;
         }
-        CreatureRecording recording = galleryEntry.recording;
 
         var sceneLoadContext = new SceneController.SimulationSceneLoadContext();
         
@@ -156,6 +222,7 @@ namespace Keiwando.Evolution.UI {
         );
         var scene = sceneLoadContext.Scene;
         this.scenes[cellIndex] = scene;
+        this.creatures[cellIndex] = sceneLoadContext.Creatures[0];
 
         var prevActiveScene = SceneManager.GetActiveScene();
         SceneManager.SetActiveScene(scene);
@@ -280,6 +347,7 @@ namespace Keiwando.Evolution.UI {
     }
 
     private void unloadScenes() {
+      sceneLoadingInitiatedForPageIndex = -1;
       for (int i = 0; i < scenes.Length; i++) {
         Scene? scene = scenes[i];
         if (scene.HasValue) {
@@ -290,6 +358,9 @@ namespace Keiwando.Evolution.UI {
       galleryManager.unloadAllGalleryEntries();
       for (int i = 0; i < cameras.Length; i++) {
         this.cameras[i] = null;
+      }
+      for (int i = 0; i < creatures.Length; i++) {
+        this.creatures[i] = null;
       }
       for (int i = 0; i < allObjectsPerScene.Length; i++) {
         if (this.allObjectsPerScene[i] != null) {
@@ -339,6 +410,63 @@ namespace Keiwando.Evolution.UI {
       fullscreenView.gameObject.SetActive(false);
       this.fullscreenSceneIndex = null;
     }
+
+    private void onImportClicked() {
+      // TODO: Implement
+
+      NativeFileSO.shared.OpenFiles(supportedFileTypesForImportAndExport, 
+      delegate (bool filesWereOpened, OpenedFile[] files) {
+        if (filesWereOpened) {
+          tryImport(files);
+        }
+      });
+    }
+
+    private void tryImport(OpenedFile[] files) {
+      // Whether at least one file was successfully imported
+      bool successfulImport = false;
+      // Whether at least one file failed to be imported
+      var failedImport = false;
+      CreatureRecording lastImportedRecording = null;
+      foreach (var file in files) {
+        using (MemoryStream memoryStream = new MemoryStream(file.Data))
+        using (BinaryReader reader = new BinaryReader(memoryStream)) {
+          CreatureRecording recording = CreatureRecordingSerializer.DecodeCreatureRecording(reader);
+          if (recording != null) {
+            CreatureRecordingSerializer.SaveCreatureRecordingFile(recording);
+            lastImportedRecording = recording;
+          } else {
+            failedImport = true;
+            Debug.LogError($"Failed to parse evolutiongallery file: {file.Name}");
+            continue;
+          }
+          successfulImport = true;
+        }
+      }
+      exitFullscreen();
+      unloadScenes();
+      galleryManager.shallowLoadGalleryEntries();
+      Refresh();
+
+      if (successfulImport) {
+        successfulImportIndicator.FadeInOut();
+      }
+      if (failedImport) {
+        failedImportIndicator.FadeInOut(1.8f);
+      }
+    }
+
+    private void onExportClicked() {
+      // TODO: Implement
+    }
+
+    private void onDeleteClicked() {
+      // TODO: Implement
+    }
+
+    private void refreshStatsLabel() {
+      // statsLabel.SetText();
+    }
     
     public void Show() {
         gameObject.SetActive(true);
@@ -362,6 +490,38 @@ namespace Keiwando.Evolution.UI {
         if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this))
             Hide();
     }
+
+
+    #region ISimulationVisibilityOptionsViewDelegate
+
+    public void ShowMuscleContractionDidChange(SimulationVisibilityOptionsView view, bool showMuscleContraction) {
+      Creature creature = getFullscreenPlaybackCreature();
+      if (creature == null) {
+        return;
+      }
+      creature.RefreshMuscleContractionVisibility(Settings.ShowMuscleContraction);
+    }
+
+    public void ShowMusclesDidChange(SimulationVisibilityOptionsView view, bool showMuscles) {
+      // Creature creature = getFullscreenPlaybackCreature();
+      // if (creature == null) {
+      //   return;
+      // }
+      // creature.Refresh
+    }
+
+    public Objective GetCurrentTask(SimulationVisibilityOptionsView view) {
+      if (!this.fullscreenSceneIndex.HasValue) {
+        return Objective.Running;
+      }
+      CreatureRecording recording = getRecordingForSceneIndex(this.fullscreenSceneIndex.Value);
+      if (recording == null) {
+        return Objective.Running;
+      }
+      return recording.task;
+    }
+
+    #endregion
   }
 
 }

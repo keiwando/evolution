@@ -31,8 +31,6 @@ namespace Keiwando.Evolution {
 			NativeFileSOMobile.shared.FilesWereOpened += delegate (OpenedFile[] files) {
 				TryImport(files);
 			};
-
-			
 		}
 
 		public void ShowUI() {

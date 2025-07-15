@@ -220,49 +220,49 @@ public class SimulationViewController : MonoBehaviour,
         Refresh();
 	}
 
-    public void DidChangeAutoplayEnabled(BestCreaturesOverlayView view, bool enabled) {
+  public void DidChangeAutoplayEnabled(BestCreaturesOverlayView view, bool enabled) {
 		bestCreatureController.AutoplayEnabled = enabled;
 	}
 
-    public void DidChangeAutoplayDuration(BestCreaturesOverlayView view, int duration) {
+  public void DidChangeAutoplayDuration(BestCreaturesOverlayView view, int duration) {
 		bestCreatureController.AutoplayDuration = duration;
 	}
 
-    public void DidClickOnPipView(BestCreaturesOverlayView view) {
+  public void DidClickOnPipView(BestCreaturesOverlayView view) {
 		visibleScreen = VisibleScreen.Simulation;
 		Refresh();
 	}
     
-    public bool IsAutoplayEnabled(BestCreaturesOverlayView view) {
+  public bool IsAutoplayEnabled(BestCreaturesOverlayView view) {
 		return bestCreatureController.AutoplayEnabled;
 	}
 
-    public int GetAutoplayDuration(BestCreaturesOverlayView view) {
+  public int GetAutoplayDuration(BestCreaturesOverlayView view) {
 		return bestCreatureController.AutoplayDuration;
 	}
 	
-    public int GetCurrentSimulationGeneration(BestCreaturesOverlayView view) {
+  public int GetCurrentSimulationGeneration(BestCreaturesOverlayView view) {
 		return evolution.CurrentGenerationNumber;
 	}
 
-    public int GetGenerationOfCurrentBest(BestCreaturesOverlayView view) {
+  public int GetGenerationOfCurrentBest(BestCreaturesOverlayView view) {
 		return bestCreatureController.CurrentGeneration;
 	}
 
-    public CreatureStats GetCreatureStatsOfCurrentBest(BestCreaturesOverlayView view) {
+  public CreatureStats GetCreatureStatsOfCurrentBest(BestCreaturesOverlayView view) {
 
-        var generation = bestCreatureController.CurrentGeneration;
-        var info = evolution.SimulationData.BestCreatures[generation - 1];
-        return info.Stats;
-    }
+			var generation = bestCreatureController.CurrentGeneration;
+			var info = evolution.SimulationData.BestCreatures[generation - 1];
+			return info.Stats;
+	}
 
-    public NeuralNetworkSettings GetNetworkSettingsOfCurrentBest(BestCreaturesOverlayView view) {
-        return evolution.NetworkSettings;
-    }
+	public NeuralNetworkSettings GetNetworkSettingsOfCurrentBest(BestCreaturesOverlayView view) {
+			return evolution.NetworkSettings;
+	}
 
-    public int GetNumberOfNetworkInputs(BestCreaturesOverlayView view) {
+	public int GetNumberOfNetworkInputs(BestCreaturesOverlayView view) {
 		return evolution.GetNumberOfCurrentBrainInputs();
-    }
+	}
 
 	public int GetNumberOfNetworkOutputs(BestCreaturesOverlayView view) {
 		var currentBest = bestCreatureController.CurrentBest;
@@ -274,55 +274,20 @@ public class SimulationViewController : MonoBehaviour,
 
 	#region ISimulationVisibilityOptionsViewDelegate 
 
-	public void GridVisibilityDidChange(SimulationVisibilityOptionsView view, float visibility) {
-		if (evolution == null) {
-			return;
-		}
-		if (evolution.SimulationData.Settings.Objective == Objective.Flying) {
-			Settings.FlyingGridVisibility = Mathf.Clamp(visibility, 0.0f, 1.0f);
-		} else {
-			Settings.DefaultGridVisibility = Mathf.Clamp(visibility, 0.0f, 1.0f);
-		}
-	}
-
-	public void HiddenCreatureOpacityDidChange(SimulationVisibilityOptionsView view, float opacity) {
-		
-		Settings.HiddenCreatureOpacity = opacity;
-	}
-
-    public void ShowMuscleContractionDidChange(SimulationVisibilityOptionsView view, bool showMuscleContraction) {
-		Settings.ShowMuscleContraction = showMuscleContraction;
-        cameraFollowController.RefreshVisibleCreatures();
-        
-        bestCreatureController.RefreshMuscleContractionVisibility(Settings.ShowMuscleContraction);
+  public void ShowMuscleContractionDidChange(SimulationVisibilityOptionsView view, bool showMuscleContraction) {
+		cameraFollowController.RefreshVisibleCreatures();
+		bestCreatureController.RefreshMuscleContractionVisibility();
 	}
 	
 	public void ShowMusclesDidChange(SimulationVisibilityOptionsView view, bool showMuscles) {
-		Settings.ShowMuscles = showMuscles;
 		cameraFollowController.RefreshVisibleCreatures();
 	}
 
-	public float GetGridVisibility(SimulationVisibilityOptionsView view) {
+	public Objective GetCurrentTask(SimulationVisibilityOptionsView view) {
 		if (evolution == null) {
-			return 0;
+			return Objective.Running;
 		}
-		if (evolution.SimulationData.Settings.Objective == Objective.Flying) {
-			return Settings.FlyingGridVisibility;
-		} else {
-			return Settings.DefaultGridVisibility;
-		}
-	}
-
-	public float GetHiddenCreatureOpacity(SimulationVisibilityOptionsView view) {
-		return Settings.HiddenCreatureOpacity;
-	}
-
-	public bool ShouldShowMuscles(SimulationVisibilityOptionsView view) {
-		return Settings.ShowMuscles;
- 	}
-
-    public bool ShouldShowMuscleContraction(SimulationVisibilityOptionsView view) {
-		return Settings.ShowMuscleContraction;
+		return evolution.SimulationData.Settings.Objective;
 	}
 
 	#endregion

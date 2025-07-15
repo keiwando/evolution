@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using UnityEngine;
 using Keiwando.Evolution.Scenes;
+using Keiwando.NFSO;
 
 public class CreatureRecordingSerializer {
 
@@ -19,7 +20,7 @@ public class CreatureRecordingSerializer {
   public static void SaveCreatureRecordingFile(CreatureRecording recording) {
 
     string creatureName = recording.creatureDesign.Name;
-		string dateString = System.DateTime.Now.ToString("MMM dd, yyyy");
+		string dateString = recording.date.ToString("MMM dd, yyyy");
 		string filename = string.Format("{0} - {1} - Gen {2}", creatureName, dateString, recording.generation);
 
     SaveCreatureRecordingFile(filename, recording, false);
@@ -110,7 +111,7 @@ public class CreatureRecordingSerializer {
     recording.movementData.Encode(writer);
   }
 
-  private static CreatureRecording DecodeCreatureRecording(BinaryReader reader) {
+  public static CreatureRecording DecodeCreatureRecording(BinaryReader reader) {
 
     try {
       if (
@@ -184,7 +185,7 @@ public class CreatureRecordingSerializer {
     }
   }
 
-  private static DateTime? ReadDateOfCreatureRecordingFile(BinaryReader reader) {
+  public static DateTime? ReadDateOfCreatureRecordingFile(BinaryReader reader) {
 
    try {
       if (

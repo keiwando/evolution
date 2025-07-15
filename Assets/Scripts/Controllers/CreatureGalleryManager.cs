@@ -29,9 +29,6 @@ namespace Keiwando.Evolution {
 
   public class CreatureGalleryManager {
 
-    // DEBUG: Remove when done prototyping
-    public static List<CreatureGalleryEntry> dbg_entries = new List<CreatureGalleryEntry>();
-
     public CreatureGallery gallery = new CreatureGallery();
 
     public void shallowLoadGalleryEntries() {
