@@ -233,7 +233,7 @@ public class CreatureRecordingSerializer {
     return FileUtil.GetFilenamesInDirectory(RESOURCE_PATH, FILE_EXTENSION);
   }
 
-  private static string PathToCreatureRecordingSave(string name) {
+  public static string PathToCreatureRecordingSave(string name) {
     return Path.Combine(RESOURCE_PATH, name + FILE_EXTENSION);
   }
 

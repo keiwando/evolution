@@ -110,10 +110,7 @@ namespace Keiwando.Evolution.UI {
 
       GameObject galleryMoreMenu = importButton.transform.parent.gameObject;
       GameObject fullscreenMoreMenu = exportButton.transform.parent.gameObject;
-
-      galleryMoreMenu.gameObject.SetActive(false);
-      fullscreenMoreMenu.gameObject.SetActive(false);
-
+      
       galleryMoreButton.onClick.AddListener(delegate () {
         galleryMoreMenu.gameObject.SetActive(!galleryMoreMenu.activeSelf);
       });
@@ -138,6 +135,14 @@ namespace Keiwando.Evolution.UI {
 
     void OnDestroy() {  
       releaseRenderResources();
+    }
+
+    void OnEnable() {
+      GameObject galleryMoreMenu = importButton.transform.parent.gameObject;
+      GameObject fullscreenMoreMenu = exportButton.transform.parent.gameObject;
+      
+      galleryMoreMenu.gameObject.SetActive(false);
+      fullscreenMoreMenu.gameObject.SetActive(false);
     }
 
     public void Refresh() {
@@ -173,10 +178,15 @@ namespace Keiwando.Evolution.UI {
       }
     }
 
-    private CreatureGalleryEntry getAndLoadGalleryEntryForSceneIndex(int sceneIndex) {
+    private int getGalleryEntryIndexForSceneIndex(int sceneIndex) {
       int numberOfItemsPerPage = Math.Max(1, grid.ColumnCount * grid.RowCount);
       int firstItemIndexOnPage = currentPageIndex * numberOfItemsPerPage;
-      int galleryEntryIndex = firstItemIndexOnPage + sceneIndex;
+      int galleryEntryIndex = firstItemIndexOnPage + sceneIndex; 
+      return galleryEntryIndex;
+    }
+
+    private CreatureGalleryEntry getAndLoadGalleryEntryForSceneIndex(int sceneIndex) {
+      int galleryEntryIndex = getGalleryEntryIndexForSceneIndex(sceneIndex);
       galleryManager.loadGalleryEntry(galleryEntryIndex);
       return this.galleryManager.gallery.entries[galleryEntryIndex];
     }
@@ -412,8 +422,6 @@ namespace Keiwando.Evolution.UI {
     }
 
     private void onImportClicked() {
-      // TODO: Implement
-
       NativeFileSO.shared.OpenFiles(supportedFileTypesForImportAndExport, 
       delegate (bool filesWereOpened, OpenedFile[] files) {
         if (filesWereOpened) {
@@ -457,7 +465,17 @@ namespace Keiwando.Evolution.UI {
     }
 
     private void onExportClicked() {
-      // TODO: Implement
+      if (!this.fullscreenSceneIndex.HasValue) {
+        return;
+      }
+      int galleryEntryIndex = getGalleryEntryIndexForSceneIndex(this.fullscreenSceneIndex.Value);
+      CreatureGalleryEntry galleryEntry = galleryManager.gallery.entries[galleryEntryIndex];
+      string filePath = CreatureRecordingSerializer.PathToCreatureRecordingSave(galleryEntry.filename);
+      FileToSave fileToSave = new FileToSave(
+        srcPath: filePath,
+        fileType: CustomEvolutionFileType.evolutiongallery
+      );
+      NativeFileSO.shared.SaveFile(fileToSave);
     }
 
     private void onDeleteClicked() {

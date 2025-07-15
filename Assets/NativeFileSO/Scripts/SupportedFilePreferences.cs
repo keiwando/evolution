@@ -29,7 +29,8 @@ namespace Keiwando.NFSO {
 			//SupportedFileType.JPEG,
 			SupportedFileType.PlainText,
 			CustomEvolutionFileType.creat,
-			CustomEvolutionFileType.evol
+			CustomEvolutionFileType.evol,
+			CustomEvolutionFileType.evolutiongallery
 			//SupportedFileType.Any
 		};
 	}
