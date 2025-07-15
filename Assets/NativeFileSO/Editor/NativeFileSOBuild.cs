@@ -12,9 +12,11 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 using Keiwando.NFSO;
 
-public class NativeFileSOBuild {
+public class NativeFileSOBuild: IPostprocessBuildWithReport {
 
 	public int callbackOrder { get { return 0; } }
 
@@ -23,6 +25,15 @@ public class NativeFileSOBuild {
 											 string pathToProject) {
 		if (target == BuildTarget.iOS) {
 			PostProcessIOS(pathToProject);
+		}
+	}
+
+	public void OnPostprocessBuild(BuildReport report) {
+		if (report.summary.platform == BuildTarget.StandaloneOSX) {
+			PostProcessMacOS(report.summary.outputPath);
+			#if UNITY_STANDALONE_OSX
+			UnityEditor.OSXStandalone.MacOSCodeSigning.CodeSignAppBundle(report.summary.outputPath);
+			#endif			
 		}
 	}
 
@@ -57,8 +68,14 @@ public class NativeFileSOBuild {
 		rootDict.SetBoolean("UISupportsDocumentBrowser", false);
 		rootDict.SetBoolean("LSSupportsOpeningDocumentsInPlace", false);
 
-		var documentTypesArray = rootDict.CreateArray("CFBundleDocumentTypes");
+		AddSupportedFileTypesToInfoPlist(plist);
 
+		plist.WriteToFile(plistPath);
+	}
+
+	private static void AddSupportedFileTypesToInfoPlist(PlistDocument plist) {
+		var rootDict = plist.root;
+		var documentTypesArray = rootDict.CreateArray("CFBundleDocumentTypes");
 		var exportedTypesArray = rootDict.CreateArray("UTExportedTypeDeclarations");
 
 		foreach (var supportedType in SupportedFilePreferences.supportedFileTypes) {
@@ -97,7 +114,13 @@ public class NativeFileSOBuild {
 				tagSpecificationDict.SetString("public.mime-type", supportedType.MimeType);
 			}
 		}
+	}
 
+	private static void PostProcessMacOS(string path) {
+		var plistPath = path + "/Contents/Info.plist";
+		var plist = new PlistDocument();
+		plist.ReadFromFile(plistPath);
+		AddSupportedFileTypesToInfoPlist(plist);
 		plist.WriteToFile(plistPath);
 	}
 
