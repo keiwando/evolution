@@ -118,6 +118,46 @@ public class BestCreaturesOverlayView: MonoBehaviour {
         autoplayDurationLabel.text = string.Format("Duration {0}s", Delegate.GetAutoplayDuration(this));
     }
 
+    public static string CreateStatsString(
+        StringBuilder stringBuilder,
+        CreatureStats stats,
+        NeuralNetworkSettings networkStats,
+        int numberOfInputs,
+        int numberOfOutputs
+    ) {
+        // Divide the lengths by 5 because of gravity scaling
+
+        stringBuilder.AppendLine("Simulation Time:  " + stats.simulationTime + "s");
+        stringBuilder.AppendLine("Average Speed:  " + (stats.averageSpeed / 5).ToString("0.00") + " m/s");
+        stringBuilder.AppendLine("Horiz. distance from start:  " + (stats.horizontalDistanceTravelled / 5).ToString("0.0") + "m");
+        stringBuilder.AppendLine("Vert. distance from start:  " + (stats.verticalDistanceTravelled / 5).ToString("0.0") + "m");
+        stringBuilder.AppendLine("Maximum jumping height:  " + (stats.maxJumpingHeight / 5).ToString("0.0") + "m");
+        stringBuilder.AppendLine("Number of bones:  " + stats.numberOfBones);
+        stringBuilder.AppendLine("Number of muscles:  " + stats.numberOfMuscles);
+        stringBuilder.AppendLine("Weight:  " + stats.weight + "kg");
+
+        // Add the neural network stats:
+        stringBuilder.AppendLine();
+        stringBuilder.AppendLine("Neural Net: " + (networkStats.NumberOfIntermediateLayers + 2) + " layers");
+
+        int numberOfNodes = numberOfInputs + stats.numberOfMuscles;
+        stringBuilder.Append(numberOfNodes);
+        stringBuilder.Append(" nodes (");
+
+        stringBuilder.Append(numberOfInputs);
+        stringBuilder.Append(" + ");
+        foreach (var layerNodeCount in networkStats.NodesPerIntermediateLayer) {
+            numberOfNodes += layerNodeCount;
+            stringBuilder.Append(layerNodeCount);
+            stringBuilder.Append(" + ");
+        }
+        stringBuilder.Append(numberOfOutputs.ToString());
+
+        stringBuilder.Append(")");
+
+        return stringBuilder.ToString();
+    }
+
     private void RefreshStats() {
 
         var stats = Delegate.GetCreatureStatsOfCurrentBest(this);
@@ -131,46 +171,15 @@ public class BestCreaturesOverlayView: MonoBehaviour {
             return;
         }
 
-        // There are more creature stats known
         var stringBuilder = new StringBuilder();
-
-        // Divide the lengths by 5 because of gravity scaling
-
-        stringBuilder.AppendLine("Simulation Time:  " + stats.simulationTime + "s");
-        stringBuilder.AppendLine("Average Speed:  " + (stats.averageSpeed / 5).ToString("0.00") + " m/s");
-        stringBuilder.AppendLine("Horiz. distance from start:  " + (stats.horizontalDistanceTravelled / 5).ToString("0.0") + "m");
-        stringBuilder.AppendLine("Vert. distance from start:  " + (stats.verticalDistanceTravelled / 5).ToString("0.0") + "m");
-        stringBuilder.AppendLine("Maximum jumping height:  " + (stats.maxJumpingHeight / 5).ToString("0.0") + "m");
-        stringBuilder.AppendLine("Number of bones:  " + stats.numberOfBones);
-        stringBuilder.AppendLine("Number of muscles:  " + stats.numberOfMuscles);
-        stringBuilder.AppendLine("Weight:  " + stats.weight + "kg");
-
-        // Add the neural network stats:
         var networkStats = Delegate.GetNetworkSettingsOfCurrentBest(this);
-
-        stringBuilder.AppendLine();
-        stringBuilder.AppendLine("Neural Net: " + (networkStats.NumberOfIntermediateLayers + 2) + " layers");
-
         var numberOfInputs = Delegate.GetNumberOfNetworkInputs(this);
         var numberOfOutputs = Delegate.GetNumberOfNetworkOutputs(this);
-        int numberOfNodes = numberOfInputs + stats.numberOfMuscles;
-        var layersStringBuilder = new StringBuilder();
-        layersStringBuilder.Append(numberOfInputs);
-        layersStringBuilder.Append(" + ");
-        foreach (var layerNodeCount in networkStats.NodesPerIntermediateLayer) {
-            numberOfNodes += layerNodeCount;
-            layersStringBuilder.Append(layerNodeCount);
-            layersStringBuilder.Append(" + ");
-        }
-        layersStringBuilder.Append(numberOfOutputs.ToString());
 
-        stringBuilder.Append(numberOfNodes);
-        stringBuilder.Append(" nodes (");
-        stringBuilder.Append(layersStringBuilder.ToString());
-        stringBuilder.Append(")");
+        string text = BestCreaturesOverlayView.CreateStatsString(stringBuilder, stats, networkStats, numberOfInputs, numberOfOutputs);
 
         // Display the stats
-        statsLabel.text = stringBuilder.ToString();
+        statsLabel.text = text;
     }
 
     private void RefreshPipGenerationLabel() {

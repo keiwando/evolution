@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -33,6 +34,7 @@ namespace Keiwando.Evolution.UI {
     [SerializeField] private Button importButton;
 		[SerializeField] private UIFade successfulImportIndicator;
 		[SerializeField] private UIFade failedImportIndicator;
+    private TMP_Text showStatsButtonLabel;
 
     // TODO: Don't show the Hidden Creature Opacity slider in the gallery 
 
@@ -102,9 +104,11 @@ namespace Keiwando.Evolution.UI {
 
       visibilityOptionsView.Delegate = this;
 
+      showStatsButtonLabel = showStatsButton.GetComponentInChildren<TMP_Text>();
       showStatsButton.onClick.AddListener(delegate () {
         refreshStatsLabel();
         statsLabel.gameObject.SetActive(!statsLabel.gameObject.activeSelf);
+        showStatsButtonLabel.text = statsLabel.gameObject.activeSelf ? "Hide Stats" : "Show Stats";
       });
       statsLabel.gameObject.SetActive(false);
 
@@ -115,7 +119,7 @@ namespace Keiwando.Evolution.UI {
         galleryMoreMenu.gameObject.SetActive(!galleryMoreMenu.activeSelf);
       });
       fullscreenMoreButton.onClick.AddListener(delegate () {
-        fullscreenMoreMenu.gameObject.SetActive(!galleryMoreMenu.activeSelf);
+        fullscreenMoreMenu.gameObject.SetActive(!fullscreenMoreMenu.activeSelf);
       });
 
       importButton.onClick.AddListener(delegate () {
@@ -483,7 +487,24 @@ namespace Keiwando.Evolution.UI {
     }
 
     private void refreshStatsLabel() {
-      // statsLabel.SetText();
+      if (!this.fullscreenSceneIndex.HasValue) {
+        return;
+      }
+      CreatureRecording recording = getRecordingForSceneIndex(this.fullscreenSceneIndex.Value);
+
+      StringBuilder stringBuilder = new StringBuilder();
+      stringBuilder.AppendLine(recording.creatureDesign.Name);
+      stringBuilder.AppendLine($"Generation: {recording.generation}");
+      stringBuilder.AppendLine($"Task: {ObjectiveUtil.StringRepresentation(recording.task)}\n");
+
+      string statsLabelText = BestCreaturesOverlayView.CreateStatsString(
+        stringBuilder,
+        recording.stats,
+        recording.networkSettings,
+        recording.networkInputCount,
+        recording.networkOutputCount
+      );
+      statsLabel.SetText(stringBuilder.ToString());
     }
     
     public void Show() {
