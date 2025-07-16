@@ -70,6 +70,13 @@ public class CreatureRecordingSerializer {
     }
   }
 
+  public static void DeleteCreatureRecording(string name) {
+    var path = CreatureRecordingSerializer.PathToCreatureRecordingSave(name);
+    if (File.Exists(path)) {
+      File.Delete(path);
+    }
+  }
+
   private static void WriteCreatureRecording(CreatureRecording recording, BinaryWriter writer) {
 
     // ### Header ###

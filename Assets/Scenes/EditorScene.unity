@@ -25470,6 +25470,7 @@ MonoBehaviour:
   failedImportIndicator: {fileID: 132679748}
   fullscreenPrevButton: {fileID: 1541223433}
   fullscreenNextButton: {fileID: 1101560311}
+  deleteConfirmation: {fileID: 114944712193497983}
 --- !u!1 &1396849619
 GameObject:
   m_ObjectHideFlags: 0

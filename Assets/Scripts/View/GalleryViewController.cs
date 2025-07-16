@@ -36,6 +36,7 @@ namespace Keiwando.Evolution.UI {
 		[SerializeField] private UIFade failedImportIndicator;
     [SerializeField] private Button fullscreenPrevButton;
     [SerializeField] private Button fullscreenNextButton;
+    [SerializeField] private DeleteConfirmationDialog deleteConfirmation;
     
     private TMP_Text showStatsButtonLabel;
 
@@ -515,7 +516,19 @@ namespace Keiwando.Evolution.UI {
     }
 
     private void onDeleteClicked() {
-      // TODO: Implement
+      if (!this.fullscreenSceneIndex.HasValue) {
+        return;
+      }
+      int galleryEntryIndex = getGalleryEntryIndexForSceneIndex(this.fullscreenSceneIndex.Value);
+      CreatureGalleryEntry galleryEntry = galleryManager.gallery.entries[galleryEntryIndex];
+
+      deleteConfirmation.ConfirmDeletionFor(galleryEntry.filename, delegate(string name) {
+        exitFullscreen();
+        CreatureRecordingSerializer.DeleteCreatureRecording(galleryEntry.filename);
+        unloadScenes();
+        galleryManager.shallowLoadGalleryEntries();
+        Refresh();
+      });
     }
 
     private void refreshStatsLabel() {
