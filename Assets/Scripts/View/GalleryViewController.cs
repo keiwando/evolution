@@ -39,8 +39,6 @@ namespace Keiwando.Evolution.UI {
     
     private TMP_Text showStatsButtonLabel;
 
-    // TODO: Don't show the Hidden Creature Opacity slider in the gallery 
-
     private GalleryGridCell[] cells;
     private RenderTexture[] renderTextures;
     private Scene?[] scenes;

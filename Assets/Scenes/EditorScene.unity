@@ -23444,7 +23444,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13.7
+  m_fontSize: 13.5
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -30280,7 +30280,7 @@ PrefabInstance:
     - target: {fileID: 1677660519532020241, guid: 646e5234a023449c99a1e3c1aa61daf5,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 39.5
       objectReference: {fileID: 0}
     - target: {fileID: 1677660519532020241, guid: 646e5234a023449c99a1e3c1aa61daf5,
         type: 3}
@@ -30316,6 +30316,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Visibility Options Container
+      objectReference: {fileID: 0}
+    - target: {fileID: 8579697042088959668, guid: 646e5234a023449c99a1e3c1aa61daf5,
+        type: 3}
+      propertyPath: slideMultiplier
+      value: 0.78
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
