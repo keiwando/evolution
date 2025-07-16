@@ -125,12 +125,15 @@ namespace Keiwando.Evolution.UI {
       });
 
       importButton.onClick.AddListener(delegate () {
+        galleryMoreMenu.gameObject.SetActive(false);
         onImportClicked();
       });
       exportButton.onClick.AddListener(delegate () {
+        fullscreenMoreMenu.gameObject.SetActive(false);
         onExportClicked();
       });
       deleteButton.onClick.AddListener(delegate () {
+        fullscreenMoreMenu.gameObject.SetActive(false);
         onDeleteClicked();
       });
 
