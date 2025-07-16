@@ -34,6 +34,9 @@ namespace Keiwando.Evolution.UI {
     [SerializeField] private Button importButton;
 		[SerializeField] private UIFade successfulImportIndicator;
 		[SerializeField] private UIFade failedImportIndicator;
+    [SerializeField] private Button fullscreenPrevButton;
+    [SerializeField] private Button fullscreenNextButton;
+    
     private TMP_Text showStatsButtonLabel;
 
     // TODO: Don't show the Hidden Creature Opacity slider in the gallery 
@@ -101,13 +104,13 @@ namespace Keiwando.Evolution.UI {
       fullscreenCloseButton.onClick.AddListener(delegate () {
           exitFullscreen();
       });
-
+      
       visibilityOptionsView.Delegate = this;
 
       showStatsButtonLabel = showStatsButton.GetComponentInChildren<TMP_Text>();
       showStatsButton.onClick.AddListener(delegate () {
-        refreshStatsLabel();
         statsLabel.gameObject.SetActive(!statsLabel.gameObject.activeSelf);
+        refreshStatsLabel();
         showStatsButtonLabel.text = statsLabel.gameObject.activeSelf ? "Hide Stats" : "Show Stats";
       });
       statsLabel.gameObject.SetActive(false);
@@ -130,6 +133,29 @@ namespace Keiwando.Evolution.UI {
       });
       deleteButton.onClick.AddListener(delegate () {
         onDeleteClicked();
+      });
+
+      prevPageButton.onClick.AddListener(delegate () {
+        this.currentPageIndex -= 1;
+        Refresh();
+      });
+      nextPageButton.onClick.AddListener(delegate () {
+        this.currentPageIndex += 1;
+        Refresh();
+      });
+      fullscreenPrevButton.onClick.AddListener(delegate () {
+        if (!this.fullscreenSceneIndex.HasValue) { return; }
+        if (this.fullscreenSceneIndex.Value <= 0) { return; }
+        int newFullscreenSceneIndex = this.fullscreenSceneIndex.Value - 1;
+        exitFullscreen();
+        enterFullscreen(newFullscreenSceneIndex);
+      });
+      fullscreenNextButton.onClick.AddListener(delegate () {
+        if (!this.fullscreenSceneIndex.HasValue) { return; }
+        if (this.fullscreenSceneIndex.Value >= this.scenes.Length - 1) { return; }
+        int newFullscreenSceneIndex = this.fullscreenSceneIndex.Value + 1;
+        exitFullscreen();
+        enterFullscreen(newFullscreenSceneIndex);
       });
 
       initialized = true;
@@ -170,6 +196,11 @@ namespace Keiwando.Evolution.UI {
 
       prevPageButton.interactable = currentPageIndex > 0;
       nextPageButton.interactable = currentPageIndex < totalNumberOfPages - 1;
+
+      if (this.fullscreenSceneIndex.HasValue) {
+        this.fullscreenPrevButton.interactable = this.fullscreenSceneIndex.Value > 0;
+        this.fullscreenNextButton.interactable = this.fullscreenSceneIndex.Value < numberOfItemsOnCurrentPage - 1;
+      }
 
       bool needsSceneLoading = sceneLoadingInitiatedForPageIndex != currentPageIndex;
       if (needsSceneLoading) {
@@ -408,6 +439,9 @@ namespace Keiwando.Evolution.UI {
       fullscreenView.gameObject.SetActive(true);
 
       this.fullscreenSceneIndex = sceneIndex;
+
+      refreshStatsLabel();
+      Refresh();
     }
 
     private void exitFullscreen() {
@@ -490,6 +524,10 @@ namespace Keiwando.Evolution.UI {
       if (!this.fullscreenSceneIndex.HasValue) {
         return;
       }
+      if (!this.showStatsButtonLabel.gameObject.activeSelf) {
+        return;
+      }
+
       CreatureRecording recording = getRecordingForSceneIndex(this.fullscreenSceneIndex.Value);
 
       StringBuilder stringBuilder = new StringBuilder();
