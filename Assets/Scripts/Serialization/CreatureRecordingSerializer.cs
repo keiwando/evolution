@@ -17,7 +17,7 @@ public class CreatureRecordingSerializer {
   public static string RESOURCE_PATH = Path.Combine(Application.persistentDataPath, SAVE_FOLDER);
   private const ushort LATEST_SERIALIZATION_VERSION = 1;
 
-  public static void SaveCreatureRecordingFile(CreatureRecording recording) {
+  public static string SaveCreatureRecordingFile(CreatureRecording recording) {
 
     string creatureName = recording.creatureDesign.Name;
 		string dateString = recording.date.ToString("MMM dd, yyyy");
@@ -25,6 +25,7 @@ public class CreatureRecordingSerializer {
 
     SaveCreatureRecordingFile(filename, recording, false);
  
+    return filename;
   }
 
   public static void SaveCreatureRecordingFile(string name, CreatureRecording recording, bool overwrite = false) {

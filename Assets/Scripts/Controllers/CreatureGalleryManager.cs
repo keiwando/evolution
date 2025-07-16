@@ -96,9 +96,5 @@ namespace Keiwando.Evolution {
         }
       }
     }
-
-    public void deleteGalleryEntry(CreatureGalleryEntry entry) {
-      var path = CreatureRecordingSerializer.PathToCreatureRecordingSave(entry.filename);
-    }
   }
 }

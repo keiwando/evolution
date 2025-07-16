@@ -23,6 +23,7 @@ namespace Keiwando.Evolution.UI {
     [SerializeField] private Button fullscreenCloseButton;
     [SerializeField] private Button prevPageButton;
     [SerializeField] private Button nextPageButton;
+    [SerializeField] private TMP_Text pageNumberLabel;
     [SerializeField] private Button closeButton;
     [SerializeField] private SimulationVisibilityOptionsView visibilityOptionsView;
     [SerializeField] private Button showStatsButton;
@@ -37,6 +38,7 @@ namespace Keiwando.Evolution.UI {
     [SerializeField] private Button fullscreenPrevButton;
     [SerializeField] private Button fullscreenNextButton;
     [SerializeField] private DeleteConfirmationDialog deleteConfirmation;
+    [SerializeField] private GameObject emptyGalleryInstructions;
     
     private TMP_Text showStatsButtonLabel;
 
@@ -203,6 +205,9 @@ namespace Keiwando.Evolution.UI {
         this.fullscreenPrevButton.interactable = this.fullscreenSceneIndex.Value > 0;
         this.fullscreenNextButton.interactable = this.fullscreenSceneIndex.Value < numberOfItemsOnCurrentPage - 1;
       }
+
+      emptyGalleryInstructions.gameObject.SetActive(totalItemCount == 0);
+      pageNumberLabel.SetText("Page {0}/{1}", currentPageIndex + 1, totalNumberOfPages);
 
       bool needsSceneLoading = sceneLoadingInitiatedForPageIndex != currentPageIndex;
       if (needsSceneLoading) {
@@ -475,14 +480,13 @@ namespace Keiwando.Evolution.UI {
       bool successfulImport = false;
       // Whether at least one file failed to be imported
       var failedImport = false;
-      CreatureRecording lastImportedRecording = null;
+      string lastImportedRecordingFilename = null;
       foreach (var file in files) {
         using (MemoryStream memoryStream = new MemoryStream(file.Data))
         using (BinaryReader reader = new BinaryReader(memoryStream)) {
           CreatureRecording recording = CreatureRecordingSerializer.DecodeCreatureRecording(reader);
           if (recording != null) {
-            CreatureRecordingSerializer.SaveCreatureRecordingFile(recording);
-            lastImportedRecording = recording;
+            lastImportedRecordingFilename = CreatureRecordingSerializer.SaveCreatureRecordingFile(recording);
           } else {
             failedImport = true;
             Debug.LogError($"Failed to parse evolutiongallery file: {file.Name}");
@@ -494,6 +498,19 @@ namespace Keiwando.Evolution.UI {
       exitFullscreen();
       unloadScenes();
       galleryManager.shallowLoadGalleryEntries();
+
+      if (lastImportedRecordingFilename != null) {
+        int pageNumberOfLastImportedRecording = 0;
+        for (int galleryIndex = 0; galleryIndex < galleryManager.gallery.entries.Count; galleryIndex++) {
+          if (galleryManager.gallery.entries[galleryIndex].filename == lastImportedRecordingFilename) {
+            int cellsPerPage = grid.ColumnCount * grid.RowCount;
+            pageNumberOfLastImportedRecording = galleryIndex / cellsPerPage;
+            break;
+          }
+        }
+        currentPageIndex = pageNumberOfLastImportedRecording;
+      }
+
       Refresh();
 
       if (successfulImport) {
