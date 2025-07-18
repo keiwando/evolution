@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Keiwando.Evolution {
 
-  // TODO: Fix open multi-page gallery, go to second page, enter fullscreen, use arrows to go to different scene -> error about destroyed camera.
   public class GalleryPlaybackController : MonoBehaviour {
 
     public CreatureRecordingPlayer recordingPlayer;
