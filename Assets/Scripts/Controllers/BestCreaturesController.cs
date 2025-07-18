@@ -113,15 +113,7 @@ namespace Keiwando.Evolution {
 			var chromosome = evolution.SimulationData.BestCreatures[generation - 1].Chromosome;
 			this.CurrentBest = context.Creatures[0];
 
-			// DEBUG:
-			if (evolution.SimulationData.BestCreatureRecording != null) {
-				this.CurrentBest.recordingPlayer = new CreatureRecordingPlayer(
-					recording: evolution.SimulationData.BestCreatureRecording.movementData
-				);
-				this.CurrentBest.recordingPlayer.beginPlayback();
-			} else {
-				this.CurrentBest.recordingPlayer = null;
-			}
+			this.CurrentBest.recordingPlayer = null;
 			evolution.ApplyBrain(this.CurrentBest, chromosome);
 
 			trackedCamera.Target = this.CurrentBest;

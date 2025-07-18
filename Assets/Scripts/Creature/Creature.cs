@@ -104,6 +104,9 @@ namespace Keiwando.Evolution {
 						foreach (Bone bone in bones) {
 							bone.RefreshBonePlacement();
 						}
+						foreach (Muscle muscle in muscles) {
+							muscle.UpdateLinePoints();
+						}
 				}
 			}
 			//currentLowest = GetLowestPoint();

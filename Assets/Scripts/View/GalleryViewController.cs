@@ -150,6 +150,7 @@ namespace Keiwando.Evolution.UI {
       fullscreenPrevButton.onClick.AddListener(delegate () {
         if (!this.fullscreenSceneIndex.HasValue) { return; }
         if (this.fullscreenSceneIndex.Value <= 0) { return; }
+        // TODO: Allow for automatic page switching here
         int newFullscreenSceneIndex = this.fullscreenSceneIndex.Value - 1;
         exitFullscreen();
         enterFullscreen(newFullscreenSceneIndex);
@@ -157,6 +158,7 @@ namespace Keiwando.Evolution.UI {
       fullscreenNextButton.onClick.AddListener(delegate () {
         if (!this.fullscreenSceneIndex.HasValue) { return; }
         if (this.fullscreenSceneIndex.Value >= this.scenes.Length - 1) { return; }
+        // TODO: Allow for automatic page switching here
         int newFullscreenSceneIndex = this.fullscreenSceneIndex.Value + 1;
         exitFullscreen();
         enterFullscreen(newFullscreenSceneIndex);
@@ -182,7 +184,7 @@ namespace Keiwando.Evolution.UI {
     public void Refresh() {
       if (!initialized) { return; }
       
-      int numberOfItemsPerPage = Math.Max(1, grid.ColumnCount * grid.RowCount);
+      int numberOfItemsPerPage = Math.Max(1, this.cells.Length);
       int totalItemCount = galleryManager.gallery.entries.Count;
       int totalNumberOfPages = Math.Max(1, (totalItemCount + numberOfItemsPerPage - 1) / numberOfItemsPerPage);
       currentPageIndex = Math.Clamp(currentPageIndex, 0, totalNumberOfPages - 1);
@@ -221,7 +223,7 @@ namespace Keiwando.Evolution.UI {
     }
 
     private int getGalleryEntryIndexForSceneIndex(int sceneIndex) {
-      int numberOfItemsPerPage = Math.Max(1, grid.ColumnCount * grid.RowCount);
+      int numberOfItemsPerPage = Math.Max(1, this.cells.Length);
       int firstItemIndexOnPage = currentPageIndex * numberOfItemsPerPage;
       int galleryEntryIndex = firstItemIndexOnPage + sceneIndex; 
       return galleryEntryIndex;
@@ -503,7 +505,7 @@ namespace Keiwando.Evolution.UI {
         int pageNumberOfLastImportedRecording = 0;
         for (int galleryIndex = 0; galleryIndex < galleryManager.gallery.entries.Count; galleryIndex++) {
           if (galleryManager.gallery.entries[galleryIndex].filename == lastImportedRecordingFilename) {
-            int cellsPerPage = grid.ColumnCount * grid.RowCount;
+            int cellsPerPage = this.cells.Length;
             pageNumberOfLastImportedRecording = galleryIndex / cellsPerPage;
             break;
           }

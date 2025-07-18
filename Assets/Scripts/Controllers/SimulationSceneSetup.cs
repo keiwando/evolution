@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Keiwando.Evolution.Scenes;
 
 namespace Keiwando.Evolution {
@@ -28,13 +29,16 @@ namespace Keiwando.Evolution {
 
     public class SimulationSceneSetup: MonoBehaviour {
 
-        public void BuildScene(SimulationSceneDescription scene, ISceneContext context) {
-            SimulationSceneBuilder.Build(scene, context);
-            SetupPhysics(scene.PhysicsConfiguration);
-
+        public void BuildScene(Scene scene, SimulationSceneDescription sceneDescription, ISceneContext context) {
+            SimulationSceneBuilder.Build(sceneDescription, context);
+            SetupPhysics(sceneDescription.PhysicsConfiguration);
+            
             var trackedCameras = FindObjectsByType<TrackedCamera>(FindObjectsSortMode.None);
             foreach (var trackedCamera in trackedCameras) {
-                trackedCamera.ControlPoints = scene.CameraControlPoints;
+                if (trackedCamera.gameObject.scene != scene) {
+                    continue;
+                }
+                trackedCamera.ControlPoints = sceneDescription.CameraControlPoints;
             }
         }
 

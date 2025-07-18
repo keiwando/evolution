@@ -272,6 +272,7 @@ MonoBehaviour:
   RenderTexture: {fileID: 0}
   Target: {fileID: 0}
   allowVerticalFollow: 1
+  autoUpdateFollowPosition: 0
 --- !u!124 &1467419412
 Behaviour:
   m_ObjectHideFlags: 0

@@ -71,7 +71,7 @@ namespace Keiwando.Evolution {
             }
 
             // Create the structures
-            sceneSetup.BuildScene(sceneDescription, sceneContext);
+            sceneSetup.BuildScene(scene, sceneDescription, sceneContext);
 
             SceneManager.SetActiveScene(prevActiveScene);
             yield return new WaitForFixedUpdate();
