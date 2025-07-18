@@ -25530,6 +25530,7 @@ MonoBehaviour:
   fullscreenNextButton: {fileID: 1101560311}
   deleteConfirmation: {fileID: 114944712193497983}
   emptyGalleryInstructions: {fileID: 1502011771}
+  editorCamera: {fileID: 1798671387}
 --- !u!1 &1396849619
 GameObject:
   m_ObjectHideFlags: 0
@@ -32811,6 +32812,7 @@ MonoBehaviour:
   zoomAnchor: {x: 0.5, y: 0.5}
   zoomInLength: 7
   zoomOutLength: 10
+  InteractiveZoomEnabled: 1
   bottomMovementPadding: 10
   topMovementPadding: 10
   leftMovementPadding: 18

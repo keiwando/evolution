@@ -39,6 +39,7 @@ namespace Keiwando.Evolution.UI {
     [SerializeField] private Button fullscreenNextButton;
     [SerializeField] private DeleteConfirmationDialog deleteConfirmation;
     [SerializeField] private GameObject emptyGalleryInstructions;
+    [SerializeField] private BoundedCamera editorCamera;
     
     private TMP_Text showStatsButtonLabel;
 
@@ -149,6 +150,8 @@ namespace Keiwando.Evolution.UI {
       });
       fullscreenPrevButton.onClick.AddListener(delegate () {
         if (!this.fullscreenSceneIndex.HasValue) { return; }
+        int galleryEntryIndex = getGalleryEntryIndexForSceneIndex(this.fullscreenSceneIndex.Value);
+        if (galleryEntryIndex <= 1)
         if (this.fullscreenSceneIndex.Value <= 0) { return; }
         // TODO: Allow for automatic page switching here
         int newFullscreenSceneIndex = this.fullscreenSceneIndex.Value - 1;
@@ -577,30 +580,6 @@ namespace Keiwando.Evolution.UI {
       );
       statsLabel.SetText(stringBuilder.ToString());
     }
-    
-    public void Show() {
-        gameObject.SetActive(true);
-        InputRegistry.shared.Register(InputType.AndroidBack, this);
-        GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture += OnAndroidBack;
-        
-        galleryManager.shallowLoadGalleryEntries();
-        Refresh();
-    }
-
-    public void Hide() {
-        InputRegistry.shared.Deregister(this);
-        GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture -= OnAndroidBack;
-        gameObject.SetActive(false);
-
-        releaseRenderResources();
-        sceneLoadingInitiatedForPageIndex = -1;
-    }
-
-    private void OnAndroidBack(AndroidBackButtonGestureRecognizer rec) {
-        if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this))
-            Hide();
-    }
-
 
     #region ISimulationVisibilityOptionsViewDelegate
 
@@ -632,6 +611,33 @@ namespace Keiwando.Evolution.UI {
     }
 
     #endregion
+
+    public void Show() {
+        gameObject.SetActive(true);
+        InputRegistry.shared.Register(InputType.AndroidBack, this);
+        GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture += OnAndroidBack;
+
+        editorCamera.InteractiveZoomEnabled = false;
+        
+        galleryManager.shallowLoadGalleryEntries();
+        Refresh();
+    }
+
+    public void Hide() {
+        InputRegistry.shared.Deregister(this);
+        GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture -= OnAndroidBack;
+        gameObject.SetActive(false);
+
+        editorCamera.InteractiveZoomEnabled = true;
+
+        releaseRenderResources();
+        sceneLoadingInitiatedForPageIndex = -1;
+    }
+
+    private void OnAndroidBack(AndroidBackButtonGestureRecognizer rec) {
+        if (InputRegistry.shared.MayHandle(InputType.AndroidBack, this))
+            Hide();
+    }
   }
 
 }

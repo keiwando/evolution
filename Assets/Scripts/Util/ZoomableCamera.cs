@@ -39,6 +39,8 @@ namespace Keiwando.Evolution {
     /// </summary>
     protected float minZoom;
 
+    public bool InteractiveZoomEnabled = true;
+
     private Camera _camera;
 
     internal virtual void Start(Camera camera) {
@@ -64,26 +66,16 @@ namespace Keiwando.Evolution {
     }
 
     private void OnScrollGesture(ScrollGestureRecognizer recognizer) {
-      if (InputRegistry.shared.MayHandle(InputType.Scroll, this)) {
-        ZoomCameraFromScroll(recognizer.ScrollDelta.y);
+      if (InputRegistry.shared.MayHandle(InputType.Scroll, this) && InteractiveZoomEnabled) {
+        SetZoom(_camera.orthographicSize - recognizer.ScrollDelta.y);
       }  
     }
 
     private void OnPinchGesture(PinchGestureRecognizer recognizer) {
-      if (InputRegistry.shared.MayHandle(InputType.Touch, this)) {
-        ZoomCameraFromPinch(recognizer.ScaleDelta);
+      if (InputRegistry.shared.MayHandle(InputType.Touch, this) && InteractiveZoomEnabled) {
+        SetZoom(_camera.orthographicSize / Math.Max(0.0000001f, recognizer.ScaleDelta));
         OnPinch(recognizer);
       }
-    }
-
-    private void ZoomCameraFromScroll(float delta) {
-
-      SetZoom(_camera.orthographicSize - delta);
-    }
-
-    private void ZoomCameraFromPinch(float percent) {
-
-      SetZoom(_camera.orthographicSize / Math.Max(0.0000001f, percent));
     }
 
     private void SetZoom(float newZoom) {
