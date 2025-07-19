@@ -33,6 +33,7 @@ public class StepSpawner : MonoBehaviour {
 		for (int i = 0; i < numberOfSteps; i++) {
 			
 			spawnPosition += spawnDistance;
+			// TODO: Try to create a single combined mesh instead of a bunch of separate objects
 			Instantiate(step, spawnPosition, step.transform.rotation);
 		}
 	}

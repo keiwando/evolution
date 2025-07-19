@@ -45,22 +45,41 @@ namespace Keiwando.Evolution.UI {
 
     private GalleryGridCell[] cells;
     private RenderTexture[] renderTextures;
-    private Scene?[] scenes;
-    private Camera[] cameras;
-    private Creature[] creatures;
+    private int fullscreenRenderTextureIndex => renderTextures.Length - 1;
+
     struct PerObjectData {
       public int layer;
       public GameObject gameObject;
     }
-    // Note: This only contains objects that were active at the time the scene finished loading.
-    private List<PerObjectData>[] allObjectsPerScene;
+    struct LoadedSceneData {
+      public Scene scene;
+      public Camera camera;
+      public Creature creature;
+      public List<PerObjectData> allObjects;
+    }
+    private LoadedSceneData?[] loadedScenes;
+    /// The unordered set of all scene indices that are requested
+    /// to be loaded.
+    private HashSet<int> neededSceneIndices = new HashSet<int>();
+    /// The ordered list of scenes that get requested to get loaded. This list
+    /// may contain duplicates and it may contain scene indices that are
+    /// already loaded.
+    private List<int> sceneLoadRequests = new List<int>();
+    /// The index of the scene that is currently being loaded. Only one scene can be
+    /// in the loading process at a time.
+    private int? currentlyLoadingSceneIndex;
+    private Coroutine sceneLoadingCoroutine;
 
+    /// The current page index in the gallery view. This is irrelevant when in fullscreen.
     private int currentPageIndex = 0;
     private int numberOfItemsOnCurrentPage = 0;
-    private int sceneLoadingInitiatedForPageIndex = -1;
-    private int fullscreenRenderTextureIndex = -1;
+    
+    // TODO: Have this store the global scene index, not the cell index.
+    /// The absolute scene index that is currently visible in fullscreen mode.
     private int? fullscreenSceneIndex = null;
-    private Coroutine sceneLoadingCoroutine;
+    /// The scene index that we want to switch to in fullscreen mode
+    /// once it is loaded.
+    private int? requestedFullscreenSceneIndex = null;
 
     private int hiddenLayer;
 
@@ -79,14 +98,15 @@ namespace Keiwando.Evolution.UI {
       this.cells = new GalleryGridCell[numberOfItemsPerPage];
       // The last index is the fullscreen texture
       this.renderTextures = new RenderTexture[numberOfItemsPerPage + 1];
-      this.fullscreenRenderTextureIndex = this.renderTextures.Length - 1;
-      this.scenes = new Scene?[numberOfItemsPerPage];
-      this.cameras = new Camera[numberOfItemsPerPage];
-      this.creatures = new Creature[numberOfItemsPerPage];
-      this.allObjectsPerScene = new List<PerObjectData>[numberOfItemsPerPage];
-      for (int i = 0; i < numberOfItemsPerPage; i++) {
-        this.allObjectsPerScene[i] = new List<PerObjectData>();
-      }
+
+      this.loadedScenes = new LoadedSceneData?[1];
+      // this.scenes = new Scene?[numberOfItemsPerPage];
+      // this.cameras = new Camera[numberOfItemsPerPage];
+      // this.creatures = new Creature[numberOfItemsPerPage];
+      // this.allObjectsPerScene = new List<PerObjectData>[numberOfItemsPerPage];
+      // for (int i = 0; i < numberOfItemsPerPage; i++) {
+      //   this.allObjectsPerScene[i] = new List<PerObjectData>();
+      // }
 
       for (int i = 0; i < numberOfItemsPerPage; i++) {
         var cell = Instantiate(templateGridCell, grid.transform);
@@ -95,7 +115,8 @@ namespace Keiwando.Evolution.UI {
 
         int cellIndex = i;
         cell.button.onClick.AddListener(delegate () {
-          enterFullscreen(sceneIndex: cellIndex);
+          int galleryEntryIndex = getGalleryEntryIndexForCellIndex(cellIndex);
+          requestNewFullscreenIndexIfPossible(galleryEntryIndex);
         });
       }
       templateGridCell.gameObject.SetActive(false);
@@ -142,34 +163,20 @@ namespace Keiwando.Evolution.UI {
 
       prevPageButton.onClick.AddListener(delegate () {
         this.currentPageIndex -= 1;
-        Refresh();
       });
       nextPageButton.onClick.AddListener(delegate () {
         this.currentPageIndex += 1;
-        Refresh();
       });
       fullscreenPrevButton.onClick.AddListener(delegate () {
         if (!this.fullscreenSceneIndex.HasValue) { return; }
-        int galleryEntryIndex = getGalleryEntryIndexForSceneIndex(this.fullscreenSceneIndex.Value);
-        if (galleryEntryIndex <= 1)
-        if (this.fullscreenSceneIndex.Value <= 0) { return; }
-        // TODO: Allow for automatic page switching here
-        int newFullscreenSceneIndex = this.fullscreenSceneIndex.Value - 1;
-        exitFullscreen();
-        enterFullscreen(newFullscreenSceneIndex);
+        requestNewFullscreenIndexIfPossible(this.fullscreenSceneIndex.Value - 1);
       });
       fullscreenNextButton.onClick.AddListener(delegate () {
         if (!this.fullscreenSceneIndex.HasValue) { return; }
-        if (this.fullscreenSceneIndex.Value >= this.scenes.Length - 1) { return; }
-        // TODO: Allow for automatic page switching here
-        int newFullscreenSceneIndex = this.fullscreenSceneIndex.Value + 1;
-        exitFullscreen();
-        enterFullscreen(newFullscreenSceneIndex);
+        requestNewFullscreenIndexIfPossible(this.fullscreenSceneIndex.Value + 1);
       });
 
       initialized = true;
-
-      Refresh();
     }
 
     void OnDestroy() {  
@@ -184,15 +191,80 @@ namespace Keiwando.Evolution.UI {
       fullscreenMoreMenu.gameObject.SetActive(false);
     }
 
-    public void Refresh() {
-      if (!initialized) { return; }
-      
+    void Update() {
+
+      if (this.requestedFullscreenSceneIndex.HasValue) {
+        if (this.loadedScenes[this.requestedFullscreenSceneIndex.Value] != null) {
+          this.fullscreenSceneIndex = this.requestedFullscreenSceneIndex.Value;
+          this.requestedFullscreenSceneIndex = null;
+
+          refreshStatsLabel();
+        }
+      }
+      if (this.fullscreenSceneIndex.HasValue) {
+        currentPageIndex = getPageIndexForGalleryEntry(this.fullscreenSceneIndex.Value);
+      }
+
+      this.fullscreenView.gameObject.SetActive(this.fullscreenSceneIndex.HasValue);
+
       int numberOfItemsPerPage = Math.Max(1, this.cells.Length);
       int totalItemCount = galleryManager.gallery.entries.Count;
       int totalNumberOfPages = Math.Max(1, (totalItemCount + numberOfItemsPerPage - 1) / numberOfItemsPerPage);
       currentPageIndex = Math.Clamp(currentPageIndex, 0, totalNumberOfPages - 1);
 
       numberOfItemsOnCurrentPage = currentPageIndex == totalNumberOfPages - 1 ? totalItemCount % numberOfItemsPerPage : numberOfItemsPerPage;
+
+      if (loadedScenes.Length != galleryManager.gallery.entries.Count) {
+        Array.Resize(ref loadedScenes, galleryManager.gallery.entries.Count);
+      }
+
+      // Automatically update the necessary scene requests
+      neededSceneIndices.Clear();
+      sceneLoadRequests.Clear();
+      if (this.fullscreenSceneIndex.HasValue) {
+        // In fullscreen mode, we want to keep the current, previous and next scene loaded.
+        requestScene(this.fullscreenSceneIndex.Value);
+        requestScene(this.fullscreenSceneIndex.Value - 1);
+        requestScene(this.fullscreenSceneIndex.Value + 1);
+      } else {
+        // In gallery mode, we want the current page of scenes to be loded
+        for (int i = 0; i < numberOfItemsOnCurrentPage; i++) {
+          int galleryEntryIndex = getGalleryEntryIndexForCellIndex(i);
+          requestScene(galleryEntryIndex);
+        }
+      }
+
+      if (this.requestedFullscreenSceneIndex.HasValue) {
+        requestScene(this.requestedFullscreenSceneIndex.Value);
+      }
+
+      // Unload scenes that are not needed any more
+      for (int i = 0; i < loadedScenes.Length; i++) {
+        LoadedSceneData? loadedScene = loadedScenes[i];
+        if (loadedScene.HasValue && !neededSceneIndices.Contains(i)) {
+          unloadScene(i);
+        }
+      }
+      if (this.currentlyLoadingSceneIndex.HasValue && 
+          !neededSceneIndices.Contains(this.currentlyLoadingSceneIndex.Value)) {
+        StopCoroutine(this.sceneLoadingCoroutine);
+        unloadScene(this.currentlyLoadingSceneIndex.Value);
+        this.currentlyLoadingSceneIndex = null;
+        this.sceneLoadingCoroutine = null;
+      }
+
+      // Load requested scene that isn't loaded or being loaded yet
+      if (!currentlyLoadingSceneIndex.HasValue) {
+        while (sceneLoadRequests.Count > 0) {
+          int nextSceneIndexToLoad = sceneLoadRequests[0];
+          sceneLoadRequests.RemoveAt(0);
+          if (loadedScenes[nextSceneIndexToLoad] == null) {
+            currentlyLoadingSceneIndex = nextSceneIndexToLoad;
+            sceneLoadingCoroutine = StartCoroutine(loadScene(nextSceneIndexToLoad));
+            break;
+          }
+        }
+      }
 
       for (int cellIndex = 0; cellIndex < cells.Length; cellIndex++) {
         GalleryGridCell cell = cells[cellIndex];
@@ -208,38 +280,152 @@ namespace Keiwando.Evolution.UI {
 
       if (this.fullscreenSceneIndex.HasValue) {
         this.fullscreenPrevButton.interactable = this.fullscreenSceneIndex.Value > 0;
-        this.fullscreenNextButton.interactable = this.fullscreenSceneIndex.Value < numberOfItemsOnCurrentPage - 1;
+        this.fullscreenNextButton.interactable = this.fullscreenSceneIndex + 1 < galleryManager.gallery.entries.Count;
       }
-
+      
       emptyGalleryInstructions.gameObject.SetActive(totalItemCount == 0);
       pageNumberLabel.SetText("Page {0}/{1}", currentPageIndex + 1, totalNumberOfPages);
 
-      bool needsSceneLoading = sceneLoadingInitiatedForPageIndex != currentPageIndex;
-      if (needsSceneLoading) {
-        unloadScenes();
-        if (sceneLoadingCoroutine != null) {
-          StopCoroutine(sceneLoadingCoroutine);
+      // Update the render texture of all cells that need an update
+      if (this.fullscreenSceneIndex.HasValue && this.loadedScenes[this.fullscreenSceneIndex.Value].HasValue) {
+        if (this.renderTextures[this.fullscreenRenderTextureIndex] == null) {
+          this.renderTextures[this.fullscreenRenderTextureIndex] = new RenderTexture(
+            width: Screen.width,
+            height: Screen.height,
+            depth: 0
+          ); 
+          this.fullscreenRawImage.texture = this.renderTextures[this.fullscreenRenderTextureIndex];
         }
-        sceneLoadingCoroutine = StartCoroutine(loadGalleryScenes());
-        sceneLoadingInitiatedForPageIndex = currentPageIndex;
+        LoadedSceneData loadedSceneData = this.loadedScenes[this.fullscreenSceneIndex.Value].Value;
+        loadedSceneData.camera.targetTexture = this.renderTextures[this.fullscreenRenderTextureIndex];
+      } else {
+        for (int cellIndex = 0; cellIndex < this.numberOfItemsOnCurrentPage; cellIndex++) {
+          int galleryEntryIndex = getGalleryEntryIndexForCellIndex(cellIndex);
+          if (!loadedScenes[galleryEntryIndex].HasValue) {
+            continue;
+          }
+          GalleryGridCell cell = cells[cellIndex];
+          LoadedSceneData loadedSceneData = loadedScenes[galleryEntryIndex].Value;
+
+          RenderTexture renderTexture = renderTextures[cellIndex];
+          if (renderTexture == null) {
+            Canvas canvas = GetComponent<Canvas>();
+            RectTransform cellTransform = cell.transform as RectTransform;
+            renderTexture = new RenderTexture(
+              width: (int)(cellTransform.sizeDelta.x * canvas.transform.localScale.x),
+              height: (int)(cellTransform.sizeDelta.y * canvas.transform.localScale.y),
+              depth: 0
+            );
+            renderTextures[cellIndex] = renderTexture;
+          }
+          loadedSceneData.camera.targetTexture = renderTexture;
+          if (cell.rawImage.texture != renderTexture) {
+            cell.rawImage.texture = renderTexture;
+          }
+        }
+      }
+
+      // Manually render the necessary scenes
+
+      foreach (int sceneIndex in neededSceneIndices) {
+        if (this.loadedScenes[sceneIndex] == null) {
+          continue;
+        }
+        LoadedSceneData loadedSceneData = this.loadedScenes[sceneIndex].Value;
+        for (int i = 0; i < loadedSceneData.allObjects.Count; i++) {
+          PerObjectData perObjectData = loadedSceneData.allObjects[i];
+          if (perObjectData.gameObject != null) {
+            if (perObjectData.gameObject.layer != hiddenLayer) {
+              perObjectData.layer = perObjectData.gameObject.layer;
+            }
+            perObjectData.gameObject.layer = hiddenLayer;
+            loadedSceneData.allObjects[i] = perObjectData;
+          }
+        }
+      }
+      for (int cellIndex = 0; cellIndex < numberOfItemsOnCurrentPage; cellIndex++) {
+        int galleryEntryIndex = getGalleryEntryIndexForCellIndex(cellIndex);
+        if (fullscreenSceneIndex.HasValue && galleryEntryIndex != fullscreenSceneIndex.Value){
+          continue;
+        }
+        if (this.loadedScenes[galleryEntryIndex] == null) {
+          continue;
+        }
+        LoadedSceneData loadedSceneData = this.loadedScenes[galleryEntryIndex].Value;
+        for (int i = 0; i < loadedSceneData.allObjects.Count; i++) {
+          PerObjectData perObjectData = loadedSceneData.allObjects[i];
+          if (perObjectData.gameObject != null) {
+            perObjectData.gameObject.layer = perObjectData.layer;
+          }
+        }
+        loadedSceneData.camera.Render();
+        for (int i = 0; i < loadedSceneData.allObjects.Count; i++) {
+          PerObjectData perObjectData = loadedSceneData.allObjects[i];
+          if (perObjectData.gameObject != null) {
+            perObjectData.gameObject.layer = hiddenLayer;
+          }
+        }
+      }
+      // Reset all object layers to their original values so that 
+      // we don't reset perObjectData.layer to hidden for all objects on the next frame
+      foreach (int sceneIndex in neededSceneIndices) {
+        if (this.loadedScenes[sceneIndex] == null) {
+          continue;
+        }
+        LoadedSceneData loadedSceneData = this.loadedScenes[sceneIndex].Value;
+        foreach (PerObjectData perObjectData in loadedSceneData.allObjects) {
+          if (perObjectData.gameObject != null) {
+            perObjectData.gameObject.layer = perObjectData.layer;
+          }
+        }
       }
     }
 
-    private int getGalleryEntryIndexForSceneIndex(int sceneIndex) {
+    private void requestScene(int sceneIndex) {
+      if (!sceneIndexIsValid(sceneIndex)) {
+        return;
+      }
+      if (!neededSceneIndices.Contains(sceneIndex)) {
+        neededSceneIndices.Add(sceneIndex);
+        sceneLoadRequests.Add(sceneIndex);
+      }
+    }
+
+    private void requestNewFullscreenIndexIfPossible(int newFullscreenIndex) {
+      if (!sceneIndexIsValid(newFullscreenIndex)) {
+        return;
+      }
+      this.requestedFullscreenSceneIndex = newFullscreenIndex;
+    }
+
+    private bool sceneIndexIsValid(int sceneIndex) {
+      return sceneIndex >= 0 && sceneIndex < loadedScenes.Length;
+    }
+
+    private int getGalleryEntryIndexForCellIndex(int cellIndex) {
       int numberOfItemsPerPage = Math.Max(1, this.cells.Length);
       int firstItemIndexOnPage = currentPageIndex * numberOfItemsPerPage;
-      int galleryEntryIndex = firstItemIndexOnPage + sceneIndex; 
+      int galleryEntryIndex = firstItemIndexOnPage + cellIndex; 
       return galleryEntryIndex;
     }
 
-    private CreatureGalleryEntry getAndLoadGalleryEntryForSceneIndex(int sceneIndex) {
-      int galleryEntryIndex = getGalleryEntryIndexForSceneIndex(sceneIndex);
+    private int getPageIndexForGalleryEntry(int galleryEntryIndex) {
+      int numberOfItemsPerPage = Math.Max(1, this.cells.Length);
+      return galleryEntryIndex / numberOfItemsPerPage;
+    }
+
+    private int getCellIndexForGalleryEntry(int galleryEntryIndex, int pageIndex) {
+      int numberOfItemsPerPage = Math.Max(1, this.cells.Length);
+      return galleryEntryIndex - pageIndex * numberOfItemsPerPage;
+    }
+
+    private CreatureGalleryEntry getAndLoadGalleryEntry(int galleryEntryIndex) {
       galleryManager.loadGalleryEntry(galleryEntryIndex);
       return this.galleryManager.gallery.entries[galleryEntryIndex];
     }
 
-    private CreatureRecording getRecordingForSceneIndex(int sceneIndex) {
-      CreatureGalleryEntry galleryEntry = getAndLoadGalleryEntryForSceneIndex(sceneIndex);
+    private CreatureRecording getRecording(int galleryEntryIndex) {
+      CreatureGalleryEntry galleryEntry = getAndLoadGalleryEntry(galleryEntryIndex);
       if (galleryEntry.loadedData == null) {
         return null;
       }
@@ -250,143 +436,76 @@ namespace Keiwando.Evolution.UI {
       if (!this.fullscreenSceneIndex.HasValue) {
         return null;
       }
-      return this.creatures[this.fullscreenSceneIndex.Value];
+      if (this.loadedScenes[this.fullscreenSceneIndex.Value] == null) {
+        return null;
+      }
+      return this.loadedScenes[this.fullscreenSceneIndex.Value].Value.creature;
     }
 
-    private IEnumerator loadGalleryScenes() {
+    private IEnumerator loadScene(int galleryEntryIndex) {
+      CreatureRecording recording = getRecording(galleryEntryIndex);
+      if (recording == null) {
+        Debug.LogWarning($"Gallery entry at absolute index {galleryEntryIndex} not loaded!");
+        yield break;
+      }
 
-      for (int cellIndex = 0; cellIndex < this.numberOfItemsOnCurrentPage; cellIndex++) {
-        GalleryGridCell cell = cells[cellIndex];
-        if (cell == null) {
-          continue;
-        }
-        CreatureRecording recording = getRecordingForSceneIndex(cellIndex);
-        if (recording == null) {
-          Debug.LogWarning($"Gallery entry for cell {cellIndex} not loaded!");
-          continue;
-        }
-
-        var sceneLoadContext = new SceneController.SimulationSceneLoadContext();
+      var sceneLoadContext = new SceneController.SimulationSceneLoadContext();
+      sceneLoadContext.DisableAllRenderers = true;
         
-        yield return SceneController.LoadSimulationScene(
-          creatureDesign: recording.creatureDesign,
-          creatureSpawnCount: 1,
-          sceneDescription: recording.sceneDescription,
-          sceneType: SceneController.SimulationSceneType.GalleryPlayback,
-          legacyOptions: LegacySimulationOptions.Default,
-          context: sceneLoadContext,
-          sceneContext: new GalleryPlaybackSceneContext(recording.stats, recording.task)
-        );
-        var scene = sceneLoadContext.Scene;
-        this.scenes[cellIndex] = scene;
-        this.creatures[cellIndex] = sceneLoadContext.Creatures[0];
+      yield return SceneController.LoadSimulationScene(
+        creatureDesign: recording.creatureDesign,
+        creatureSpawnCount: 1,
+        sceneDescription: recording.sceneDescription,
+        sceneType: SceneController.SimulationSceneType.GalleryPlayback,
+        legacyOptions: LegacySimulationOptions.Default,
+        context: sceneLoadContext,
+        sceneContext: new GalleryPlaybackSceneContext(recording.stats, recording.task)
+      );
+      var scene = sceneLoadContext.Scene;
+      LoadedSceneData loadedSceneData = new LoadedSceneData();
+      loadedSceneData.scene = scene;
+      loadedSceneData.creature = sceneLoadContext.Creatures[0];
 
-        var prevActiveScene = SceneManager.GetActiveScene();
-        SceneManager.SetActiveScene(scene);
-        
-        SimulationSceneSetup sceneSetup = null;
-        var rootObjects = scene.GetRootGameObjects();
-        for (int i = 0; i < rootObjects.Length; i++) {
-            sceneSetup = rootObjects[i].GetComponent<SimulationSceneSetup>();
-            if (sceneSetup != null) break;
-        }
-        this.allObjectsPerScene[cellIndex].Clear();
-        foreach (GameObject rootObject in rootObjects) {
-          // GetComponentsInChildren includes the root object
-          foreach (UnityEngine.Transform childTransform in rootObject.GetComponentsInChildren<UnityEngine.Transform>()) {
-            allObjectsPerScene[cellIndex].Add(new PerObjectData {
-              layer = childTransform.gameObject.layer,
-              gameObject = childTransform.gameObject
-            });
-          }
-        }
-        foreach (GameObject rootObject in rootObjects) {
-          if (rootObject.name == "Main Camera") {
-            Camera mainCamera = rootObject.GetComponent<Camera>();
-            RenderTexture renderTexture = renderTextures[cellIndex];
-            if (renderTexture == null) {
-              Canvas canvas = GetComponent<Canvas>();
-              RectTransform cellTransform = cell.transform as RectTransform;
-              renderTexture = new RenderTexture(
-                width: (int)(cellTransform.sizeDelta.x * canvas.transform.localScale.x),
-                height: (int)(cellTransform.sizeDelta.y * canvas.transform.localScale.y),
-                depth: 0
-              );
-              renderTextures[cellIndex] = renderTexture;
-            }
-            mainCamera.targetTexture = renderTexture;
-            cell.rawImage.texture = renderTexture;
-            
-            mainCamera.enabled = false;
-            mainCamera.scene = scene;
-            this.cameras[cellIndex] = mainCamera;
-
-            SimulationBackgroundRenderer backgroundRenderer = mainCamera.GetComponent<SimulationBackgroundRenderer>();
-            backgroundRenderer.task = recording.task;
-
-          } else if (rootObject.name == "GalleryPlaybackController") {
-            GalleryPlaybackController playbackController = rootObject.GetComponent<GalleryPlaybackController>();
-            CreatureRecordingPlayer player = new CreatureRecordingPlayer(recording: recording.movementData);
-            playbackController.Setup(sceneLoadContext.Creatures[0], player);
-            playbackController.Play();
-          }
-        }
-
-        SceneManager.SetActiveScene(prevActiveScene);
-        
-        yield return null;
-      }
-    }
-
-    void Update() {
-      for (int sceneIndex = 0; sceneIndex < numberOfItemsOnCurrentPage; sceneIndex++) {
-        if (this.cameras[sceneIndex] == null) {
-          continue;
-        }
-        List<PerObjectData> allObjectsInScene = allObjectsPerScene[sceneIndex];
-        for (int i = 0; i < allObjectsInScene.Count; i++) {
-          PerObjectData perObjectData = allObjectsInScene[i];
-          if (perObjectData.gameObject != null) {
-            if (perObjectData.gameObject.layer != hiddenLayer) {
-              perObjectData.layer = perObjectData.gameObject.layer;
-            }
-            perObjectData.gameObject.layer = hiddenLayer;
-            allObjectsInScene[i] = perObjectData;
-          }
+      var prevActiveScene = SceneManager.GetActiveScene();
+      SceneManager.SetActiveScene(scene);
+      
+      var rootObjects = scene.GetRootGameObjects();
+      loadedSceneData.allObjects = new List<PerObjectData>();
+      foreach (GameObject rootObject in rootObjects) {
+        // GetComponentsInChildren includes the root object
+        foreach (UnityEngine.Transform childTransform in rootObject.GetComponentsInChildren<UnityEngine.Transform>()) {
+          loadedSceneData.allObjects.Add(new PerObjectData {
+            layer = childTransform.gameObject.layer,
+            gameObject = childTransform.gameObject
+          });
         }
       }
-      for (int sceneIndex = 0; sceneIndex < numberOfItemsOnCurrentPage; sceneIndex++) {
-        if (fullscreenSceneIndex.HasValue && sceneIndex != fullscreenSceneIndex.Value){
-          continue;
-        }
-        Camera camera = this.cameras[sceneIndex];
-        if (camera == null) {
-          continue;
-        }
-        for (int i = 0; i < allObjectsPerScene[sceneIndex].Count; i++) {
-          PerObjectData perObjectData = allObjectsPerScene[sceneIndex][i];
-          if (perObjectData.gameObject != null) {
-            perObjectData.gameObject.layer = perObjectData.layer;
-          }
-        }
-        camera.Render();
-        for (int i = 0; i < allObjectsPerScene[sceneIndex].Count; i++) {
-          PerObjectData perObjectData = allObjectsPerScene[sceneIndex][i];
-          if (perObjectData.gameObject != null) {
-            perObjectData.gameObject.layer = hiddenLayer;
-          }
+      foreach (GameObject rootObject in rootObjects) {
+        if (rootObject.name == "Main Camera") {
+          Camera mainCamera = rootObject.GetComponent<Camera>();
+          mainCamera.enabled = false;
+          loadedSceneData.camera = mainCamera;
+
+          SimulationBackgroundRenderer backgroundRenderer = mainCamera.GetComponent<SimulationBackgroundRenderer>();
+          backgroundRenderer.task = recording.task;
+
+        } else if (rootObject.name == "GalleryPlaybackController") {
+          GalleryPlaybackController playbackController = rootObject.GetComponent<GalleryPlaybackController>();
+          CreatureRecordingPlayer player = new CreatureRecordingPlayer(recording: recording.movementData);
+          playbackController.Setup(sceneLoadContext.Creatures[0], player);
+          playbackController.Play();
         }
       }
-      // Reset all object layers to their original values so that 
-      // we don't reset perObjectData.layer to hidden for all objects on the next frame
-      for (int sceneIndex = 0; sceneIndex < numberOfItemsOnCurrentPage; sceneIndex++) {
-        List<PerObjectData> allObjectsInScene = allObjectsPerScene[sceneIndex];
-        foreach (PerObjectData perObjectData in allObjectsInScene) {
-          if (perObjectData.gameObject != null) {
-            perObjectData.gameObject.layer = perObjectData.layer;
-          }
-        }
+
+      SceneManager.SetActiveScene(prevActiveScene);
+
+      // The gallery size might have reduced while this scene was loading…
+      if (this.loadedScenes.Length > galleryEntryIndex) {
+        this.loadedScenes[galleryEntryIndex] = loadedSceneData;
       }
+
+      this.sceneLoadingCoroutine = null;
+      this.currentlyLoadingSceneIndex = null;
     }
 
     private void releaseRenderResources() {
@@ -404,70 +523,33 @@ namespace Keiwando.Evolution.UI {
     }
 
     private void unloadScenes() {
-      sceneLoadingInitiatedForPageIndex = -1;
-      for (int i = 0; i < scenes.Length; i++) {
-        Scene? scene = scenes[i];
-        if (scene.HasValue) {
-          SceneManager.UnloadSceneAsync(scene.Value);
-          scenes[i] = null;
-        }
-      }
+      neededSceneIndices.Clear();
       galleryManager.unloadAllGalleryEntries();
-      for (int i = 0; i < cameras.Length; i++) {
-        this.cameras[i] = null;
-      }
-      for (int i = 0; i < creatures.Length; i++) {
-        this.creatures[i] = null;
-      }
-      for (int i = 0; i < allObjectsPerScene.Length; i++) {
-        if (this.allObjectsPerScene[i] != null) {
-          this.allObjectsPerScene[i].Clear();
-        }
+      for (int i = 0; i < loadedScenes.Length; i++) {
+        unloadScene(i);
       }
     }
 
-    private void enterFullscreen(int sceneIndex) {
-      if (this.fullscreenSceneIndex.HasValue) {
-        if (this.fullscreenSceneIndex.Value == sceneIndex) {
-          return;
-        }
-        exitFullscreen();
-      }
-
-      Camera camera = this.cameras[sceneIndex];
-      if (camera == null) {
+    private void unloadScene(int index) {
+      if (index < 0 || index >= loadedScenes.Length || loadedScenes[index] == null) {
         return;
       }
-      if (this.renderTextures[this.fullscreenRenderTextureIndex] == null) {
-        this.renderTextures[this.fullscreenRenderTextureIndex] = new RenderTexture(
-          width: Screen.width,
-          height: Screen.height,
-          depth: 0
-        ); 
-        this.fullscreenRawImage.texture = this.renderTextures[this.fullscreenRenderTextureIndex];
+      LoadedSceneData loadedSceneData = loadedScenes[index].Value;
+      foreach (PerObjectData obj in loadedSceneData.allObjects) {
+        if (obj.gameObject != null) {
+          // We must manually disable all objects in this scene before it starts asynchronously
+          // unloading, otherwise its objects will show up in the manual camera renders
+          // of the loaded scenes (since we won't have a reference to this scene any more
+          // in order to manually change the object layers before rendering…)
+          obj.gameObject.SetActive(false);
+        }
       }
-
-      camera.targetTexture = this.renderTextures[this.fullscreenRenderTextureIndex];
-      fullscreenView.gameObject.SetActive(true);
-
-      this.fullscreenSceneIndex = sceneIndex;
-
-      refreshStatsLabel();
-      Refresh();
+      SceneManager.UnloadSceneAsync(loadedSceneData.scene);
+      galleryManager.unloadGalleryEntry(index);
+      this.loadedScenes[index] = null;
     }
 
     private void exitFullscreen() {
-      if (!this.fullscreenSceneIndex.HasValue) {
-        return;
-      }
-      int sceneIndex = this.fullscreenSceneIndex.Value;
-
-      Camera camera = this.cameras[sceneIndex];
-      if (camera != null) {
-        RenderTexture previewRenderTexture = this.renderTextures[sceneIndex];
-        camera.targetTexture = previewRenderTexture;
-      }
-      fullscreenView.gameObject.SetActive(false);
       this.fullscreenSceneIndex = null;
     }
 
@@ -516,8 +598,6 @@ namespace Keiwando.Evolution.UI {
         currentPageIndex = pageNumberOfLastImportedRecording;
       }
 
-      Refresh();
-
       if (successfulImport) {
         successfulImportIndicator.FadeInOut();
       }
@@ -530,8 +610,7 @@ namespace Keiwando.Evolution.UI {
       if (!this.fullscreenSceneIndex.HasValue) {
         return;
       }
-      int galleryEntryIndex = getGalleryEntryIndexForSceneIndex(this.fullscreenSceneIndex.Value);
-      CreatureGalleryEntry galleryEntry = galleryManager.gallery.entries[galleryEntryIndex];
+      CreatureGalleryEntry galleryEntry = galleryManager.gallery.entries[this.fullscreenSceneIndex.Value];
       string filePath = CreatureRecordingSerializer.PathToCreatureRecordingSave(galleryEntry.filename);
       FileToSave fileToSave = new FileToSave(
         srcPath: filePath,
@@ -544,15 +623,13 @@ namespace Keiwando.Evolution.UI {
       if (!this.fullscreenSceneIndex.HasValue) {
         return;
       }
-      int galleryEntryIndex = getGalleryEntryIndexForSceneIndex(this.fullscreenSceneIndex.Value);
-      CreatureGalleryEntry galleryEntry = galleryManager.gallery.entries[galleryEntryIndex];
+      CreatureGalleryEntry galleryEntry = galleryManager.gallery.entries[this.fullscreenSceneIndex.Value];
 
       deleteConfirmation.ConfirmDeletionFor(galleryEntry.filename, delegate(string name) {
         exitFullscreen();
         CreatureRecordingSerializer.DeleteCreatureRecording(galleryEntry.filename);
         unloadScenes();
         galleryManager.shallowLoadGalleryEntries();
-        Refresh();
       });
     }
 
@@ -564,7 +641,7 @@ namespace Keiwando.Evolution.UI {
         return;
       }
 
-      CreatureRecording recording = getRecordingForSceneIndex(this.fullscreenSceneIndex.Value);
+      CreatureRecording recording = getRecording(this.fullscreenSceneIndex.Value);
 
       StringBuilder stringBuilder = new StringBuilder();
       stringBuilder.AppendLine(recording.creatureDesign.Name);
@@ -591,19 +668,13 @@ namespace Keiwando.Evolution.UI {
       creature.RefreshMuscleContractionVisibility(Settings.ShowMuscleContraction);
     }
 
-    public void ShowMusclesDidChange(SimulationVisibilityOptionsView view, bool showMuscles) {
-      // Creature creature = getFullscreenPlaybackCreature();
-      // if (creature == null) {
-      //   return;
-      // }
-      // creature.Refresh
-    }
+    public void ShowMusclesDidChange(SimulationVisibilityOptionsView view, bool showMuscles) {}
 
     public Objective GetCurrentTask(SimulationVisibilityOptionsView view) {
       if (!this.fullscreenSceneIndex.HasValue) {
         return Objective.Running;
       }
-      CreatureRecording recording = getRecordingForSceneIndex(this.fullscreenSceneIndex.Value);
+      CreatureRecording recording = getRecording(this.fullscreenSceneIndex.Value);
       if (recording == null) {
         return Objective.Running;
       }
@@ -620,7 +691,6 @@ namespace Keiwando.Evolution.UI {
         editorCamera.InteractiveZoomEnabled = false;
         
         galleryManager.shallowLoadGalleryEntries();
-        Refresh();
     }
 
     public void Hide() {
@@ -631,7 +701,6 @@ namespace Keiwando.Evolution.UI {
         editorCamera.InteractiveZoomEnabled = true;
 
         releaseRenderResources();
-        sceneLoadingInitiatedForPageIndex = -1;
     }
 
     private void OnAndroidBack(AndroidBackButtonGestureRecognizer rec) {
