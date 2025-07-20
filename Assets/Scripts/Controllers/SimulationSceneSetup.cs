@@ -29,13 +29,19 @@ namespace Keiwando.Evolution {
 
     public class SimulationSceneSetup: MonoBehaviour {
 
-        public void BuildScene(Scene scene, SimulationSceneDescription sceneDescription, ISceneContext context) {
+        // Note: When running the simulation, the tracked camera is not inside of the additively
+        // loaded scene, so we can't use that scene to filter, but we also don't need to filter
+        // here at all. We only need the filter for the gallery scenes.
+        public void BuildScene(SimulationSceneDescription sceneDescription, 
+                               ISceneContext context,
+                               Scene? trackedCameraFilterScene) {
             SimulationSceneBuilder.Build(sceneDescription, context);
             SetupPhysics(sceneDescription.PhysicsConfiguration);
             
             var trackedCameras = FindObjectsByType<TrackedCamera>(FindObjectsSortMode.None);
             foreach (var trackedCamera in trackedCameras) {
-                if (trackedCamera.gameObject.scene != scene) {
+                if (trackedCameraFilterScene.HasValue && 
+                    trackedCamera.gameObject.scene != trackedCameraFilterScene.Value) {
                     continue;
                 }
                 trackedCamera.ControlPoints = sceneDescription.CameraControlPoints;

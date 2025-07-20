@@ -10,7 +10,7 @@ namespace Keiwando.Evolution {
         IComparer<T> GetAscendingComparer();
     }
 
-    public enum SelectionAlgorithm {
+    public enum SelectionAlgorithm: byte {
         Uniform = 0,
         FitnessProportional = 1,
         TournamentSelection = 2,

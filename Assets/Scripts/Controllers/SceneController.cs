@@ -72,7 +72,8 @@ namespace Keiwando.Evolution {
       }
 
       // Create the structures
-      sceneSetup.BuildScene(scene, sceneDescription, sceneContext);
+      UnityEngine.SceneManagement.Scene? trackedCameraFilterScene = sceneType == SimulationSceneType.GalleryPlayback ? scene : null;
+      sceneSetup.BuildScene(sceneDescription, sceneContext, trackedCameraFilterScene: trackedCameraFilterScene);
 
       SceneManager.SetActiveScene(prevActiveScene);
       yield return new WaitForFixedUpdate();

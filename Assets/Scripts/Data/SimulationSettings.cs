@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Keiwando.Evolution;
 using Keiwando.JSON;
 
@@ -84,6 +85,58 @@ public struct SimulationSettings {
 	}
 
 	#region Encode & Decode
+
+	public void Encode(BinaryWriter writer) {
+		long dataLengthOffset = writer.Seek(0, SeekOrigin.Current);
+		writer.WriteDummyBlockLength();
+
+		ushort flags = 0;
+		writer.Write(flags);
+		writer.Write(this.KeepBestCreatures);
+		writer.Write(this.SimulationTime);
+		writer.Write(this.PopulationSize);
+		writer.Write(this.SimulateInBatches);
+		writer.Write(this.BatchSize);
+		writer.Write((byte)this.Objective);
+		writer.Write(this.MutationRate);
+		writer.Write((byte)this.SelectionAlgorithm);
+		writer.Write((byte)this.RecombinationAlgorithm);
+		writer.Write((byte)this.MutationAlgorithm);
+
+		writer.WriteBlockLengthToOffset(dataLengthOffset);
+	}
+
+	public static SimulationSettings Decode(BinaryReader reader) {
+		uint dataLength = reader.ReadBlockLength();
+		long byteAfterData = reader.BaseStream.Position + (long)dataLength;
+
+		ushort flags = reader.ReadUInt16();
+		bool keepBestCreatures = reader.ReadBoolean();
+		int simulationTime = reader.ReadInt32();
+		int populationSize = reader.ReadInt32();
+		bool simulateInBatches = reader.ReadBoolean();
+		int batchSize = reader.ReadInt32();
+		Objective objective = (Objective)reader.ReadByte();
+		float mutationRate = reader.ReadSingle();
+		SelectionAlgorithm selectionAlgorithm = (SelectionAlgorithm)reader.ReadByte();
+		RecombinationAlgorithm recombinationAlgorithm = (RecombinationAlgorithm)reader.ReadByte();
+		MutationAlgorithm mutationAlgorithm = (MutationAlgorithm)reader.ReadByte();
+
+		reader.BaseStream.Seek(byteAfterData, SeekOrigin.Begin);
+
+		return new SimulationSettings {
+			KeepBestCreatures = keepBestCreatures,
+			SimulationTime = simulationTime,
+			PopulationSize = populationSize,
+			SimulateInBatches = simulateInBatches,
+			BatchSize = batchSize,
+			Objective = objective,
+			MutationRate = mutationRate,
+			SelectionAlgorithm = selectionAlgorithm,
+			RecombinationAlgorithm = recombinationAlgorithm,
+			MutationAlgorithm = mutationAlgorithm
+		};
+	}
 
 	private static class CodingKey {
 		public const string KeepBestCreatures = "keepBestCreatures";

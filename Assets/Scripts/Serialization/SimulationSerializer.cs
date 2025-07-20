@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Keiwando.Evolution;
 using Keiwando.JSON;
+using Keiwando.Evolution.Scenes;
 
 /// <summary>
 /// The SimulationSerializer provides function for saving and loading the state of a simulation in / from a file.
@@ -41,6 +42,7 @@ public class SimulationSerializer {
 	public static readonly Regex EXTENSION_PATTERN = new Regex(FILE_EXTENSION);
 
 	private static string RESOURCE_PATH = Path.Combine(Application.persistentDataPath, SAVE_FOLDER);
+	private const ushort LATEST_SERIALIZATION_VERSION = 1;
 
 	static SimulationSerializer() {
 
@@ -58,15 +60,17 @@ public class SimulationSerializer {
 	/// <returns>The filename of the save file without the extensions</returns>
 	public static string SaveSimulation(SimulationData data) {
 
-		string contents = data.Encode().ToString(Formatting.None);
 		string creatureName = data.CreatureDesign.Name;
 		string dateString = System.DateTime.Now.ToString("MMM dd, yyyy");
 		string objectiveString = ObjectiveUtil.StringRepresentation(data.Settings.Objective);
 		int generation = data.BestCreatures.Count + 1;
 		string filename = string.Format("{0} - {1} - {2} - Gen {3}", creatureName, objectiveString, dateString, generation);
+		
+		// string contents = data.Encode().ToString(Formatting.None);
 
 		// Save without overwriting existing saves
-		return SaveSimulationFile(filename, contents, false);
+		return SaveSimulationFile(filename, data, false);
+		// return SaveSimulationFile(filename, contents, false);
 	}
 
 	/// <summary>
@@ -75,7 +79,7 @@ public class SimulationSerializer {
 	/// <param name="name">The filename without an extension.</param>
 	/// <param name="encodedData"></param>
 	/// <returns>The filename of the save file without the extension</returns>
-	public static string SaveSimulationFile(string name, string encodedData, bool overwrite = false) { 
+	public static string SaveSimulationFile(string name, SimulationData data, bool overwrite = false) { 
 
 		name = EXTENSION_PATTERN.Replace(name, "");
 
@@ -85,9 +89,194 @@ public class SimulationSerializer {
 		var path = PathToSimulationSave(name);
 
 		CreateSaveFolder();
-		File.WriteAllText(path, encodedData);
+
+		using (var stream = File.Open(path, FileMode.Create))
+		using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8)) {
+			WriteSimulationData(data, writer);
+		}
+
+		// File.WriteAllText(path, encodedData);
 
 		return name;
+	}
+
+	/// <summary>
+	/// Loads a previously saved simulation data with the specified name
+	/// </summary>
+	/// <param name="name"></param>
+	/// <returns></returns>
+	public static SimulationData LoadSimulationData(string name) {
+
+		var path = PathToSimulationSave(name);
+		if (!File.Exists(path)) {
+			return null;
+		}
+
+		using (var stream = File.Open(path, FileMode.Open))
+		using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8)) {
+			SimulationData simulationData = DecodeSimulationData(reader, name);
+			if (simulationData != null) {
+				return simulationData;
+			}
+		}
+		string textContents = File.ReadAllText(path);
+		return ParseLegacySimulationData(textContents, name);
+	}
+
+	private static void WriteSimulationData(SimulationData data, BinaryWriter writer) {
+
+		// ### Header ###
+
+		// Magic Bytes
+		writer.Write((char)'E');
+    writer.Write((char)'V');
+    writer.Write((char)'O');
+    writer.Write((char)'L');
+    writer.Write((char)'S');
+    writer.Write((char)'I');
+    writer.Write((char)'M');
+    writer.Write((char)'L');
+
+		// Version 
+		ushort version = LATEST_SERIALIZATION_VERSION;
+		writer.Write(version);
+
+		// ### Content ###
+		
+		long dataLengthBeforeChromosomesOffset = writer.Seek(0, SeekOrigin.Current);
+		writer.WriteDummyBlockLength();
+		
+		ushort simulationDataVersion = (ushort)data.Version;
+		writer.Write(simulationDataVersion);
+		data.Settings.Encode(writer);
+		data.NetworkSettings.Encode(writer);
+		CreatureSerializer.WriteCreatureDesign(data.CreatureDesign, writer);
+		data.SceneDescription.Encode(writer);
+		writer.Write(data.LastV2SimulatedGeneration);
+
+		writer.WriteBlockLengthToOffset(dataLengthBeforeChromosomesOffset);
+
+		// Population Chromosomes
+
+		long populationDataLengthOffset = writer.Seek(0, SeekOrigin.Current);
+		writer.WriteDummyBlockLength();
+		// We first write the population chromosomes so that in the normal case of the population size
+		// not changing during the simulation, we can simply append the new best creatures chromosome
+		// data to the end of the save file.
+		int chromosomeLength = data.CurrentChromosomes.Length > 0 ? data.CurrentChromosomes[0].Length : 0;
+		writer.Write(chromosomeLength);
+
+		byte[] byteData = new byte[chromosomeLength * sizeof(float)];
+		for (int i = 0; i < data.Settings.PopulationSize; i++) {
+			float[] chromosome = data.CurrentChromosomes[i];
+			Buffer.BlockCopy(chromosome, 0, byteData, 0, byteData.Length);
+			writer.Write(byteData);
+		}
+
+		writer.WriteBlockLengthToOffset(populationDataLengthOffset);
+
+		// Best Creatures Chromosomes
+
+		writer.Write(data.BestCreatures.Count);
+		foreach (ChromosomeData chromosomeData in data.BestCreatures) {
+			Buffer.BlockCopy(chromosomeData.Chromosome, 0, byteData, 0, byteData.Length);
+			writer.Write(byteData);
+			chromosomeData.Stats.Encode(writer);
+		}
+	}
+
+	public static SimulationData DecodeSimulationData(BinaryReader reader, string name) {
+		try {
+
+			if (
+        reader.ReadChar() != 'E' ||
+        reader.ReadChar() != 'V' ||
+        reader.ReadChar() != 'O' ||
+        reader.ReadChar() != 'L' ||
+        reader.ReadChar() != 'S' ||
+        reader.ReadChar() != 'I' ||
+        reader.ReadChar() != 'M' ||
+        reader.ReadChar() != 'L'
+      ) {
+        return null;
+      }
+
+			ushort version = reader.ReadUInt16();
+			if (version > LATEST_SERIALIZATION_VERSION) {
+				Debug.Log($"Unknown SimulationData serialization version {version}");
+				return null;
+			}
+
+			uint dataLengthBeforeChromosomes = reader.ReadBlockLength();
+			long startByteOfChromosomes = reader.BaseStream.Position + (long)dataLengthBeforeChromosomes;
+
+			int simulationDataVersion = (int)reader.ReadUInt16();
+			SimulationSettings simulationSettings = SimulationSettings.Decode(reader);
+			NeuralNetworkSettings networkSettings = NeuralNetworkSettings.Decode(reader);
+			CreatureDesign creatureDesign = CreatureSerializer.DecodeCreatureDesign(reader);
+			if (creatureDesign == null) {
+				return null;
+			}
+			SimulationSceneDescription sceneDescription = SimulationSceneDescription.Decode(reader);
+			if (sceneDescription == null) {
+				return null;
+			}
+			int lastV2SimulatedGeneration = reader.ReadInt32();
+
+			reader.BaseStream.Seek(startByteOfChromosomes, SeekOrigin.Begin);
+
+			uint populationDataLength = reader.ReadBlockLength();
+			long byteAfterPopulationData = reader.BaseStream.Position + (long)populationDataLength;
+
+			int chromosomeLength = reader.ReadInt32();
+			float[][] currentChromosomes = new float[simulationSettings.PopulationSize][];
+
+			for (int i = 0; i < simulationSettings.PopulationSize; i++) {
+				byte[] byteData = reader.ReadBytes(chromosomeLength * sizeof(float));
+				float[] chromosome = new float[chromosomeLength];
+				Buffer.BlockCopy(byteData, 0, chromosome, 0, byteData.Length);
+				currentChromosomes[i] = chromosome;
+			}
+
+			reader.BaseStream.Seek(byteAfterPopulationData, SeekOrigin.Begin);
+
+			int numberOfBestCreaturesData = reader.ReadInt32();
+			List<ChromosomeData> bestCreatures = new List<ChromosomeData>();
+
+			for (int i = 0; i < numberOfBestCreaturesData; i++) {
+				byte[] byteData = reader.ReadBytes(chromosomeLength * sizeof(float));
+				float[] chromosome = new float[chromosomeLength];
+				Buffer.BlockCopy(byteData, 0, chromosome, 0, byteData.Length);
+				CreatureStats stats = CreatureStats.Decode(reader);
+				bestCreatures.Add(new ChromosomeData(chromosome, stats));
+			}
+
+			return new SimulationData(
+				settings: simulationSettings,
+				networkSettings: networkSettings,
+				design: creatureDesign,
+				sceneDescription: sceneDescription,
+				bestCreatures: bestCreatures,
+				currentChromosomes: currentChromosomes,
+				lastV2SimulatedGeneration: lastV2SimulatedGeneration
+			);
+		} catch {
+			return null;
+		}
+	}
+
+	/// <summary>
+	/// Returns the SimulationData of a previously saved simulation.
+	/// </summary>
+	/// <param name="name">The name of the saved simulation without the file extension.</param>
+	public static SimulationData ParseLegacySimulationData(string encoded, string filename = "Unnamed.evol") {
+
+		// Distinguish between JSON and legacy custom encodings
+		if (encoded.StartsWith("{")) {
+			return SimulationData.Decode(encoded);
+		}
+
+		return LegacySimulationLoader.ParseSimulationData(filename, encoded);
 	}
 
 	/// <summary>
@@ -104,35 +293,6 @@ public class SimulationSerializer {
 			counter++;
 		}
 		return finalName;
-	}
-
-	/// <summary>
-	/// Loads a previously saved simulation data with the specified name
-	/// </summary>
-	/// <param name="name"></param>
-	/// <returns></returns>
-	public static SimulationData LoadSimulationData(string name) {
-
-		var contents = LoadSaveData(name);
-
-		if (string.IsNullOrEmpty(contents))
-			throw new Exception("Invalid Simulation Data file contents - empty!");
-
-		return ParseSimulationData(contents, name);
-	}
-
-	/// <summary>
-	/// Returns the SimulationData of a previously saved simulation.
-	/// </summary>
-	/// <param name="name">The name of the saved simulation without the file extension.</param>
-	public static SimulationData ParseSimulationData(string encoded, string filename = "Unnamed.evol") {
-
-		// Distinguish between JSON and legacy custom encodings
-		if (encoded.StartsWith("{")) {
-			return SimulationData.Decode(encoded);
-		}
-
-		return LegacySimulationLoader.ParseSimulationData(filename, encoded);
 	}
 
 	/// <summary>
@@ -175,16 +335,6 @@ public class SimulationSerializer {
 		var path = PathToSimulationSave(name);
 		if (File.Exists(path))
 			File.Delete(path);
-	}
-
-	private static string LoadSaveData(string name) {
-		
-		var path = PathToSimulationSave(name);
-		if (File.Exists(path)) {
-			return File.ReadAllText(path);
-		} else {
-			return "";
-		}
 	}
 
 	/// <summary>

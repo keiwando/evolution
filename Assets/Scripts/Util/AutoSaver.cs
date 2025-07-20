@@ -1,4 +1,6 @@
-﻿namespace Keiwando.Evolution {
+﻿using UnityEngine;
+
+namespace Keiwando.Evolution {
 	
 	public class AutoSaver {
 	

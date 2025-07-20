@@ -44,7 +44,14 @@ public class SlideToggle : MonoBehaviour {
   public void SetIsOn(bool isOn, bool animated = true) {
     InitializeIfNecessary();
     animationsEnabled = animated;
+    bool toggleValueChanged = toggle.isOn != isOn;
     toggle.isOn = isOn;
+    if (!toggleValueChanged) {
+      // We run this manually to ensure that the visual state of the slide
+      // toggle is updated, even if the underlying toggle might already
+      // be on this state.
+      OnValueChanged(isOn); 
+    }
     animationsEnabled = true;
   }
 

@@ -7,6 +7,7 @@ using Keiwando;
 using Keiwando.NFSO;
 using Keiwando.Evolution.UI;
 using System;
+using System.IO;
 
 namespace Keiwando.Evolution {
 
@@ -103,16 +104,25 @@ namespace Keiwando.Evolution {
 
 				var extension = file.Extension.ToLower();
 				if (extension.Equals(".evol")) {
-					var encoded = file.ToUTF8String();
 					try {
-						var simulationData = SimulationSerializer.ParseSimulationData(encoded, file.Name);
+						SimulationData simulationData;
+						using (MemoryStream memoryStream = new MemoryStream(file.Data))
+						using (BinaryReader reader = new BinaryReader(memoryStream)) {
+							simulationData = SimulationSerializer.DecodeSimulationData(reader, file.Name);
+						}
+						if (simulationData == null) {
+							var encoded = file.ToUTF8String();
+							simulationData = SimulationSerializer.ParseLegacySimulationData(encoded, file.Name);
+						}
+						if (simulationData != null) {
+							SimulationSerializer.SaveSimulationFile(file.Name, simulationData, false);
+							successfulImport = true;
+						}
 					} catch {
 						failedImport = true;
-						Debug.LogError(string.Format("Failed to parse .evol file contents: {0}", encoded));
+						Debug.LogError(string.Format("Failed to parse .evol file contents with name {0}", file.Name));
 						continue;
 					}
-					SimulationSerializer.SaveSimulationFile(file.Name, encoded, false);
-					successfulImport = true;
 				}
 			}
 			RefreshCache();

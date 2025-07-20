@@ -41,22 +41,22 @@ namespace Keiwando.Evolution {
         int Length { get; }
     }
 
-    public enum MutationAlgorithm {
+    public enum MutationAlgorithm: byte {
 
         /// <summary>
         /// Changes a random number of values at consecutive indices.
         /// </summary>
-        Chunk,
+        Chunk = 0,
 
         /// <summary>
         /// Changes the value at each index with a random probability.
         /// </summary>
-        Global,
+        Global = 1,
 
         /// <summary>
         /// Chooses a random start and end index and inverts the order of values inbetween.
         /// </summary>
-        Inversion
+        Inversion = 2
     }
 
     public static class Mutation {

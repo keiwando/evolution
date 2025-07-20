@@ -72,7 +72,6 @@ public class SharedSimulationOverlayView: MonoBehaviour {
     }
 
     public void Refresh() {
-
         saveToGalleryButton.interactable = simulationViewController.SaveToGalleryIsPossible();
         saveToGalleryWaitingForSimulationLabel.gameObject.SetActive(!saveToGalleryButton.interactable);
         autosaveToggle.isOn = simulationViewController.IsAutoSaveEnabled();
@@ -80,6 +79,7 @@ public class SharedSimulationOverlayView: MonoBehaviour {
 
     private void ToggleSaveMenu() {
         this.saveMenu.gameObject.SetActive(!this.saveMenu.gameObject.activeSelf);
+        Refresh();
     }
 
     private void HideSaveMenu() {

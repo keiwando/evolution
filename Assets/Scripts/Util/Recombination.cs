@@ -2,24 +2,24 @@ using System;
 
 namespace Keiwando.Evolution {
 
-    public enum RecombinationAlgorithm {
+    public enum RecombinationAlgorithm: byte {
 
         /// <summary>
         /// Cuts the parent chromosomes at the same random index 
         /// and uses one part from each parent.
         /// </summary>
-        OnePointCrossover,
+        OnePointCrossover = 0,
 
         /// <summary>
         /// Cuts the parent chromosomes at multiple random indices 
         /// and alternatingly chooses parts from the parent chromosomes.
         /// </summary>
-        MultiPointCrossover,
+        MultiPointCrossover = 1,
 
         /// <summary>
         /// Chooses each bit at random from either parent chromosome.
         /// </summary>
-        UniformCrossover
+        UniformCrossover = 2
     }
 
     public static class Recombination<T> {
