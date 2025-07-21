@@ -45,7 +45,7 @@ namespace Keiwando.Evolution.Scenes {
       if (data.BestCreatures.Count > lastGenerationIncludedInCachedBestDistance + 1) {
 
         BinaryReader reader = null;
-        string saveFilePath = evolution.currentSaveFilePath;
+        string saveFilePath = evolution.CurrentSaveFilePath;
         int chromosomeLength = 0;
         Objective objective = this.data.Settings.Objective;
 

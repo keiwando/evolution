@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using UnityEngine;
 
 namespace Keiwando.Evolution {
 	
@@ -17,12 +18,6 @@ namespace Keiwando.Evolution {
 			set => Settings.AutoSaveDistance = value;
 		}
 
-		public string lastSaveFileName { get; private set; }
-
-		public AutoSaver() {
-			this.lastSaveFileName = "";
-		}
-
 		public bool Update(int generation, Evolution evolution) {
 
 			if (!Enabled || generation % GenerationDistance != 0 || generation < 2) { 
@@ -30,21 +25,9 @@ namespace Keiwando.Evolution {
 			}
 
 			// Perform an auto-save
-			Save(generation, evolution);
+			evolution.SaveSimulation();
 
 			return true;
-		}
-
-		private void Save(int generation, Evolution evolution) {
-
-			var lastSave = this.lastSaveFileName;
-
-			this.lastSaveFileName = evolution.SaveSimulation();
-
-			// Delete the last auto-saved file
-			if (lastSave != "") {
-				SimulationSerializer.DeleteSaveFile(lastSave);
-			}
 		}
 	}
 }

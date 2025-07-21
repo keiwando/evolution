@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.IO;
 using System.Text;
 using Keiwando.Evolution.Scenes;
 
@@ -100,10 +101,11 @@ namespace Keiwando.Evolution {
 		public AutoSaver AutoSaver { get; private set; }
 		public int LastSavedGeneration { get; private set; }
     public CreatureRecording BestCreatureRecording { get; set; }
-		public string loadedFromSimulationFilePath => config.Options.loadedFromSimulationFilePath;
-		public string currentSaveFilePath {
+		private string lastSaveFilePath { get; set; }
+		private string loadedFromSimulationFilePath => config.Options.loadedFromSimulationFilePath;
+		public string CurrentSaveFilePath {
 			get {
-				string path = AutoSaver.lastSaveFileName;
+				string path = lastSaveFilePath;
 				if (string.IsNullOrEmpty(path)) {
 					path = loadedFromSimulationFilePath;
 				}
@@ -111,6 +113,7 @@ namespace Keiwando.Evolution {
 			}
 		}
 
+		public BestCreaturesController BestCreaturesController { get; set; }
 		private Coroutine simulationRoutine;
 
 		private List<CreatureRecorder> recorders = new List<CreatureRecorder>();
@@ -494,22 +497,39 @@ namespace Keiwando.Evolution {
 			}
 		}
 
-		public string SaveSimulation() {
-			// DEBUG: For now to avoid existing saves being overwritten with simulation data that doesn't have all best creatures loaded, we skip the save in that case and log an error. Once we can save by simply appending to an existing file, remove this
-			foreach (ChromosomeData? chromosomeData in SimulationData.BestCreatures) {
-				if (chromosomeData == null) {
-					Debug.LogError("Tried to save incomplete simulation data. Not implemented yet");
-					return null;
+		public void SaveSimulation() {
+
+			string filePathToUpdate = null;
+			if (string.IsNullOrEmpty(lastSaveFilePath)) {
+				// The first save of each separate simulation run (even when loaded from an old simulation file)
+				// should result in a distinct save file.
+				string availableFilename = SimulationSerializer.GetAvailableSimulationName(SimulationData);
+				// DEBUG:
+				Debug.Log($"availableFilename: {availableFilename}");
+				if (!string.IsNullOrEmpty(loadedFromSimulationFilePath)) {
+					string dstFilePath = SimulationSerializer.PathToSimulationSave(availableFilename);
+					// Copy the source file so we can append to it as a new file
+					File.Copy(loadedFromSimulationFilePath, dstFilePath);
+					filePathToUpdate = dstFilePath;
+				} else {
+					SimulationSerializer.SaveSimulationFile(availableFilename, SimulationData);
 				}
+				this.lastSaveFilePath = availableFilename;
+			} else {
+				filePathToUpdate = lastSaveFilePath;
+			}
+
+			if (!string.IsNullOrEmpty(filePathToUpdate)) {
+				this.lastSaveFilePath = SimulationSerializer.SaveSimulationDataUpdatesIntoExistingFile(SimulationData, filePathToUpdate);
 			}
 			
-			var savefileName = SimulationSerializer.SaveSimulation(SimulationData);
+			BestCreaturesController.RemoveUnneededBestCreatures(SimulationData);
 			this.LastSavedGeneration = currentGenerationNumber;
 			if (SimulationWasSaved != null) SimulationWasSaved();
-			return savefileName;
 		}
 
 		public void LoadBestCreatureOfGenerationIfNecessary(int generation) {
+			string currentSaveFilePath = CurrentSaveFilePath;
 			if (SimulationData.BestCreatures[generation - 1] == null &&
 				 !string.IsNullOrEmpty(currentSaveFilePath)
 			) {

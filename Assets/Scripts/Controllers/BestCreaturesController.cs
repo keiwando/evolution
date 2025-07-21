@@ -53,6 +53,7 @@ namespace Keiwando.Evolution {
 			Physics.simulationMode = SimulationMode.Script;
 
 			evolution = FindAnyObjectByType<Evolution>();
+			evolution.BestCreaturesController = this;
 
 			AutoplayDuration = 10;
 			AutoplayEnabled = true;
@@ -168,6 +169,14 @@ namespace Keiwando.Evolution {
 		public void RefreshMuscleContractionVisibility() {
 			if (CurrentBest != null) 
 				CurrentBest.RefreshMuscleContractionVisibility(Settings.ShowMuscleContraction);
+		}
+
+		public void RemoveUnneededBestCreatures(SimulationData simulationData) {
+			for (int i = 0; i < simulationData.BestCreatures.Count - 2; i++) {
+				if (i != CurrentGeneration - 1) {
+					simulationData.BestCreatures[i] = null;
+				}
+			}
 		}
 	}
 }

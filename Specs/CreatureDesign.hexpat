@@ -139,3 +139,5 @@ struct CreatureDesign {
 
   CreatureDesignDataBlock dataBlocks[while($ < expectedEndByte)];
 };
+
+CreatureDesign creatureDesign @ 0x0 [[inline]];
