@@ -32,7 +32,7 @@ namespace Keiwando.Evolution.Scenes {
       if (generation < 1 || generation > data.BestCreatures.Count) {
         return null;
       }
-      evolution.LoadBestCreatureOfGenerationIfNecessary(generation - 1);
+      evolution.LoadBestCreatureOfGenerationIfNecessary(generation);
       return data.BestCreatures[generation - 1]?.Stats;
     }
 
@@ -45,40 +45,42 @@ namespace Keiwando.Evolution.Scenes {
       if (data.BestCreatures.Count > lastGenerationIncludedInCachedBestDistance + 1) {
 
         BinaryReader reader = null;
-        string saveFilePath = evolution.AutoSaver.lastSaveFileName;
+        string saveFilePath = evolution.currentSaveFilePath;
         int chromosomeLength = 0;
         Objective objective = this.data.Settings.Objective;
 
-        for (int i = lastGenerationIncludedInCachedBestDistance + 1; i < data.BestCreatures.Count; i++) {
-          float distance = 0f;
-          if (data.BestCreatures[i] != null) {
-            var stats = data.BestCreatures[i].Value.Stats;
-            distance = GetDistanceForObjective(stats, objective);
+        try {
+          for (int i = lastGenerationIncludedInCachedBestDistance + 1; i < data.BestCreatures.Count; i++) {
+            float distance = 0f;
+            if (data.BestCreatures[i] != null) {
+              var stats = data.BestCreatures[i].Value.Stats;
+              distance = GetDistanceForObjective(stats, objective);
 
-          } else if (!string.IsNullOrEmpty(saveFilePath) && File.Exists(saveFilePath)) {
-            if (reader == null) {
-              var stream = File.Open(saveFilePath, FileMode.Open);
-              reader = new BinaryReader(stream, System.Text.Encoding.UTF8);
-              chromosomeLength = SimulationSerializer.SkipUntilBestCreaturesDataAndReturnChromosomeLength(reader);
-              SimulationSerializer.SkipBestCreatureEntries(reader, count: i, chromosomeLength);
-              // DEBUG:
-              Debug.Log("Streaming best creatures distances from file");
+            } else if (!string.IsNullOrEmpty(saveFilePath) && File.Exists(saveFilePath)) {
+              if (reader == null) {
+                var stream = File.Open(saveFilePath, FileMode.Open);
+                reader = new BinaryReader(stream, System.Text.Encoding.UTF8);
+                chromosomeLength = SimulationSerializer.SkipUntilBestCreaturesDataAndReturnChromosomeLength(reader);
+                int numberOfBestCreatureEntries = reader.ReadInt32();
+                SimulationSerializer.SkipBestCreatureEntries(reader, count: i, chromosomeLength);
+              }
+              reader.BaseStream.Seek(chromosomeLength * sizeof(float), SeekOrigin.Current);
+              distance = GetDistanceForObjectiveAndAdvancePastCreatureStats(reader, objective);
             }
-            reader.BaseStream.Seek(chromosomeLength * sizeof(float), SeekOrigin.Current);
-            distance = GetDistanceForObjectiveAndAdvancePastCreatureStats(reader, objective);
+            
+            if (distance > bestDistance) {
+              bestDistance = distance;
+            }
           }
-          
-          if (distance > bestDistance) {
-            bestDistance = distance;
+        } finally {
+          if (reader != null) {
+            reader.BaseStream.Close();
+            reader.Close();
           }
         }
+        
         lastGenerationIncludedInCachedBestDistance = data.BestCreatures.Count - 1;
         cachedBestDistance = bestDistance;
-
-        if (reader != null) {
-          reader.BaseStream.Close();
-          reader.Close();
-        }
       }
 
       return bestDistance;

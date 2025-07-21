@@ -320,19 +320,24 @@ public class SimulationSerializer {
 	public static void SkipBestCreatureEntries(BinaryReader reader, int count, int chromosomeLength) {
 		int chromosomeByteLength = chromosomeLength * sizeof(float);
 		for (int i = 0; i < count; i++) {
-				reader.BaseStream.Seek(chromosomeByteLength, SeekOrigin.Current);
-				CreatureStats.Skip(reader);
-			}
+			reader.BaseStream.Seek(chromosomeByteLength, SeekOrigin.Current);
+			CreatureStats.Skip(reader);
+		}
 	}
 
-	public static void LoadBestCreatureData(string filename, SimulationData simulationData, int generationIndex) {
+	public static void LoadBestCreatureData(string filepath, SimulationData simulationData, int generationIndex) {
 		if (generationIndex < 0 || generationIndex >= simulationData.BestCreatures.Count) {
 			return;
 		}
-		using (var stream = File.Open(filename, FileMode.Open))
+		using (var stream = File.Open(filepath, FileMode.Open))
 		using (var reader = new BinaryReader(stream)) {
 			int chromosomeLength = SkipUntilBestCreaturesDataAndReturnChromosomeLength(reader);
 			int chromosomeByteLength = chromosomeLength * sizeof(float);
+			int bestCreatureEntriesCount = reader.ReadInt32();
+			if (generationIndex >= bestCreatureEntriesCount) {
+				Debug.LogError($"Not enough best creature entries in the simulation data file: {filepath}!.");
+				return;
+			}
 			SkipBestCreatureEntries(reader, count: generationIndex, chromosomeLength: chromosomeLength);
 			ChromosomeData chromosomeData = LoadChromosomeData(reader, chromosomeLength: chromosomeLength);
 			simulationData.BestCreatures[generationIndex] = chromosomeData;

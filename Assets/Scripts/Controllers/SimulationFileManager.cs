@@ -92,7 +92,11 @@ namespace Keiwando.Evolution {
 
 			var simulationData = SimulationSerializer.LoadSimulationData(filename);
 			InputRegistry.shared.DeregisterAll();
-			editor.StartSimulation(simulationData);
+			string filepath = SimulationSerializer.PathToSimulationSave(filename);
+			SimulationOptions options = new SimulationOptions {
+				loadedFromSimulationFilePath = filepath
+			};
+			editor.StartSimulation(simulationData, options);
 		}
 
 		private void TryImport(OpenedFile[] files) {

@@ -252,7 +252,7 @@ public class SimulationViewController : MonoBehaviour,
   public CreatureStats GetCreatureStatsOfCurrentBest(BestCreaturesOverlayView view) {
 
 			var generation = bestCreatureController.CurrentGeneration;
-			evolution.LoadBestCreatureOfGenerationIfNecessary(generation - 1);
+			evolution.LoadBestCreatureOfGenerationIfNecessary(generation);
 			ChromosomeData? bestChromosomeData = evolution.SimulationData.BestCreatures[generation - 1];
 			if (bestChromosomeData.HasValue) {
 				return bestChromosomeData.Value.Stats;	

@@ -100,6 +100,16 @@ namespace Keiwando.Evolution {
 		public AutoSaver AutoSaver { get; private set; }
 		public int LastSavedGeneration { get; private set; }
     public CreatureRecording BestCreatureRecording { get; set; }
+		public string loadedFromSimulationFilePath => config.Options.loadedFromSimulationFilePath;
+		public string currentSaveFilePath {
+			get {
+				string path = AutoSaver.lastSaveFileName;
+				if (string.IsNullOrEmpty(path)) {
+					path = loadedFromSimulationFilePath;
+				}
+				return path;
+			}
+		}
 
 		private Coroutine simulationRoutine;
 
@@ -501,9 +511,9 @@ namespace Keiwando.Evolution {
 
 		public void LoadBestCreatureOfGenerationIfNecessary(int generation) {
 			if (SimulationData.BestCreatures[generation - 1] == null &&
-				 !string.IsNullOrEmpty(AutoSaver.lastSaveFileName)
+				 !string.IsNullOrEmpty(currentSaveFilePath)
 			) {
-				SimulationSerializer.LoadBestCreatureData(AutoSaver.lastSaveFileName, SimulationData, generation - 1);
+				SimulationSerializer.LoadBestCreatureData(currentSaveFilePath, SimulationData, generation - 1);
 			}
 		}
 	}

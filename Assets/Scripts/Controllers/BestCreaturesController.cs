@@ -110,7 +110,7 @@ namespace Keiwando.Evolution {
 			this.physicsScene = context.PhysicsScene;
 			this.playbackScene = context.Scene;
 
-			evolution.LoadBestCreatureOfGenerationIfNecessary(generation - 1);
+			evolution.LoadBestCreatureOfGenerationIfNecessary(generation);
 			var chromosome = evolution.SimulationData.BestCreatures[generation - 1]?.Chromosome;
 			this.CurrentBest = context.Creatures[0];
 

@@ -5,6 +5,7 @@ namespace Keiwando.Evolution {
 
     public struct SimulationOptions {
         public Action<Evolution.Solution[]> onEvaluatedSolutions;
+        public string loadedFromSimulationFilePath;
     }
 
     public struct SimulationConfig {
