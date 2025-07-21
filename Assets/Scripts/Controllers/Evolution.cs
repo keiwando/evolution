@@ -99,6 +99,7 @@ namespace Keiwando.Evolution {
 
 		public AutoSaver AutoSaver { get; private set; }
 		public int LastSavedGeneration { get; private set; }
+    public CreatureRecording BestCreatureRecording { get; set; }
 
 		private Coroutine simulationRoutine;
 
@@ -179,7 +180,7 @@ namespace Keiwando.Evolution {
 				int currentBatchSize = Math.Min(actualBatchSize, remainingCreatures);
 
 				var context = new SceneController.SimulationSceneLoadContext();
-				var sceneContext = new SimulationSceneContext(this.SimulationData);
+				var sceneContext = new SimulationSceneContext(this);
 
 				yield return SceneController.LoadSimulationScene(
 					creatureDesign: this.SimulationData.CreatureDesign,
@@ -298,7 +299,7 @@ namespace Keiwando.Evolution {
 			SimulationData.BestCreatures.Add(new ChromosomeData(best.Encodable.ToChromosome(), best.Stats));
 
 			CreatureRecordingMovementData recordedMovementData = best.Recorder.toRecordingMovementData();
-			SimulationData.BestCreatureRecording = new CreatureRecording(
+			BestCreatureRecording = new CreatureRecording(
 				creatureDesign: SimulationData.CreatureDesign,
 				sceneDescription: SimulationData.SceneDescription,
 				movementData: recordedMovementData,
@@ -476,7 +477,7 @@ namespace Keiwando.Evolution {
 		}
 
 		public void SaveToGallery() {
-			CreatureRecording recording = this.SimulationData.BestCreatureRecording;
+			CreatureRecording recording = this.BestCreatureRecording;
 			if (recording != null) {
 				CreatureRecordingSerializer.SaveCreatureRecordingFile(recording);
 				if (CreatureWasSavedToGallery != null) CreatureWasSavedToGallery();
@@ -484,10 +485,26 @@ namespace Keiwando.Evolution {
 		}
 
 		public string SaveSimulation() {
+			// DEBUG: For now to avoid existing saves being overwritten with simulation data that doesn't have all best creatures loaded, we skip the save in that case and log an error. Once we can save by simply appending to an existing file, remove this
+			foreach (ChromosomeData? chromosomeData in SimulationData.BestCreatures) {
+				if (chromosomeData == null) {
+					Debug.LogError("Tried to save incomplete simulation data. Not implemented yet");
+					return null;
+				}
+			}
+			
 			var savefileName = SimulationSerializer.SaveSimulation(SimulationData);
 			this.LastSavedGeneration = currentGenerationNumber;
 			if (SimulationWasSaved != null) SimulationWasSaved();
 			return savefileName;
+		}
+
+		public void LoadBestCreatureOfGenerationIfNecessary(int generation) {
+			if (SimulationData.BestCreatures[generation - 1] == null &&
+				 !string.IsNullOrEmpty(AutoSaver.lastSaveFileName)
+			) {
+				SimulationSerializer.LoadBestCreatureData(AutoSaver.lastSaveFileName, SimulationData, generation - 1);
+			}
 		}
 	}
 }

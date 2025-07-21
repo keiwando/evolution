@@ -40,38 +40,6 @@ namespace Keiwando.Evolution {
 
                 viewController.FocusOnNextCreature();
             } 
-            
-            #if UNITY_EDITOR
-            if (Input.GetKeyDown(KeyCode.P)) {
-                foreach (var bestCreature in evolution.SimulationData.BestCreatures) {
-                    Debug.Log(bestCreature.GetFitness());
-                }
-            } else if (Input.GetKeyDown(KeyCode.L)) {
-                var bestCreatures = evolution.SimulationData.BestCreatures;
-                if (bestCreatures.Count <= 1) return;
-                var lastFitness = bestCreatures[0].GetFitness();
-                for (int i = 1; i < bestCreatures.Count; i++) {
-                    var fitness = bestCreatures[i].GetFitness();
-                    Debug.Log((fitness - lastFitness) * 100);
-                    lastFitness = fitness;
-                }
-            } // else if (Input.GetKeyDown(KeyCode.K)) {
-            //     var currentContainer = GameObject.FindGameObjectWithTag("SimulationConfig");
-            //     Destroy(currentContainer);
-            //     SceneController.LoadSync(SceneController.Scene.Editor);
-            //     var simulationData = evolution.SimulationData;
-            //     var containerObject = new GameObject("SimulationConfig");
-            //     containerObject.tag = "SimulationConfig";
-            //     var configContainer = containerObject.AddComponent<SimulationConfigContainer>();
-            //     configContainer.SimulationData = simulationData;
-            //     // configContainer.SimulationData = SimulationData.Decode(simulationData.Encode().ToString());
-
-            //     Debug.Log(simulationData == simulationData);
-            //     Debug.Log(simulationData == SimulationData.Decode(simulationData.Encode().ToString()));
-            //     DontDestroyOnLoad(containerObject);
-            //     SceneController.LoadSync(SceneController.Scene.SimulationContainer);
-            // }
-            #endif
         }
     }
 }

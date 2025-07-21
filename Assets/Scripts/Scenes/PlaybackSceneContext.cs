@@ -10,7 +10,7 @@ namespace Keiwando.Evolution.Scenes {
 
         private readonly BestCreaturesController controller;
 
-        public PlaybackSceneContext(SimulationData data, BestCreaturesController controller): base(data) {
+        public PlaybackSceneContext(Evolution evolution, BestCreaturesController controller): base(evolution) {
             this.controller = controller;
         }
 

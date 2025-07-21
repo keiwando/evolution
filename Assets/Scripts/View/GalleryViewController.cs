@@ -643,8 +643,11 @@ namespace Keiwando.Evolution.UI {
 
       CreatureRecording recording = getRecording(this.fullscreenSceneIndex.Value);
 
+      var fitnessPercentage = Mathf.Round(recording.stats.fitness * 1000f) / 10f;
+
       StringBuilder stringBuilder = new StringBuilder();
       stringBuilder.AppendLine(recording.creatureDesign.Name);
+      stringBuilder.AppendLine(string.Format("Fitness: {0}%", fitnessPercentage));
       stringBuilder.AppendLine($"Generation: {recording.generation}");
       stringBuilder.AppendLine($"Task: {ObjectiveUtil.StringRepresentation(recording.task)}\n");
 

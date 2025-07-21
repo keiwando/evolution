@@ -101,6 +101,33 @@ public class CreatureStats {
 		};
 	}
 
+	public static void Skip(BinaryReader reader) {
+		uint dataLength = reader.ReadBlockLength();
+		long expectedEndByte = reader.BaseStream.Position + (long)dataLength;
+		reader.BaseStream.Seek(expectedEndByte, SeekOrigin.Begin);
+	}
+
+	private static float ReadFloatAtOffsetAndAdvanceToEnd(BinaryReader reader, int offset) {
+		uint dataLength = reader.ReadBlockLength();
+		long expectedEndByte = reader.BaseStream.Position + (long)dataLength;
+		reader.BaseStream.Seek(offset, SeekOrigin.Current);
+		float value = reader.ReadSingle();
+		reader.BaseStream.Seek(expectedEndByte, SeekOrigin.Begin);
+		return value;
+	}
+
+	public static float DecodeHorizontalDistanceTravelledAndAdvanceToEnd(BinaryReader reader) {
+		return ReadFloatAtOffsetAndAdvanceToEnd(reader, 14);
+	}
+
+	public static float DecodeVerticalDistanceTravelledAndAdvanceToEnd(BinaryReader reader) {
+		return ReadFloatAtOffsetAndAdvanceToEnd(reader, 18);
+	}
+
+	public static float DecodeMaxJumpingHeightAndAdvanceToEnd(BinaryReader reader) {
+		return ReadFloatAtOffsetAndAdvanceToEnd(reader, 22);
+	}
+
 	private static class CodingKey {
 		public const string UnclampedFitness = "unclampedFitness";
 		public const string Fitness = "fitness";

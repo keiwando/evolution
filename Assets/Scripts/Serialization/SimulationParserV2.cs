@@ -45,7 +45,7 @@ public class SimulationParserV2 {
 		creatureDesign.Name = creatureName;
 
 		var bestChromosomesData = new List<string>(components[4].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None));
-		var bestChromosomes = new List<ChromosomeData>();
+		var bestChromosomes = new List<ChromosomeData?>();
 
 		foreach (var chromosomeData in bestChromosomesData) {
 

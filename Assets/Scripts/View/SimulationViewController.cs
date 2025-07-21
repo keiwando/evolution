@@ -149,7 +149,7 @@ public class SimulationViewController : MonoBehaviour,
 	}
 
 	public bool SaveToGalleryIsPossible() {
-		return evolution.SimulationData.BestCreatureRecording != null;
+		return evolution.BestCreatureRecording != null;
 	}
 
   public void PauseButtonClicked() {
@@ -252,8 +252,14 @@ public class SimulationViewController : MonoBehaviour,
   public CreatureStats GetCreatureStatsOfCurrentBest(BestCreaturesOverlayView view) {
 
 			var generation = bestCreatureController.CurrentGeneration;
-			var info = evolution.SimulationData.BestCreatures[generation - 1];
-			return info.Stats;
+			evolution.LoadBestCreatureOfGenerationIfNecessary(generation - 1);
+			ChromosomeData? bestChromosomeData = evolution.SimulationData.BestCreatures[generation - 1];
+			if (bestChromosomeData.HasValue) {
+				return bestChromosomeData.Value.Stats;	
+			} else {
+				Debug.LogError("Best creature data not loaded");
+				return new CreatureStats();
+			}
 	}
 
 	public NeuralNetworkSettings GetNetworkSettingsOfCurrentBest(BestCreaturesOverlayView view) {

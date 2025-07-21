@@ -9,6 +9,6 @@ namespace Keiwando.Evolution.Scenes {
         protected override string staticForegroundLayerName => "StaticForeground";
         protected override string dynamicForegroundLayerName => "DynamicForeground";
 
-        public SimulationSceneContext(SimulationData data): base(data) {}
+        public SimulationSceneContext(Evolution evolution): base(evolution) {}
     }
 }

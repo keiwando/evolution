@@ -10,7 +10,7 @@ public class CustomEvolutionFileType {
 		Extension = "evol",
 		Owner = true,
 		AppleUTI = "com.keiwando.Evolution.evol",
-		AppleConformsToUTI = "public.plain-text",
+		AppleConformsToUTI = "public.data",
 		MimeType = "application/octet-stream"
 	};
 

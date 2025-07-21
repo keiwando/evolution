@@ -96,7 +96,7 @@ namespace Keiwando.Evolution {
 			this.CurrentGeneration = generation;
 
 			var context = new SceneController.SimulationSceneLoadContext();
-			var sceneContext = new PlaybackSceneContext(this.evolution.SimulationData, this);
+			var sceneContext = new PlaybackSceneContext(this.evolution, this);
 
 			yield return SceneController.LoadSimulationScene(
 				creatureDesign: this.evolution.SimulationData.CreatureDesign,
@@ -110,7 +110,8 @@ namespace Keiwando.Evolution {
 			this.physicsScene = context.PhysicsScene;
 			this.playbackScene = context.Scene;
 
-			var chromosome = evolution.SimulationData.BestCreatures[generation - 1].Chromosome;
+			evolution.LoadBestCreatureOfGenerationIfNecessary(generation - 1);
+			var chromosome = evolution.SimulationData.BestCreatures[generation - 1]?.Chromosome;
 			this.CurrentBest = context.Creatures[0];
 
 			this.CurrentBest.recordingPlayer = null;

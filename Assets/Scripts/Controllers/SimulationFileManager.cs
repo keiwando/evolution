@@ -108,7 +108,7 @@ namespace Keiwando.Evolution {
 						SimulationData simulationData;
 						using (MemoryStream memoryStream = new MemoryStream(file.Data))
 						using (BinaryReader reader = new BinaryReader(memoryStream)) {
-							simulationData = SimulationSerializer.DecodeSimulationData(reader, file.Name);
+							simulationData = SimulationSerializer.DecodeSimulationData(reader);
 						}
 						if (simulationData == null) {
 							var encoded = file.ToUTF8String();

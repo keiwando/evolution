@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using Keiwando.JSON;
 using Keiwando.Evolution.Scenes;
+using UnityEngine;
 
 namespace Keiwando.Evolution {
 
@@ -16,11 +17,10 @@ namespace Keiwando.Evolution {
         public CreatureDesign CreatureDesign { get; set; }
         public SimulationSceneDescription SceneDescription { get; set; }
 
-        public List<ChromosomeData> BestCreatures { get; set; }
+        /// Each entry is optional here because we generally don't want to keep all of these
+        /// in memory and instead only load them when necessary.
+        public List<ChromosomeData?> BestCreatures { get; set; }
         public float[][] CurrentChromosomes { get; set; }
-
-        // DEBUG:
-        public CreatureRecording BestCreatureRecording { get; set; }
 
         public readonly int LastV2SimulatedGeneration;
 
@@ -34,7 +34,7 @@ namespace Keiwando.Evolution {
             this.NetworkSettings = networkSettings;
             this.CreatureDesign = design;
             this.SceneDescription = sceneDescription;
-            this.BestCreatures = new List<ChromosomeData>();
+            this.BestCreatures = new List<ChromosomeData?>();
             this.CurrentChromosomes = new float[0][];
             this.LastV2SimulatedGeneration = 0;
         }
@@ -44,7 +44,7 @@ namespace Keiwando.Evolution {
             NeuralNetworkSettings networkSettings, 
             CreatureDesign design,
             SimulationSceneDescription sceneDescription,
-            List<ChromosomeData> bestCreatures, 
+            List<ChromosomeData?> bestCreatures, 
             float[][] currentChromosomes,
             int lastV2SimulatedGeneration = 0
         ): this(settings, networkSettings, design, sceneDescription) {
@@ -67,15 +67,23 @@ namespace Keiwando.Evolution {
         }
 
         public JObject Encode() {
+            Debug.LogError("SimulationData encoding as JSON is not intended to be called any more!");
 
             JObject json = new JObject();
+
+            var bestCreatures = new List<ChromosomeData>();
+            foreach (ChromosomeData? chromosomeData in this.BestCreatures) {
+                if (chromosomeData.HasValue) {
+                    bestCreatures.Add(chromosomeData.Value);
+                }
+            }
             
             json[CodingKey.Version] = this.Version;
             json[CodingKey.Settings] = this.Settings.Encode();
             json[CodingKey.NetworkSettings] = this.NetworkSettings.Encode();
             json[CodingKey.CreatureDesign] = this.CreatureDesign.Encode();
             json[CodingKey.SceneDescription] = this.SceneDescription.Encode();
-            json[CodingKey.BestCreatures] = JArray.From(this.BestCreatures);
+            json[CodingKey.BestCreatures] = JArray.From(bestCreatures);
             var chromosomeTokens = new JToken[this.CurrentChromosomes.Length];
             for (int i = 0; i < chromosomeTokens.Length; i++) {
                 chromosomeTokens[i] = new JArray(this.CurrentChromosomes[i]);
@@ -98,12 +106,18 @@ namespace Keiwando.Evolution {
                 currentChromosomes[i] = encodedCurrentChromosomes[i].ToFloatArray();
             }
 
+            List<ChromosomeData> bestCreaturesNotNull = json[CodingKey.BestCreatures].ToList(ChromosomeData.Decode);
+            List<ChromosomeData?> bestCreatures = new List<ChromosomeData?>();
+            foreach (ChromosomeData chromosomeData in bestCreaturesNotNull) {
+                bestCreatures.Add(chromosomeData);
+            }
+
             return new SimulationData(
                 json[CodingKey.Settings].Decode(SimulationSettings.Decode),
                 json[CodingKey.NetworkSettings].Decode(NeuralNetworkSettings.Decode),
                 json[CodingKey.CreatureDesign].Decode(CreatureDesign.Decode),
                 json[CodingKey.SceneDescription].Decode(SimulationSceneDescription.Decode),
-                json[CodingKey.BestCreatures].ToList(ChromosomeData.Decode),
+                bestCreatures,
                 currentChromosomes,
                 json[CodingKey.LastV2SimulatedGeneration].ToInt()
             );

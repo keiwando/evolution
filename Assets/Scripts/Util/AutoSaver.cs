@@ -17,7 +17,11 @@ namespace Keiwando.Evolution {
 			set => Settings.AutoSaveDistance = value;
 		}
 
-		private string lastSaveFileName = "";
+		public string lastSaveFileName { get; private set; }
+
+		public AutoSaver() {
+			this.lastSaveFileName = "";
+		}
 
 		public bool Update(int generation, Evolution evolution) {
 
