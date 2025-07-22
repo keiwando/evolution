@@ -31,48 +31,53 @@ public class SimulationParserV2 {
 	/// <param name="content">The Content of the save file.</param>
 	public static SimulationData ParseSimulationData(string name, string content, LegacySimulationLoader.SplitOptions splitOptions) {
 
-		var creatureName = name.Split('-')[0].Replace(" ", "");
-		if (string.IsNullOrEmpty(creatureName))
-			creatureName = "Unnamed";
+		try {
+			var creatureName = name.Split('-')[0].Replace(" ", "");
+			if (string.IsNullOrEmpty(creatureName))
+				creatureName = "Unnamed";
 
-		var components = content.Split(splitOptions.SPLIT_ARRAY, System.StringSplitOptions.None);
+			var components = content.Split(splitOptions.SPLIT_ARRAY, System.StringSplitOptions.None);
 
-		var simulationSettings = SimulationSettings.Decode(components[1]);
-		var networkSettings = NeuralNetworkSettings.Decode(components[2]);
+			var simulationSettings = SimulationSettings.Decode(components[1]);
+			var networkSettings = NeuralNetworkSettings.Decode(components[2]);
 
-		var creatureData = components[3];
-		var creatureDesign = CreatureSerializer.ParseCreatureDesign(creatureData);
-		creatureDesign.Name = creatureName;
+			var creatureData = components[3];
+			var creatureDesign = CreatureSerializer.ParseCreatureDesign(creatureData);
+			creatureDesign.Name = creatureName;
 
-		var bestChromosomesData = new List<string>(components[4].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None));
-		var bestChromosomes = new List<ChromosomeData?>();
+			var bestChromosomesData = new List<string>(components[4].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None));
+			var bestChromosomes = new List<ChromosomeData?>();
 
-		foreach (var chromosomeData in bestChromosomesData) {
+			foreach (var chromosomeData in bestChromosomesData) {
 
-			if (chromosomeData != "") {
-				var stats = ChromosomeStats.FromString(chromosomeData);
-				var data = new StringChromosomeData(stats.chromosome, stats.stats);
-				bestChromosomes.Add(data.ToChromosomeData());	
+				if (chromosomeData != "") {
+					var stats = ChromosomeStats.FromString(chromosomeData);
+					var data = new StringChromosomeData(stats.chromosome, stats.stats);
+					bestChromosomes.Add(data.ToChromosomeData());	
+				}
 			}
-		}
 
-		var chromosomeComponents = components[5].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None);
-		var currentChromosomes = new List<float[]>();
+			var chromosomeComponents = components[5].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None);
+			var currentChromosomes = new List<float[]>();
 
-		foreach (var chromosome in chromosomeComponents) {
+			foreach (var chromosome in chromosomeComponents) {
 
-			if (chromosome != "") {
-				currentChromosomes.Add(ConversionUtils.BinaryStringToFloatArray(chromosome));
+				if (chromosome != "") {
+					currentChromosomes.Add(ConversionUtils.BinaryStringToFloatArray(chromosome));
+				}
 			}
+
+			var sceneDescription = DefaultSimulationScenes.DefaultSceneForObjective(simulationSettings.Objective);
+			sceneDescription.PhysicsConfiguration = ScenePhysicsConfiguration.Legacy;
+
+			return new SimulationData(
+				simulationSettings, networkSettings, creatureDesign, 
+				sceneDescription, bestChromosomes, currentChromosomes.ToArray(),
+				bestChromosomes.Count
+			);
+		} catch (Exception e) {
+			Debug.LogError(e.Message);
+			return null;
 		}
-
-		var sceneDescription = DefaultSimulationScenes.DefaultSceneForObjective(simulationSettings.Objective);
-		sceneDescription.PhysicsConfiguration = ScenePhysicsConfiguration.Legacy;
-
-		return new SimulationData(
-			simulationSettings, networkSettings, creatureDesign, 
-			sceneDescription, bestChromosomes, currentChromosomes.ToArray(),
-			bestChromosomes.Count
-		);
 	}
 }

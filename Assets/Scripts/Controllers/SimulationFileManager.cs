@@ -16,12 +16,10 @@ namespace Keiwando.Evolution {
 		[SerializeField]
 		private CreatureEditor editor;
 
-		[SerializeField]
-		private FileSelectionViewController viewController;
-		[SerializeField]
-		private UIFade importIndicator;
-		[SerializeField]
-		private UIFade failedImportIndicator;
+		[SerializeField] private FileSelectionViewController viewController;
+		[SerializeField] private UIFade importIndicator;
+		[SerializeField] private UIFade failedImportIndicator;
+		[SerializeField] private UIFade corruptFileIndicator;
 
 		private int selectedIndex = 0;
 		private List<string> filenames = new List<string>();
@@ -91,6 +89,10 @@ namespace Keiwando.Evolution {
 			yield return new WaitForEndOfFrame();
 
 			var simulationData = SimulationSerializer.LoadSimulationData(filename);
+			if (simulationData == null) {
+				corruptFileIndicator.FadeInOut(2.0f);
+				yield break;
+			}
 			InputRegistry.shared.DeregisterAll();
 			string filepath = SimulationSerializer.PathToSimulationSave(filename);
 			SimulationOptions options = new SimulationOptions {
@@ -121,6 +123,9 @@ namespace Keiwando.Evolution {
 						if (simulationData != null) {
 							SimulationSerializer.SaveSimulationFile(file.Name, simulationData, false);
 							successfulImport = true;
+						} else {
+							failedImport = true;
+							Debug.LogError(string.Format("Failed to parse .evol file contents with name {0}", file.Name));
 						}
 					} catch {
 						failedImport = true;
