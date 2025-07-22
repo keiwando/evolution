@@ -42,7 +42,7 @@ public class SimulationParserV1 {
 			var timePerGen = int.Parse(components[1].Replace(Environment.NewLine, ""));
 
 			var creatureData = components[2];
-			var creatureDesign = CreatureSerializer.ParseCreatureDesign(creatureData, creatureName);
+			var creatureDesign = CreatureSerializer.ParseLegacyCreatureDesign(creatureData, creatureName);
 
 			var bestChromosomesData = new List<string>(components[3].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None));
 			var bestChromosomes = new List<ChromosomeData?>();

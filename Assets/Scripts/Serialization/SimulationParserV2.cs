@@ -42,7 +42,7 @@ public class SimulationParserV2 {
 			var networkSettings = NeuralNetworkSettings.Decode(components[2]);
 
 			var creatureData = components[3];
-			var creatureDesign = CreatureSerializer.ParseCreatureDesign(creatureData);
+			var creatureDesign = CreatureSerializer.ParseLegacyCreatureDesign(creatureData);
 			creatureDesign.Name = creatureName;
 
 			var bestChromosomesData = new List<string>(components[4].Split(splitOptions.NEWLINE_SPLIT, StringSplitOptions.None));

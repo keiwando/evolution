@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Keiwando.NFSO;
 using Keiwando.Evolution.UI;
+using System;
 
 namespace Keiwando.Evolution {
 
@@ -160,19 +162,30 @@ namespace Keiwando.Evolution {
 			foreach (var file in files) {
 				var extension = file.Extension.ToLower();
 				if (extension.Equals(".creat")) {
-
-					var nameFromFile = CreatureSerializer.EXTENSION_PATTERN.Replace(file.Name, "");
-					var encoded = file.ToUTF8String();
 					try {
-						var design = CreatureSerializer.ParseCreatureDesign(encoded, nameFromFile);
-						CreatureSerializer.SaveCreatureDesign(design, false);
-						lastImportedDesign = design;
+						CreatureDesign creatureDesign;
+						using (MemoryStream memoryStream = new MemoryStream(file.Data))
+						using (BinaryReader reader = new BinaryReader(memoryStream)) {
+							creatureDesign = CreatureSerializer.DecodeCreatureDesign(reader);
+						}
+						if (creatureDesign == null) {
+							var nameFromFile = CreatureSerializer.EXTENSION_PATTERN.Replace(file.Name, "");
+							var encoded = file.ToUTF8String();
+							creatureDesign = CreatureSerializer.ParseLegacyCreatureDesign(encoded, nameFromFile);
+						}
+						if (creatureDesign != null) {
+							CreatureSerializer.SaveCreatureDesign(creatureDesign, false);
+							successfulImport = true;
+							lastImportedDesign = creatureDesign;
+						} else {
+							failedImport = true;
+							Debug.LogError(string.Format("Failed to parse .creat file: {0}", file.Name));
+						}
 					} catch {
 						failedImport = true;
-						Debug.LogError(string.Format("Failed to parse .creat file contents: {0}", encoded));
+						Debug.LogError(string.Format("Failed to parse .creat file: {0}", file.Name));
 						continue;
 					}
-					successfulImport = true;
 				}
 			}
 			RefreshCache();

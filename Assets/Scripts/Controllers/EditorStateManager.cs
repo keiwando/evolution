@@ -67,7 +67,7 @@ public class EditorStateManager {
         }
         
         try {
-            _lastCreatureDesign = CreatureSerializer.ParseCreatureDesign(Settings.LastCreatureDesign);
+            _lastCreatureDesign = CreatureSerializer.ParseLegacyCreatureDesign(Settings.LastCreatureDesign);
         } catch {
             Settings.LastCreatureDesign = CreatureDesign.Empty.Encode().ToString(Formatting.None);
             _lastCreatureDesign = CreatureDesign.Empty;

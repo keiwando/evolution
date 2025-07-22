@@ -59,11 +59,40 @@ public class CreatureSerializer {
 		}
 
 		design.Name = creatureName;
-		var encoded = design.Encode().ToString(Formatting.None);
 		var path = PathToCreatureDesign(creatureName);
 
 		CreateSaveFolder();
-		File.WriteAllText(path, encoded);
+
+		using (var stream = File.Open(path, FileMode.Create))
+		using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8)) {
+			WriteCreatureDesign(design, writer);
+		}
+	}
+
+	/// <summary>
+	/// Loads a creature design with a specified name.
+	/// </summary>
+	public static CreatureDesign LoadCreatureDesign(string name) {
+
+		#if UNITY_WEBGL
+		return GetDefaultCreatureDesign(name);
+		#endif
+
+		var path = PathToCreatureDesign(name);
+		if (!File.Exists(path)) {
+			return new CreatureDesign();
+		}
+
+		using (var stream = File.Open(path, FileMode.Open))
+		using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8)) {
+			CreatureDesign creatureDesign = DecodeCreatureDesign(reader);
+			if (creatureDesign != null) {
+				return creatureDesign;
+			}
+		}
+
+		string textContents = File.ReadAllText(path);
+		return ParseLegacyCreatureDesign(textContents, name);
 	}
 
 	private enum TaggedBlockType: short {
@@ -435,24 +464,7 @@ public class CreatureSerializer {
 		);
 	}
 
-	/// <summary>
-	/// Loads a creature design with a specified name.
-	/// </summary>
-	public static CreatureDesign LoadCreatureDesign(string name) {
-
-		#if UNITY_WEBGL
-		return GetDefaultCreatureDesign(name);
-		#endif
-
-		var contents = LoadSaveData(name);
-		
-		if (string.IsNullOrEmpty(contents)) 
-			return new CreatureDesign();
-
-		return ParseCreatureDesign(contents, name);
-	}
-
-	public static CreatureDesign ParseCreatureDesign(string encoded, string name = "") {
+	public static CreatureDesign ParseLegacyCreatureDesign(string encoded, string name = "") {
 
 		if (string.IsNullOrEmpty(encoded)) 
 			return new CreatureDesign();
@@ -547,17 +559,7 @@ public class CreatureSerializer {
 		#endif
 		// return Application.platform == RuntimePlatform.WebGLPlayer;
 	}
-
-	private static string LoadSaveData(string name) {
-		
-		var path = PathToCreatureDesign(name);
-		if (File.Exists(path)) {
-			return File.ReadAllText(path);
-		} else {
-			return "";
-		}
-	}
-
+	
 	private static CreatureDesign GetDefaultCreatureDesign(string name) {
 
 		if (!DefaultCreatures.defaultCreatures.ContainsKey(name)) {
@@ -566,7 +568,7 @@ public class CreatureSerializer {
 		}
 
 		var contents = DefaultCreatures.defaultCreatures[name];
-		return ParseCreatureDesign(contents, name);
+		return ParseLegacyCreatureDesign(contents, name);
 	}
 
 	/// <summary>
@@ -584,7 +586,7 @@ public class CreatureSerializer {
 
 		foreach (var creature in DefaultCreatures.defaultCreatures) {
 			if (!CreatureExists(creature.Key)) {
-				var design = ParseCreatureDesign(creature.Value, creature.Key);
+				var design = ParseLegacyCreatureDesign(creature.Value, creature.Key);
 				SaveCreatureDesign(design, false);
 			}
 		}
@@ -622,7 +624,7 @@ public class CreatureSerializer {
 		foreach (var creatureName in creatureNames) {
 			var saveData = PlayerPrefs.GetString(creatureName, "");
 			if (!string.IsNullOrEmpty(saveData) && !CreatureExists(creatureName)) {
-				var design = ParseCreatureDesign(saveData, creatureName);
+				var design = ParseLegacyCreatureDesign(saveData, creatureName);
 				SaveCreatureDesign(design, false);
 			}
 		}
