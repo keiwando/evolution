@@ -141,7 +141,7 @@ General Tips
 
 You can delete individual body part by clicking on the “Delete“ button (or pressing D on the keyboard) and clicking on the part that you want to delete. This will also delete any directly attached objects. So if you delete a bone that has a muscle attached, then that muscle will be deleted as well. Similarly, if you delete a joint, this will delete all of the directly attached bones, which in turn also delete the attached muscles. 
 
-Once you’re happy with a creature that you’ve built you can save it using the save button at the top(not available in the browser version). You can also load previously saved simulations if you click on the "Simulations" button in the top left. Use the export and import buttons to share saved creatures and simulations between your devices or with your friends.
+Once you’re happy with a creature that you’ve built you can save it using the save button at the top (not available in the browser version). You can also load previously saved simulations if you click on the "Simulations" button in the top left. Use the export and import buttons to share saved creatures and simulations between your devices or with your friends.
 
 There are a couple of creatures that are available “out of the box“. As of the time of me writing this we have the Hailer, Spider, Spring, Frogger and Roo.
 

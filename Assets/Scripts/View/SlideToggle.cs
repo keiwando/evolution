@@ -20,6 +20,8 @@ public class SlideToggle : MonoBehaviour {
     }
   }
   private Toggle _toggle;
+  public bool animateChanges = true;
+
   private Color onTint;
   private float toggleEnabledHandleX;
   private Coroutine currentAnimation;
@@ -59,7 +61,7 @@ public class SlideToggle : MonoBehaviour {
     if (currentAnimation != null) {
       StopCoroutine(currentAnimation);
     }
-    if (animationsEnabled) {
+    if (animateChanges && animationsEnabled) {
       currentAnimation = StartCoroutine(AnimateToggle(isOn));
     } else {
       SetHandlePosition(isOn, handle.rectTransform.anchoredPosition.x, 1f);

@@ -4020,6 +4020,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 673749617468346774}
     m_Modifications:
+    - target: {fileID: 1605042959175050529, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: rootContainer
+      value: 
+      objectReference: {fileID: 680401285}
     - target: {fileID: 2084737220445058505, guid: ddba5d3d97b9c407b8551ce8581fa97a,
         type: 3}
       propertyPath: rootContainer
@@ -4091,6 +4096,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6514538583278878860, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: animateChanges
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7474581827263798094, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: rootContainer
+      value: 
+      objectReference: {fileID: 680401285}
+    - target: {fileID: 8104002188246593149, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8405136065187221026, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: animateChanges
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9036467642359566878, guid: ddba5d3d97b9c407b8551ce8581fa97a,
         type: 3}
@@ -4227,6 +4252,26 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9036467642564399780, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: m_FontData.m_MinSize
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036467642564399780, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036467642738196833, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: m_FontData.m_MaxSize
+      value: 227
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036467642738196833, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 26
+      objectReference: {fileID: 0}
     - target: {fileID: 9036467642969872362, guid: ddba5d3d97b9c407b8551ce8581fa97a,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -4261,6 +4306,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMin.x
       value: 0.11111111
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036467643074230308, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -131.9192
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036467643074230308, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 14.7327
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036467643074230308, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -204.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036467643232670210, guid: ddba5d3d97b9c407b8551ce8581fa97a,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.099998474
       objectReference: {fileID: 0}
     - target: {fileID: 9036467643232670211, guid: ddba5d3d97b9c407b8551ce8581fa97a,
         type: 3}
@@ -6095,6 +6160,7 @@ MonoBehaviour:
   zoomAnchor: {x: 0.5, y: 0.5}
   zoomInLength: 0
   zoomOutLength: 15
+  InteractiveZoomEnabled: 1
   RenderTexture: {fileID: 8400000, guid: 9df058a82577d40c680ff3618910c18a, type: 2}
   Target: {fileID: 0}
   allowVerticalFollow: 1
@@ -6155,6 +6221,7 @@ MonoBehaviour:
   background: {fileID: 1318278891}
   handle: {fileID: 67156070}
   offTint: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  animateChanges: 1
 --- !u!114 &972441677
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10860,6 +10927,7 @@ MonoBehaviour:
   zoomAnchor: {x: 0.5, y: 0.5}
   zoomInLength: 0
   zoomOutLength: 15
+  InteractiveZoomEnabled: 1
   RenderTexture: {fileID: 8400000, guid: 5fd56a39dc81b44dca0e0c137288786f, type: 2}
   Target: {fileID: 0}
   allowVerticalFollow: 1
@@ -12570,7 +12638,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 20
