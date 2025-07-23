@@ -20,6 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// Modifications 
+//
+// Copyright (c) 2025 Keiwan Donyagard
+
 using UnityEngine;
 
 public class GooglyEye : MonoBehaviour
@@ -36,9 +40,13 @@ public class GooglyEye : MonoBehaviour
     private Vector3 _velocity;
     private Vector3 _lastPosition;
 
+    public SpriteRenderer[] spriteRenderers;
+
     void Start() {
         _origin = Eye.localPosition;
         _lastPosition = transform.position;
+
+		spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
     }
 
     void Update() {

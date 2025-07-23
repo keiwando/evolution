@@ -203,6 +203,8 @@ public class CreatureSerializer {
 			List<JointData> joints = new List<JointData>();
 			List<BoneData> bones = new List<BoneData>();
 			List<MuscleData> muscles = new List<MuscleData>();
+			// TODO: Decode and serialize decorations
+			List<DecorationData> decorations = new List<DecorationData>(); 
 
 			while (reader.BaseStream.Position < expectedEndByte) {
 				// Read tagged blocks
@@ -254,7 +256,8 @@ public class CreatureSerializer {
 				name: name,
 				joints: joints,
 				bones: bones,
-				muscles: muscles
+				muscles: muscles,
+				decorations: decorations
 			);
 		} catch {
 			return null;

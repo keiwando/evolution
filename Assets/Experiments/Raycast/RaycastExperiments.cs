@@ -22,7 +22,7 @@ public class RaycastExperiments: MonoBehaviour {
         var context = new SceneController.SimulationSceneLoadContext();
 
         yield return SceneController.LoadSimulationScene(
-            creatureDesign: new CreatureDesign("Unnamed", joints, new List<BoneData>(), new List<MuscleData>()),
+            creatureDesign: new CreatureDesign("Unnamed", joints, new List<BoneData>(), new List<MuscleData>(), new List<DecorationData>()),
             creatureSpawnCount: 1,
             sceneDescription: DefaultSimulationScenes.DefaultSceneForObjective(Objective.Running),
             sceneType: SceneController.SimulationSceneType.Simulation,

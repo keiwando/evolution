@@ -22,6 +22,7 @@ namespace Keiwando.Evolution {
 		public List<Joint> joints;
 		public List<Bone> bones;
 		public List<Muscle> muscles;
+		public List<Decoration> decorations;
 
 		public Brain brain;
 
@@ -107,6 +108,9 @@ namespace Keiwando.Evolution {
 						foreach (Muscle muscle in muscles) {
 							muscle.UpdateLinePoints();
 						}
+				}
+				foreach (Decoration decoration in decorations) {
+					decoration.UpdateOrientation();
 				}
 			}
 			//currentLowest = GetLowestPoint();
@@ -522,7 +526,28 @@ namespace Keiwando.Evolution {
 
 			var boneLayer = LayerMask.NameToLayer("VisibleCreature");
 			var jointLayer = LayerMask.NameToLayer("VisibleJoint");
+			// TODO: Introduce a decoration-specific layer if necessary
 
+			SetOnLayer(boneLayer: boneLayer, jointLayer: jointLayer);
+		}
+
+		public void SetOnInvisibleLayer() {
+
+			var boneLayer = LayerMask.NameToLayer("Creature");
+			var jointLayer = LayerMask.NameToLayer("Joint");
+
+			SetOnLayer(boneLayer: boneLayer, jointLayer: jointLayer);
+		}
+
+		public void SetOnBestCreatureLayer() {
+
+			var boneLayer = LayerMask.NameToLayer("PlaybackCreature");
+			var jointLayer = LayerMask.NameToLayer("PlaybackJoint");
+
+			SetOnLayer(boneLayer: boneLayer, jointLayer: jointLayer);
+		}
+
+		private void SetOnLayer(LayerMask boneLayer, LayerMask jointLayer) {
 			foreach (var bone in bones) {
 				if (bone == null) continue;
 				bone.SetLayer(boneLayer);
@@ -538,48 +563,13 @@ namespace Keiwando.Evolution {
 				muscle.gameObject.layer = boneLayer;
 			}
 
+			foreach (var decoration in decorations) {
+				if (decoration == null) { continue; }
+				decoration.SetLayer(jointLayer);
+			}
+
 			if (gameObject == null) return;
-			gameObject.layer = boneLayer;
-		}
-
-		public void SetOnInvisibleLayer() {
-
-			var boneLayer = LayerMask.NameToLayer("Creature");
-			var jointLayer = LayerMask.NameToLayer("Joint");
-
-			foreach (var bone in bones) {
-				bone.SetLayer(boneLayer);
-			}
-
-			foreach (var joint in joints) {
-				joint.SetLayer(jointLayer);
-			}
-
-			foreach (var muscle in muscles) {
-				muscle.gameObject.layer = boneLayer;
-			}
-
-			gameObject.layer = boneLayer;
-		}
-
-		public void SetOnBestCreatureLayer() {
-
-			var boneLayer = LayerMask.NameToLayer("PlaybackCreature");
-			var jointLayer = LayerMask.NameToLayer("PlaybackJoint");
-
-			foreach (var bone in bones) {
-				bone.SetLayer(boneLayer);
-			}
-
-			foreach (var joint in joints) {
-				joint.SetLayer(jointLayer);
-			}
-
-			foreach (var muscle in muscles) {
-				muscle.gameObject.layer = boneLayer;
-			}
-
-			gameObject.layer = boneLayer;
+			gameObject.layer = boneLayer;	
 		}
 
 		public void RemoveMuscleColliders() {

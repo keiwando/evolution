@@ -44,7 +44,7 @@ public static class LegacyCreatureParser {
 			}
 		}
 
-		return new CreatureDesign(name, joints, bones, muscles);
+		return new CreatureDesign(name, joints, bones, muscles, new List<DecorationData>());
     }
 
 	private static JointData ParseJointData(string encoded) {

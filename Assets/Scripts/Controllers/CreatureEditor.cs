@@ -16,6 +16,7 @@ public class CreatureEditor: MonoBehaviour,
         Joint,
         Bone,
         Muscle,
+        Decoration,
         Move,
         Delete,
         Select
@@ -29,6 +30,7 @@ public class CreatureEditor: MonoBehaviour,
         }
     }
     private Tool selectedTool = Tool.Joint;
+    private DecorationType selectedDecorationType = DecorationType.GooglyEye;
 
     [SerializeField]
     private EditorViewController viewController;
@@ -258,6 +260,13 @@ public class CreatureEditor: MonoBehaviour,
                     creatureBuilder.TryStartingMuscle(bone); 
                 break;
 
+            case Tool.Decoration:
+                var closestBone = FindClosestBone(clickWorldPos);
+                if (closestBone != null) {
+                    creatureBuilder.CreateDecorationFromBone(closestBone, clickWorldPos, selectedDecorationType);
+                }
+                break;
+
             case Tool.Move:
                 selectionManager.AddCurrentHoveringToSelection();
                 jointsToMove = selectionManager.GetJointsToMoveFromSelection();
@@ -300,6 +309,10 @@ public class CreatureEditor: MonoBehaviour,
             case Tool.Muscle:
                 var hoveringBone = selectionManager.GetSingleSelected<Bone>();
                 creatureBuilder.UpdateCurrentMuscleEnd(clickWorldPos, hoveringBone); 
+                break;
+
+            case Tool.Decoration:
+                creatureBuilder.UpdateCurrentDecoration(clickWorldPos);
                 break;
 
             case Tool.Move:
@@ -349,6 +362,10 @@ public class CreatureEditor: MonoBehaviour,
 
             case Tool.Muscle:
                 creatureEdited = creatureBuilder.PlaceCurrentMuscle(); 
+                break;
+            
+            case Tool.Decoration:
+                creatureEdited = creatureBuilder.PlaceCurrentDecoration();
                 break;
 
             case Tool.Move: 
@@ -438,6 +455,13 @@ public class CreatureEditor: MonoBehaviour,
 			StartSimulation();
 		}
 
+        // DEBUG:
+        else if (input.GetKeyDown(KeyCode.C)) {
+            // DEBUG:
+            Debug.Log("Selected Decoration Tool");
+            SelectedTool = Tool.Decoration;
+        }
+
         else if (input.GetKeyDown(KeyCode.Escape)) {
             selectionManager.DeselectAll();
             OnSelectionChanged();
@@ -480,7 +504,7 @@ public class CreatureEditor: MonoBehaviour,
     }
 
     private void OnToolChanged(Tool tool) {
-        if (tool == Tool.Joint || tool == Tool.Bone || tool == Tool.Muscle) {
+        if (tool == Tool.Joint || tool == Tool.Bone || tool == Tool.Muscle || tool == Tool.Decoration) {
             selectionManager.DeselectAll();
             OnSelectionChanged();
         }
@@ -515,6 +539,22 @@ public class CreatureEditor: MonoBehaviour,
 
     public BodyComponent FindBodyComponentWithId(int id) {
         return creatureBuilder.FindWithId(id);
+    }
+
+    private Bone FindClosestBone(Vector3 position) {
+        var closestDistance = float.PositiveInfinity;
+        int? closestBoneIndex = null;
+        for (int i = 0; i < this.creatureBuilder.bones.Count; i++) {
+            float distToBone = Vector3.Distance(this.creatureBuilder.bones[i].Center, position);
+            if (distToBone < closestDistance) {
+                closestDistance = distToBone;
+                closestBoneIndex = i;
+            }
+        } 
+        if (closestBoneIndex.HasValue) {
+            return this.creatureBuilder.bones[closestBoneIndex.Value];
+        }
+        return null;
     }
 
     private void ReloadSettingsControls() {

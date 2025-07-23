@@ -171,6 +171,7 @@ public class Bone : BodyComponent {
 
 		Destroy(gameObject);
 
+		// TODO: Delete connected decorations
 	}
 
 	private void DeleteAllConnectedMuscles() {

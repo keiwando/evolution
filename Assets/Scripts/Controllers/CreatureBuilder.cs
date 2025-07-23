@@ -22,11 +22,15 @@ namespace Keiwando.Evolution {
 		/// <summary>
 		/// The bones that have been placed in the scene.
 		/// </summary>
-		private List<Bone> bones = new List<Bone>();
+		public List<Bone> bones = new List<Bone>();
 		/// <summary>
 		/// The muscles that have been placed in the scene.
 		/// </summary>
 		private List<Muscle> muscles = new List<Muscle>();
+		/// <summary>
+		/// The decorations that have been placed in the scene.
+		/// </summary>
+		private List<Decoration> decorations = new List<Decoration>();
 
 		/// <summary> 
 		/// The Bone that is currently being placed. 
@@ -37,6 +41,9 @@ namespace Keiwando.Evolution {
 		/// The Muscle that is currently being placed.
 		/// </summary>
 		private Muscle currentMuscle;
+
+		/// The decoration that is currently being placed.
+		private Decoration currentDecoration;
 
 		/// <summary>
 		/// The minimum distance between two joints when they are placed 
@@ -67,11 +74,16 @@ namespace Keiwando.Evolution {
 				CreateMuscleFromData(muscleData);
 			}
 
+			foreach (var decorationData in design.Decorations) {
+				CreateDecorationFromData(decorationData);
+			}
+
 			// Update the idCounter
 			int maxJointID = design.Joints.Count > 0 ? design.Joints.Max(data => data.id) : 0;
 			int maxBoneID = design.Bones.Count > 0 ? design.Bones.Max(data => data.id) : 0;
 			int maxMuscleID = design.Muscles.Count > 0 ? design.Muscles.Max(data => data.id) : 0;
-			idCounter = Mathf.Max(Mathf.Max(maxJointID, maxBoneID), maxMuscleID) + 1;
+			int maxDecorationID = design.Decorations.Count > 0 ? design.Decorations.Max(decoration => decoration.id) : 0;
+			idCounter = Mathf.Max(Mathf.Max(Mathf.Max(maxJointID, maxBoneID), maxMuscleID), maxDecorationID) + 1;
 		}
 
 		
@@ -359,6 +371,114 @@ namespace Keiwando.Evolution {
 		}
 
 		#endregion
+		#region Decoration Placement
+
+		public void CreateDecorationFromBone(Bone referenceBone, Vector3 atPosition, DecorationType decorationType) {
+
+			LocalDecorationTransform localTransform = CalculateDecorationTransform(
+				bone: referenceBone, 
+				worldPosition: atPosition, 
+				worldRotation: 0f
+			);
+			if (decorationType == DecorationType.GooglyEye) {
+				localTransform.scale = Decoration.DEFAULT_GOOGLY_EYE_SCALE;
+			}
+
+			var decorationData = new DecorationData(
+				id: idCounter++,
+				boneId: referenceBone.BoneData.id,
+				offset: localTransform.offset,
+				scale: localTransform.scale,
+				rotation: localTransform.rotation,
+				flipX: false,
+				flipY: false,
+				decorationType: decorationType
+			);
+			currentDecoration = Decoration.CreateFromData(referenceBone, decorationData);
+		}
+
+		public void CreateDecorationFromData(DecorationData data) {
+
+			var bone = FindBoneWithId(data.boneId);
+			if (bone == null) {
+				Debug.LogError($"The connecting bone for decoration {data.id} was not found!");
+				return;
+			}
+			var decoration = Decoration.CreateFromData(bone, data);
+			decorations.Add(decoration);
+		}
+
+		public void UpdateCurrentDecoration(Vector3 worldPosition) {
+			if (currentDecoration == null) { return; }
+			LocalDecorationTransform newLocalTransform = CalculateNewDecorationTransform(currentDecoration, worldPosition);
+			DecorationData newDecorationData = currentDecoration.DecorationData;
+			newDecorationData.offset = newLocalTransform.offset;
+			newDecorationData.rotation = newLocalTransform.rotation;
+			newDecorationData.scale = newLocalTransform.scale;
+			currentDecoration.DecorationData = newDecorationData;
+
+			currentDecoration.UpdateOrientation();
+		}
+
+		public void CancelCurrentDecoration() {
+
+			if (currentDecoration == null) return;
+
+			UnityEngine.Object.Destroy(currentDecoration.gameObject);
+			currentDecoration = null;
+		}
+
+		/// Checks to see if the current decoration is valid (attached to a bone) and if so
+		/// adds it to the list of decorations.
+		public bool PlaceCurrentDecoration() {
+			if (currentDecoration == null) { return false; }
+
+			if (currentDecoration.bone == null) {
+				UnityEngine.Object.Destroy(currentDecoration.gameObject);
+				currentDecoration = null;
+				return false;
+			} else {
+				decorations.Add(currentDecoration);
+				currentDecoration = null;
+				return true;
+			}
+		}
+
+		struct LocalDecorationTransform {
+			public Vector2 offset;
+			public float rotation;
+			public float scale;
+		}
+
+		private LocalDecorationTransform CalculateDecorationTransform(
+			Bone bone, 
+			Vector3 worldPosition, 
+			float worldRotation
+		) {
+			Vector3 localOffset = bone.transform.InverseTransformPoint(worldPosition);
+			Quaternion worldRotationQuat = Quaternion.Euler(0f, 0f, worldRotation);
+			Quaternion localRotation = Quaternion.Inverse(bone.transform.rotation) * worldRotationQuat;
+
+			return new LocalDecorationTransform {
+				offset = new Vector2(localOffset.x, localOffset.y),
+				rotation = localRotation.eulerAngles.z * Mathf.Deg2Rad,
+				scale = 1f
+			};
+		}
+
+		private LocalDecorationTransform CalculateNewDecorationTransform(
+			Decoration decoration,
+			Vector3 worldPosition
+		) {
+			Vector3 localOffset = decoration.bone.transform.InverseTransformPoint(worldPosition);
+			return new LocalDecorationTransform {
+				offset = localOffset,
+				rotation = decoration.DecorationData.rotation,
+				scale = decoration.DecorationData.scale
+			};
+		}
+
+		#endregion
 		#region Move
 
 		/// <summary>
@@ -409,6 +529,9 @@ namespace Keiwando.Evolution {
 			foreach (var joint in joints) {
 				joint.Delete();
 			}
+			foreach (var decoration in decorations) {
+				decoration.Delete();
+			}
 
 			RemoveDeletedObjects();
 			idCounter = 0;
@@ -453,9 +576,14 @@ namespace Keiwando.Evolution {
 				muscle.transform.SetParent(creatureObj.transform);
 			}
 
+			foreach (Decoration decoration in decorations) {
+				decoration.transform.SetParent(creatureObj.transform);
+			}
+
 			creature.joints = joints;
 			creature.bones = bones;
 			creature.muscles = muscles;
+			creature.decorations = decorations;
 
 			return creature;
 		}
@@ -470,7 +598,8 @@ namespace Keiwando.Evolution {
 			var jointData = this.joints.Select(j => j.JointData).ToList();
 			var boneData = this.bones.Select(b => b.BoneData).ToList();
 			var muscleData = this.muscles.Select(m => m.MuscleData).ToList();
-			return new CreatureDesign(name, jointData, boneData, muscleData);
+			var decorationData = this.decorations.Select(d => d.DecorationData).ToList();
+			return new CreatureDesign(name, jointData, boneData, muscleData, decorationData);
 		}
 
 		#region Hover Configuration
@@ -530,6 +659,7 @@ namespace Keiwando.Evolution {
 			bones = BodyComponent.RemoveDeletedObjects<Bone>(bones);
 			joints = BodyComponent.RemoveDeletedObjects<Joint>(joints);
 			muscles = BodyComponent.RemoveDeletedObjects<Muscle>(muscles);
+			decorations = BodyComponent.RemoveDeletedObjects<Decoration>(decorations);
 		}
 
 		#endregion
@@ -540,6 +670,7 @@ namespace Keiwando.Evolution {
 		public void CancelTemporaryBodyParts() {
 			CancelCurrentBone();
 			CancelCurrentMuscle();
+			CancelCurrentDecoration();
 		}
 	}
 

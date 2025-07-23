@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 7959485844883969855}
   - component: {fileID: 8227367379952550713}
   - component: {fileID: 7399825121467445435}
+  - component: {fileID: 6104525128567117241}
   m_Layer: 0
   m_Name: Googly Eye
   m_TagString: Untagged
@@ -195,6 +196,21 @@ MonoBehaviour:
   Speed: 3.2
   GravityMultiplier: 0.3
   Bounciness: 0.507
+--- !u!114 &6104525128567117241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4641850081435982348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0aff651409fa41beb25b7c6ea94a698, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bone: {fileID: 0}
+  flipX: 0
+  flipY: 0
 --- !u!1 &7852290077393209877
 GameObject:
   m_ObjectHideFlags: 0
