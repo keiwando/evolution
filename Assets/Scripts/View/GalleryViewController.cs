@@ -88,8 +88,6 @@ namespace Keiwando.Evolution.UI {
       CustomEvolutionFileType.evolutiongallery
     };
 
-    private bool initialized = false;
-
     void Start() {
 
       hiddenLayer = LayerMask.NameToLayer("Hidden");
@@ -175,8 +173,6 @@ namespace Keiwando.Evolution.UI {
         if (!this.fullscreenSceneIndex.HasValue) { return; }
         requestNewFullscreenIndexIfPossible(this.fullscreenSceneIndex.Value + 1);
       });
-
-      initialized = true;
     }
 
     void OnDestroy() {  

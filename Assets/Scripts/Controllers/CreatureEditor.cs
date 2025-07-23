@@ -261,7 +261,8 @@ public class CreatureEditor: MonoBehaviour,
                 break;
 
             case Tool.Decoration:
-                var closestBone = FindClosestBone(clickWorldPos);
+                var hoveringBone = selectionManager.GetSingleSelected<Bone>();
+                var closestBone = hoveringBone != null ? hoveringBone : FindClosestBone(clickWorldPos);
                 if (closestBone != null) {
                     creatureBuilder.CreateDecorationFromBone(closestBone, clickWorldPos, selectedDecorationType);
                 }

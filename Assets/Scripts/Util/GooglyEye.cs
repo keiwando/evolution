@@ -40,13 +40,9 @@ public class GooglyEye : MonoBehaviour
     private Vector3 _velocity;
     private Vector3 _lastPosition;
 
-    public SpriteRenderer[] spriteRenderers;
-
     void Start() {
         _origin = Eye.localPosition;
         _lastPosition = transform.position;
-
-		spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
     }
 
     void Update() {

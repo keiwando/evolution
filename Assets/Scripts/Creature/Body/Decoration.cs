@@ -17,12 +17,12 @@ public class Decoration : BodyComponent {
 
   public DecorationData DecorationData { get; set; }
 
-  public bool flipX;
-  public bool flipY;
+  public bool VisualizeConnection { get; private set; }
 
   SpriteRenderer spriteRenderer;
-  GooglyEye googlyEye;
+  // GooglyEye googlyEye;
   SpriteRenderer[] googlyEyeSpriteRenderers;
+  LineRenderer connectionVisualizationRenderer;
 
   public static Decoration CreateFromData(Bone bone, DecorationData data) {
 
@@ -31,11 +31,13 @@ public class Decoration : BodyComponent {
     decoration.DecorationData = data;
     decoration.bone = bone;
     decoration.spriteRenderer = decoration.GetComponent<SpriteRenderer>();
+    decoration.connectionVisualizationRenderer = decoration.GetComponent<LineRenderer>();
+    decoration.connectionVisualizationRenderer.enabled = false;
 
     decoration.UpdateOrientation();
 
     if (data.decorationType == DecorationType.GooglyEye) {
-      decoration.googlyEye = decoration.GetComponent<GooglyEye>();
+      // decoration.googlyEye = decoration.GetComponent<GooglyEye>();
       decoration.googlyEyeSpriteRenderers = decoration.GetComponentsInChildren<SpriteRenderer>();
     }
     return decoration;
@@ -46,6 +48,19 @@ public class Decoration : BodyComponent {
     transform.position = bone.transform.TransformPoint(new Vector3(DecorationData.offset.x, DecorationData.offset.y, Z_POSITION));
     transform.rotation = bone.transform.rotation * Quaternion.Euler(0f, 0f, DecorationData.rotation * Mathf.Rad2Deg);
     transform.localScale = new Vector3(scale, scale, scale);
+
+    if (connectionVisualizationRenderer != null && VisualizeConnection) {
+      connectionVisualizationRenderer.SetPosition(0, transform.position);
+      connectionVisualizationRenderer.SetPosition(1, bone.Center);
+    }
+  }
+
+  public void SetVisualizeConnection(bool visualize) {
+    this.VisualizeConnection = visualize;
+    if (connectionVisualizationRenderer != null) {
+      connectionVisualizationRenderer.enabled = visualize;
+    }
+    UpdateOrientation();
   }
 
   public void SetLayer(LayerMask layer) {
@@ -53,6 +68,14 @@ public class Decoration : BodyComponent {
     if (googlyEyeSpriteRenderers != null) {
       foreach (SpriteRenderer spriteRenderer in googlyEyeSpriteRenderers) {
         spriteRenderer.gameObject.layer = layer;
+      }
+    }
+  }
+
+  protected override void SetRendererMaterialForHighlight(Material mat) {
+    if (googlyEyeSpriteRenderers != null) {
+      foreach (SpriteRenderer spriteRenderer in googlyEyeSpriteRenderers) {
+        spriteRenderer.material = mat;
       }
     }
   }

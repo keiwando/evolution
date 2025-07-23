@@ -395,6 +395,7 @@ namespace Keiwando.Evolution {
 				decorationType: decorationType
 			);
 			currentDecoration = Decoration.CreateFromData(referenceBone, decorationData);
+			currentDecoration.SetVisualizeConnection(true);
 		}
 
 		public void CreateDecorationFromData(DecorationData data) {
@@ -438,6 +439,7 @@ namespace Keiwando.Evolution {
 				currentDecoration = null;
 				return false;
 			} else {
+				currentDecoration.SetVisualizeConnection(false);
 				decorations.Add(currentDecoration);
 				currentDecoration = null;
 				return true;

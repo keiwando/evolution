@@ -24,13 +24,17 @@ abstract public class Hoverable: MonoBehaviour {
 
 	public void EnableHighlight() {
 
+		SetRendererMaterialForHighlight(highlightMaterial);
 		if (_renderer == null) return;
 		_renderer.sharedMaterial = highlightMaterial;
 	}
 
 	public void DisableHighlight() {
 		
+		SetRendererMaterialForHighlight(normalMaterial);
 		if (_renderer == null) return;
 		_renderer.sharedMaterial = normalMaterial;
 	}
+
+	protected virtual void SetRendererMaterialForHighlight(Material mat) {}
 }

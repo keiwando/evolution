@@ -59,6 +59,7 @@ namespace Keiwando.Evolution {
                 break;
 
             case CreatureEditor.Tool.Muscle:
+            case CreatureEditor.Tool.Decoration:
                 hovering = GetComponentAtScreenPoint<Bone>(mouseScreenPos); 
                 break;
 
@@ -76,6 +77,8 @@ namespace Keiwando.Evolution {
             case CreatureEditor.Tool.Delete:
             case CreatureEditor.Tool.Select:
                 hovering = GetComponentAtScreenPoint<Joint>(mouseScreenPos);
+                if (hovering == null)
+                    hovering = CheckCachedCollisionsFor<Decoration>();
                 if (hovering == null)
                     hovering = CheckCachedCollisionsFor<Bone>();
                 if (hovering == null)
