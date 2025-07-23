@@ -53,8 +53,8 @@ public struct DecorationData: IJsonConvertible {
   public Vector2 offset;
   public float scale;
   public float rotation;
-  public readonly bool flipX;
-  public readonly bool flipY;
+  public bool flipX;
+  public bool flipY;
   public readonly DecorationType decorationType;
 
   public DecorationData(
@@ -120,4 +120,26 @@ public struct DecorationData: IJsonConvertible {
   }
 
   #endregion
+}
+
+public static class DecorationUtils {
+
+  static Sprite[] decorationEmojiSprites;
+  static Sprite googlyEyeSprite;
+
+  public static Sprite DecorationTypeToImageResourceName(DecorationType type) {
+    switch (type) {
+      case DecorationType.GooglyEye: 
+        if (googlyEyeSprite == null) {
+          googlyEyeSprite = Resources.Load<Sprite>("Sprites/Decorations/googly_eye_icon");
+        }
+        return googlyEyeSprite;
+      default:
+        int index = (int)type - 1;
+        if (decorationEmojiSprites == null) {
+          decorationEmojiSprites = Resources.LoadAll<Sprite>("Sprites/Decorations/decoration_emojis");
+        }
+        return decorationEmojiSprites[index];
+    }
+  } 
 }

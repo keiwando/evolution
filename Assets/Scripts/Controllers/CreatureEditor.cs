@@ -30,7 +30,7 @@ public class CreatureEditor: MonoBehaviour,
         }
     }
     private Tool selectedTool = Tool.Joint;
-    private DecorationType selectedDecorationType = DecorationType.GooglyEye;
+    public DecorationType SelectedDecorationType = DecorationType.GooglyEye;
 
     [SerializeField]
     private EditorViewController viewController;
@@ -264,7 +264,7 @@ public class CreatureEditor: MonoBehaviour,
                 var hoveringBone = selectionManager.GetSingleSelected<Bone>();
                 var closestBone = hoveringBone != null ? hoveringBone : FindClosestBone(clickWorldPos);
                 if (closestBone != null) {
-                    creatureBuilder.CreateDecorationFromBone(closestBone, clickWorldPos, selectedDecorationType);
+                    creatureBuilder.CreateDecorationFromBone(closestBone, clickWorldPos, SelectedDecorationType);
                 }
                 break;
 
@@ -576,6 +576,9 @@ public class CreatureEditor: MonoBehaviour,
         }
         else if (part is Muscle) {
             advancedSettingsManager = new MuscleSettingsManager(part as Muscle, viewController.ShowAdvancedSettingsControls());
+        } 
+        else if (part is Decoration) {
+            advancedSettingsManager = new DecorationSettingsManager(part as Decoration, viewController.ShowAdvancedSettingsControls());
         }
         advancedSettingsManager.dataWillChange += delegate () {
             historyManager.Push(creatureBuilder.GetDesign());

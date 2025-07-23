@@ -72,12 +72,13 @@ public class Decoration : BodyComponent {
     }
   }
 
-  protected override void SetRendererMaterialForHighlight(Material mat) {
+  protected override void SetRendererMaterialForHighlight(Material mat, bool selected) {
     if (googlyEyeSpriteRenderers != null) {
       foreach (SpriteRenderer spriteRenderer in googlyEyeSpriteRenderers) {
         spriteRenderer.material = mat;
       }
     }
+    SetVisualizeConnection(selected);
   }
 
   public override void Delete() {
