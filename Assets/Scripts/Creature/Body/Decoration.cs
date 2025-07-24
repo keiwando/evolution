@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Decoration : BodyComponent {
@@ -53,6 +54,11 @@ public class Decoration : BodyComponent {
     transform.rotation = bone.transform.rotation * Quaternion.Euler(0f, 0f, DecorationData.rotation * Mathf.Rad2Deg);
     transform.localScale = new Vector3(scale, scale, scale);
 
+    if (spriteRenderer != null) {
+      spriteRenderer.flipX = DecorationData.flipX;
+      spriteRenderer.flipY = DecorationData.flipY;
+    }
+
     if (connectionVisualizationRenderer != null && VisualizeConnection) {
       connectionVisualizationRenderer.SetPosition(0, transform.position);
       connectionVisualizationRenderer.SetPosition(1, bone.Center);
@@ -76,10 +82,10 @@ public class Decoration : BodyComponent {
     }
   }
 
-  protected override void SetRendererMaterialForHighlight(Material mat, bool selected) {
+  protected override void SetRendererMaterialForHighlight(Material mat, Material spriteMat, bool selected) {
     if (googlyEyeSpriteRenderers != null) {
       foreach (SpriteRenderer spriteRenderer in googlyEyeSpriteRenderers) {
-        spriteRenderer.material = mat;
+        spriteRenderer.material = spriteMat;
       }
     }
     SetVisualizeConnection(selected);

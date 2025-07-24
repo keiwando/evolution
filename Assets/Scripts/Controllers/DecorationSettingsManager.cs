@@ -40,6 +40,8 @@ namespace Keiwando.Evolution {
         decoration.DecorationData = data;
         Refresh();
       };
+
+      Refresh();
     }
 
     public override void Refresh() {
