@@ -25,6 +25,8 @@ public class Decoration : BodyComponent {
   // GooglyEye googlyEye;
   SpriteRenderer[] googlyEyeSpriteRenderers;
   LineRenderer connectionVisualizationRenderer;
+  BoxCollider boxCollider;
+  SphereCollider sphereCollider;
 
   public static Decoration CreateFromData(Bone bone, DecorationData data) {
 
@@ -41,10 +43,14 @@ public class Decoration : BodyComponent {
     if (data.decorationType == DecorationType.GooglyEye) {
       // decoration.googlyEye = decoration.GetComponent<GooglyEye>();
       decoration.googlyEyeSpriteRenderers = decoration.GetComponentsInChildren<SpriteRenderer>();
+      decoration.sphereCollider = decoration.GetComponent<SphereCollider>();
     } else {
       decoration.spriteRenderer.sprite = DecorationUtils.DecorationTypeToImageResourceName(data.decorationType);
       // So the decoration shows up above all others when first being placed.
       decoration.spriteRenderer.sortingOrder = 1000000;
+      decoration.boxCollider = decoration.GetComponent<BoxCollider>();
+      decoration.boxCollider.size = DecorationUtils.HitboxSizeForDecoration(data.decorationType);
+      decoration.boxCollider.center = DecorationUtils.HitboxCenterForDecoration(data.decorationType);
     }
 
     return decoration;
@@ -106,7 +112,15 @@ public class Decoration : BodyComponent {
     Destroy(gameObject);
   }
 
-  public override void PrepareForEvolution() {}
+  public override void PrepareForEvolution() {
+    if (boxCollider != null) {
+      // Let's not waste physics performance on decorations 
+      boxCollider.enabled = false;
+    }
+    if (sphereCollider != null) {
+      sphereCollider.enabled = false;
+    }
+  }
   
   public override int GetId() {
     return DecorationData.id;

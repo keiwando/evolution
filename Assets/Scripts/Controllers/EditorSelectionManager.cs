@@ -9,8 +9,11 @@ namespace Keiwando.Evolution {
 
         private static RaycastHit[] _cachedPointCollisions = new RaycastHit[10];
         private static int _cachedPointCollisionsLength = 0;
+        private static int[] _cachedCollisionSortingOrders = new int[10];
         private static Collider[] _cachedSphereCollisions = new Collider[10];
         private static int _cachedSphereCollisionsLength = 0;
+        private static IComparer<int> descendingIntComparer = Comparer<int>.Create((lhs, rhs) => rhs.CompareTo(lhs));
+        private static int googlyEyeSortingLayer = 0;
 
         /// <summary>
         /// The treshold distance used to distinguish between a click/touch and a drag
@@ -38,6 +41,8 @@ namespace Keiwando.Evolution {
             this.selectionArea = selectionArea;
             this.mouseDeleteTexture = mouseDeleteTexture;
             selectionArea.gameObject.SetActive(false);
+
+            googlyEyeSortingLayer = SortingLayer.NameToID("Googly Eye");
         }
 
         public void Update(Vector3 mouseScreenPos) {
@@ -355,6 +360,27 @@ namespace Keiwando.Evolution {
             worldPoint.z = 0;
             var hitCount = Physics.RaycastNonAlloc(ray, _cachedPointCollisions);
             _cachedPointCollisionsLength = Math.Min(hitCount, 10);
+
+            bool needsSpriteOrdering = false;
+            for (int i = 0; i < hitCount; i++) {
+                SpriteRenderer spriteRenderer = _cachedPointCollisions[i].collider.gameObject.GetComponent<SpriteRenderer>();
+                int sortingOrder = 0;
+                if (spriteRenderer != null) {
+                    if (spriteRenderer.sortingLayerID == googlyEyeSortingLayer) {
+                        sortingOrder = 1000000000;
+                    } else {
+                        sortingOrder = spriteRenderer.sortingOrder;
+                    }
+                    needsSpriteOrdering = true;
+                }
+                _cachedCollisionSortingOrders[i] = sortingOrder;
+            }
+            for (int i = hitCount; i < _cachedCollisionSortingOrders.Length; i++) {
+                _cachedCollisionSortingOrders[i] = 0;
+            }
+            if (needsSpriteOrdering) {
+                Array.Sort(_cachedCollisionSortingOrders, _cachedPointCollisions, descendingIntComparer);
+            }
 
             #if TEST || UNITY_IOS || UNITY_ANDROID
             T item = CheckCachedCollisionsFor<T>();
