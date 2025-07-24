@@ -458,8 +458,6 @@ public class CreatureEditor: MonoBehaviour,
 
         // DEBUG:
         else if (input.GetKeyDown(KeyCode.C)) {
-            // DEBUG:
-            Debug.Log("Selected Decoration Tool");
             SelectedTool = Tool.Decoration;
         }
 

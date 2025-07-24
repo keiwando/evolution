@@ -382,6 +382,8 @@ namespace Keiwando.Evolution {
 			);
 			if (decorationType == DecorationType.GooglyEye) {
 				localTransform.scale = Decoration.DEFAULT_GOOGLY_EYE_SCALE;
+			} else {
+				localTransform.scale = Decoration.DEFAULT_EMOJI_SCALE;
 			}
 
 			var decorationData = new DecorationData(

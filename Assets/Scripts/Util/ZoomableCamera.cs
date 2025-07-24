@@ -41,6 +41,8 @@ namespace Keiwando.Evolution {
 
     public bool InteractiveZoomEnabled = true;
 
+    public PointerHoverDetector[] pointerHoverAreasToIgnore;
+
     private Camera _camera;
 
     internal virtual void Start(Camera camera) {
@@ -66,16 +68,30 @@ namespace Keiwando.Evolution {
     }
 
     private void OnScrollGesture(ScrollGestureRecognizer recognizer) {
-      if (InputRegistry.shared.MayHandle(InputType.Scroll, this) && InteractiveZoomEnabled) {
+      if (InputRegistry.shared.MayHandle(InputType.Scroll, this) && ZoomingIsAllowed()) {
         SetZoom(_camera.orthographicSize - recognizer.ScrollDelta.y);
       }  
     }
 
     private void OnPinchGesture(PinchGestureRecognizer recognizer) {
-      if (InputRegistry.shared.MayHandle(InputType.Touch, this) && InteractiveZoomEnabled) {
+      if (InputRegistry.shared.MayHandle(InputType.Touch, this) && ZoomingIsAllowed()) {
         SetZoom(_camera.orthographicSize / Math.Max(0.0000001f, recognizer.ScaleDelta));
         OnPinch(recognizer);
       }
+    }
+
+    private bool ZoomingIsAllowed() {
+      if (!InteractiveZoomEnabled) {
+        return false;
+      }
+      if (pointerHoverAreasToIgnore != null) {
+        foreach (PointerHoverDetector pointerHoverDetector in pointerHoverAreasToIgnore) {
+          if (pointerHoverDetector.isHovered) {
+            return false;
+          }
+        }
+      }
+      return true;
     }
 
     private void SetZoom(float newZoom) {

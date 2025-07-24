@@ -34,9 +34,9 @@ public class SelectableButton : MonoBehaviour {
 	private IEnumerator routine;
 
 	void Start () {
-		var offsetX = SelectionOffset.x * (float)Screen.width / ReferenceResolution.x;
-		var offsetY = SelectionOffset.y * (float)Screen.height / ReferenceResolution.y;
-		defaultPosition = transform.position;
+		var offsetX = SelectionOffset.x * (float)Screen.width / (ReferenceResolution.x * transform.lossyScale.x);
+		var offsetY = SelectionOffset.y * (float)Screen.height / (ReferenceResolution.y * transform.lossyScale.y);
+		defaultPosition = transform.localPosition;
 		selectedPosition = new Vector3(defaultPosition.x + offsetX, defaultPosition.y + offsetY, 0);
 	}
 
@@ -48,7 +48,7 @@ public class SelectableButton : MonoBehaviour {
 	{
 		// Will need to perform some of this process and yield until next frames
 		float closeEnough = 0.2f;
-		float distance = (transform.position - target).magnitude;
+		float distance = (transform.localPosition - target).magnitude;
 
 		// GC will trigger unless we define this ahead of time
 		WaitForEndOfFrame wait = new WaitForEndOfFrame();
@@ -57,14 +57,14 @@ public class SelectableButton : MonoBehaviour {
 		while(distance >= closeEnough)
 		{
 			// Move a bit then  wait until next  frame
-			transform.position = Vector3.Slerp(transform.position, target, delta);
+			transform.localPosition = Vector3.Slerp(transform.localPosition, target, delta);
 			yield return wait;
 
 			// Check if we should repeat
-			distance = (transform.position - target).magnitude;
+			distance = (transform.localPosition - target).magnitude;
 		}
 
 		// Complete the motion to prevent negligible sliding
-		transform.position = target;
+		transform.localPosition = target;
 	}
 }

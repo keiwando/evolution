@@ -8,6 +8,7 @@ public class Decoration : BodyComponent {
   private const string SPRITE_DECORATION_PREFAB_PATH = "Prefabs/Decoration";
 
   public const float DEFAULT_GOOGLY_EYE_SCALE = 1.3f;
+  public const float DEFAULT_EMOJI_SCALE = 2.0f;
 
   private const float Z_POSITION = -1f;
 
@@ -39,7 +40,10 @@ public class Decoration : BodyComponent {
     if (data.decorationType == DecorationType.GooglyEye) {
       // decoration.googlyEye = decoration.GetComponent<GooglyEye>();
       decoration.googlyEyeSpriteRenderers = decoration.GetComponentsInChildren<SpriteRenderer>();
+    } else {
+      decoration.spriteRenderer.sprite = DecorationUtils.DecorationTypeToImageResourceName(data.decorationType);
     }
+
     return decoration;
   }
 

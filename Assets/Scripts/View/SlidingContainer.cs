@@ -22,7 +22,7 @@ namespace Keiwando.UI {
 
         [SerializeField] private AnimationCurve animationCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     
-        public Direction LastSlideDirection { get; protected set; }
+        public Direction LastSlideDirection { get; set; }
 
         /// The animation target positions. Needed so that the animation can be finished 
         /// instantly when a running coroutine is stopped.

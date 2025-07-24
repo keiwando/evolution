@@ -29,6 +29,8 @@ namespace Keiwando.Evolution.UI {
         this.cells[i] = cell;
       }
       cellTemplate.gameObject.SetActive(false);
+
+      OnCellIndexSelected(FindCellIndexOfDecorationType(creatureEditor.SelectedDecorationType));
     }
 
     private void OnCellIndexSelected(int cellIndex) {
