@@ -69,7 +69,9 @@ namespace Keiwando.Evolution {
                 break;
 
             case CreatureEditor.Tool.Move:
-                hovering = GetComponentAtScreenPoint<Joint>(mouseScreenPos);
+                hovering = GetComponentAtScreenPoint<Decoration>(mouseScreenPos);
+                if (hovering == null)
+                    hovering = CheckCachedCollisionsFor<Joint>();
                 if (hovering == null)
                     hovering = CheckCachedCollisionsFor<Bone>();
                 #if TEST || UNITY_IOS || UNITY_ANDROID
@@ -137,9 +139,9 @@ namespace Keiwando.Evolution {
             return null;
         }
 
-        public HashSet<Joint> GetJointsToMoveFromSelection() {
-            
-            HashSet<Joint> jointsToMove = new HashSet<Joint>();
+        public void RefreshPartsToMoveFromSelection(HashSet<Joint> jointsToMove, HashSet<Decoration> decorationsToMove) {
+            jointsToMove.Clear();
+            decorationsToMove.Clear();
             for (int i = 0; i < selection.Count; i++) {
                 var component = selection[i];
                 if (component is Joint) {
@@ -148,9 +150,11 @@ namespace Keiwando.Evolution {
                     var bone = component as Bone;
                     jointsToMove.Add(bone.startingJoint);
                     jointsToMove.Add(bone.endingJoint);
+                } else if (component is Decoration) {
+                    var decoration = component as Decoration;
+                    decorationsToMove.Add(decoration);
                 }
             }
-            return jointsToMove;
         }
 
         public void AddCurrentHoveringToSelection() {

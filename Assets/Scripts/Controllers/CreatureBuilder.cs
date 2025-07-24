@@ -415,14 +415,18 @@ namespace Keiwando.Evolution {
 
 		public void UpdateCurrentDecoration(Vector3 worldPosition) {
 			if (currentDecoration == null) { return; }
-			LocalDecorationTransform newLocalTransform = CalculateNewDecorationTransform(currentDecoration, worldPosition);
-			DecorationData newDecorationData = currentDecoration.DecorationData;
+			MoveDecorationToWorldPosition(currentDecoration, worldPosition);
+		}
+
+		private void MoveDecorationToWorldPosition(Decoration decoration, Vector3 worldPosition) {
+			LocalDecorationTransform newLocalTransform = CalculateNewDecorationTransform(decoration, worldPosition);
+			DecorationData newDecorationData = decoration.DecorationData;
 			newDecorationData.offset = newLocalTransform.offset;
 			newDecorationData.rotation = newLocalTransform.rotation;
 			newDecorationData.scale = newLocalTransform.scale;
-			currentDecoration.DecorationData = newDecorationData;
+			decoration.DecorationData = newDecorationData;
 
-			currentDecoration.UpdateOrientation();
+			decoration.UpdateOrientation();
 		}
 
 		public void CancelCurrentDecoration() {
@@ -491,11 +495,22 @@ namespace Keiwando.Evolution {
 		/// <summary>
 		/// Moves the currently selected components to the specified position.
 		/// </summary>
-		public void MoveSelection(ICollection<Joint> jointsToMove, Vector3 movement) {
+		public void MoveSelection(ICollection<Joint> jointsToMove, ICollection<Decoration> decorationsToMove, Vector3 movement) {
 
 			foreach (var joint in jointsToMove) {
 				var newPosition = joint.transform.position + movement;
 				joint.MoveTo(newPosition);		
+			}
+			foreach (var decoration in decorationsToMove) {
+				var newWorldPosition = decoration.transform.position + movement;
+				MoveDecorationToWorldPosition(decoration, newWorldPosition);
+			}
+			if (jointsToMove.Count > 0) {
+				// We have to refresh the position of all decorations, since the joint movements could
+				// have caused transitive decoration movements
+				foreach (Decoration decoration in this.decorations) {
+					decoration.UpdateOrientation();
+				}
 			}
 		}
 

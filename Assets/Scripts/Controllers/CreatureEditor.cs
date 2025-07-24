@@ -52,7 +52,7 @@ public class CreatureEditor: MonoBehaviour,
     // MARK: - Movement
     private Vector3 lastDragPosition;
     private HashSet<Joint> jointsToMove = new HashSet<Joint>();
-    // TODO: Make the move tool work for decorations as well
+    private HashSet<Decoration> decorationsToMove = new HashSet<Decoration>();
 
     void Start() {
 
@@ -218,8 +218,9 @@ public class CreatureEditor: MonoBehaviour,
         if (pinchRecognizer.State != GestureRecognizerState.Ended) {
             selectionManager.CancelSelection();
             creatureBuilder.CancelTemporaryBodyParts();
-            bool needsCreatureReset = jointsToMove.Count > 0;
+            bool needsCreatureReset = jointsToMove.Count > 0 || decorationsToMove.Count > 0;
             jointsToMove.Clear();
+            decorationsToMove.Clear();
             if (needsCreatureReset) {
                 SetState(creatureBuilder.GetDesign());
             }
@@ -272,7 +273,7 @@ public class CreatureEditor: MonoBehaviour,
 
             case Tool.Move:
                 selectionManager.AddCurrentHoveringToSelection();
-                jointsToMove = selectionManager.GetJointsToMoveFromSelection();
+                selectionManager.RefreshPartsToMoveFromSelection(jointsToMove, decorationsToMove);
                 lastDragPosition = clickWorldPos;
                 if (grid.gameObject.activeSelf && jointsToMove.Count > 0) {
                     // Snap the closest joint to the grid
@@ -319,8 +320,8 @@ public class CreatureEditor: MonoBehaviour,
                 break;
 
             case Tool.Move:
-                if (jointsToMove.Count > 0) {
-                    creatureBuilder.MoveSelection(jointsToMove, clickWorldPos - lastDragPosition);
+                if (jointsToMove.Count > 0 || decorationsToMove.Count > 0) {
+                    creatureBuilder.MoveSelection(jointsToMove, decorationsToMove, clickWorldPos - lastDragPosition);
                     lastDragPosition = clickWorldPos;
                 }    
                 break;
