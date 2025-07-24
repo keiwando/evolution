@@ -74,7 +74,6 @@ namespace Keiwando.Evolution.UI {
     private int currentPageIndex = 0;
     private int numberOfItemsOnCurrentPage = 0;
     
-    // TODO: Have this store the global scene index, not the cell index.
     /// The absolute scene index that is currently visible in fullscreen mode.
     private int? fullscreenSceneIndex = null;
     /// The scene index that we want to switch to in fullscreen mode

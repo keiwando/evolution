@@ -3,8 +3,6 @@ using Keiwando.NFSO;
 
 public class CustomEvolutionFileType {
 
-	// TODO: Change the base UTIs here if necessary
-
 	public static readonly SupportedFileType evol = new SupportedFileType {
 		Name = "Evolution Save File",
 		Extension = "evol",
@@ -19,7 +17,7 @@ public class CustomEvolutionFileType {
 		Extension = "creat",
 		Owner = true,
 		AppleUTI = "com.keiwando.Evolution.creat",
-		AppleConformsToUTI = "public.plain-text",
+		AppleConformsToUTI = "public.data",
 		MimeType = "application/octet-stream"
 	};
 

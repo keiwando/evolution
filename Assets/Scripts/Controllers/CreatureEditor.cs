@@ -52,6 +52,7 @@ public class CreatureEditor: MonoBehaviour,
     // MARK: - Movement
     private Vector3 lastDragPosition;
     private HashSet<Joint> jointsToMove = new HashSet<Joint>();
+    // TODO: Make the move tool work for decorations as well
 
     void Start() {
 
@@ -266,6 +267,7 @@ public class CreatureEditor: MonoBehaviour,
                 if (closestBone != null) {
                     creatureBuilder.CreateDecorationFromBone(closestBone, clickWorldPos, SelectedDecorationType);
                 }
+                // TODO: If there is no bone yet, notify the user that they should add one
                 break;
 
             case Tool.Move:

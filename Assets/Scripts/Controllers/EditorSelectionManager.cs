@@ -76,9 +76,9 @@ namespace Keiwando.Evolution {
 
             case CreatureEditor.Tool.Delete:
             case CreatureEditor.Tool.Select:
-                hovering = GetComponentAtScreenPoint<Joint>(mouseScreenPos);
+                hovering = GetComponentAtScreenPoint<Decoration>(mouseScreenPos);
                 if (hovering == null)
-                    hovering = CheckCachedCollisionsFor<Decoration>();
+                    hovering = CheckCachedCollisionsFor<Joint>();
                 if (hovering == null)
                     hovering = CheckCachedCollisionsFor<Bone>();
                 if (hovering == null)
@@ -325,7 +325,8 @@ namespace Keiwando.Evolution {
         private static void GetComponentsInRect<T>(Rect rect, List<BodyComponent> result) 
             where T: BodyComponent {
 
-            Collider[] colliders = Physics.OverlapBox(rect.center, rect.size * 0.5f);
+            Vector3 rectExtends3D = new Vector3(0.5f * rect.width, 0.5f * rect.height, 1.0f);
+            Collider[] colliders = Physics.OverlapBox(rect.center, rectExtends3D);
             
             result.Clear();
 

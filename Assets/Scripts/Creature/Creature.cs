@@ -526,7 +526,6 @@ namespace Keiwando.Evolution {
 
 			var boneLayer = LayerMask.NameToLayer("VisibleCreature");
 			var jointLayer = LayerMask.NameToLayer("VisibleJoint");
-			// TODO: Introduce a decoration-specific layer if necessary
 
 			SetOnLayer(boneLayer: boneLayer, jointLayer: jointLayer);
 		}

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-// TODO: Remove in favor of InputRegistry
+// TODO(later): Remove in favor of InputRegistry
 public class KeyInputManager {
 
     public static KeyInputManager shared = new KeyInputManager();
