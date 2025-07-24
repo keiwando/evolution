@@ -84,6 +84,8 @@ namespace Keiwando.Evolution {
 			int maxMuscleID = design.Muscles.Count > 0 ? design.Muscles.Max(data => data.id) : 0;
 			int maxDecorationID = design.Decorations.Count > 0 ? design.Decorations.Max(decoration => decoration.id) : 0;
 			idCounter = Mathf.Max(Mathf.Max(Mathf.Max(maxJointID, maxBoneID), maxMuscleID), maxDecorationID) + 1;
+
+			Creature.RefreshDecorationSortingOrders(this.decorations);
 		}
 
 		
@@ -443,6 +445,7 @@ namespace Keiwando.Evolution {
 			} else {
 				currentDecoration.SetVisualizeConnection(false);
 				decorations.Add(currentDecoration);
+				Creature.RefreshDecorationSortingOrders(this.decorations);
 				currentDecoration = null;
 				return true;
 			}

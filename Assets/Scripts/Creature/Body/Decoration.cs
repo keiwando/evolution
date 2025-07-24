@@ -43,6 +43,8 @@ public class Decoration : BodyComponent {
       decoration.googlyEyeSpriteRenderers = decoration.GetComponentsInChildren<SpriteRenderer>();
     } else {
       decoration.spriteRenderer.sprite = DecorationUtils.DecorationTypeToImageResourceName(data.decorationType);
+      // So the decoration shows up above all others when first being placed.
+      decoration.spriteRenderer.sortingOrder = 1000000;
     }
 
     return decoration;
@@ -80,6 +82,14 @@ public class Decoration : BodyComponent {
         spriteRenderer.gameObject.layer = layer;
       }
     }
+  }
+
+  public int SetSpriteRendererOrder(int order) {
+    if (DecorationData.decorationType != DecorationType.GooglyEye && spriteRenderer != null) {
+      spriteRenderer.sortingOrder = order;
+      return order + 1;
+    }
+    return order;
   }
 
   protected override void SetRendererMaterialForHighlight(Material mat, Material spriteMat, bool selected) {

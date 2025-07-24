@@ -51,6 +51,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Googly Eye
+    uniqueID: 1122847201
+    locked: 0
   - name: Dropdown
     uniqueID: 1391076565
     locked: 0

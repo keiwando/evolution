@@ -146,6 +146,8 @@ namespace Keiwando.Evolution {
 				muscle.PrepareForEvolution();
 			}
 
+			RefreshDecorationSortingOrders();
+
 			alive = true;
 		}
 
@@ -574,6 +576,17 @@ namespace Keiwando.Evolution {
 		public void RemoveMuscleColliders() {
 			for (int i = 0; i < muscles.Count; i++) {
 				muscles[i].RemoveCollider();
+			}
+		}
+
+		public void RefreshDecorationSortingOrders() {
+			RefreshDecorationSortingOrders(this.decorations);
+		}
+
+		public static void RefreshDecorationSortingOrders(List<Decoration> decorations) {
+			int nextSortingOrder = 20;
+			foreach (Decoration decoration in decorations) {
+				nextSortingOrder = decoration.SetSpriteRendererOrder(nextSortingOrder);
 			}
 		}
 	}
