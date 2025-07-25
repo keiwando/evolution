@@ -51,11 +51,19 @@
 
             sampler2D _MainTex;
 
+            #define EPSILON 1e-6
+
+            fixed4 blend(fixed4 src, fixed4 dst) {
+                fixed srcA = src.a;
+                fixed resA = srcA + dst.a * (1.0 - srcA);
+                fixed3 resRGB = (src.rgb * srcA + dst.rgb * dst.a * (1.0 - srcA)) / max(resA, EPSILON);
+                return fixed4(resRGB, resA);
+            }
+
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
-                col.rgb = _Color.rgb;
-                col.a *= _Color.a;
+                col.rgb = blend(_Color, col).rgb;
                 return col;
             }
             ENDCG
