@@ -27,8 +27,6 @@ public class Joint : BodyComponent {
 
 	private SpriteRenderer[] googlyEyesSpriteRenderers = null;
 
-	private Vector3 resetPosition;
-	private Quaternion resetRotation;
 	private bool iterating;
 
 	public static Joint CreateFromData(JointData data) {
@@ -38,25 +36,13 @@ public class Joint : BodyComponent {
 		renderer.sortingOrder = 2;
 		joint.JointData = data;
 
-		if (data.isGooglyEye) {
-			var eye = ((GameObject) Instantiate(Resources.Load(GOOGLY_EYE_PATH), joint.transform)).transform;
-			eye.localPosition = new Vector3(0, 0, -1f);
-			eye.localRotation = Quaternion.identity;
-			eye.localScale = new Vector3(GOOGLY_EYE_SCALE, GOOGLY_EYE_SCALE, 1f);
-			joint.googlyEyesSpriteRenderers = eye.GetComponentsInChildren<SpriteRenderer>();
-		}
-
 		return joint;
 	}
 
 	public override void Start () {
 		base.Start();
 
-		resetPosition = transform.position;
-		resetRotation = transform.rotation;
-
 		body = GetComponent<Rigidbody>();
-
 		body.mass = JointData.weight;
 	}
 

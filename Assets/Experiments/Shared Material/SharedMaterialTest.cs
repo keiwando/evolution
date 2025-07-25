@@ -20,8 +20,7 @@ public class SharedMaterialTest : MonoBehaviour {
                 0, 
                 new Vector2(0, 0),
                 1f,
-                0f,
-                false
+                0f
             )
         );
 

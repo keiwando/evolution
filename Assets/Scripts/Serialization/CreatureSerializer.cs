@@ -321,8 +321,7 @@ public class CreatureSerializer {
 			id: id,
 			position: new Vector2(positionX, positionY),
 			weight: weight,
-			penalty: fitnessPenalty,
-			isGooglyEye: false
+			penalty: fitnessPenalty
 		);
 	}
 

@@ -10,14 +10,12 @@ public struct JointData: IJsonConvertible {
     public readonly Vector2 position;
     public readonly float weight;
     public readonly float fitnessPenaltyForTouchingGround;
-    public readonly bool isGooglyEye;
 
-    public JointData(int id, Vector2 position, float weight, float penalty, bool isGooglyEye) {
+    public JointData(int id, Vector2 position, float weight, float penalty) {
         this.id = id;
         this.position = position;
         this.weight = weight;
         this.fitnessPenaltyForTouchingGround = penalty;
-        this.isGooglyEye = isGooglyEye;
     }
 
     #region Encode & Decode
@@ -29,7 +27,6 @@ public struct JointData: IJsonConvertible {
         public const string Weight = "weight";
         // This is optional and only serialized if != 0.0f
         public const string Penalty = "penalty";
-        public const string IsGooglyEye = "gE";
     }
 
     public JObject Encode() {
@@ -40,9 +37,6 @@ public struct JointData: IJsonConvertible {
         json[CodingKey.Weight] = this.weight;
         if (fitnessPenaltyForTouchingGround != 0.0f) {
             json[CodingKey.Penalty] = fitnessPenaltyForTouchingGround;
-        }
-        if (isGooglyEye) {
-            json[CodingKey.IsGooglyEye] = true;
         }
         return json;
     }
@@ -60,9 +54,8 @@ public struct JointData: IJsonConvertible {
         float y = json[CodingKey.Y].ToFloat();
         float weight = json[CodingKey.Weight].ToFloat();
         float penalty = json.ContainsKey(CodingKey.Penalty) ? json[CodingKey.Penalty].ToFloat() : 0.0f;
-        bool isGooglyEye = json.ContainsKey(CodingKey.IsGooglyEye) && json[CodingKey.IsGooglyEye].ToBool();
 
-        return new JointData(id, new Vector2(x, y), weight, penalty, isGooglyEye);
+        return new JointData(id, new Vector2(x, y), weight, penalty);
     }
 
     #endregion
