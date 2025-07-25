@@ -373,8 +373,9 @@ public class CreatureEditor: MonoBehaviour,
                 break;
 
             case Tool.Move: 
-                creatureEdited = creatureBuilder.MoveEnded(jointsToMove); 
+                creatureEdited = creatureBuilder.MoveEnded(jointsToMove, decorationsToMove); 
                 jointsToMove.Clear();
+                decorationsToMove.Clear();
                 if (!isPointerOverUI) {
                     selectionManager.DeselectAll();
                 }

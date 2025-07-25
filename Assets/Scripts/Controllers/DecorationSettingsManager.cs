@@ -26,6 +26,7 @@ namespace Keiwando.Evolution {
         var data = oldData;
         data.flipX = flipX;
         decoration.DecorationData = data;
+        decoration.UpdateOrientation();
         Refresh();
       };
       
@@ -38,6 +39,7 @@ namespace Keiwando.Evolution {
         var data = oldData;
         data.flipY = flipY;
         decoration.DecorationData = data;
+        decoration.UpdateOrientation();
         Refresh();
       };
 

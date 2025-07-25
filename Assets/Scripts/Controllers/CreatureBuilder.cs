@@ -518,17 +518,21 @@ namespace Keiwando.Evolution {
 		/// Resets all properties used while moving a body component.
 		/// </summary>
 		/// <returns>Returns whether the creature design was changed.</returns>
-		public bool MoveEnded(ICollection<Joint> jointsToMove) {
+		public bool MoveEnded(ICollection<Joint> jointsToMove, ICollection<Decoration> decorationsToMove) {
 
-			if (jointsToMove == null) return false;
-
-			var didChange = jointsToMove.Count > 0;
-			if (didChange) {
-				foreach (var joint in jointsToMove) {
-					var oldData = joint.JointData;
-					var newData = new JointData(oldData.id, joint.center, oldData.weight, oldData.fitnessPenaltyForTouchingGround, oldData.isGooglyEye);
-					joint.JointData = newData;
+			var didChange = false;
+			if (jointsToMove != null) {
+				didChange |= jointsToMove.Count > 0;
+				if (didChange) {
+					foreach (var joint in jointsToMove) {
+						var oldData = joint.JointData;
+						var newData = new JointData(oldData.id, joint.center, oldData.weight, oldData.fitnessPenaltyForTouchingGround, oldData.isGooglyEye);
+						joint.JointData = newData;
+					}
 				}
+			}
+			if (decorationsToMove != null) {
+				didChange |= decorationsToMove.Count > 0;
 			}
 			return didChange;
 		}

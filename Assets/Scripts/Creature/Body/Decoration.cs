@@ -101,7 +101,9 @@ public class Decoration : BodyComponent {
   protected override void SetRendererMaterialForHighlight(Material mat, Material spriteMat, bool selected) {
     if (googlyEyeSpriteRenderers != null) {
       foreach (SpriteRenderer spriteRenderer in googlyEyeSpriteRenderers) {
-        spriteRenderer.material = spriteMat;
+        if (spriteRenderer != null) {
+          spriteRenderer.material = spriteMat;
+        }
       }
     }
     SetVisualizeConnection(selected);

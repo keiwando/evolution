@@ -504,17 +504,16 @@ namespace Keiwando.Evolution {
 				// The first save of each separate simulation run (even when loaded from an old simulation file)
 				// should result in a distinct save file.
 				string availableFilename = SimulationSerializer.GetAvailableSimulationName(SimulationData);
-				// DEBUG:
-				Debug.Log($"availableFilename: {availableFilename}");
 				if (!string.IsNullOrEmpty(loadedFromSimulationFilePath)) {
 					string dstFilePath = SimulationSerializer.PathToSimulationSave(availableFilename);
 					// Copy the source file so we can append to it as a new file
 					File.Copy(loadedFromSimulationFilePath, dstFilePath);
 					filePathToUpdate = dstFilePath;
+					this.lastSaveFilePath = dstFilePath;
 				} else {
-					SimulationSerializer.SaveSimulationFile(availableFilename, SimulationData);
+					string savedFilenameWithoutExtension = SimulationSerializer.SaveSimulationFile(availableFilename, SimulationData);
+					this.lastSaveFilePath = SimulationSerializer.PathToSimulationSave(savedFilenameWithoutExtension);
 				}
-				this.lastSaveFilePath = availableFilename;
 			} else {
 				filePathToUpdate = lastSaveFilePath;
 			}
