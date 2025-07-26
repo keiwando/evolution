@@ -54,6 +54,10 @@ public class CreatureEditor: MonoBehaviour,
     private HashSet<Joint> jointsToMove = new HashSet<Joint>();
     private HashSet<Decoration> decorationsToMove = new HashSet<Decoration>();
     private bool currentClickStartedOverUI = false;
+    private bool currentClickStartedOverTransformGizmo => currentClickStartedOverScaleHandle || currentClickStartedOverRotationHandle;
+    private bool currentClickStartedOverScaleHandle = false;
+    private bool currentClickStartedOverRotationHandle = false;
+    private Vector2 moveStartTransformGizmoPosition;
 
     [SerializeField] private TransformGizmo transformGizmo;
 
@@ -113,7 +117,7 @@ public class CreatureEditor: MonoBehaviour,
         }
 
         if (transformGizmo.gameObject.activeSelf) {
-            Vector3 centerOfSelection = selectionManager.CalculateCenterOfSelection();
+            Vector3 centerOfSelection = selectionManager.CalculateCenterOfSelection(includeMuscles: false);
             transformGizmo.transform.position = new Vector3(centerOfSelection.x, centerOfSelection.y, -9f);
         }
     }
@@ -255,10 +259,15 @@ public class CreatureEditor: MonoBehaviour,
             clickWorldPos = grid.ClosestPointOnGrid(clickWorldPos);
         }
 
+        bool isOverScaleHandle = transformGizmo.gameObject.activeSelf && transformGizmo.IsPointerOverScaleHandle(clickWorldPos);
+        bool isOverRotationHandle = transformGizmo.gameObject.activeSelf && transformGizmo.IsPointerOverRotationHandle(clickWorldPos);
+
         // Mouse Down
         if (Input.GetMouseButtonDown(0)) { 
 
             this.currentClickStartedOverUI = isPointerOverUI;
+            this.currentClickStartedOverScaleHandle = isOverScaleHandle;
+            this.currentClickStartedOverRotationHandle = isOverRotationHandle;
 
             if (isPointerOverUI) return;
             
@@ -286,17 +295,20 @@ public class CreatureEditor: MonoBehaviour,
                 break;
 
             case Tool.Move:
+                if (transformGizmo.gameObject.activeSelf) {
+                    this.moveStartTransformGizmoPosition = transformGizmo.transform.position;
+                }
                 if (selectionManager.GetSelection().Count == 0) {
                     selectionManager.AddCurrentHoveringToSelection();
                 } else {
-                    if (!selectionManager.CurrentHoveringIsPartOfSelection()) {
+                    if (!selectionManager.CurrentHoveringIsPartOfSelection() && !currentClickStartedOverTransformGizmo) {
                         selectionManager.DeselectAll();
                         selectionManager.AddCurrentHoveringToSelection();
                     }
                 }
                 selectionManager.RefreshPartsToMoveFromSelection(jointsToMove, decorationsToMove);
                 lastDragPosition = clickWorldPos;
-                if (grid.gameObject.activeSelf && jointsToMove.Count > 0) {
+                if (!currentClickStartedOverTransformGizmo && grid.gameObject.activeSelf && jointsToMove.Count > 0) {
                     // Snap the closest joint to the grid
                     Joint closestJoint = null;
                     float closestDistance = float.MaxValue;
@@ -341,9 +353,41 @@ public class CreatureEditor: MonoBehaviour,
                 break;
 
             case Tool.Move:
-                // TODO: Don't move if the current touch sequence started on a UI element (e.g. click to select with transofrm gizmo, then click on a UI button. The selection shouldn't jump there.)
                 if (!currentClickStartedOverUI && (jointsToMove.Count > 0 || decorationsToMove.Count > 0)) {
-                    creatureBuilder.MoveSelection(jointsToMove, decorationsToMove, clickWorldPos - lastDragPosition);
+                    if (this.currentClickStartedOverScaleHandle) {
+                        Vector2 clickWorldPos2D = new Vector2(clickWorldPos.x, clickWorldPos.y);
+                        float dragDistanceToTransformOrigin = Vector2.Distance(moveStartTransformGizmoPosition, clickWorldPos2D);
+                        float scale = dragDistanceToTransformOrigin / TransformGizmo.BASE_HANDLE_DISTANCE_FROM_ORIGIN;
+                        // Safety clamp to prevent unwanted values
+                        scale = Mathf.Clamp(scale, 0.1f, 10f);
+
+                        float previousScale = transformGizmo.currentScaleFactor;
+                        float dScale = scale / previousScale;
+
+                        Vector2 scaleOrigin = new Vector2(moveStartTransformGizmoPosition.x, moveStartTransformGizmoPosition.y);
+                        creatureBuilder.ScaleSelection(jointsToMove, decorationsToMove, dScale, scaleOrigin);
+                        
+                        transformGizmo.currentScaleFactor = scale;
+                        transformGizmo.UpdateOrientation();
+
+                    } else if (this.currentClickStartedOverRotationHandle) {
+
+                        Vector2 clickWorldPos2D = new Vector2(clickWorldPos.x, clickWorldPos.y);
+                        Vector2 rotationOrigin = new Vector2(moveStartTransformGizmoPosition.x, moveStartTransformGizmoPosition.y);
+
+                        float oldRotation = Mathf.Atan2(transformGizmo.rotationHandle.transform.position.y - rotationOrigin.y, transformGizmo.rotationHandle.transform.position.x - rotationOrigin.x) * Mathf.Rad2Deg;
+                        float newRotation = Mathf.Atan2(clickWorldPos2D.y - rotationOrigin.y, clickWorldPos2D.x - rotationOrigin.x) * Mathf.Rad2Deg;
+                        float dRotation = newRotation - oldRotation;
+
+                        creatureBuilder.RotateSelection(jointsToMove, decorationsToMove, dRotation, rotationOrigin);
+                        
+                        transformGizmo.transform.rotation = Quaternion.Euler(0, 0, newRotation);
+                        transformGizmo.UpdateOrientation();
+
+                        lastDragPosition = clickWorldPos;
+                    } else {
+                        creatureBuilder.MoveSelection(jointsToMove, decorationsToMove, clickWorldPos - lastDragPosition);
+                    }
                     lastDragPosition = clickWorldPos;
                 }    
                 break;
@@ -397,10 +441,13 @@ public class CreatureEditor: MonoBehaviour,
             case Tool.Move: 
                 creatureEdited = creatureBuilder.MoveEnded(jointsToMove, decorationsToMove); 
                 if (GestureRecognizerCollection.shared.GetClickGestureRecognizer().ClickEndedOnThisFrame() && 
-                    selectionManager.LastHoveringIsPartOfSelection()
+                    selectionManager.LastHoveringIsPartOfSelection() && 
+                    !transformGizmo.gameObject.activeSelf &&
+                    !selectionManager.SelectionOnlyContainsType(BodyComponentType.Muscle)
                 ) {
                     transformGizmo.gameObject.SetActive(true);
-                } else {
+                    transformGizmo.Reset();
+                } else if (!currentClickStartedOverTransformGizmo) {
                     transformGizmo.gameObject.SetActive(false);
                     jointsToMove.Clear();
                     decorationsToMove.Clear();
@@ -488,11 +535,6 @@ public class CreatureEditor: MonoBehaviour,
 		else if (input.GetKeyDown(KeyCode.E)) {
 			StartSimulation();
 		}
-
-        // DEBUG:
-        else if (input.GetKeyDown(KeyCode.C)) {
-            SelectedTool = Tool.Decoration;
-        }
 
         else if (input.GetKeyDown(KeyCode.Escape)) {
             selectionManager.DeselectAll();

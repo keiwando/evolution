@@ -429,6 +429,20 @@ namespace Keiwando.Evolution {
 			decoration.UpdateOrientation();
 		}
 
+		private void SetDecorationScale(Decoration decoration, float scale) {
+			DecorationData newDecorationData = decoration.DecorationData;
+			newDecorationData.scale = scale;
+			decoration.DecorationData = newDecorationData;
+			decoration.UpdateOrientation();
+		}
+
+		private void SetDecorationRotation(Decoration decoration, float rotation) {
+			DecorationData newDecorationData = decoration.DecorationData;
+			newDecorationData.rotation = rotation;
+			decoration.DecorationData = newDecorationData;
+			decoration.UpdateOrientation();
+		}
+
 		public void CancelCurrentDecoration() {
 
 			if (currentDecoration == null) return;
@@ -508,10 +522,69 @@ namespace Keiwando.Evolution {
 			if (jointsToMove.Count > 0) {
 				// We have to refresh the position of all decorations, since the joint movements could
 				// have caused transitive decoration movements
+				RefreshAllDecorationOrientations();
+			}
+		}
+
+		public void ScaleSelection(ICollection<Joint> jointsToScale, ICollection<Decoration> decorationsToScsale, float scale, Vector2 scaleOrigin) {
+			foreach (var joint in jointsToScale) {
+				Vector3 newPosition = GetNewPositionForScalingAroundPoint(joint.gameObject, scale, scaleOrigin);
+				joint.MoveTo(newPosition);
+			}
+			foreach (var decoration in decorationsToScsale) {
+				Vector3 newPosition = GetNewPositionForScalingAroundPoint(decoration.gameObject, scale, scaleOrigin);
+				MoveDecorationToWorldPosition(decoration, newPosition);
+				float newDecorationScale = decoration.DecorationData.scale * scale;
+				SetDecorationScale(decoration, newDecorationScale);
+			}
+			if (jointsToScale.Count > 0) {
+				// We have to refresh the position of all decorations, since the joint movements could
+				// have caused transitive decoration movements
+				RefreshAllDecorationOrientations();
+			}
+		}
+
+		private Vector3 GetNewPositionForScalingAroundPoint(GameObject gameObject, float scale, Vector2 scaleOrigin) {
+				Vector3 pos = gameObject.transform.position;
+				Vector3 scaleOrigin3D = new Vector3(scaleOrigin.x, scaleOrigin.y, pos.z);
+				Vector3 offset = pos - scaleOrigin3D;
+				Vector3 scaledOffset = new Vector3(offset.x * scale, offset.y * scale, 0f);
+				Vector3 newPosition = scaleOrigin3D + scaledOffset;
+				return newPosition;
+		}
+
+		public void RotateSelection(ICollection<Joint> jointToRotate, ICollection<Decoration> decorationsToRotate, float rotation, Vector2 rotationOrigin) {
+			foreach (var joint in jointToRotate) {
+				Vector3 newPosition = GetNewPositionForRotatingAroundPoint(joint.gameObject, rotation, rotationOrigin);
+				joint.MoveTo(newPosition);
+			}
+			foreach (var decoration in decorationsToRotate) {
+				Vector3 newPosition = GetNewPositionForRotatingAroundPoint(decoration.gameObject, rotation, rotationOrigin);
+				MoveDecorationToWorldPosition(decoration, newPosition);
+				float newRotation = decoration.DecorationData.rotation + rotation * Mathf.Deg2Rad;
+				SetDecorationRotation(decoration, newRotation);
+			}
+			if (jointToRotate.Count > 0) {
+				// We have to refresh the position of all decorations, since the joint movements could
+				// have caused transitive decoration movements
+				RefreshAllDecorationOrientations();
+			}
+		}
+
+		private Vector3 GetNewPositionForRotatingAroundPoint(GameObject gameObject, float dRotation, Vector2 rotationOrigin) {
+			Vector3 pos = gameObject.transform.position;
+			Vector3 rotationOrigin3D = new Vector3(rotationOrigin.x, rotationOrigin.y, pos.z);
+			Vector3 offset = pos - rotationOrigin3D;
+			Quaternion rotationQuat = Quaternion.Euler(0f, 0f, dRotation);
+			Vector3 rotatedOffset = rotationQuat * offset;
+			Vector3 newPosition = rotationOrigin3D + rotatedOffset;
+			return newPosition;
+		}
+
+		private void RefreshAllDecorationOrientations() {
 				foreach (Decoration decoration in this.decorations) {
 					decoration.UpdateOrientation();
 				}
-			}
 		}
 
 		/// <summary>

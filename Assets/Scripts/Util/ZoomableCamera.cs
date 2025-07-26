@@ -39,6 +39,8 @@ namespace Keiwando.Evolution {
     /// </summary>
     protected float minZoom;
 
+    private float initialZoom;
+
     public bool InteractiveZoomEnabled = true;
 
     public PointerHoverDetector[] pointerHoverAreasToIgnore;
@@ -47,7 +49,7 @@ namespace Keiwando.Evolution {
 
     internal virtual void Start(Camera camera) {
       this._camera = camera;
-      var initialZoom = camera.orthographicSize;
+      initialZoom = camera.orthographicSize;
       minZoom = initialZoom - zoomInLength;
 
       InputRegistry.shared.Register(InputType.Scroll, this, EventHandleMode.PassthroughEvent);
@@ -115,6 +117,10 @@ namespace Keiwando.Evolution {
       _camera.transform.position = pos;
 
       OnAfterZoom();
+    }
+
+    public float GetCurrentRelativeZoom() {
+      return _camera.orthographicSize / initialZoom;
     }
 
     protected abstract void OnAfterZoom();

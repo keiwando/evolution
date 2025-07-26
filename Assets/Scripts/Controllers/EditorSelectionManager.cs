@@ -164,12 +164,17 @@ namespace Keiwando.Evolution {
             return false;
         }
 
-        public Vector3 CalculateCenterOfSelection() {
+        public Vector3 CalculateCenterOfSelection(bool includeMuscles) {
             Vector3 avgPosition = Vector3.zero;
+            int componentCount = 0;
             foreach (BodyComponent component in selection) {
+                if (!includeMuscles && component.GetBodyComponentType() == BodyComponentType.Muscle) {
+                    continue;
+                } 
                 avgPosition += component.transform.position;
+                componentCount += 1;
             }
-            avgPosition /= (float)selection.Count;
+            avgPosition /= (float)componentCount;
             return avgPosition;
         }
 
@@ -281,6 +286,15 @@ namespace Keiwando.Evolution {
 
         public bool IsAnythingSelected() {
             return this.selection.Count > 0;
+        }
+
+        public bool SelectionOnlyContainsType(BodyComponentType type) {
+            foreach (BodyComponent selectedComponent in selection) {
+                if (selectedComponent.GetBodyComponentType() != type) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public List<BodyComponent> GetSelection() {

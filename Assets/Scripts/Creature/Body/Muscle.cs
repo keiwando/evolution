@@ -73,9 +73,6 @@ public class Muscle : BodyComponent {
 	private float minLineWidth = 0.5f;
 	private float maxLineWidth = 1.5f;
 
-	private Vector3 resetPosition;
-	private Quaternion resetRotation;
-
 	public static Muscle CreateFromData(MuscleData data) {
 
 		Material muscleMaterial = Resources.Load(MATERIAL_PATH) as Material;
@@ -96,13 +93,6 @@ public class Muscle : BodyComponent {
 		muscle.invisibleMaterial = invisibleMaterial;
 
 		return muscle;
-	}
-
-	public override void Start () {
-		base.Start();
-
-		resetPosition = transform.position;
-		resetRotation = transform.rotation;
 	}
 
 	void Update () {
@@ -364,6 +354,10 @@ public class Muscle : BodyComponent {
 	public override void PrepareForEvolution () {
 		living = true;
 	}
+	
+	public override BodyComponentType GetBodyComponentType() {
+    return BodyComponentType.Muscle;
+  }
 
 	public override int GetId() {
 		return MuscleData.id;

@@ -120,6 +120,10 @@ public class Joint : BodyComponent {
 		body.isKinematic = false;
 	}
 
+  public override BodyComponentType GetBodyComponentType() {
+    return BodyComponentType.Joint;
+  }
+
 	public override int GetId() {
 		return JointData.id;
 	}

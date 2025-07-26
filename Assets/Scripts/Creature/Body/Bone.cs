@@ -202,6 +202,10 @@ public class Bone : BodyComponent {
 			Destroy(wingSpriteRenderer.gameObject);
 		}
 	}
+  
+	public override BodyComponentType GetBodyComponentType() {
+    return BodyComponentType.Bone;
+  }
 
 	public override int GetId() {
 		return BoneData.id;

@@ -1,5 +1,12 @@
 ﻿using System.Collections.Generic;
 
+public enum BodyComponentType {
+	Joint,
+	Bone,
+	Muscle,
+	Decoration
+}
+
 abstract public class BodyComponent: Hoverable {
 
 	private bool deleted;
@@ -16,6 +23,8 @@ abstract public class BodyComponent: Hoverable {
 	/// Prepares the component for the evolution simulation.
 	/// </summary>
 	abstract public void PrepareForEvolution();
+
+	abstract public BodyComponentType GetBodyComponentType();
 
 	/// <summary>
 	/// Returns the id of this component.

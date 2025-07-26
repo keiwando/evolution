@@ -27859,6 +27859,7 @@ GameObject:
   - component: {fileID: 1434564821}
   - component: {fileID: 1434564823}
   - component: {fileID: 1434564822}
+  - component: {fileID: 1434564824}
   m_Layer: 0
   m_Name: Rotation Gizmo
   m_TagString: Untagged
@@ -28043,6 +28044,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!135 &1434564824
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1434564820}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.8
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1442536306
 GameObject:
   m_ObjectHideFlags: 0
@@ -30889,6 +30911,7 @@ GameObject:
   - component: {fileID: 1604283085}
   - component: {fileID: 1604283087}
   - component: {fileID: 1604283086}
+  - component: {fileID: 1604283088}
   m_Layer: 0
   m_Name: Scale Gizmo
   m_TagString: Untagged
@@ -31073,6 +31096,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!135 &1604283088
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1604283084}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.8
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1614398316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33044,6 +33088,8 @@ MonoBehaviour:
   rotationHandle: {fileID: 1434564823}
   scaleLineRenderer: {fileID: 1604283086}
   rotationLineRenderer: {fileID: 1434564822}
+  zoomableCamera: {fileID: 1798671387}
+  currentScaleFactor: 1
 --- !u!1 &1742217306
 GameObject:
   m_ObjectHideFlags: 0

@@ -123,6 +123,10 @@ public class Decoration : BodyComponent {
       sphereCollider.enabled = false;
     }
   }
+	
+  public override BodyComponentType GetBodyComponentType() {
+    return BodyComponentType.Decoration;
+  }
   
   public override int GetId() {
     return DecorationData.id;
