@@ -139,6 +139,40 @@ namespace Keiwando.Evolution {
             return null;
         }
 
+        public BodyComponent GetLastHovering() {
+            return lastHovering;
+        }
+
+        public bool CurrentHoveringIsPartOfSelection() {
+            return ItemIsPartOfSelection(currentHovering);
+        }
+
+        public bool LastHoveringIsPartOfSelection() {
+            return ItemIsPartOfSelection(lastHovering);
+        }
+
+        public bool ItemIsPartOfSelection(BodyComponent component) {
+            if (component == null) {
+                return false;
+            }
+            int id = component.GetId();
+            foreach (BodyComponent selectedCompoennt in selection) {
+                if (selectedCompoennt.GetId() == id) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public Vector3 CalculateCenterOfSelection() {
+            Vector3 avgPosition = Vector3.zero;
+            foreach (BodyComponent component in selection) {
+                avgPosition += component.transform.position;
+            }
+            avgPosition /= (float)selection.Count;
+            return avgPosition;
+        }
+
         public void RefreshPartsToMoveFromSelection(HashSet<Joint> jointsToMove, HashSet<Decoration> decorationsToMove) {
             jointsToMove.Clear();
             decorationsToMove.Clear();
@@ -158,8 +192,16 @@ namespace Keiwando.Evolution {
         }
 
         public void AddCurrentHoveringToSelection() {
-            if (currentHovering != null)
+            if (currentHovering != null) {
+                int hoveringId = currentHovering.GetId();
+                foreach (BodyComponent selectedComponent in selection) {
+                    if (selectedComponent.GetId() == hoveringId) {
+                        return;
+                    }
+                }
                 selection.Add(currentHovering);
+                currentHovering.EnableHighlight();
+            }   
         }
 
         public void StartSelection(Vector3 startPosition) {

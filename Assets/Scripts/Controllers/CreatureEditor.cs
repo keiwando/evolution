@@ -53,6 +53,9 @@ public class CreatureEditor: MonoBehaviour,
     private Vector3 lastDragPosition;
     private HashSet<Joint> jointsToMove = new HashSet<Joint>();
     private HashSet<Decoration> decorationsToMove = new HashSet<Decoration>();
+    private bool currentClickStartedOverUI = false;
+
+    [SerializeField] private TransformGizmo transformGizmo;
 
     void Start() {
 
@@ -104,6 +107,15 @@ public class CreatureEditor: MonoBehaviour,
         selectionManager.Update(InputUtils.GetMousePosition());
         HandleClicks();
         HandleKeyboardInput();
+
+        if (selectionManager.GetSelection().Count == 0) {
+            transformGizmo.gameObject.SetActive(false);
+        }
+
+        if (transformGizmo.gameObject.activeSelf) {
+            Vector3 centerOfSelection = selectionManager.CalculateCenterOfSelection();
+            transformGizmo.transform.position = new Vector3(centerOfSelection.x, centerOfSelection.y, -9f);
+        }
     }
 
     /// <summary>
@@ -246,6 +258,8 @@ public class CreatureEditor: MonoBehaviour,
         // Mouse Down
         if (Input.GetMouseButtonDown(0)) { 
 
+            this.currentClickStartedOverUI = isPointerOverUI;
+
             if (isPointerOverUI) return;
             
             switch (selectedTool) {
@@ -272,7 +286,14 @@ public class CreatureEditor: MonoBehaviour,
                 break;
 
             case Tool.Move:
-                selectionManager.AddCurrentHoveringToSelection();
+                if (selectionManager.GetSelection().Count == 0) {
+                    selectionManager.AddCurrentHoveringToSelection();
+                } else {
+                    if (!selectionManager.CurrentHoveringIsPartOfSelection()) {
+                        selectionManager.DeselectAll();
+                        selectionManager.AddCurrentHoveringToSelection();
+                    }
+                }
                 selectionManager.RefreshPartsToMoveFromSelection(jointsToMove, decorationsToMove);
                 lastDragPosition = clickWorldPos;
                 if (grid.gameObject.activeSelf && jointsToMove.Count > 0) {
@@ -320,7 +341,8 @@ public class CreatureEditor: MonoBehaviour,
                 break;
 
             case Tool.Move:
-                if (jointsToMove.Count > 0 || decorationsToMove.Count > 0) {
+                // TODO: Don't move if the current touch sequence started on a UI element (e.g. click to select with transofrm gizmo, then click on a UI button. The selection shouldn't jump there.)
+                if (!currentClickStartedOverUI && (jointsToMove.Count > 0 || decorationsToMove.Count > 0)) {
                     creatureBuilder.MoveSelection(jointsToMove, decorationsToMove, clickWorldPos - lastDragPosition);
                     lastDragPosition = clickWorldPos;
                 }    
@@ -374,10 +396,17 @@ public class CreatureEditor: MonoBehaviour,
 
             case Tool.Move: 
                 creatureEdited = creatureBuilder.MoveEnded(jointsToMove, decorationsToMove); 
-                jointsToMove.Clear();
-                decorationsToMove.Clear();
-                if (!isPointerOverUI) {
-                    selectionManager.DeselectAll();
+                if (GestureRecognizerCollection.shared.GetClickGestureRecognizer().ClickEndedOnThisFrame() && 
+                    selectionManager.LastHoveringIsPartOfSelection()
+                ) {
+                    transformGizmo.gameObject.SetActive(true);
+                } else {
+                    transformGizmo.gameObject.SetActive(false);
+                    jointsToMove.Clear();
+                    decorationsToMove.Clear();
+                    if (!isPointerOverUI) {
+                        selectionManager.DeselectAll();
+                    }
                 }
                 break;
 
