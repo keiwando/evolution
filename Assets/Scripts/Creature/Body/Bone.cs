@@ -20,9 +20,6 @@ public class Bone : BodyComponent {
 
 	public BoneData BoneData { get; set; }
 
-	private Vector3 resetPosition;
-	private Quaternion resetRotation;
-
 	public Rigidbody Body => body;
 	private Rigidbody body;
 
@@ -61,13 +58,6 @@ public class Bone : BodyComponent {
 		bone.UpdateFeatherVisibility();
 
 		return bone;
-	}
-	
-	public override void Start () {
-		base.Start();
-
-		resetPosition = transform.position;
-		resetRotation = transform.rotation;
 	}
 
 	public void FixedUpdate() {

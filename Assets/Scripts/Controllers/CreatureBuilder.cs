@@ -56,6 +56,8 @@ namespace Keiwando.Evolution {
 		/// </summary>
 		public static float CONNECTION_WIDTH = 0.5f;
 
+		private Dictionary<int, float>  _absoluteDecorationRotations = new Dictionary<int, float>();
+
 		public CreatureBuilder() {}
 
 		public CreatureBuilder(CreatureDesign design) {
@@ -554,6 +556,10 @@ namespace Keiwando.Evolution {
 		}
 
 		public void RotateSelection(ICollection<Joint> jointToRotate, ICollection<Decoration> decorationsToRotate, float rotation, Vector2 rotationOrigin) {
+			foreach (var decoration in decorationsToRotate) {
+				var newAbsoluteRotation = decoration.transform.rotation.eulerAngles.z + rotation;
+				_absoluteDecorationRotations[decoration.GetId()] = newAbsoluteRotation;
+			}
 			foreach (var joint in jointToRotate) {
 				Vector3 newPosition = GetNewPositionForRotatingAroundPoint(joint.gameObject, rotation, rotationOrigin);
 				joint.MoveTo(newPosition);
@@ -561,7 +567,9 @@ namespace Keiwando.Evolution {
 			foreach (var decoration in decorationsToRotate) {
 				Vector3 newPosition = GetNewPositionForRotatingAroundPoint(decoration.gameObject, rotation, rotationOrigin);
 				MoveDecorationToWorldPosition(decoration, newPosition);
-				float newRotation = decoration.DecorationData.rotation + rotation * Mathf.Deg2Rad;
+				float newAbsoluteRotation = _absoluteDecorationRotations[decoration.GetId()];
+				float localDeltaRotation = newAbsoluteRotation - decoration.transform.rotation.eulerAngles.z;
+				float newRotation = decoration.DecorationData.rotation + localDeltaRotation * Mathf.Deg2Rad;
 				SetDecorationRotation(decoration, newRotation);
 			}
 			if (jointToRotate.Count > 0) {
