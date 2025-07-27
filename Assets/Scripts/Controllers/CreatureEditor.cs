@@ -453,6 +453,7 @@ public class CreatureEditor: MonoBehaviour,
 
             case Tool.Move: 
                 if (!this.currentClickStartedOverUI) {
+                    // TODO: Make sure that undo steps are correctly inserted when moving decorations
                     creatureEdited = creatureBuilder.MoveEnded(jointsToMove, decorationsToMove); 
                 }
                 if (GestureRecognizerCollection.shared.GetClickGestureRecognizer().ClickEndedOnThisFrame() && 

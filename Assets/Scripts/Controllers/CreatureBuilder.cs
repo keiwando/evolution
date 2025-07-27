@@ -57,6 +57,7 @@ namespace Keiwando.Evolution {
 		public static float CONNECTION_WIDTH = 0.5f;
 
 		private Dictionary<int, float>  _absoluteDecorationRotations = new Dictionary<int, float>();
+		private static HashSet<int> _idsTmpAlloc = new HashSet<int>();
 
 		public CreatureBuilder() {}
 
@@ -660,6 +661,7 @@ namespace Keiwando.Evolution {
 			foreach (var decoration in decorations) {
 				decoration.Delete();
 			}
+			DeleteDecorationsOfDeletedBones();
 
 			RemoveDeletedObjects();
 			idCounter = 0;
@@ -674,7 +676,23 @@ namespace Keiwando.Evolution {
 				item.Delete();
 				
 			}
+			DeleteDecorationsOfDeletedBones();
 			RemoveDeletedObjects();
+		}
+
+		private void DeleteDecorationsOfDeletedBones() {
+			_idsTmpAlloc.Clear();
+			HashSet<int> boneIds = _idsTmpAlloc;
+			foreach (Bone bone in bones) {
+				if (bone != null && bone.gameObject != null && !bone.deleted) {
+					boneIds.Add(bone.BoneData.id);
+				}
+			}
+			foreach (Decoration decoration in this.decorations) {
+				if (!boneIds.Contains(decoration.DecorationData.boneId)) {
+					decoration.Delete();
+				}
+			}
 		}
 
 		public void SetBodyComponents(List<Joint> joints, List<Bone> bones, List<Muscle> muscles) {

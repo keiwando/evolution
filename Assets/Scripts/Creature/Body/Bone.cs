@@ -160,8 +160,6 @@ public class Bone : BodyComponent {
 		endingJoint.Disconnect(this);
 
 		Destroy(gameObject);
-
-		// TODO: Delete connected decorations
 	}
 
 	private void DeleteAllConnectedMuscles() {

@@ -9,7 +9,7 @@ public enum BodyComponentType {
 
 abstract public class BodyComponent: Hoverable {
 
-	private bool deleted;
+	public bool deleted { get; private set; }
 
 	public override void Start () {
 		base.Start();
