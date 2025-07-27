@@ -458,7 +458,10 @@ public class CreatureEditor: MonoBehaviour,
                 if (GestureRecognizerCollection.shared.GetClickGestureRecognizer().ClickEndedOnThisFrame() && 
                     selectionManager.LastHoveringIsPartOfSelection() && 
                     !transformGizmo.gameObject.activeSelf &&
-                    !selectionManager.SelectionOnlyContainsType(BodyComponentType.Muscle)
+                    !selectionManager.SelectionOnlyContainsType(BodyComponentType.Muscle) &&
+                    // For single selected joints, scale and rotation doesn't do anything.
+                    !(selectionManager.SelectionOnlyContainsType(BodyComponentType.Joint) && 
+                      selectionManager.GetSelection().Count == 1)
                 ) {
                     transformGizmo.gameObject.SetActive(true);
                     transformGizmo.Reset();
