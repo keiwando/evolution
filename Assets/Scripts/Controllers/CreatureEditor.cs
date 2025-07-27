@@ -51,8 +51,8 @@ public class CreatureEditor: MonoBehaviour,
 
     // MARK: - Movement
     private Vector3 lastDragPosition;
-    private HashSet<Joint> jointsToMove = new HashSet<Joint>();
-    private HashSet<Decoration> decorationsToMove = new HashSet<Decoration>();
+    private Dictionary<int, Joint> jointsToMove = new Dictionary<int, Joint>();
+    private Dictionary<int, Decoration> decorationsToMove = new Dictionary<int, Decoration>();
     private bool currentClickStartedOverUI = false;
     private bool currentClickStartedOverTransformGizmo => currentClickStartedOverScaleHandle || currentClickStartedOverRotationHandle;
     private bool currentClickStartedOverScaleHandle = false;
@@ -312,7 +312,7 @@ public class CreatureEditor: MonoBehaviour,
                     // Snap the closest joint to the grid
                     Joint closestJoint = null;
                     float closestDistance = float.MaxValue;
-                    foreach (var jointToMove in jointsToMove) {
+                    foreach (var jointToMove in jointsToMove.Values) {
                         var distance = Vector3.Distance(jointToMove.center, clickWorldPos);
                         if (distance < closestDistance) {
                             closestJoint = jointToMove;
@@ -439,7 +439,9 @@ public class CreatureEditor: MonoBehaviour,
                 break;
 
             case Tool.Move: 
-                creatureEdited = creatureBuilder.MoveEnded(jointsToMove, decorationsToMove); 
+                if (!this.currentClickStartedOverUI) {
+                    creatureEdited = creatureBuilder.MoveEnded(jointsToMove, decorationsToMove); 
+                }
                 if (GestureRecognizerCollection.shared.GetClickGestureRecognizer().ClickEndedOnThisFrame() && 
                     selectionManager.LastHoveringIsPartOfSelection() && 
                     !transformGizmo.gameObject.activeSelf &&
@@ -447,6 +449,8 @@ public class CreatureEditor: MonoBehaviour,
                 ) {
                     transformGizmo.gameObject.SetActive(true);
                     transformGizmo.Reset();
+                    creatureBuilder.CancelMove(jointsToMove, decorationsToMove, oldDesign);
+                    creatureEdited = false;
                 } else if (!currentClickStartedOverTransformGizmo) {
                     transformGizmo.gameObject.SetActive(false);
                     jointsToMove.Clear();

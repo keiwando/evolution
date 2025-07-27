@@ -511,13 +511,13 @@ namespace Keiwando.Evolution {
 		/// <summary>
 		/// Moves the currently selected components to the specified position.
 		/// </summary>
-		public void MoveSelection(ICollection<Joint> jointsToMove, ICollection<Decoration> decorationsToMove, Vector3 movement) {
+		public void MoveSelection(Dictionary<int, Joint> jointsToMove, Dictionary<int, Decoration> decorationsToMove, Vector3 movement) {
 
-			foreach (var joint in jointsToMove) {
+			foreach (var joint in jointsToMove.Values) {
 				var newPosition = joint.transform.position + movement;
 				joint.MoveTo(newPosition);		
 			}
-			foreach (var decoration in decorationsToMove) {
+			foreach (var decoration in decorationsToMove.Values) {
 				var newWorldPosition = decoration.transform.position + movement;
 				MoveDecorationToWorldPosition(decoration, newWorldPosition);
 			}
@@ -528,12 +528,12 @@ namespace Keiwando.Evolution {
 			}
 		}
 
-		public void ScaleSelection(ICollection<Joint> jointsToScale, ICollection<Decoration> decorationsToScsale, float scale, Vector2 scaleOrigin) {
-			foreach (var joint in jointsToScale) {
+		public void ScaleSelection(Dictionary<int, Joint> jointsToScale, Dictionary<int, Decoration> decorationsToScsale, float scale, Vector2 scaleOrigin) {
+			foreach (var joint in jointsToScale.Values) {
 				Vector3 newPosition = GetNewPositionForScalingAroundPoint(joint.gameObject, scale, scaleOrigin);
 				joint.MoveTo(newPosition);
 			}
-			foreach (var decoration in decorationsToScsale) {
+			foreach (var decoration in decorationsToScsale.Values) {
 				Vector3 newPosition = GetNewPositionForScalingAroundPoint(decoration.gameObject, scale, scaleOrigin);
 				MoveDecorationToWorldPosition(decoration, newPosition);
 				float newDecorationScale = decoration.DecorationData.scale * scale;
@@ -555,16 +555,16 @@ namespace Keiwando.Evolution {
 				return newPosition;
 		}
 
-		public void RotateSelection(ICollection<Joint> jointToRotate, ICollection<Decoration> decorationsToRotate, float rotation, Vector2 rotationOrigin) {
-			foreach (var decoration in decorationsToRotate) {
+		public void RotateSelection(Dictionary<int, Joint> jointToRotate, Dictionary<int, Decoration> decorationsToRotate, float rotation, Vector2 rotationOrigin) {
+			foreach (var decoration in decorationsToRotate.Values) {
 				var newAbsoluteRotation = decoration.transform.rotation.eulerAngles.z + rotation;
 				_absoluteDecorationRotations[decoration.GetId()] = newAbsoluteRotation;
 			}
-			foreach (var joint in jointToRotate) {
+			foreach (var joint in jointToRotate.Values) {
 				Vector3 newPosition = GetNewPositionForRotatingAroundPoint(joint.gameObject, rotation, rotationOrigin);
 				joint.MoveTo(newPosition);
 			}
-			foreach (var decoration in decorationsToRotate) {
+			foreach (var decoration in decorationsToRotate.Values) {
 				Vector3 newPosition = GetNewPositionForRotatingAroundPoint(decoration.gameObject, rotation, rotationOrigin);
 				MoveDecorationToWorldPosition(decoration, newPosition);
 				float newAbsoluteRotation = _absoluteDecorationRotations[decoration.GetId()];
@@ -595,17 +595,38 @@ namespace Keiwando.Evolution {
 				}
 		}
 
+		public void CancelMove(Dictionary<int, Joint> jointsToMove, Dictionary<int, Decoration> decorationsToMove, CreatureDesign oldState) {
+			foreach (JointData jointData in oldState.Joints) {
+				if (jointsToMove.ContainsKey(jointData.id)) {
+					Joint joint = jointsToMove[jointData.id];
+					joint.MoveTo(jointData.position);
+				}
+			}
+			foreach (DecorationData decorationData in oldState.Decorations) {
+				if (decorationsToMove.ContainsKey(decorationData.id)) {
+					Decoration decoration = decorationsToMove[decorationData.id];
+					decoration.DecorationData = decorationData;
+					decoration.UpdateOrientation();
+				}
+			}
+			if (jointsToMove.Count > 0) {
+				// We have to refresh the position of all decorations, since the joint movements could
+				// have caused transitive decoration movements
+				RefreshAllDecorationOrientations();
+			}
+		}
+
 		/// <summary>
 		/// Resets all properties used while moving a body component.
 		/// </summary>
 		/// <returns>Returns whether the creature design was changed.</returns>
-		public bool MoveEnded(ICollection<Joint> jointsToMove, ICollection<Decoration> decorationsToMove) {
+		public bool MoveEnded(Dictionary<int, Joint> jointsToMove, Dictionary<int, Decoration> decorationsToMove) {
 
 			var didChange = false;
 			if (jointsToMove != null) {
 				didChange |= jointsToMove.Count > 0;
 				if (didChange) {
-					foreach (var joint in jointsToMove) {
+					foreach (var joint in jointsToMove.Values) {
 						var oldData = joint.JointData;
 						var newData = new JointData(oldData.id, joint.center, oldData.weight, oldData.fitnessPenaltyForTouchingGround);
 						joint.JointData = newData;

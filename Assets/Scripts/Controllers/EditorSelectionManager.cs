@@ -178,20 +178,20 @@ namespace Keiwando.Evolution {
             return avgPosition;
         }
 
-        public void RefreshPartsToMoveFromSelection(HashSet<Joint> jointsToMove, HashSet<Decoration> decorationsToMove) {
+        public void RefreshPartsToMoveFromSelection(Dictionary<int, Joint> jointsToMove, Dictionary<int, Decoration> decorationsToMove) {
             jointsToMove.Clear();
             decorationsToMove.Clear();
             for (int i = 0; i < selection.Count; i++) {
                 var component = selection[i];
                 if (component is Joint) {
-                    jointsToMove.Add(component as Joint);
+                    jointsToMove[component.GetId()] = component as Joint;
                 } else if (component is Bone) {
                     var bone = component as Bone;
-                    jointsToMove.Add(bone.startingJoint);
-                    jointsToMove.Add(bone.endingJoint);
+                    jointsToMove[bone.startingJoint.JointData.id] = bone.startingJoint;
+                    jointsToMove[bone.endingJoint.JointData.id] = bone.endingJoint;
                 } else if (component is Decoration) {
                     var decoration = component as Decoration;
-                    decorationsToMove.Add(decoration);
+                    decorationsToMove[decoration.DecorationData.id] = decoration;
                 }
             }
         }
