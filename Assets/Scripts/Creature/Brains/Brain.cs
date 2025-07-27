@@ -5,6 +5,14 @@ using System.Collections.Generic;
 
 namespace Keiwando.Evolution {
 
+	public enum BrainType {
+		Universal = 0,
+		LegacyRunningBrain = 1,
+		LegacyJumpingBrain = 2,
+		LegacyObstacleJumpBrain = 3,
+		LegacyClimbingBrain = 4
+	}
+
 	[RequireComponent(typeof(Creature))]
 	abstract public class Brain : MonoBehaviour {
 
@@ -26,30 +34,66 @@ namespace Keiwando.Evolution {
 
 		public virtual void Start() {
 			this.creature = GetComponent<Creature>();
-		} 
+		}
 
-		public void Init(NeuralNetworkSettings settings, Muscle[] muscles, float[] chromosome = null) {
+    public static int GetNetworkInputCountForBrainType(BrainType brainType) {
+      switch (brainType) {
+        case BrainType.Universal: return UniversalBrain.NUMBER_OF_INPUTS;
+        case BrainType.LegacyRunningBrain: return RunningBrain.NUMBER_OF_INPUTS;
+        case BrainType.LegacyJumpingBrain: return JumpingBrain.NUMBER_OF_INPUTS;
+        case BrainType.LegacyObstacleJumpBrain: return ObstacleJumpingBrain.NUMBER_OF_INPUTS;
+        case BrainType.LegacyClimbingBrain: return ClimbingBrain.NUMBER_OF_INPUTS;
+				default:
+					Debug.LogError("Unhandled brain type.");
+					return UniversalBrain.NUMBER_OF_INPUTS;
+      }
+    }
 
-			this.muscles = muscles;
-			this.muscleToOutputIndex = new int[muscles.Length];
-			this.numberOfUniqueMuscleIds = 0;
+		public static int GetNetworkOutputCountForBrainType(BrainType brainType, UniqueMusclesContext uniqueMusclesContext) {
+			switch (brainType) {
+				case BrainType.Universal: return uniqueMusclesContext.numberOfUniqueMuscleIds + UniversalBrain.NUMBER_OF_ADDITIONAL_OUTPUTS;
+				default: return uniqueMusclesContext.numberOfUniqueMuscleIds;
+			}
+		}
+
+    public struct UniqueMusclesContext {
+      public int numberOfUniqueMuscleIds;
+		  /// For each muscle, contains the index of the brain output that should be applied to this muscle.
+      public int[] muscleToOutputIndex;
+    }
+
+    public static UniqueMusclesContext CalculateUniqueMusclesContext(List<MuscleData> muscles) {
+      int numberOfUniqueMuscleIds = 0;
+      int[] muscleToOutputIndex = new int[muscles.Count];
 			Dictionary<string, int> userIdToFirstCorrespondingMuscleIndex = null;
-			for (int i = 0; i < muscles.Length; i++) {
+			for (int i = 0; i < muscles.Count; i++) {
 				var muscle = muscles[i];
 				int outputIndex = numberOfUniqueMuscleIds;
-				if (muscle.MuscleData.userId == "") {
+				if (muscle.userId == "") {
 					numberOfUniqueMuscleIds++;
 				} else {
 					if (userIdToFirstCorrespondingMuscleIndex == null) {
 						userIdToFirstCorrespondingMuscleIndex = new Dictionary<string, int>();
 					}
-					if (!userIdToFirstCorrespondingMuscleIndex.TryGetValue(muscle.MuscleData.userId, out outputIndex)) {
+					if (!userIdToFirstCorrespondingMuscleIndex.TryGetValue(muscle.userId, out outputIndex)) {
 						outputIndex = numberOfUniqueMuscleIds++;
-						userIdToFirstCorrespondingMuscleIndex.Add(muscle.MuscleData.userId, outputIndex);
+						userIdToFirstCorrespondingMuscleIndex.Add(muscle.userId, outputIndex);
 					}
 				}
-				this.muscleToOutputIndex[i] = outputIndex;
+				muscleToOutputIndex[i] = outputIndex;
 			}
+      return new UniqueMusclesContext {
+        numberOfUniqueMuscleIds = numberOfUniqueMuscleIds,
+        muscleToOutputIndex = muscleToOutputIndex
+      };
+    }
+
+		public void Init(NeuralNetworkSettings settings, Muscle[] muscles, UniqueMusclesContext uniqueMusclesContext, float[] chromosome = null) {
+
+			this.muscles = muscles;
+			this.muscleToOutputIndex = new int[muscles.Length];
+			this.numberOfUniqueMuscleIds = uniqueMusclesContext.numberOfUniqueMuscleIds;
+      this.muscleToOutputIndex = uniqueMusclesContext.muscleToOutputIndex;
 
 			this.Network = new FeedForwardNetwork(NumberOfInputs, NumberOfOutputs, settings, chromosome);
 		}

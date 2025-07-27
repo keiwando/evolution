@@ -7,10 +7,11 @@ namespace Keiwando.Evolution {
         private const float MAX_RAYCAST_DISTANCE = 20f;
         private const float ANGLE_SMOOTHING_WEIGHT = 0.1f;
         public const int NUMBER_OF_INPUTS = 11;
+        public const int NUMBER_OF_ADDITIONAL_OUTPUTS = 1;
 
         public override int NumberOfInputs => NUMBER_OF_INPUTS;
         public override int NumberOfOutputs {
-            get { return base.NumberOfOutputs + 1; }
+            get { return base.NumberOfOutputs + NUMBER_OF_ADDITIONAL_OUTPUTS; }
         }
 
         private float customRaycastAngle = 0f;

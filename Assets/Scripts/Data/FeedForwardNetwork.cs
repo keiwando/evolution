@@ -90,6 +90,11 @@ public class FeedForwardNetwork: IChromosomeEncodable<string>, IChromosomeEncoda
         }
     }
 
+    public static void PopulateRandomWeights(float[] weights) {
+        for (int i = 0; i < weights.Length; i++) {
+            weights[i] = UnityEngine.Random.Range(Constants.MIN_WEIGHT, Constants.MAX_WEIGHT);
+        }
+    }
     
     public float[] CalculateOutputs() {
 

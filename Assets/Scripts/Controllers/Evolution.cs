@@ -115,6 +115,7 @@ namespace Keiwando.Evolution {
 
 		public BestCreaturesController BestCreaturesController { get; set; }
 		private Coroutine simulationRoutine;
+    private Brain.UniqueMusclesContext uniqueMusclesContext;
 
 		private List<CreatureRecorder> recorders = new List<CreatureRecorder>();
 		
@@ -160,6 +161,7 @@ namespace Keiwando.Evolution {
 			this.LastSavedGeneration = data.BestCreatures.Count;
 			
 			this.currentGenerationNumber = data.BestCreatures.Count + 1;
+      this.uniqueMusclesContext = Brain.CalculateUniqueMusclesContext(data.CreatureDesign.Muscles);
 
 			if (this.InitializationDidEnd != null) InitializationDidEnd();
 
@@ -185,6 +187,23 @@ namespace Keiwando.Evolution {
 			this.cachedSettings = this.Settings;
 
 			if (NewGenerationDidBegin != null) NewGenerationDidBegin();
+
+			// We have to immediately create missing chromosomes here so that the Chromosomes array
+			// is always complete for serialization purposes
+      if (SimulationData.CurrentChromosomes.Length < cachedSettings.PopulationSize) {
+        float[][] allChromosomes = new float[cachedSettings.PopulationSize][];
+        for (int i = 0; i < SimulationData.CurrentChromosomes.Length; i++) {
+          allChromosomes[i] = SimulationData.CurrentChromosomes[i];
+        }
+        BrainType brainType = GetBrainTypeForSimulation(cachedSettings.Objective, SimulationData.LastV2SimulatedGeneration);
+        int chromosomeLength = CalculateChromosomeLengthForBrainType(brainType, SimulationData.NetworkSettings, this.uniqueMusclesContext);
+        for (int i = SimulationData.CurrentChromosomes.Length; i < allChromosomes.Length; i++) {
+          float[] randomWeights = new float[chromosomeLength];
+					FeedForwardNetwork.PopulateRandomWeights(randomWeights);
+					allChromosomes[i] = randomWeights;
+        }
+				SimulationData.CurrentChromosomes = allChromosomes;
+      }
 
 			for (int i = 0; i < numberOfBatches; i++) {
 				
@@ -399,7 +418,6 @@ namespace Keiwando.Evolution {
 			for (int i = 0; i < creatures.Length; i++) {
 
 				if (i < chromosomes.Length) {
-					// ApplyBrain(creatures[i], chromosomes[0]);
 					ApplyBrain(creatures[i], chromosomes[i]);
 				} else {
 					// Random brain
@@ -413,36 +431,73 @@ namespace Keiwando.Evolution {
 			Brain brain = creature.GetComponent<Brain>();
 			
 			if (brain == null) {
-				var useLegacyBrains = SimulationData.LastV2SimulatedGeneration > 0;
+				BrainType brainType = GetBrainTypeForSimulation(Settings.Objective, lastV2SimulatedGeneration: SimulationData.LastV2SimulatedGeneration);
 				AddObjectiveTracker(Settings.Objective, creature);
-				brain = AddBrainComponent(Settings.Objective, creature, useLegacyBrains);
+				brain = AddBrainComponent(brainType, creature);
 			}
-			brain.Init(NetworkSettings, creature.muscles.ToArray(), chromosome);
+			brain.Init(NetworkSettings, creature.muscles.ToArray(), this.uniqueMusclesContext, chromosome);
 			
 			creature.brain = brain;
 		}
 
-		private static Brain AddBrainComponent(Objective objective, Creature creature, bool useLegacyBrains = false) {
-
-			var gameObject = creature.gameObject;
-
+		private static BrainType GetBrainTypeForSimulation(Objective objective, int lastV2SimulatedGeneration) {
+			bool useLegacyBrains = lastV2SimulatedGeneration > 0;
 			if (!useLegacyBrains) {
-				return gameObject.AddComponent<UniversalBrain>();
+				return BrainType.Universal;
 			}
 
 			switch (objective) {
-			case Objective.Running:
-				return gameObject.AddComponent<RunningBrain>();
-			case Objective.Jumping:
-				return gameObject.AddComponent<JumpingBrain>();
-			case Objective.ObstacleJump:
-				return gameObject.AddComponent<ObstacleJumpingBrain>();
-			case Objective.Climbing:
-				return gameObject.AddComponent<ClimbingBrain>();
-			default:
-				throw new System.ArgumentException(string.Format("There is no brain type for the given objective: {0}", objective));
+				case Objective.Running: return BrainType.LegacyRunningBrain;
+				case Objective.Jumping: return BrainType.LegacyJumpingBrain;
+				case Objective.ObstacleJump: return BrainType.LegacyObstacleJumpBrain;
+				case Objective.Climbing: return BrainType.LegacyClimbingBrain;
+			}
+			return BrainType.Universal;
+		}
+
+		private static Brain AddBrainComponent(BrainType brainType, Creature creature) {
+
+			var gameObject = creature.gameObject;
+
+			switch (brainType) {
+				case BrainType.Universal:
+					return gameObject.AddComponent<UniversalBrain>();
+				case BrainType.LegacyRunningBrain:
+					return gameObject.AddComponent<RunningBrain>();
+				case BrainType.LegacyJumpingBrain:
+					return gameObject.AddComponent<JumpingBrain>();
+				case BrainType.LegacyObstacleJumpBrain:
+					return gameObject.AddComponent<ObstacleJumpingBrain>();
+				case BrainType.LegacyClimbingBrain:
+					return gameObject.AddComponent<ClimbingBrain>();
+				default:
+					throw new System.ArgumentException(string.Format("There is no brain type for the given brainType: {0}", brainType));
 			}
 		}
+
+    private static int CalculateChromosomeLengthForBrainType(BrainType brainType, NeuralNetworkSettings networkSettings, Brain.UniqueMusclesContext uniqueMusclesContext) {
+      
+      int numberOfInputs = Brain.GetNetworkInputCountForBrainType(brainType);
+      int numberOfOutputs = Brain.GetNetworkOutputCountForBrainType(brainType, uniqueMusclesContext);
+      int totalWeightCount = 0;
+      int totalLayerCount = networkSettings.NumberOfIntermediateLayers + 2;
+      for (int i = 0; i < totalLayerCount - 1; i++) {
+        int layerInputNodesCount = 0;
+        int layerOutputNodesCount = 0;
+        if (i == 0) {
+          layerInputNodesCount = numberOfInputs;
+        } else {
+          layerInputNodesCount = networkSettings.NodesPerIntermediateLayer[i - 1];
+        }
+        if (i == totalLayerCount - 2) {
+          layerOutputNodesCount = numberOfOutputs;
+        } else {
+          layerOutputNodesCount = networkSettings.NodesPerIntermediateLayer[i];
+        }
+        totalWeightCount += (layerInputNodesCount * layerOutputNodesCount);
+      }
+      return totalWeightCount;
+    }
 
 		private static ObjectiveTracker AddObjectiveTracker(Objective objective, Creature creature) {
 
