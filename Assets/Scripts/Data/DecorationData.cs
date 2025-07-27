@@ -42,6 +42,7 @@ public enum DecorationType: int {
   Emoji_Saxophone = 36,
   Emoji_Guitar = 37,
   Emoji_Bone = 38
+  // Note: When adding more cases here, update DecorationUtils.MAX_VALUE_RAW_VALUE
 }
 
 [Serializable]
@@ -60,7 +61,7 @@ public struct DecorationData: IJsonConvertible {
   public DecorationData(
     int id,
     int boneId,
-    Vector3 offset,
+    Vector2 offset,
     float scale,
     float rotation,
     bool flipX,
@@ -123,6 +124,8 @@ public struct DecorationData: IJsonConvertible {
 }
 
 public static class DecorationUtils {
+
+  public static int MAX_VALID_RAW_VALUE = 38;
 
   static Sprite[] decorationEmojiSprites;
   static Sprite googlyEyeSprite;

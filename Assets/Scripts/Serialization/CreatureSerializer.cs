@@ -98,9 +98,10 @@ public class CreatureSerializer {
 	private enum TaggedBlockType: short {
 		Joints = 0,
 		Bones = 1,
-		Muscles = 2
+		Muscles = 2,
+		Decorations = 3 
 	}
-	private const short TaggedBlockType_MAX_VALUE = 2;
+	private const short TaggedBlockType_MAX_VALUE = 3;
 	private const ushort SERIALIZATION_VERSION = 1;
 
 	public static void WriteCreatureDesign(CreatureDesign design, BinaryWriter writer) {
@@ -172,6 +173,20 @@ public class CreatureSerializer {
 			writer.WriteBlockLengthToOffset(lengthOffset);
 		}
 
+		// Decorations
+		{
+			long lengthOffset = writer.Seek(0, SeekOrigin.Current);
+			writer.WriteDummyBlockLength();
+
+			writer.Write((short)TaggedBlockType.Decorations);
+			writer.Write((uint)design.Decorations.Count);
+			foreach (DecorationData decoration in design.Decorations) {
+				WriteDecorationData(decoration, writer);
+			}
+
+			writer.WriteBlockLengthToOffset(lengthOffset);
+		}
+
 		writer.WriteBlockLengthToOffset(dataLengthOffset);
 	}
 
@@ -203,7 +218,6 @@ public class CreatureSerializer {
 			List<JointData> joints = new List<JointData>();
 			List<BoneData> bones = new List<BoneData>();
 			List<MuscleData> muscles = new List<MuscleData>();
-			// TODO: Decode and serialize decorations
 			List<DecorationData> decorations = new List<DecorationData>(); 
 
 			while (reader.BaseStream.Position < expectedEndByte) {
@@ -240,6 +254,15 @@ public class CreatureSerializer {
 						for (int i = 0; i < muscleCount; i++) {
 							MuscleData muscleData = ReadMuscleData(reader);
 							muscles.Add(muscleData);
+						}
+						break;
+					}
+
+					case TaggedBlockType.Decorations: {
+						int decorationsCount = (int) reader.ReadUInt32();
+						for (int i = 0; i < decorationsCount; i++) {
+							DecorationData decorationData = ReadDecorationData(reader);
+							decorations.Add(decorationData);
 						}
 						break;
 					}
@@ -463,6 +486,67 @@ public class CreatureSerializer {
 			strength: strength,
 			canExpand: canExpand,
 			userId: userId
+		);
+	}
+
+	private static void WriteDecorationData(DecorationData decorationData, BinaryWriter writer) {
+		// Two bytes length so the reader can be forwards compatible and just jump
+		// to the next joint without knowing all the properties
+		long lengthOffset = writer.Seek(0, SeekOrigin.Current);
+		writer.Write((ushort)0);
+
+		ushort flags = 0;
+		if (decorationData.flipX) {
+			flags |= (1 << 0);
+		}
+		if (decorationData.flipY) {
+			flags |= (1 << 1);
+		}
+		writer.Write(flags);
+		writer.Write((int)decorationData.id);
+		writer.Write((int)decorationData.boneId);
+		writer.Write(decorationData.offset.x);
+		writer.Write(decorationData.offset.y);
+		writer.Write(decorationData.scale);
+		writer.Write(decorationData.rotation);
+		writer.Write((int)decorationData.decorationType);
+
+		long nextOffset = writer.Seek(0, SeekOrigin.Current);
+		writer.Seek((int)lengthOffset, SeekOrigin.Begin);
+		writer.Write((ushort)(nextOffset - lengthOffset - 2));
+		writer.Seek((int)nextOffset, SeekOrigin.Begin);
+	}
+
+	private static DecorationData ReadDecorationData(BinaryReader reader) {
+		ushort dataLength = reader.ReadUInt16();
+		long endByte = reader.BaseStream.Position + dataLength;
+
+		ushort flags = reader.ReadUInt16();
+		bool flipX = (flags & (1 << 0)) != 0;
+		bool flipY = (flags & (1 << 1)) != 0;
+		int id = reader.ReadInt32();
+		int boneId = reader.ReadInt32();
+		float offsetX = reader.ReadSingle();
+		float offsetY = reader.ReadSingle();
+		float scale = reader.ReadSingle();
+		float rotation = reader.ReadSingle();
+		int rawDecorationType = reader.ReadInt32();
+		DecorationType decorationType = DecorationType.GooglyEye;
+		if (rawDecorationType >= 0 && rawDecorationType <= DecorationUtils.MAX_VALID_RAW_VALUE) {
+			decorationType = (DecorationType)rawDecorationType;
+		}
+
+		reader.BaseStream.Seek(endByte, SeekOrigin.Begin);
+
+		return new DecorationData(
+			id: id,
+			boneId: boneId,
+			offset: new Vector2(offsetX, offsetY),
+			scale: scale,
+			rotation: rotation,
+			flipX: flipX,
+			flipY: flipY,
+			decorationType: decorationType
 		);
 	}
 
