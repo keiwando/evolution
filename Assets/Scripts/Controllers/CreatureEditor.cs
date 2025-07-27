@@ -320,6 +320,9 @@ public class CreatureEditor: MonoBehaviour,
                     }
                 }
                 selectionManager.RefreshPartsToMoveFromSelection(jointsToMove, decorationsToMove);
+                foreach (Decoration decoration in decorationsToMove.Values) {
+                    decoration.DecorationDataBeforeEdit = decoration.DecorationData;
+                }
                 lastDragPosition = clickWorldPos;
                 if (!currentClickStartedOverTransformGizmo && grid.gameObject.activeSelf && jointsToMove.Count > 0) {
                     // Snap the closest joint to the grid
@@ -416,7 +419,10 @@ public class CreatureEditor: MonoBehaviour,
         else if (InputUtils.MouseUp()) {
 
             var creatureEdited = false;
-            var oldDesign = creatureBuilder.GetDesign();
+            var oldDesign = creatureBuilder.GetDesign(queryStateBeforeEdit: true);
+            foreach (Decoration decoration in creatureBuilder.decorations) {
+                decoration.DecorationDataBeforeEdit = null;
+            }
 
             switch (selectedTool) {
 
@@ -453,7 +459,6 @@ public class CreatureEditor: MonoBehaviour,
 
             case Tool.Move: 
                 if (!this.currentClickStartedOverUI) {
-                    // TODO: Make sure that undo steps are correctly inserted when moving decorations
                     creatureEdited = creatureBuilder.MoveEnded(jointsToMove, decorationsToMove); 
                 }
                 if (GestureRecognizerCollection.shared.GetClickGestureRecognizer().ClickEndedOnThisFrame() && 

@@ -18,6 +18,7 @@ public class Decoration : BodyComponent {
   public Vector3 bindPoint => bone.Center;
 
   public DecorationData DecorationData { get; set; }
+  public DecorationData? DecorationDataBeforeEdit { get; set; }
 
   public bool VisualizeConnection { get; private set; }
 

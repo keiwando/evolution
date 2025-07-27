@@ -26,11 +26,11 @@ namespace Keiwando.Evolution {
 		/// <summary>
 		/// The muscles that have been placed in the scene.
 		/// </summary>
-		private List<Muscle> muscles = new List<Muscle>();
+		public List<Muscle> muscles = new List<Muscle>();
 		/// <summary>
 		/// The decorations that have been placed in the scene.
 		/// </summary>
-		private List<Decoration> decorations = new List<Decoration>();
+		public List<Decoration> decorations = new List<Decoration>();
 
 		/// <summary> 
 		/// The Bone that is currently being placed. 
@@ -738,13 +738,15 @@ namespace Keiwando.Evolution {
 		/// Returns a CreatureDesign representation of the currently placed
 		/// body parts 
 		/// </summary>
-		public CreatureDesign GetDesign() {
+		public CreatureDesign GetDesign(bool queryStateBeforeEdit = false) {
 			
 			var name = this.Name;
 			var jointData = this.joints.Select(j => j.JointData).ToList();
 			var boneData = this.bones.Select(b => b.BoneData).ToList();
 			var muscleData = this.muscles.Select(m => m.MuscleData).ToList();
-			var decorationData = this.decorations.Select(d => d.DecorationData).ToList();
+			var decorationData = this.decorations.Select(
+				d => queryStateBeforeEdit ? d.DecorationDataBeforeEdit ?? d.DecorationData : d.DecorationData
+			).ToList();
 			return new CreatureDesign(name, jointData, boneData, muscleData, decorationData);
 		}
 
