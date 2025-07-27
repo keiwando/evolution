@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Keiwando;
+using Keiwando.UI;
 using Keiwando.Evolution.Scenes;
 using Keiwando.Evolution;
 using Keiwando.Evolution.UI;
@@ -41,6 +42,7 @@ public class CreatureEditor: MonoBehaviour,
 	private Texture2D mouseDeleteTexture;
     [SerializeField]
     private UnityEngine.Transform selectionArea;
+    [SerializeField] private InfoAlert infoAlert;
 
     private CreatureBuilder creatureBuilder;
     private HistoryManager<CreatureDesign> historyManager;
@@ -275,14 +277,23 @@ public class CreatureEditor: MonoBehaviour,
 
             case Tool.Bone:
                 var joint = selectionManager.GetSingleSelected<Joint>();
-                if (joint != null)
+                if (joint != null) {
                     creatureBuilder.TryStartingBone(joint); 
+                } else if (creatureBuilder.joints.Count == 0) {
+                    infoAlert.label.SetText(MESSAGE_ADD_JOINTS_BEFORE_ADDING_BONES);
+                    infoAlert.fade.FadeInOut(totalDuration: 3f);
+                } 
                 break;
 
             case Tool.Muscle:
                 var bone = selectionManager.GetSingleSelected<Bone>();
-                if (bone != null)
+                if (bone != null) {
                     creatureBuilder.TryStartingMuscle(bone); 
+                } else if (creatureBuilder.bones.Count == 0) {
+                    infoAlert.label.SetText(MESSAGE_ADD_BONES_BEFORE_ADDING_MUSCLES);
+                    infoAlert.fade.FadeInOut(totalDuration: 3f);
+                }
+                    
                 break;
 
             case Tool.Decoration:
@@ -290,8 +301,10 @@ public class CreatureEditor: MonoBehaviour,
                 var closestBone = hoveringBone != null ? hoveringBone : FindClosestBone(clickWorldPos);
                 if (closestBone != null) {
                     creatureBuilder.CreateDecorationFromBone(closestBone, clickWorldPos, SelectedDecorationType);
+                } else {
+                    infoAlert.label.SetText(MESSAGE_ADD_BONES_BEFORE_ADDING_DECORATIONS);
+                    infoAlert.fade.FadeInOut(totalDuration: 3f);
                 }
-                // TODO: If there is no bone yet, notify the user that they should add one
                 break;
 
             case Tool.Move:
@@ -680,6 +693,13 @@ public class CreatureEditor: MonoBehaviour,
             ReloadSettingsControls();
         }
     }
+
+    #endregion
+    #region User Messages
+
+    private const string MESSAGE_ADD_BONES_BEFORE_ADDING_DECORATIONS = "Add bones before attaching decorations.";
+    private const string MESSAGE_ADD_JOINTS_BEFORE_ADDING_BONES = "Add joints and connect them with bones.";
+    private const string MESSAGE_ADD_BONES_BEFORE_ADDING_MUSCLES = "Add bones and connect them with muscles.";
 
     #endregion
 }

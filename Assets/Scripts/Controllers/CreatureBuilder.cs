@@ -18,7 +18,7 @@ namespace Keiwando.Evolution {
 		/// <summary>
 		/// The joints of the creature that have been placed in the scene.
 		/// </summary>
-		private List<Joint> joints = new List<Joint>();	
+		public List<Joint> joints = new List<Joint>();	
 		/// <summary>
 		/// The bones that have been placed in the scene.
 		/// </summary>
