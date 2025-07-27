@@ -267,6 +267,7 @@ public class SimulationSerializer {
 
 		byte[] byteData = new byte[chromosomeLength * sizeof(float)];
 		for (int i = 0; i < data.Settings.PopulationSize; i++) {
+			// TODO: Fix index out of range exception here when trying to save a simulation on the first generation.
 			float[] chromosome = data.CurrentChromosomes[i];
 			Buffer.BlockCopy(chromosome, 0, byteData, 0, byteData.Length);
 			writer.Write(byteData);

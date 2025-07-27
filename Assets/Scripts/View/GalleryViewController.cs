@@ -353,7 +353,9 @@ namespace Keiwando.Evolution.UI {
             perObjectData.gameObject.layer = perObjectData.layer;
           }
         }
+          // TODO: Make sure that steps render correctly during playback
         loadedSceneData.camera.Render();
+
         for (int i = 0; i < loadedSceneData.allObjects.Count; i++) {
           PerObjectData perObjectData = loadedSceneData.allObjects[i];
           if (perObjectData.gameObject != null) {

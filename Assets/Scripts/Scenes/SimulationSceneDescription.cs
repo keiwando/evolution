@@ -104,6 +104,11 @@ namespace Keiwando.Evolution.Scenes {
                         stairstep.Encode(writer);
                         break;
                     }
+                    case StructureType.StepSpawner: {
+                        StepSpawner stepSpawner = (StepSpawner)structure;
+                        stepSpawner.Encode(writer);
+                        break;
+                    }
                 }
 
                 writer.WriteBlockLengthToOffset(structureLengthOffset);
@@ -158,6 +163,10 @@ namespace Keiwando.Evolution.Scenes {
                     }
                     case (ushort)StructureType.Stairstep: {
                         structures[i] = Stairstep.Decode(reader);
+                        break;
+                    }
+                    case (ushort)StructureType.StepSpawner: {
+                        structures[i] = StepSpawner.Decode(reader);
                         break;
                     }
                     default: {

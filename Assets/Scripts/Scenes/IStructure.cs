@@ -8,7 +8,8 @@ namespace Keiwando.Evolution.Scenes {
         Wall = 1,
         DistanceMarkerSpawner = 2,
         RollingObstacleSpawner = 3,
-        Stairstep = 4
+        Stairstep = 4,
+        StepSpawner = 5
     }
 
     public interface IStructure {

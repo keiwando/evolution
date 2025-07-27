@@ -16,6 +16,7 @@ namespace Keiwando.Evolution.Scenes {
             new RegisteredStructure(RollingObstacleSpawner.ENCODING_ID, RollingObstacleSpawner.Decode),
             new RegisteredStructure(Stairstep.ENCODING_ID, Stairstep.Decode),
             new RegisteredStructure(Wall.ENCODING_ID, Wall.Decode),
+            new RegisteredStructure(StepSpawner.ENCODING_ID, StepSpawner.Decode)
         };
     }
 }
