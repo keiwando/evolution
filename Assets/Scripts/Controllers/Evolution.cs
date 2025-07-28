@@ -41,17 +41,20 @@ namespace Keiwando.Evolution {
 			set { SimulationData.NetworkSettings = value; }
 		}
 
-		// Cached values
-		private SimulationSettings cachedSettings;
+		// The user can change simulation settings during a running simulation via the pause menu,
+		// but we must ensure to only apply those changes starting with the next generation. The
+		// settings of our SimulationData must be kept in sync with the rest of its state 
+		// (e.g. current chromosomes length = population size etc.)
+		public SimulationSettings SettingsForNextGeneration;
 
-		public bool IsSimulatingInBatches { get { return cachedSettings.SimulateInBatches; } }
+		public bool IsSimulatingInBatches { get { return Settings.SimulateInBatches; } }
 
 		/// <summary>
 		/// The number of creatures that are currently being simulated at once. Cached at the beginning of
 		/// each generation.
 		/// </summary>
 		/// <value></value>
-		public int CurrentBatchSize { get { return cachedSettings.BatchSize; } }
+		public int CurrentBatchSize { get { return Settings.BatchSize; } }
 
 		/// <summary>
 		/// The simulation config with which the simulation was started.
@@ -157,7 +160,7 @@ namespace Keiwando.Evolution {
 			this.config = config;
 			var data = config.SimulationData;
 			this.SimulationData = data;
-			this.cachedSettings = Settings;
+			this.SettingsForNextGeneration = data.Settings;
 			this.LastSavedGeneration = data.BestCreatures.Count;
 			
 			this.currentGenerationNumber = data.BestCreatures.Count + 1;
@@ -177,25 +180,24 @@ namespace Keiwando.Evolution {
 
 		private IEnumerator SimulateGeneration() {
 
+			this.Settings = this.SettingsForNextGeneration;
 			var solutions = new Solution[Settings.PopulationSize];
 			var solutionIndex = 0;
 			// Prepare batch simulation
 			int actualBatchSize = Settings.SimulateInBatches ? Settings.BatchSize : Settings.PopulationSize;
 			int numberOfBatches = (int)Math.Ceiling((double)this.Settings.PopulationSize / actualBatchSize);
 			int firstChromosomeIndex = 0;
-			// Cache values that can be changed during the simulation
-			this.cachedSettings = this.Settings;
 
 			if (NewGenerationDidBegin != null) NewGenerationDidBegin();
 
 			// We have to immediately create missing chromosomes here so that the Chromosomes array
 			// is always complete for serialization purposes
-      if (SimulationData.CurrentChromosomes.Length < cachedSettings.PopulationSize) {
-        float[][] allChromosomes = new float[cachedSettings.PopulationSize][];
+      if (SimulationData.CurrentChromosomes.Length < Settings.PopulationSize) {
+        float[][] allChromosomes = new float[Settings.PopulationSize][];
         for (int i = 0; i < SimulationData.CurrentChromosomes.Length; i++) {
           allChromosomes[i] = SimulationData.CurrentChromosomes[i];
         }
-        BrainType brainType = GetBrainTypeForSimulation(cachedSettings.Objective, SimulationData.LastV2SimulatedGeneration);
+        BrainType brainType = GetBrainTypeForSimulation(Settings.Objective, SimulationData.LastV2SimulatedGeneration);
         int chromosomeLength = CalculateChromosomeLengthForBrainType(brainType, SimulationData.NetworkSettings, this.uniqueMusclesContext);
         for (int i = SimulationData.CurrentChromosomes.Length; i < allChromosomes.Length; i++) {
           float[] randomWeights = new float[chromosomeLength];
@@ -251,7 +253,7 @@ namespace Keiwando.Evolution {
 				if (batch.Length > 0) {
 					int numberOfJoints = batch[0].joints.Count;
 					int numberOfMuscles = batch[0].muscles.Count;
-					int recordingDurationInSeconds = (int)Math.Min(10f, cachedSettings.SimulationTime);
+					int recordingDurationInSeconds = (int)Math.Min(10f, Settings.SimulationTime);
 					for (int recorderIndex = 0; recorderIndex < recorders.Count; recorderIndex++) {
 						bool needsNewRecorder = false; 
 						if (recorders[recorderIndex] == null) {
@@ -289,7 +291,7 @@ namespace Keiwando.Evolution {
 					var creature = batch[j];
 					solutions[solutionIndex++] = new Solution() { 
 						Encodable = creature.brain.Network,
-						Stats = creature.GetStatistics(this.cachedSettings.SimulationTime),
+						Stats = creature.GetStatistics(this.Settings.SimulationTime),
 						NumberOfNetworkOutputs = creature.brain.Network.NumberOfOutputs,
 						Recorder = creature.recorder
 					};
@@ -315,7 +317,7 @@ namespace Keiwando.Evolution {
 
 			if (NewBatchDidBegin != null) NewBatchDidBegin();
 
-			yield return new WaitForSeconds(cachedSettings.SimulationTime);
+			yield return new WaitForSeconds(Settings.SimulationTime);
 		}
 
 		private void EvaluateSolutions(Solution[] solutions) {
@@ -524,7 +526,7 @@ namespace Keiwando.Evolution {
 				return UniversalBrain.NUMBER_OF_INPUTS;
 			}
 
-			switch (cachedSettings.Objective) {
+			switch (Settings.Objective) {
 				case Objective.Running: return RunningBrain.NUMBER_OF_INPUTS;
 				case Objective.Jumping: return JumpingBrain.NUMBER_OF_INPUTS;
 				case Objective.ObstacleJump: return ObstacleJumpingBrain.NUMBER_OF_INPUTS;

@@ -12,11 +12,17 @@ namespace Keiwando.Evolution {
             set => EditorStateManager.EditorSettings = value;
         }
         private SimulationSettings simulationSettings {
-            get => EditorStateManager.SimulationSettings;
+            get {
+                if (evolution != null) {
+                    return evolution.SettingsForNextGeneration;
+                } else {
+                    return EditorStateManager.SimulationSettings;
+                }
+            }
             set {
                 EditorStateManager.SimulationSettings = value;
                 if (evolution != null) 
-                    evolution.Settings = value;    
+                    evolution.SettingsForNextGeneration = value;    
             }
         }
 
