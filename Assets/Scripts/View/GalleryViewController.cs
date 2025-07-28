@@ -287,7 +287,7 @@ namespace Keiwando.Evolution.UI {
           this.renderTextures[this.fullscreenRenderTextureIndex] = new RenderTexture(
             width: Screen.width,
             height: Screen.height,
-            depth: 0
+            depth: 16
           ); 
           this.fullscreenRawImage.texture = this.renderTextures[this.fullscreenRenderTextureIndex];
         }
@@ -309,7 +309,7 @@ namespace Keiwando.Evolution.UI {
             renderTexture = new RenderTexture(
               width: (int)(cellTransform.sizeDelta.x * canvas.transform.localScale.x),
               height: (int)(cellTransform.sizeDelta.y * canvas.transform.localScale.y),
-              depth: 0
+              depth: 16
             );
             renderTextures[cellIndex] = renderTexture;
           }
@@ -353,7 +353,6 @@ namespace Keiwando.Evolution.UI {
             perObjectData.gameObject.layer = perObjectData.layer;
           }
         }
-          // TODO: Make sure that steps render correctly during playback
         loadedSceneData.camera.Render();
 
         for (int i = 0; i < loadedSceneData.allObjects.Count; i++) {
