@@ -39,6 +39,10 @@ public class GooglyEye : MonoBehaviour
     private Vector3 _origin;
     private Vector3 _velocity;
     private Vector3 _lastPosition;
+    
+    public SpriteRenderer outlineSpriteRenderer;
+    public SpriteRenderer eyeSpriteRenderer;
+    public SpriteRenderer irisSpriteRenderer;
 
     void Start() {
         _origin = Eye.localPosition;

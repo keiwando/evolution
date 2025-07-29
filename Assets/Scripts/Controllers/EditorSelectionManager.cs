@@ -13,7 +13,6 @@ namespace Keiwando.Evolution {
         private static Collider[] _cachedSphereCollisions = new Collider[10];
         private static int _cachedSphereCollisionsLength = 0;
         private static IComparer<int> descendingIntComparer = Comparer<int>.Create((lhs, rhs) => rhs.CompareTo(lhs));
-        private static int googlyEyeSortingLayer = 0;
 
         /// <summary>
         /// The treshold distance used to distinguish between a click/touch and a drag
@@ -41,8 +40,6 @@ namespace Keiwando.Evolution {
             this.selectionArea = selectionArea;
             this.mouseDeleteTexture = mouseDeleteTexture;
             selectionArea.gameObject.SetActive(false);
-
-            googlyEyeSortingLayer = SortingLayer.NameToID("Googly Eye");
         }
 
         public void Update(Vector3 mouseScreenPos) {
@@ -426,11 +423,7 @@ namespace Keiwando.Evolution {
                 SpriteRenderer spriteRenderer = _cachedPointCollisions[i].collider.gameObject.GetComponent<SpriteRenderer>();
                 int sortingOrder = 0;
                 if (spriteRenderer != null) {
-                    if (spriteRenderer.sortingLayerID == googlyEyeSortingLayer) {
-                        sortingOrder = 1000000000;
-                    } else {
-                        sortingOrder = spriteRenderer.sortingOrder;
-                    }
+                    sortingOrder = spriteRenderer.sortingOrder;
                     needsSpriteOrdering = true;
                 }
                 _cachedCollisionSortingOrders[i] = sortingOrder;

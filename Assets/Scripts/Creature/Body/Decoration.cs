@@ -20,8 +20,7 @@ public class Decoration : BodyComponent {
   public bool VisualizeConnection { get; private set; }
 
   SpriteRenderer spriteRenderer;
-  // GooglyEye googlyEye;
-  SpriteRenderer[] googlyEyeSpriteRenderers;
+  GooglyEye googlyEye;
   LineRenderer connectionVisualizationRenderer;
   BoxCollider boxCollider;
   SphereCollider sphereCollider;
@@ -39,8 +38,7 @@ public class Decoration : BodyComponent {
     decoration.UpdateOrientation();
 
     if (data.decorationType == DecorationType.GooglyEye) {
-      // decoration.googlyEye = decoration.GetComponent<GooglyEye>();
-      decoration.googlyEyeSpriteRenderers = decoration.GetComponentsInChildren<SpriteRenderer>();
+      decoration.googlyEye = decoration.GetComponent<GooglyEye>();
       decoration.sphereCollider = decoration.GetComponent<SphereCollider>();
     } else {
       decoration.spriteRenderer.sprite = DecorationUtils.DecorationTypeToImageResourceName(data.decorationType);
@@ -55,9 +53,7 @@ public class Decoration : BodyComponent {
   }
 
   public void UpdateOrientation() {
-    // DEBUG:
-    float scale = DecorationUtils.DefaultScaleForDecoration(DecorationData.decorationType);
-    // float scale = DecorationData.scale;
+    float scale = DecorationData.scale;
     transform.position = bone.transform.TransformPoint(new Vector3(DecorationData.offset.x, DecorationData.offset.y, Z_POSITION));
     transform.rotation = bone.transform.rotation * Quaternion.Euler(0f, 0f, DecorationData.rotation * Mathf.Rad2Deg);
     transform.localScale = new Vector3(scale, scale, scale);
@@ -83,10 +79,10 @@ public class Decoration : BodyComponent {
 
   public void SetLayer(LayerMask layer) {
     this.gameObject.layer = layer;
-    if (googlyEyeSpriteRenderers != null) {
-      foreach (SpriteRenderer spriteRenderer in googlyEyeSpriteRenderers) {
-        spriteRenderer.gameObject.layer = layer;
-      }
+    if (googlyEye != null) {
+      googlyEye.eyeSpriteRenderer.gameObject.layer = layer;
+      googlyEye.outlineSpriteRenderer.gameObject.layer = layer;
+      googlyEye.irisSpriteRenderer.gameObject.layer = layer;
     }
   }
 
@@ -94,17 +90,20 @@ public class Decoration : BodyComponent {
     if (DecorationData.decorationType != DecorationType.GooglyEye && spriteRenderer != null) {
       spriteRenderer.sortingOrder = order;
       return order + 1;
+    } else if (googlyEye != null) {
+      googlyEye.outlineSpriteRenderer.sortingOrder = order;
+      googlyEye.eyeSpriteRenderer.sortingOrder = order + 1;
+      googlyEye.irisSpriteRenderer.sortingOrder = order + 2;
+      return order + 3;
     }
     return order;
   }
 
   protected override void SetRendererMaterialForHighlight(Material mat, Material spriteMat, bool selected) {
-    if (googlyEyeSpriteRenderers != null) {
-      foreach (SpriteRenderer spriteRenderer in googlyEyeSpriteRenderers) {
-        if (spriteRenderer != null) {
-          spriteRenderer.material = spriteMat;
-        }
-      }
+    if (googlyEye != null) {
+      googlyEye.eyeSpriteRenderer.material = spriteMat;
+      googlyEye.outlineSpriteRenderer.material = spriteMat;
+      googlyEye.irisSpriteRenderer.material = spriteMat;
     }
     SetVisualizeConnection(selected);
   }
