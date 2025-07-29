@@ -8,9 +8,6 @@ public class Decoration : BodyComponent {
   private const string GOOGLY_EYE_PREFAB_PATH = "Prefabs/Googly Eye";
   private const string SPRITE_DECORATION_PREFAB_PATH = "Prefabs/Decoration";
 
-  public const float DEFAULT_GOOGLY_EYE_SCALE = 1.3f;
-  public const float DEFAULT_EMOJI_SCALE = 2.0f;
-
   private const float Z_POSITION = -1f;
 
   public Bone bone;  
@@ -58,7 +55,9 @@ public class Decoration : BodyComponent {
   }
 
   public void UpdateOrientation() {
-    float scale = DecorationData.scale;
+    // DEBUG:
+    float scale = DecorationUtils.DefaultScaleForDecoration(DecorationData.decorationType);
+    // float scale = DecorationData.scale;
     transform.position = bone.transform.TransformPoint(new Vector3(DecorationData.offset.x, DecorationData.offset.y, Z_POSITION));
     transform.rotation = bone.transform.rotation * Quaternion.Euler(0f, 0f, DecorationData.rotation * Mathf.Rad2Deg);
     transform.localScale = new Vector3(scale, scale, scale);

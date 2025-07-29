@@ -1,10 +1,115 @@
 fileFormatVersion: 2
-guid: df6dab015074d4466bb33e3b7c3bae09
+guid: 238c6df6e05ba445a9ef5c428a160a49
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2140674089725531574
-    second: decoration_emojis_0
+      213: 4362949071974528596
+    second: skin_components_0
+  - first:
+      213: -7400458550309031145
+    second: skin_components_1
+  - first:
+      213: -5938976158115434223
+    second: skin_components_2
+  - first:
+      213: -3861851090983772238
+    second: skin_components_3
+  - first:
+      213: -70458232951407535
+    second: skin_components_4
+  - first:
+      213: 522974779929843933
+    second: skin_components_5
+  - first:
+      213: 1724103208468362391
+    second: skin_components_6
+  - first:
+      213: 2324884288304894271
+    second: skin_components_7
+  - first:
+      213: 897752653176156143
+    second: skin_components_8
+  - first:
+      213: -5093643691498662894
+    second: skin_components_9
+  - first:
+      213: -2006520592727251939
+    second: skin_components_10
+  - first:
+      213: -4259989798420910675
+    second: skin_components_11
+  - first:
+      213: 610297027162698933
+    second: skin_components_12
+  - first:
+      213: -2582558082206928024
+    second: skin_components_13
+  - first:
+      213: 8430435921763645447
+    second: skin_components_14
+  - first:
+      213: 8058607561929738065
+    second: skin_components_15
+  - first:
+      213: 2231295653072494575
+    second: skin_components_16
+  - first:
+      213: -6648549634604204125
+    second: skin_components_17
+  - first:
+      213: -1849860416928369109
+    second: skin_components_18
+  - first:
+      213: 849678518827926499
+    second: skin_components_19
+  - first:
+      213: -667649835102475070
+    second: skin_components_20
+  - first:
+      213: -4375621782780230890
+    second: skin_components_21
+  - first:
+      213: -4574603240477372258
+    second: skin_components_22
+  - first:
+      213: -4679473671212438657
+    second: skin_components_23
+  - first:
+      213: -1413966255018250965
+    second: skin_components_24
+  - first:
+      213: 8519594941855543263
+    second: skin_components_25
+  - first:
+      213: -4565454303334562885
+    second: skin_components_26
+  - first:
+      213: -7447777899787056317
+    second: skin_components_27
+  - first:
+      213: 900052461027898381
+    second: skin_components_28
+  - first:
+      213: 4874602398877996432
+    second: skin_components_29
+  - first:
+      213: 4924678306449047898
+    second: skin_components_30
+  - first:
+      213: 8059075372582118159
+    second: skin_components_31
+  - first:
+      213: 6293659351104010476
+    second: skin_components_32
+  - first:
+      213: 659742176339806688
+    second: skin_components_33
+  - first:
+      213: -6978261672708965301
+    second: skin_components_34
+  - first:
+      213: 6722724932326875935
+    second: skin_components_35
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +244,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: decoration_emojis_0
+      name: skin_components_0
       rect:
         serializedVersion: 2
         x: 0
@@ -147,21 +252,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 016f2f33c16604a7ba1164b0253ec50e
-      internalID: -247612583
+      spriteID: 12a0c7ddc180a4e1792664dd641163ea
+      internalID: -1865686236
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_1
+      name: skin_components_1
       rect:
         serializedVersion: 2
         x: 256
@@ -169,21 +274,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e8a3b55549bc14a2d9f848a38f13aa19
-      internalID: 181282819
+      spriteID: 366ec6e7f3a1d41ceb541c00cb6effcb
+      internalID: 868564242
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_2
+      name: skin_components_2
       rect:
         serializedVersion: 2
         x: 512
@@ -191,21 +296,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d14b67cfa22174d06a83c195355d929e
-      internalID: -843124594
+      spriteID: cc362f0be9c324003b832e5e61d22392
+      internalID: -1224101693
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_3
+      name: skin_components_3
       rect:
         serializedVersion: 2
         x: 768
@@ -213,21 +318,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 08195b1c6b88946f58c0ff2af689ed88
-      internalID: 852592912
+      spriteID: be4bc0821a2a54bd5b1beffcde745233
+      internalID: -1836514934
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_4
+      name: skin_components_4
       rect:
         serializedVersion: 2
         x: 1024
@@ -235,21 +340,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ed3e71aa3d91740edbc403166374451f
-      internalID: -31381366
+      spriteID: f9836a851e8394819ac26304729a3424
+      internalID: -1476650336
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_5
+      name: skin_components_5
       rect:
         serializedVersion: 2
         x: 1280
@@ -257,21 +362,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9fd46c84a03d848b094b83400f10afff
-      internalID: -1456654425
+      spriteID: 2e72071dbcd3e482dba676f70fec8058
+      internalID: -801420496
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_6
+      name: skin_components_6
       rect:
         serializedVersion: 2
         x: 1536
@@ -279,21 +384,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f8d43fe54b898456d8301fcd08fe1a87
-      internalID: -255619634
+      spriteID: 2c062b2fe32984e04ae59c13793fe062
+      internalID: -873636633
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_7
+      name: skin_components_7
       rect:
         serializedVersion: 2
         x: 1792
@@ -301,21 +406,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 801202599882a4917b597b7b6cbba6e6
-      internalID: 583367764
+      spriteID: 3220303787da74c54902c4d661cda7f9
+      internalID: 559075949
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_8
+      name: skin_components_8
       rect:
         serializedVersion: 2
         x: 0
@@ -323,21 +428,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9cc55b07a326149b2ab71a4a1674fe7d
-      internalID: 1319777292
+      spriteID: 2aa8cd02917bc4398b3c470cdf4ca259
+      internalID: -1461465458
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_9
+      name: skin_components_9
       rect:
         serializedVersion: 2
         x: 256
@@ -345,21 +450,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: de8e632cb4b5d44c693a18ddc6dc5e22
-      internalID: -1371190864
+      spriteID: 94873f839c88c4dd1b6baf3aae0ce260
+      internalID: -1935646157
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_10
+      name: skin_components_10
       rect:
         serializedVersion: 2
         x: 512
@@ -367,21 +472,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3cbeb894842b34fcfab0f740c0c74d99
-      internalID: -888313392
+      spriteID: 6ec5c4a4ca61443aa8abe9427e6a3717
+      internalID: -1253840713
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_11
+      name: skin_components_11
       rect:
         serializedVersion: 2
         x: 768
@@ -389,21 +494,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 930d2a477839b48ce93d0fffe7b217ab
-      internalID: -1995506454
+      spriteID: 58f42c9794cb9418896bfabfc9914443
+      internalID: -664821076
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_12
+      name: skin_components_12
       rect:
         serializedVersion: 2
         x: 1024
@@ -411,21 +516,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0a925c097b7fd46299d3f6200e554e5d
-      internalID: 587273450
+      spriteID: fb49071d61fa247749945aa860905f62
+      internalID: 1457887735
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_13
+      name: skin_components_13
       rect:
         serializedVersion: 2
         x: 1280
@@ -433,21 +538,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0cd0d165d1ced411bae8d0c7ac4945d0
-      internalID: 755200288
+      spriteID: 0cc0f5640b30a4d7b9a59d2a107b4237
+      internalID: -1581279058
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_14
+      name: skin_components_14
       rect:
         serializedVersion: 2
         x: 1536
@@ -455,21 +560,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 62f3040a8ca894412899ddb235ccdec7
-      internalID: 100134703
+      spriteID: 10d3f38083a084657a43dc109c621cf1
+      internalID: -698881833
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_15
+      name: skin_components_15
       rect:
         serializedVersion: 2
         x: 1792
@@ -477,21 +582,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 052fea403346f48889c5f1f7ab838a7f
-      internalID: 1013951849
+      spriteID: f97b2c0cbe60b4a8797637bd2b98e809
+      internalID: -1066799503
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_16
+      name: skin_components_16
       rect:
         serializedVersion: 2
         x: 0
@@ -499,21 +604,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9b6533ddb52544c2f92051e91a423249
-      internalID: 1436064452
+      spriteID: 9e31077954c414f54b593e5bc72ef4cf
+      internalID: -1611363736
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_17
+      name: skin_components_17
       rect:
         serializedVersion: 2
         x: 256
@@ -521,21 +626,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 42a770c2a84ea4806bee217aaacd8948
-      internalID: 99396890
+      spriteID: 4f235233554994a7f8a1af5a1a5f845f
+      internalID: 2145798251
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_18
+      name: skin_components_18
       rect:
         serializedVersion: 2
         x: 512
@@ -543,21 +648,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0851c0ac0326b426c83ee2e509261d05
-      internalID: 2109708508
+      spriteID: 16f24552f998340cf980626f0cd6f669
+      internalID: -308887407
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_19
+      name: skin_components_19
       rect:
         serializedVersion: 2
         x: 768
@@ -565,21 +670,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c2a7c4edf129a4df8a7e4f8b7d69184c
-      internalID: 876785012
+      spriteID: 79d21e32b5bb14dc7b81564dd6b39fbe
+      internalID: 1525090486
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_20
+      name: skin_components_20
       rect:
         serializedVersion: 2
         x: 1024
@@ -587,21 +692,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9752195b3b96a4c01810eec9ac7ca55e
-      internalID: 1740220249
+      spriteID: 998319c543a5244d4967e0798e41b9c8
+      internalID: -1207189763
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_21
+      name: skin_components_21
       rect:
         serializedVersion: 2
         x: 1280
@@ -609,21 +714,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 959d2fdcea3244b4b88b8cbf9c6eef2b
-      internalID: 770159005
+      spriteID: 423efb22e000c474fbde59e888179f25
+      internalID: -932418367
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_22
+      name: skin_components_22
       rect:
         serializedVersion: 2
         x: 1536
@@ -631,21 +736,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aebb2ce58be2145fd84ac154fe823bce
-      internalID: -469605636
+      spriteID: 57a4a889d118a47439030be2516713d6
+      internalID: -350325322
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_23
+      name: skin_components_23
       rect:
         serializedVersion: 2
         x: 1792
@@ -653,21 +758,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: be3e04dd8606544aca8c9448e56fdc17
-      internalID: 717495253
+      spriteID: e2a8aa2fee3074ea0a4094841185b3f0
+      internalID: -733788279
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_24
+      name: skin_components_24
       rect:
         serializedVersion: 2
         x: 0
@@ -675,21 +780,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ae874fa922f564685a75dc5965f6c137
-      internalID: -1746263305
+      spriteID: cfd5c7241bbf447dda19c6f3bdb6bcef
+      internalID: 2058185791
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_25
+      name: skin_components_25
       rect:
         serializedVersion: 2
         x: 256
@@ -697,21 +802,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ec5e03fe12875492e820e44aba0a5bf4
-      internalID: 548767754
+      spriteID: b0a9db00a4e554c2480b422024710a3c
+      internalID: 1070621955
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_26
+      name: skin_components_26
       rect:
         serializedVersion: 2
         x: 512
@@ -719,21 +824,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dd1499cea9b0b43eda07d1ddf89ae822
-      internalID: -382744211
+      spriteID: 69e0cceeae3d144b094035683c85041b
+      internalID: -1525566681
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_27
+      name: skin_components_27
       rect:
         serializedVersion: 2
         x: 768
@@ -741,21 +846,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b15261f24959842348a999265533a76f
-      internalID: -516292454
+      spriteID: a0c6dd5b6dd8140ebb1306168d45625f
+      internalID: -1382404949
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_28
+      name: skin_components_28
       rect:
         serializedVersion: 2
         x: 1024
@@ -763,21 +868,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4e8cd37d872fb4bf6a71a7ea91b5fa7e
-      internalID: 995250571
+      spriteID: d6b8060e32fd74e24be409513dde3231
+      internalID: -2069848243
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_29
+      name: skin_components_29
       rect:
         serializedVersion: 2
         x: 1280
@@ -785,21 +890,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4e81043cf87394ba3996a022911e124a
-      internalID: -1397034299
+      spriteID: 58292e23a71a34b85be7e9f39a41f0dd
+      internalID: 1408068587
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_30
+      name: skin_components_30
       rect:
         serializedVersion: 2
         x: 1536
@@ -807,21 +912,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a9f9a0cfb56234c9dbc3a85bd1b54469
-      internalID: 1059673653
+      spriteID: 01bf76131bb5b4c6db15bd2aa26e44a1
+      internalID: -1107611718
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_31
+      name: skin_components_31
       rect:
         serializedVersion: 2
         x: 1792
@@ -829,21 +934,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fbc1e54d4fbc54e31a91758566c38706
-      internalID: -1541053548
+      spriteID: 7f20796c5d57b4798b49284e1d4b9c21
+      internalID: 863108407
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_32
+      name: skin_components_32
       rect:
         serializedVersion: 2
         x: 0
@@ -851,21 +956,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 506df1df65ed84fb885c2b477ed6d750
-      internalID: -1219570400
+      spriteID: 271384c0daa5f44c6b1d4496ae4150df
+      internalID: 548784067
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_33
+      name: skin_components_33
       rect:
         serializedVersion: 2
         x: 256
@@ -873,21 +978,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ed3da72ea433a4c8497bf6546a9d23d9
-      internalID: 876181710
+      spriteID: e17f2a597424e44d38b24c344c728ad1
+      internalID: 743091122
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_34
+      name: skin_components_34
       rect:
         serializedVersion: 2
         x: 512
@@ -895,21 +1000,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 98c3e130498fd4022a0d30c48cc44498
-      internalID: 479765067
+      spriteID: ebda9969a0b884df2bc2ce0ebf7e3675
+      internalID: 15726669
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_35
+      name: skin_components_35
       rect:
         serializedVersion: 2
         x: 768
@@ -917,21 +1022,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7837e50700f314347b2d54993085fb42
-      internalID: 1995423371
+      spriteID: e04e5a5483f53426cb9a860c10afc969
+      internalID: 1956402947
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_36
+      name: skin_components_36
       rect:
         serializedVersion: 2
         x: 1024
@@ -939,21 +1044,21 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 105f994d1a4584e25ad95985273f63ba
-      internalID: 1352868663
+      spriteID: 39392592112fb49578c3458f44b51723
+      internalID: 1626412241
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: decoration_emojis_37
+      name: skin_components_37
       rect:
         serializedVersion: 2
         x: 1280
@@ -961,15 +1066,81 @@ TextureImporter:
         width: 256
         height: 256
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1f98dc5cf71f340049cbbcbeb912e18d
-      internalID: 1400988269
+      spriteID: 7817d40d636a6414a9f9c91ea3a3c1c4
+      internalID: 1964934093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skin_components_38
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 768
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 765d764dabb9a49e799afcb47813eda0
+      internalID: -1743053611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skin_components_39
+      rect:
+        serializedVersion: 2
+        x: 1792
+        y: 768
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4db75d835e76e48f5aa6929b88f494c6
+      internalID: -683657120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skin_components_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 935a03f0e48e744009435dacedb38a4e
+      internalID: 311454573
       vertices: []
       indices: 
       edges: []
@@ -978,7 +1149,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 4e2de997ce4bd44ba961ed4b75197c80
+    spriteID: 06fa7c7dfd7c74817898bb3f06cf6509
     internalID: 0
     vertices: []
     indices: 
@@ -988,70 +1159,47 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      decoration_emojis_0: -247612583
-      decoration_emojis_1: 181282819
-      decoration_emojis_10: -888313392
-      decoration_emojis_11: -1995506454
-      decoration_emojis_12: 587273450
-      decoration_emojis_13: 755200288
-      decoration_emojis_14: 100134703
-      decoration_emojis_15: 1013951849
-      decoration_emojis_16: 1436064452
-      decoration_emojis_17: 99396890
-      decoration_emojis_18: 2109708508
-      decoration_emojis_19: 876785012
-      decoration_emojis_2: -843124594
-      decoration_emojis_20: 1740220249
-      decoration_emojis_21: 770159005
-      decoration_emojis_22: -469605636
-      decoration_emojis_23: 717495253
-      decoration_emojis_24: -1746263305
-      decoration_emojis_25: 548767754
-      decoration_emojis_26: -382744211
-      decoration_emojis_27: -516292454
-      decoration_emojis_28: 995250571
-      decoration_emojis_29: -1397034299
-      decoration_emojis_3: 852592912
-      decoration_emojis_30: 1059673653
-      decoration_emojis_31: -1541053548
-      decoration_emojis_32: -1219570400
-      decoration_emojis_33: 876181710
-      decoration_emojis_34: 479765067
-      decoration_emojis_35: 1995423371
-      decoration_emojis_36: 1352868663
-      decoration_emojis_37: 1400988269
-      decoration_emojis_38: -432226526
-      decoration_emojis_39: 2134952871
-      decoration_emojis_4: -31381366
-      decoration_emojis_40: 1973459183
-      decoration_emojis_41: -1649409473
-      decoration_emojis_42: -510808681
-      decoration_emojis_43: 2074227674
-      decoration_emojis_44: -430963486
-      decoration_emojis_45: 1853821028
-      decoration_emojis_46: -1380683617
-      decoration_emojis_47: 142091511
-      decoration_emojis_48: -290249850
-      decoration_emojis_49: -690765653
-      decoration_emojis_5: -1456654425
-      decoration_emojis_50: 238548717
-      decoration_emojis_51: 1519357343
-      decoration_emojis_52: 1699582631
-      decoration_emojis_53: -828225180
-      decoration_emojis_54: -618948120
-      decoration_emojis_55: -1118834321
-      decoration_emojis_56: 348746363
-      decoration_emojis_57: -397572057
-      decoration_emojis_58: -1091241372
-      decoration_emojis_59: 1510148511
-      decoration_emojis_6: -255619634
-      decoration_emojis_60: 1418234421
-      decoration_emojis_61: -1922911739
-      decoration_emojis_62: -1373306435
-      decoration_emojis_63: 408092154
-      decoration_emojis_7: 583367764
-      decoration_emojis_8: 1319777292
-      decoration_emojis_9: -1371190864
+      skin_components_0: -1865686236
+      skin_components_1: 868564242
+      skin_components_10: -1253840713
+      skin_components_11: -664821076
+      skin_components_12: 1457887735
+      skin_components_13: -1581279058
+      skin_components_14: -698881833
+      skin_components_15: -1066799503
+      skin_components_16: -1611363736
+      skin_components_17: 2145798251
+      skin_components_18: -308887407
+      skin_components_19: 1525090486
+      skin_components_2: -1224101693
+      skin_components_20: -1207189763
+      skin_components_21: -932418367
+      skin_components_22: -350325322
+      skin_components_23: -733788279
+      skin_components_24: 2058185791
+      skin_components_25: 1070621955
+      skin_components_26: -1525566681
+      skin_components_27: -1382404949
+      skin_components_28: -2069848243
+      skin_components_29: 1408068587
+      skin_components_3: -1836514934
+      skin_components_30: -1107611718
+      skin_components_31: 863108407
+      skin_components_32: 548784067
+      skin_components_33: 743091122
+      skin_components_34: 15726669
+      skin_components_35: 1956402947
+      skin_components_36: 1626412241
+      skin_components_37: 1964934093
+      skin_components_38: -1743053611
+      skin_components_39: -683657120
+      skin_components_4: -1476650336
+      skin_components_40: 311454573
+      skin_components_5: -801420496
+      skin_components_6: -873636633
+      skin_components_7: 559075949
+      skin_components_8: -1461465458
+      skin_components_9: -1935646157
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

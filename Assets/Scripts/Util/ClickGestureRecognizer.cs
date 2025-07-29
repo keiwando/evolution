@@ -13,8 +13,12 @@ namespace Keiwando {
 
     private float clickStartTime = 0f;
 
-    private const float CLICK_DURATION_THRESHOLD = 0.8f;
-    private const float CLICK_MOVE_THRESHOLD = 50f;
+    private const float CLICK_DURATION_THRESHOLD = 0.5f;
+    #if UNITY_IOS || UNITY_ANDROID
+    private const float CLICK_MOVE_THRESHOLD = 40f;
+    #else
+    private const float CLICK_MOVE_THRESHOLD = 5f;
+    #endif
 
     void Update() {
       

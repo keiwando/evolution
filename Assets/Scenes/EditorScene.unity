@@ -20075,8 +20075,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 26}
+  m_AnchoredPosition: {x: 10, y: 0}
+  m_SizeDelta: {x: 140, y: 26}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1068865097
 MonoBehaviour:
@@ -20098,7 +20098,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Decorations
+  m_text: Skin Components
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5e2d7abe6d7b84a629444e8955c2187b, type: 2}
   m_sharedMaterial: {fileID: 21963835038686776, guid: 5e2d7abe6d7b84a629444e8955c2187b,
@@ -22589,7 +22589,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 10, y: 10}
-  m_SizeDelta: {x: 100, y: 40}
+  m_SizeDelta: {x: 70, y: 40}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1208213582
 MonoBehaviour:
@@ -32033,7 +32033,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Decorations
+  m_text: Skin
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5e2d7abe6d7b84a629444e8955c2187b, type: 2}
   m_sharedMaterial: {fileID: 21963835038686776, guid: 5e2d7abe6d7b84a629444e8955c2187b,

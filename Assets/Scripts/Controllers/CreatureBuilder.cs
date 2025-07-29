@@ -385,11 +385,7 @@ namespace Keiwando.Evolution {
 				worldPosition: atPosition, 
 				worldRotation: 0f
 			);
-			if (decorationType == DecorationType.GooglyEye) {
-				localTransform.scale = Decoration.DEFAULT_GOOGLY_EYE_SCALE;
-			} else {
-				localTransform.scale = Decoration.DEFAULT_EMOJI_SCALE;
-			}
+			localTransform.scale = DecorationUtils.DefaultScaleForDecoration(decorationType);
 
 			var decorationData = new DecorationData(
 				id: idCounter++,

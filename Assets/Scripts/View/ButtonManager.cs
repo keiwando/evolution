@@ -78,7 +78,7 @@ public class ButtonManager : MonoBehaviour {
 				decorationsSelectionSlidingContainer.Slide(SlidingContainer.Direction.Right, 0.3f, false);
 			}
 		} else {
-			decorationsButtonLabel.SetText("Decorations");
+			decorationsButtonLabel.SetText("Skin");
 			if (buttonsSlidingContainer.LastSlideDirection == SlidingContainer.Direction.Left) {
 				buttonsSlidingContainer.Slide(SlidingContainer.Direction.Right, 0.3f, false);
 			}
