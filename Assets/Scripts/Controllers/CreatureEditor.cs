@@ -114,7 +114,7 @@ public class CreatureEditor: MonoBehaviour,
         HandleClicks();
         HandleKeyboardInput();
 
-        if (selectionManager.GetSelection().Count == 0) {
+        if (selectionManager.GetSelection().Count == 0 || selectedTool != Tool.Move) {
             transformGizmo.gameObject.SetActive(false);
         }
 
@@ -474,10 +474,11 @@ public class CreatureEditor: MonoBehaviour,
                     creatureBuilder.CancelMove(jointsToMove, decorationsToMove, oldDesign);
                     creatureEdited = false;
                 } else if (!currentClickStartedOverTransformGizmo) {
-                    transformGizmo.gameObject.SetActive(false);
-                    jointsToMove.Clear();
-                    decorationsToMove.Clear();
+                    // DEBUG:
                     if (!isPointerOverUI) {
+                        transformGizmo.gameObject.SetActive(false);
+                        jointsToMove.Clear();
+                        decorationsToMove.Clear();
                         selectionManager.DeselectAll();
                     }
                 }
@@ -490,6 +491,8 @@ public class CreatureEditor: MonoBehaviour,
                 creatureEdited = selection.Count > 0;
                 creatureBuilder.Delete(selection);
                 selectionManager.DeselectAll();
+                jointsToMove.Clear();
+                decorationsToMove.Clear();
                 break;
 
             case Tool.Select:
@@ -630,6 +633,8 @@ public class CreatureEditor: MonoBehaviour,
             var oldDesign = creatureBuilder.GetDesign();
             var deleted = selectionManager.DeleteSelection(this.creatureBuilder);
             if (deleted) {
+                jointsToMove.Clear();
+                decorationsToMove.Clear();
                 OnSelectionChanged();
                 historyManager.Push(oldDesign);
                 viewController.Refresh();

@@ -38,17 +38,15 @@ abstract public class BodyComponent: Hoverable {
 	/// </summary>
 	/// <param name="objects">A list of BodyComponents</param>
 	/// <typeparam name="T">A BodyComponent subtype.</typeparam>
-	/// <returns>A list without the already destroyed objects of the input list.</returns>
-	public static List<T> RemoveDeletedObjects<T>(List<T> objects) where T: BodyComponent {
+	public static void RemoveDeletedObjects<T>(List<T> objects) where T: BodyComponent {
 
-		List<T> removed = new List<T>(objects);
-		foreach (T obj in objects) {
+		for (int i = objects.Count - 1; i >= 0; i--) {
+			T obj = objects[i];
 			if (obj == null || obj.Equals(null) || obj.gameObject == null 
 				|| obj.gameObject.Equals(null) || obj.deleted) {
-	
-				removed.Remove(obj);
+				
+				objects.RemoveAt(i);
 			}
 		}
-		return removed;
 	}
 }

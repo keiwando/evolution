@@ -800,10 +800,10 @@ namespace Keiwando.Evolution {
 		/// </summary>
 		private void RemoveDeletedObjects() {
 
-			bones = BodyComponent.RemoveDeletedObjects<Bone>(bones);
-			joints = BodyComponent.RemoveDeletedObjects<Joint>(joints);
-			muscles = BodyComponent.RemoveDeletedObjects<Muscle>(muscles);
-			decorations = BodyComponent.RemoveDeletedObjects<Decoration>(decorations);
+			BodyComponent.RemoveDeletedObjects<Bone>(bones);
+			BodyComponent.RemoveDeletedObjects<Joint>(joints);
+			BodyComponent.RemoveDeletedObjects<Muscle>(muscles);
+			BodyComponent.RemoveDeletedObjects<Decoration>(decorations);
 		}
 
 		#endregion
