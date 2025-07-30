@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Keiwando;
 using Keiwando.UI;
@@ -8,8 +9,7 @@ using Keiwando.Evolution;
 using Keiwando.Evolution.UI;
 
 public class CreatureEditor: MonoBehaviour, 
-                             HistoryManager<CreatureDesign>.IStateProvider,
-                             IEditorViewControllerDelegate {
+                             HistoryManager<CreatureDesign>.IStateProvider {
 
     public event System.Action<Tool> onToolChanged;
 
@@ -33,21 +33,17 @@ public class CreatureEditor: MonoBehaviour,
     private Tool selectedTool = Tool.Joint;
     public DecorationType SelectedDecorationType = DecorationType.GooglyEye;
 
-    [SerializeField]
-    private EditorViewController viewController;
-    [SerializeField]
-    private Grid grid;
+    [SerializeField] private EditorViewController viewController;
+    [SerializeField] private Grid grid;
 
-    [SerializeField]
-	private Texture2D mouseDeleteTexture;
-    [SerializeField]
-    private UnityEngine.Transform selectionArea;
+    [SerializeField] private Texture2D mouseDeleteTexture;
+    [SerializeField] private UnityEngine.Transform selectionArea;
     [SerializeField] private InfoAlert infoAlert;
 
     private CreatureBuilder creatureBuilder;
     private HistoryManager<CreatureDesign> historyManager;
 
-    private EditorSelectionManager selectionManager;
+    public EditorSelectionManager selectionManager;
     private HashSet<int> selectionAtBeginningOfDrag = new HashSet<int>();
     private BodyComponentSettingsManager advancedSettingsManager;
 
@@ -65,7 +61,7 @@ public class CreatureEditor: MonoBehaviour,
 
     void Start() {
 
-        viewController.Delegate = this;
+        viewController.editor = this;
         historyManager = new HistoryManager<CreatureDesign>(this);
 
         Screen.sleepTimeout = SleepTimeout.SystemSetting;
@@ -639,6 +635,22 @@ public class CreatureEditor: MonoBehaviour,
                 historyManager.Push(oldDesign);
                 viewController.Refresh();
             }
+        }
+    }
+
+    public void BringSelectedDecorationsForward() {
+        ChangeSelectedDecorationsOrderBy(1);
+    }
+
+    public void SendSelectedDecorationsBackward() {
+        ChangeSelectedDecorationsOrderBy(-1);
+    }
+
+    private void ChangeSelectedDecorationsOrderBy(int orderChange) {
+        var oldDesign = creatureBuilder.GetDesign();
+        bool editedCreature = creatureBuilder.ChangeDecorationsOrderBy(orderChange, this.selectionManager.GetSelection());
+        if (editedCreature) {
+            historyManager.Push(oldDesign);
         }
     }
 

@@ -286,6 +286,9 @@ namespace Keiwando.Evolution {
         }
 
         public bool SelectionOnlyContainsType(BodyComponentType type) {
+            if (this.selection.Count == 0) {
+                return false;
+            }
             foreach (BodyComponent selectedComponent in selection) {
                 if (selectedComponent.GetBodyComponentType() != type) {
                     return false;

@@ -638,6 +638,43 @@ namespace Keiwando.Evolution {
 
 		#endregion
 
+		public bool ChangeDecorationsOrderBy(int orderChange, List<BodyComponent> selection) {
+			if (orderChange == 0) {
+				return false;
+			}
+			bool editedCreature = false;
+			_idsTmpAlloc.Clear();
+			foreach (BodyComponent component in selection) {
+					if (component.GetBodyComponentType() == BodyComponentType.Decoration) {
+							_idsTmpAlloc.Add(component.GetId());
+					}
+			}
+			if (_idsTmpAlloc.Count > 0) {
+				int nextMovementIndexLimit = orderChange > 0 ? this.decorations.Count - 1: 0;
+				for (
+					int i = orderChange > 0 ? this.decorations.Count - 1 : 0; 
+					(orderChange > 0 && i >= 0) || (orderChange < 0 && i < this.decorations.Count); 
+					i += orderChange > 0 ? -1 : 1
+				) {
+					Decoration decoration = this.decorations[i];
+					if (_idsTmpAlloc.Contains(decoration.DecorationData.id)) {
+						int targetMoveIndex = i + orderChange;
+						if ((orderChange > 0 && targetMoveIndex <= nextMovementIndexLimit) || 
+						    (orderChange < 0 && targetMoveIndex >= nextMovementIndexLimit)) {
+							this.decorations.RemoveAt(i);
+							this.decorations.Insert(targetMoveIndex, decoration);
+							editedCreature = true;
+							nextMovementIndexLimit = orderChange > 0 ? targetMoveIndex - 1 : targetMoveIndex + 1;
+						} else {
+							nextMovementIndexLimit = orderChange > 0 ? i - 1 : i + 1;
+						}
+					}
+				}
+				Creature.RefreshDecorationSortingOrders(this.decorations);
+			}
+			return editedCreature;
+		}
+
 		public void Reset() {
 			DeleteAll();
 			Name = "Unnamed";

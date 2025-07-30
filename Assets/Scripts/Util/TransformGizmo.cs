@@ -2,8 +2,6 @@ using System;
 using Keiwando.Evolution;
 using UnityEngine;
 
-// TODO: Add controls for changing the sorting order of decorations
-
 public class TransformGizmo: MonoBehaviour {
 
   private const float BASE_HANDLE_SCALE = 0.5f;

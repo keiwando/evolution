@@ -4,53 +4,54 @@ using Keiwando.UI;
 
 namespace Keiwando.Evolution.UI {
 
-    public interface IEditorViewControllerDelegate {
-        string GetCreatureName();
-        bool CanUndo(EditorViewController viewController);
-        bool CanRedo(EditorViewController viewController);
-        void Undo();
-        void Redo();
-        void RefreshAfterUndoRedo();
-    }
-
     public class EditorViewController: MonoBehaviour {
 
-        public IEditorViewControllerDelegate Delegate { get; set; }
+        public CreatureEditor editor { get; set; }
 
-        [SerializeField]
-        private TogglingSlidingContainer settingsControlsContainer;
-        [SerializeField]
-        private TogglingSlidingContainer advancedBodyControlsContainer;
+        [SerializeField] private TogglingSlidingContainer settingsControlsContainer;
+        [SerializeField] private TogglingSlidingContainer advancedBodyControlsContainer;
 
-        [SerializeField]
-        private BasicSettingsView basicSettingsView;
-        [SerializeField]
-        private AdvancedBodyControlsViewController advancedBodyControlsViewController;
+        [SerializeField] private BasicSettingsView basicSettingsView;
+        [SerializeField] private AdvancedBodyControlsViewController advancedBodyControlsViewController;
         
-        [SerializeField]
-        private ButtonManager buttonManager;
-        [SerializeField]
-        private CreatureDesignControlsView creatureDesignControlsView;
+        [SerializeField] private ButtonManager buttonManager;
+        [SerializeField] private CreatureDesignControlsView creatureDesignControlsView;
 
-        [SerializeField]
-        private Button undoButton;
-        [SerializeField]
-        private Button redoButton;
+        [SerializeField] private Button undoButton;
+        [SerializeField] private Button redoButton;
 
-        [SerializeField]
-        private GameObject migrationNotice;
+        [SerializeField] private Button editorActionsMenuButton;
+        [SerializeField] private GameObject editorActionsMenu;
+        [SerializeField] private Button editorActionBringForwardButton;
+        [SerializeField] private Button editorActionSendBackwardButton;
+
+        [SerializeField] private GameObject migrationNotice;
 
         void Start() {
             basicSettingsView.Delegate = new SettingsManager();
 
             undoButton.onClick.AddListener(delegate () {
-                Delegate.Undo();
+                editor.Undo();
                 RefreshAfterUndoRedo();
             });
 
             redoButton.onClick.AddListener(delegate () {
-                Delegate.Redo();
+                editor.Redo();
                 RefreshAfterUndoRedo();
+            });
+
+            editorActionsMenuButton.onClick.AddListener(delegate () {
+                bool decorationIsSelected = editor.selectionManager.SelectionOnlyContainsType(BodyComponentType.Decoration);
+                editorActionBringForwardButton.gameObject.SetActive(decorationIsSelected);
+                editorActionSendBackwardButton.gameObject.SetActive(decorationIsSelected);
+                editorActionsMenu.gameObject.SetActive(true);
+            });
+
+            editorActionBringForwardButton.onClick.AddListener(delegate () {
+                editor.BringSelectedDecorationsForward();
+            });
+            editorActionSendBackwardButton.onClick.AddListener(delegate () {
+                editor.SendSelectedDecorationsBackward();
             });
 
             CreatureSerializer.MigrationDidBegin += delegate () {
@@ -89,18 +90,24 @@ namespace Keiwando.Evolution.UI {
         public void Refresh() {
             RefreshUndoButtons();
             basicSettingsView.Refresh();
-            creatureDesignControlsView.SetCurrentCreatureName(Delegate?.GetCreatureName() ?? "Unnamed");
+            creatureDesignControlsView.SetCurrentCreatureName(editor?.GetCreatureName() ?? "Unnamed");
+            
+            bool decorationIsSelected = editor.selectionManager.SelectionOnlyContainsType(BodyComponentType.Decoration);
+            editorActionsMenuButton.gameObject.SetActive(decorationIsSelected);
+            if (!editorActionsMenuButton.gameObject.activeSelf) {
+                editorActionsMenu.gameObject.SetActive(false);
+            }
         }
 
         private void RefreshAfterUndoRedo() {
             RefreshUndoButtons();
-            Delegate?.RefreshAfterUndoRedo();
+            editor?.RefreshAfterUndoRedo();
         }
 
         private void RefreshUndoButtons() {
 
             float disabledAlpha = 0.5f;
-            var undoEnabled = Delegate.CanUndo(this);
+            var undoEnabled = editor.CanUndo(this);
             undoButton.interactable = undoEnabled;
             var undoCanvasGroup = undoButton.GetComponent<CanvasGroup>();
             // For some reason the CanvasGroups end up getting destroyed sometimes
@@ -108,7 +115,7 @@ namespace Keiwando.Evolution.UI {
                 undoCanvasGroup.alpha = undoEnabled ? 1f : disabledAlpha;
             }
 
-            var redoEnabled = Delegate.CanRedo(this);
+            var redoEnabled = editor.CanRedo(this);
             redoButton.interactable = redoEnabled;
             var redoCanvasGroup = redoButton.GetComponent<CanvasGroup>();
             if (redoCanvasGroup) {
