@@ -2,6 +2,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Keiwando.Evolution.UI {
 
@@ -42,7 +43,7 @@ namespace Keiwando.Evolution.UI {
 
         [SerializeField] private Toggle gridToggle;
         [SerializeField] private Slider gridSizeSlider;
-        [SerializeField] private Text gridSizeLabel;
+        [SerializeField] private TMP_Text gridSizeLabel;
 
         // MARK: - Simulation Settings
 
