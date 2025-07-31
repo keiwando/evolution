@@ -30,22 +30,6 @@ namespace Keiwando.UI {
 
     void Start() {
 
-      // DEBUG:
-      items = new MultiselectControlItem[] {
-        new MultiselectControlItem {
-          Name = "Fitness Proportional"
-        },
-        new MultiselectControlItem {
-          Name = "Rank Proportional"
-        },
-        new MultiselectControlItem {
-          Name = "Tournament"
-        },
-        new MultiselectControlItem {
-          Name = "Uniform"
-        }
-      };
-
       previousButton.onClick.AddListener(delegate () {
         ChangeIndex(-1);
       });
@@ -55,11 +39,15 @@ namespace Keiwando.UI {
       textCoverButton.onClick.AddListener(delegate () {
         ChangeIndex(1);
       });
+
+      Refresh();
     }
 
-    void Refresh() {
+    public void Refresh() {
       if (items != null && currentIndex >= 0 && currentIndex < items.Length) {
         label.SetText(items[currentIndex].Name);
+      } else {
+        label.SetText("");
       }
     }
 
