@@ -33,11 +33,15 @@ namespace Keiwando.Evolution {
             set => EditorStateManager.NetworkSettings = value;
         }
 
+        public NeuralNetworkSettingsUIManager neuralNetworkUIManager;
+
         private Evolution evolution;
         public Grid grid;
 
-        public SettingsManager(Evolution evolution = null) {
+        public SettingsManager(Evolution evolution = null, 
+                               NeuralNetworkSettingsUIManager neuralNetworkSettingsUIManager = null) {
             this.evolution = evolution;
+            this.neuralNetworkUIManager = neuralNetworkSettingsUIManager;
         }
 
         public void Setup(SettingsView settingsView, bool setupForPauseScreen) {
@@ -107,7 +111,7 @@ namespace Keiwando.Evolution {
                     },
                     new SettingControl {
                         type = SettingControlType.Input,
-                        name = "SimulationTime",
+                        name = "Simulation Time",
                         inputValue = delegate () { return simulationSettings.SimulationTime.ToString(); },
                         onInputValueChanged = delegate (string newValue) {
                             int newSimulationTime = 0;
@@ -260,6 +264,8 @@ namespace Keiwando.Evolution {
 
                                     settings.NodesPerIntermediateLayer = layerSizes.ToArray();
                                     networkSettings = settings;
+
+                                    neuralNetworkUIManager.Refresh();
                                 }
                             }
                         }
@@ -269,6 +275,8 @@ namespace Keiwando.Evolution {
                         name = "Reset",
                         onButtonPressed = delegate () {
                             networkSettings = NeuralNetworkSettings.Default;
+                            
+                            neuralNetworkUIManager.Refresh();
                         }
                     }
                 }

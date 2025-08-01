@@ -67,7 +67,7 @@ public class VisualNeuralNetwork : MonoBehaviour {
 		canvasWidth = canvasRect.width;
 		//canvasHeight = canvasRect.height;
 
-		_settings = NeuralNetworkSettingsManager.GetNetworkSettings();
+		_settings = NeuralNetworkSettingsUIManager.GetNetworkSettings();
 	}
 
 	public void Refresh() {

@@ -10,6 +10,7 @@ namespace Keiwando.Evolution.UI {
     public class SettingsViewController: MonoBehaviour {
 
         [SerializeField] private SettingsView settingsView;
+        [SerializeField] private NeuralNetworkSettingsUIManager neuralNetworkSettingsUIManager;
 
         // TODO: Remove
         [SerializeField] private GeneralSettingsView generalSettingsView;
@@ -29,7 +30,7 @@ namespace Keiwando.Evolution.UI {
 
         void Start() {
 
-            var settingsManager = new SettingsManager();
+            var settingsManager = new SettingsManager(neuralNetworkSettingsUIManager: neuralNetworkSettingsUIManager);
             settingsManager.grid = grid;
             generalSettingsView.Delegate = settingsManager;
             networkSettingsView.Delegate = settingsManager;
