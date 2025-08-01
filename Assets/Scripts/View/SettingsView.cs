@@ -51,9 +51,12 @@ namespace Keiwando.UI {
     [SerializeField] private SettingsButtonControlCell buttonCellTemplate;
     [SerializeField] private SettingsInputControlCell inputCellTemplate;
     [SerializeField] private SettingsMultiselectControlCell multiselectCellTemplate;
+    [SerializeField] private TMP_Text tooltipTextLabel;
 
     private SettingsTab[] tabs;
     private int selectedTabIndex = 0;
+
+    private int selectedControlIndex = 0;
 
     struct AnySettingCell {
       public SettingControlType type;
@@ -81,6 +84,24 @@ namespace Keiwando.UI {
           }
         }
       }
+      public GameObject selectionHighlight {
+        get { 
+          switch (type) {
+            case SettingControlType.Toggle:
+              return toggleControl.selectionHighlight;
+            case SettingControlType.Slider:
+              return sliderControl.selectionHighlight;
+            case SettingControlType.Button:
+              return buttonControl.selectionHighlight;
+            case SettingControlType.Input:
+              return inputControl.selectionHighlight;
+            case SettingControlType.Multiselect:
+              return multiselectControl.selectionHighlight;
+            default:
+              return null;
+          }
+        }
+      }
     }
     private AnySettingCell[][] settingCellsPerTab;
 
@@ -99,6 +120,7 @@ namespace Keiwando.UI {
       if (this.tabs == null) {
         return;
       }
+      bool didSetTooltip = false;
       for (int tabIndex = 0; tabIndex < this.tabs.Length; tabIndex++) {
         bool isSelectedTab = tabIndex == selectedTabIndex;
         SettingControlGroup group = controlGroups[tabIndex];
@@ -112,6 +134,13 @@ namespace Keiwando.UI {
           SettingControl control = controlGroups[tabIndex].controls[controlIndex];
           AnySettingCell cell = settingCellsPerTab[tabIndex][controlIndex];
           cell.gameObject.SetActive(isSelectedTab);
+
+          bool isSelected = isSelectedTab && controlIndex == selectedControlIndex;
+          cell.selectionHighlight.SetActive(isSelected);
+          if (isSelected && control.tooltip != null) {
+            tooltipTextLabel.SetText(control.tooltip);
+            didSetTooltip = true;
+          }
 
           bool disabled = false;
           if (control.disabledIf != null) {
@@ -144,6 +173,9 @@ namespace Keiwando.UI {
           }
         }
       }
+      if (!didSetTooltip) {
+        tooltipTextLabel.SetText("");
+      }
     }
 
     public void SetupControls() {
@@ -161,6 +193,7 @@ namespace Keiwando.UI {
         int tabIndex = i; // Must copy to not capture a reference to i
         tab.button.onClick.AddListener(delegate () {
           this.selectedTabIndex = tabIndex;
+          this.selectedControlIndex = 0;
           Refresh();
         });
         tab.gameObject.SetActive(true);
@@ -169,7 +202,7 @@ namespace Keiwando.UI {
         this.settingCellsPerTab[i] = new AnySettingCell[group.controls.Length];
         for (int controlIndex = 0; controlIndex < group.controls.Length; controlIndex++) {
           SettingControl control = group.controls[controlIndex];
-          AnySettingCell cell = createSettingCellForControl(control);
+          AnySettingCell cell = createSettingCellForControl(control, controlIndex: controlIndex);
           this.settingCellsPerTab[i][controlIndex] = cell;
         }
       }
@@ -177,7 +210,7 @@ namespace Keiwando.UI {
       Refresh();
     }
 
-    private AnySettingCell createSettingCellForControl(SettingControl control) {
+    private AnySettingCell createSettingCellForControl(SettingControl control, int controlIndex) {
       switch (control.type) {
         case SettingControlType.Toggle: {
           SettingsToggleControlCell cell = Instantiate(toggleCellTemplate.gameObject, toggleCellTemplate.transform.parent).GetComponent<SettingsToggleControlCell>();
@@ -187,6 +220,7 @@ namespace Keiwando.UI {
             if (control.onToggleValueChanged != null) {
               control.onToggleValueChanged(isOn);
             }
+            this.selectedControlIndex = controlIndex;
             Refresh();
           });
           return new AnySettingCell { type = control.type, toggleControl = cell };
@@ -201,6 +235,7 @@ namespace Keiwando.UI {
             if (control.onSliderValueChanged != null) {
               control.onSliderValueChanged(value);
             }
+            this.selectedControlIndex = controlIndex;
             Refresh();
           });
           return new AnySettingCell { type = control.type, sliderControl = cell };
@@ -214,6 +249,7 @@ namespace Keiwando.UI {
             if (control.onButtonPressed != null) {
               control.onButtonPressed();
             }
+            this.selectedControlIndex = controlIndex;
             Refresh();
           });
           return new AnySettingCell { type = control.type, buttonControl = cell };
@@ -226,6 +262,7 @@ namespace Keiwando.UI {
             if (control.onInputValueChanged != null) {
               control.onInputValueChanged(value);
             }
+            this.selectedControlIndex = controlIndex;
             Refresh();
           });
           return new AnySettingCell { type = control.type, inputControl = cell };
@@ -243,6 +280,8 @@ namespace Keiwando.UI {
             if (control.onMultiselectIndexChanged != null) {
               control.onMultiselectIndexChanged(currentIndex);
             }
+            this.selectedControlIndex = controlIndex;
+            Refresh();
           });
           return new AnySettingCell { type = control.type, multiselectControl = cell };
         }

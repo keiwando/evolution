@@ -62,7 +62,8 @@ namespace Keiwando.Evolution {
                                 var settings = editorSettings;
                                 settings.GridEnabled = isOn;
                                 editorSettings = settings;
-                            }
+                            },
+                            tooltip = "When enabled, joints can only be placed on a fixed grid in the creature."
                         },
                         new SettingControl {
                             type = SettingControlType.Slider,
@@ -78,14 +79,16 @@ namespace Keiwando.Evolution {
                                 settings = editorSettings;
                                 settings.GridSize = Math.Clamp(value, min: EditorSettings.MIN_GRID_SIZE, max: EditorSettings.MAX_GRID_SIZE);
                                 editorSettings = settings;
-                            }
+                            },
+                            tooltip = "Controls how fine the grid in the creature editor should be."
                         },
                         new SettingControl {
                             type = SettingControlType.Button,
                             name = "Reset",
                             onButtonPressed = delegate () {
                                 editorSettings = EditorSettings.Default;
-                            }
+                            },
+                            tooltip = "Resets all editor settings"
                         }
                     }
                 };
@@ -104,7 +107,8 @@ namespace Keiwando.Evolution {
                             if (int.TryParse(newValue, out newPopulationSize)) {
                                 PopulationSizeDidChange(newPopulationSize);
                             }
-                        }
+                        },
+                        tooltip = "The number of creatures to simulate in each generation."
                     },
                     new SettingControl {
                         type = SettingControlType.Input,
@@ -115,7 +119,8 @@ namespace Keiwando.Evolution {
                             if (int.TryParse(newValue, out newSimulationTime)) {
                                 SimulationTimeDidChange(newSimulationTime);
                             }
-                        }
+                        },
+                        tooltip = "The number of seconds to simulate each creature."
                     },
                     new SettingControl {
                         type = SettingControlType.Multiselect,
@@ -131,7 +136,8 @@ namespace Keiwando.Evolution {
                             settings.Objective = ObjectiveUtil.ALL_OBJECTIVES[index];
                             simulationSettings = settings;
                         },
-                        disabledIf = delegate () { return setupForPauseScreen; }
+                        disabledIf = delegate () { return setupForPauseScreen; },
+                        tooltip = "The task that the creatures are trying to learn." + (setupForPauseScreen ? "\nThis cannot be changed during a simulation." : "")
                     },
                     new SettingControl {
                         type = SettingControlType.Toggle,
@@ -141,7 +147,8 @@ namespace Keiwando.Evolution {
                             var settings = simulationSettings;
                             settings.KeepBestCreatures = isOn;
                             simulationSettings = settings;
-                        } 
+                        },
+                        tooltip = "When this option is enabled, the two best creatures of a simulation run are copied to the next generation without any modifications (no recombination or mutation)."
                     },
                     new SettingControl {
                         type = SettingControlType.Toggle,
@@ -151,7 +158,8 @@ namespace Keiwando.Evolution {
                             var settings = simulationSettings;
                             settings.SimulateInBatches = isOn;
                             simulationSettings = settings;
-                        }
+                        },
+                        tooltip = "Instead of simulating all of the creatures of one generation at once, you have the option to simulate them in smaller batches. This will be easier on the CPU but it will also take a longer amount of time to finish simulating each generation."
                     },
                     new SettingControl {
                         type = SettingControlType.Input,
@@ -166,7 +174,8 @@ namespace Keiwando.Evolution {
                                 simulationSettings = settings;
                             }
                         },
-                        disabledIf = delegate () { return !simulationSettings.SimulateInBatches; }
+                        disabledIf = delegate () { return !simulationSettings.SimulateInBatches; },
+                        tooltip = "The number of creatures of the same generation to simulate at once."
                     },
                     new SettingControl {
                         type = SettingControlType.Multiselect,
@@ -179,7 +188,35 @@ namespace Keiwando.Evolution {
                             var settings = simulationSettings;
                             settings.SelectionAlgorithm = ALL_SELECTION_ALGORITHMS[index];
                             simulationSettings = settings;
-                        }
+                        },
+                        tooltip = @"
+<size=20><b>Selection Algorithm</b></size>
+
+
+Defines how creatures are selected for survival and reproduction.
+
+
+<b>Uniform</b>
+
+Every creature has the same chances of being selected.
+
+
+<b>Fitness Proportional</b>
+
+The selection probability is proportional to the fitness of the creature.
+
+
+<b>Rank
+Proportional</b>
+
+The selection probability is proportional to the rank of the fitness of the creature.
+
+
+<b>Tournament</b>
+
+Chooses
+a group of creatures uniformly at random and then selects the best one of that group.
+"
                     },
                     new SettingControl {
                         type = SettingControlType.Multiselect,
@@ -192,7 +229,28 @@ namespace Keiwando.Evolution {
                             var settings = simulationSettings;
                             settings.RecombinationAlgorithm = ALL_RECOMBINATION_ALGORITHMS[index];
                             simulationSettings = settings;
-                        }
+                        },
+                        tooltip = @"
+<size=20><b>Recombination Algorithm</b></size>
+
+
+Defines how two parent chromosomes are recombined into one offspring.
+
+
+<b>One Point</b>
+
+Cuts the parent chromosomes at the same random index and uses one part from each parent.
+
+
+<b>Multi Point</b>
+
+Cuts the parent chromosomes at multiple random indices and alternatingly chooses parts from the parent chromosomes.
+
+
+<b>Uniform</b>
+
+Chooses each bit at random from either parent chromosome.
+"
                     },
                     new SettingControl {
                         type = SettingControlType.Multiselect,
@@ -205,7 +263,27 @@ namespace Keiwando.Evolution {
                             var settings = simulationSettings;
                             settings.MutationAlgorithm = ALL_MUTATION_ALGORITHMS[index];
                             simulationSettings = settings;
-                        }
+                        },
+                        tooltip = @"
+<size=20><b>Mutation Algorithm</b></size>
+
+Defines how random changes are applied to offspring chromosomes.
+
+
+<b>Chunk</b>
+
+Changes a random number of consecutive values in the chromosome.
+
+
+<b>Global</b>
+
+Changes the value at each index with a random probability.
+
+
+<b>Inversion</b>
+
+Chooses a random start and end index and inverts the order of values inbetween.'                        
+"
                     },
                     new SettingControl {
                         type = SettingControlType.Slider,
@@ -218,7 +296,8 @@ namespace Keiwando.Evolution {
                             var settings = simulationSettings;
                             settings.MutationRate = Math.Clamp(value, 0f, 1f);
                             simulationSettings = settings;
-                        }
+                        },
+                        tooltip = "The probability for each offspring to receive any amount of random mutation."
                     },
                     new SettingControl {
                         type = SettingControlType.Button,
@@ -227,7 +306,8 @@ namespace Keiwando.Evolution {
                             simulationSettings = SimulationSettings.Default;
                         },
                         // Disabled so you don't change the objective with it.
-                        disabledIf = delegate () { return setupForPauseScreen; }
+                        disabledIf = delegate () { return setupForPauseScreen; },
+                        tooltip = "Resets all simulation settings to their default values."
                     }
                 }
             };
@@ -267,7 +347,8 @@ namespace Keiwando.Evolution {
                                 }
                             }
                         },
-                        disabledIf = delegate () { return setupForPauseScreen; }
+                        disabledIf = delegate () { return setupForPauseScreen; },
+                        tooltip = "The total number of layers in the neural network that controls the creature's muscles." + (setupForPauseScreen ? "\nThis cannot be changed during a simulation." : "")
                     },
                     new SettingControl {
                         type = SettingControlType.Button,
@@ -277,7 +358,8 @@ namespace Keiwando.Evolution {
                             
                             neuralNetworkUIManager.Refresh();
                         },
-                        disabledIf = delegate () { return setupForPauseScreen; }
+                        disabledIf = delegate () { return setupForPauseScreen; },
+                        tooltip = "Resets the neural network to its default state."
                     }
                 },
                 anciliaryView = neuralNetworkUIManager.neuralNetworkUIRootContainer

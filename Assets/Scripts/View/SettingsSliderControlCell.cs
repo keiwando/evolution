@@ -9,5 +9,6 @@ namespace Keiwando.UI {
     public TMP_Text label;
     public TMP_Text valueLabel;
     public Slider slider;
+    public GameObject selectionHighlight;
   }
 }

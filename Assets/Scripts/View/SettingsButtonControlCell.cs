@@ -9,5 +9,6 @@ namespace Keiwando.UI {
     public TMP_Text label;
     public Button button;
     public TMP_Text buttonLabel;
+    public GameObject selectionHighlight;
   }
 }

@@ -8,5 +8,6 @@ namespace Keiwando.UI {
 
     public TMP_Text label;
     public Toggle toggle;
+    public GameObject selectionHighlight;
   }
 }
