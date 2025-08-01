@@ -8,6 +8,7 @@ public class NeuralNetworkSettingsUIManager : MonoBehaviour {
 
 	private static readonly string INPUT_FIELD_PREFAB_NAME = "Prefabs/Layer Input Field";
 
+	public GameObject neuralNetworkUIRootContainer;
 	[SerializeField] private VisualNeuralNetworkRenderer networkRenderer;
 	[SerializeField] private RectTransform leftEdge;
 	[SerializeField] private RectTransform rightEdge;

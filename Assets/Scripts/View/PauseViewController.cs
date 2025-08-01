@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Keiwando.UI;
 
 namespace Keiwando.Evolution.UI {
 
@@ -12,67 +13,38 @@ namespace Keiwando.Evolution.UI {
 
         public IPauseViewControllerDelegate Delegate { get; set; }
 
+        [SerializeField] private SettingsView settingsView;
+        [SerializeField] private NeuralNetworkSettingsUIManager neuralNetworkSettingsUIManager; 
+
         [SerializeField] private Button continueButton;
         
-        [SerializeField] private InputField generationTimeInput;
-        [SerializeField] private InputField populationSizeInput;
-
-        [SerializeField] private GeneralSettingsView generalSettingsView;
-
         private SettingsManager settingsManager;
 
         void Start() {
 
             var evolution = FindAnyObjectByType<Evolution>();
-            this.settingsManager = new SettingsManager(evolution);
+            this.settingsManager = new SettingsManager(
+                evolution: evolution, 
+                neuralNetworkSettingsUIManager: neuralNetworkSettingsUIManager
+            );
+            settingsManager.Setup(settingsView, setupForPauseScreen: true);
 
             continueButton.onClick.AddListener(delegate () {
                 Hide();
             });
 
-            generationTimeInput.onEndEdit.AddListener(delegate (string text) {
-                int simulationTime = 0;
-                try {
-                    simulationTime = int.Parse(text);
-                } catch { 
-                    Refresh();
-                    return; 
-                }
-                settingsManager.SimulationTimeDidChange(simulationTime);
-                Refresh();
-            });
-
-            populationSizeInput.onEndEdit.AddListener(delegate (string text) {
-                int populationSize = 10;
-                try {
-                    populationSize = int.Parse(text);
-                } catch {
-                    Refresh();
-                    return;
-                }
-                int batchSize = Math.Min(settingsManager.GetBatchSize(generalSettingsView), populationSize);
-                settingsManager.BatchSizeChanged(generalSettingsView, batchSize);
-                settingsManager.PopulationSizeDidChange(populationSize);
-                Refresh();
-            });
-
-            generalSettingsView.Delegate = settingsManager;
-
             Refresh();
         }
 
         public void Refresh() {
-
-            generationTimeInput.text = settingsManager.GetSimulationTime(this).ToString();
-            populationSizeInput.text = settingsManager.GetPopulationSize().ToString();
-
-            generalSettingsView.Refresh();
+            settingsView.Refresh();
         }
 
         public void Show() {
             this.gameObject.SetActive(true);
             InputRegistry.shared.Register(InputType.AndroidBack, this);
             GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture += OnAndroidBack;
+            Refresh();
         }
 
         public void Hide() {

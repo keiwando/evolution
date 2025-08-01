@@ -6,7 +6,6 @@ using Keiwando.Evolution.UI;
 namespace Keiwando.Evolution {
 
     public class SettingsManager: 
-        ISettingsViewControllerDelegate,
         IBasicSettingsViewDelegate {
 
         private EditorSettings editorSettings {
@@ -101,11 +100,7 @@ namespace Keiwando.Evolution {
                         onInputValueChanged = delegate (string newValue) {
                             int newPopulationSize = 0;
                             if (int.TryParse(newValue, out newPopulationSize)) {
-                                newPopulationSize = Math.Clamp(newPopulationSize, 2, 1000);
-                                var settings = simulationSettings;
-                                settings.PopulationSize = newPopulationSize;
-                                settings.BatchSize = Math.Clamp(settings.BatchSize, 1, settings.PopulationSize);
-                                simulationSettings = settings;
+                                PopulationSizeDidChange(newPopulationSize);
                             }
                         }
                     },
@@ -116,10 +111,7 @@ namespace Keiwando.Evolution {
                         onInputValueChanged = delegate (string newValue) {
                             int newSimulationTime = 0;
                             if (int.TryParse(newValue, out newSimulationTime)) {
-                                newSimulationTime = Math.Clamp(newSimulationTime, 1, 100000);
-                                var settings = simulationSettings;
-                                settings.SimulationTime = newSimulationTime;
-                                simulationSettings = settings;
+                                SimulationTimeDidChange(newSimulationTime);
                             }
                         }
                     },
@@ -279,13 +271,19 @@ namespace Keiwando.Evolution {
                             neuralNetworkUIManager.Refresh();
                         }
                     }
-                }
+                },
+                anciliaryView = neuralNetworkUIManager.neuralNetworkUIRootContainer
             };
 
             // TODO: Add credits tab
             settingsView.controlGroups[nextTabIndex++] = new SettingControlGroup {
                 name = "Credits",
                 controls = new SettingControl[] {
+                    new SettingControl {
+                        type = SettingControlType.Button,
+                        name = "Credits"
+                        // TODO: Add tooltip
+                    },
                     new SettingControl {
                         type = SettingControlType.Button,
                         name = "Impressum",
@@ -297,127 +295,6 @@ namespace Keiwando.Evolution {
             };
 
             settingsView.SetupControls();
-        }
-
-        // TODO: Remove all of this once unused
-
-        // MARK: - ISettingsViewControllerDelegate
-
-        public bool IsGridActivated(GeneralSettingsView view) {
-            return editorSettings.GridEnabled;
-        }
-
-        public float GetGridSize(GeneralSettingsView view) {
-            return editorSettings.GridSize;
-        }
-
-        public float GetMinGridSize(GeneralSettingsView view) {
-            return EditorSettings.MIN_GRID_SIZE;
-        }
-
-        public float GetMaxGridSize(GeneralSettingsView view) {
-            return EditorSettings.MAX_GRID_SIZE;
-        }
-
-        public bool IsKeepBestCreatureEnabled(GeneralSettingsView view) {
-            return simulationSettings.KeepBestCreatures;
-        }
-
-        public bool IsSimulateInBatchesEnabled(GeneralSettingsView view) {
-            return simulationSettings.SimulateInBatches;
-        }
-
-        public int GetBatchSize(GeneralSettingsView view) {
-            return simulationSettings.BatchSize;
-        }
-
-        public SelectionAlgorithm GetSelectionAlgorithm(GeneralSettingsView view) {
-            return simulationSettings.SelectionAlgorithm;
-        }
-
-        public RecombinationAlgorithm GetRecombinationAlgorithm(GeneralSettingsView view) {
-            return simulationSettings.RecombinationAlgorithm;
-        }
-
-        public MutationAlgorithm GetMutationAlgorithm(GeneralSettingsView view) {
-            return simulationSettings.MutationAlgorithm;
-        }
-
-        public float GetMutationRate(GeneralSettingsView view) {
-            return simulationSettings.MutationRate;
-        }
-
-        public int GetSimulationTime(PauseViewController view) {
-            return simulationSettings.SimulationTime;
-        }
-
-        public void SimulationTimeDidChange(int time) {
-            var settings = simulationSettings;
-            settings.SimulationTime = Math.Min(Math.Max(time, 1), 100000);
-            simulationSettings = settings;
-        }
-
-        public void GridActivationToggled(GeneralSettingsView view, bool enabled) {
-            var settings = editorSettings;
-            settings.GridEnabled = enabled;
-            editorSettings = settings;
-            if (grid != null) grid.gameObject.SetActive(enabled);
-        }
-
-        public void GridSizeChanged(GeneralSettingsView view, float size) {
-            var settings = editorSettings;
-            settings.GridSize = size;
-            editorSettings = settings;
-            if (grid != null) {
-                grid.Size = size;
-                grid.VisualRefresh();
-            }
-        }
-
-        public void KeepBestCreaturesToggled(GeneralSettingsView view, bool enabled) {
-            var settings = simulationSettings;
-            settings.KeepBestCreatures = enabled;
-            simulationSettings = settings;
-        }
-
-        public void SimulateInBatchesToggled(GeneralSettingsView view, bool enabled) {
-            var settings = simulationSettings;
-            settings.SimulateInBatches = enabled;
-            simulationSettings = settings;
-        }
-
-        public void BatchSizeChanged(GeneralSettingsView view, int batchSize) {
-            var settings = simulationSettings;
-            settings.BatchSize = Math.Min(Math.Max(batchSize, 1), settings.PopulationSize);
-            simulationSettings = settings;
-        }
-
-        public void SelectionAlgorithmChanged(GeneralSettingsView view, SelectionAlgorithm algorithm) {
-            var settings = simulationSettings;
-            settings.SelectionAlgorithm = algorithm;
-            simulationSettings = settings;
-        }
-
-        public void RecombinationAlgorithmChanged(GeneralSettingsView view, RecombinationAlgorithm algorithm) {
-            var settings = simulationSettings;
-            settings.RecombinationAlgorithm = algorithm;
-            simulationSettings = settings;
-        }
-
-        public void MutationAlgorithmChanged(GeneralSettingsView view, MutationAlgorithm algorithm) {
-            var settings = simulationSettings;
-            settings.MutationAlgorithm = algorithm;
-            simulationSettings = settings;
-        }
-
-        public void MutationRateChanged(GeneralSettingsView view, float mutationRate) {
-            var settings = simulationSettings;
-            settings.MutationRate = Math.Min(Math.Max(mutationRate, 0), 1);
-            simulationSettings = settings;
-        }
-
-        public void ResetButtonPressed(NetworkSettingsView view) {
-            networkSettings = NeuralNetworkSettings.Default;
         }
 
         // MARK: - IBasicSettingsViewDelegate
@@ -435,8 +312,17 @@ namespace Keiwando.Evolution {
         }
 
         public void PopulationSizeDidChange(int value) {
+            int newPopulationSize = Math.Clamp(value, 2, 1000);
             var settings = simulationSettings;
-            settings.PopulationSize = Math.Max(2, value);
+            settings.PopulationSize = newPopulationSize;
+            settings.BatchSize = Math.Clamp(settings.BatchSize, 1, settings.PopulationSize);
+            simulationSettings = settings;
+        }
+
+        public void SimulationTimeDidChange(int simulationTime) {
+            int newSimulationTime = Math.Clamp(simulationTime, 1, 100000);
+            var settings = simulationSettings;
+            settings.SimulationTime = newSimulationTime;
             simulationSettings = settings;
         }
 

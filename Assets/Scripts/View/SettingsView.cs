@@ -37,6 +37,7 @@ namespace Keiwando.UI {
   public struct SettingControlGroup {
     public string name;
     public SettingControl[] controls;
+    public GameObject anciliaryView;
   }
 
   public class SettingsView: MonoBehaviour {
@@ -103,6 +104,9 @@ namespace Keiwando.UI {
         SettingsTab tab = this.tabs[tabIndex];
         tab.label.SetText(group.name);
         tab.SetSelected(isSelectedTab);
+        if (group.anciliaryView != null) {
+          group.anciliaryView.SetActive(isSelectedTab);
+        }
         for (int controlIndex = 0; controlIndex < group.controls.Length; controlIndex++) {
           SettingControl control = controlGroups[tabIndex].controls[controlIndex];
           AnySettingCell cell = settingCellsPerTab[tabIndex][controlIndex];
@@ -146,6 +150,7 @@ namespace Keiwando.UI {
           this.selectedTabIndex = tabIndex;
           Refresh();
         });
+        tab.gameObject.SetActive(true);
         tabs[i] = tab;
 
         this.settingCellsPerTab[i] = new AnySettingCell[group.controls.Length];

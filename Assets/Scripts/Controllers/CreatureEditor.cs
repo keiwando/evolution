@@ -470,7 +470,6 @@ public class CreatureEditor: MonoBehaviour,
                     creatureBuilder.CancelMove(jointsToMove, decorationsToMove, oldDesign);
                     creatureEdited = false;
                 } else if (!currentClickStartedOverTransformGizmo) {
-                    // DEBUG:
                     if (!isPointerOverUI) {
                         transformGizmo.gameObject.SetActive(false);
                         jointsToMove.Clear();
