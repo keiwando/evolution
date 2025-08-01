@@ -137,6 +137,7 @@ namespace Keiwando.Evolution {
                             simulationSettings = settings;
                         },
                         disabledIf = delegate () { return setupForPauseScreen; },
+                        // TODO: Explain each task here.
                         tooltip = "The task that the creatures are trying to learn." + (setupForPauseScreen ? "\nThis cannot be changed during a simulation." : "")
                     },
                     new SettingControl {

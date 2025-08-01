@@ -203,6 +203,12 @@ namespace Keiwando.UI {
         for (int controlIndex = 0; controlIndex < group.controls.Length; controlIndex++) {
           SettingControl control = group.controls[controlIndex];
           AnySettingCell cell = createSettingCellForControl(control, controlIndex: controlIndex);
+          PointerDownDetector pointerDownDetector = cell.gameObject.GetComponent<PointerDownDetector>();
+          int controlIndexCopy = controlIndex;
+          pointerDownDetector.onPointerDown.AddListener(delegate () {
+            this.selectedControlIndex = controlIndexCopy;
+            Refresh();
+          });
           this.settingCellsPerTab[i][controlIndex] = cell;
         }
       }

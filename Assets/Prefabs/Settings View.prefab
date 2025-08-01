@@ -383,6 +383,7 @@ GameObject:
   m_Component:
   - component: {fileID: 580834256637622239}
   - component: {fileID: 6755477127817595738}
+  - component: {fileID: 5440071134129415709}
   m_Layer: 5
   m_Name: Multiselect Control Cell Template
   m_TagString: Untagged
@@ -407,10 +408,10 @@ RectTransform:
   - {fileID: 5072112322930581704}
   m_Father: {fileID: 6786534419838322610}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 245, y: -190}
-  m_SizeDelta: {x: 490, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6755477127817595738
 MonoBehaviour:
@@ -427,6 +428,21 @@ MonoBehaviour:
   label: {fileID: 8457676935299288063}
   multiselectControl: {fileID: 1364985621944605711}
   selectionHighlight: {fileID: 7487565144957013042}
+--- !u!114 &5440071134129415709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630549379846905869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9596592d34ed644a5a39452c5423c688, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onPointerDown:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &805856206282894434
 GameObject:
   m_ObjectHideFlags: 0
@@ -1624,6 +1640,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7716072536113342007}
   - component: {fileID: 2876527319868394825}
+  - component: {fileID: 2235500097782583118}
   m_Layer: 5
   m_Name: Toggle Control Cell Template
   m_TagString: Untagged
@@ -1648,10 +1665,10 @@ RectTransform:
   - {fileID: 6142541231440772762}
   m_Father: {fileID: 6786534419838322610}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 245, y: -30}
-  m_SizeDelta: {x: 490, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2876527319868394825
 MonoBehaviour:
@@ -1668,6 +1685,21 @@ MonoBehaviour:
   label: {fileID: 1277272396277556607}
   toggle: {fileID: 2944432871889568455}
   selectionHighlight: {fileID: 5288943904175352028}
+--- !u!114 &2235500097782583118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2725315516403293753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9596592d34ed644a5a39452c5423c688, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onPointerDown:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2752929400999837207
 GameObject:
   m_ObjectHideFlags: 0
@@ -4309,6 +4341,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3765854280325288356}
   - component: {fileID: 3502525405541368577}
+  - component: {fileID: 4741246447788454194}
   m_Layer: 5
   m_Name: Slider Control Cell Template
   m_TagString: Untagged
@@ -4334,10 +4367,10 @@ RectTransform:
   - {fileID: 6049418469465253421}
   m_Father: {fileID: 6786534419838322610}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 245, y: -70}
-  m_SizeDelta: {x: 490, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3502525405541368577
 MonoBehaviour:
@@ -4355,6 +4388,21 @@ MonoBehaviour:
   valueLabel: {fileID: 3091277533461593485}
   slider: {fileID: 2028060955265197923}
   selectionHighlight: {fileID: 5805745611742983041}
+--- !u!114 &4741246447788454194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6377905706115410845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9596592d34ed644a5a39452c5423c688, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onPointerDown:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6690644972586838411
 GameObject:
   m_ObjectHideFlags: 0
@@ -5166,6 +5214,7 @@ GameObject:
   m_Component:
   - component: {fileID: 782747128332724098}
   - component: {fileID: 4510671483658618735}
+  - component: {fileID: 8551770157995104416}
   m_Layer: 5
   m_Name: Input Control Cell Template
   m_TagString: Untagged
@@ -5190,10 +5239,10 @@ RectTransform:
   - {fileID: 82741652784086860}
   m_Father: {fileID: 6786534419838322610}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 245, y: -150}
-  m_SizeDelta: {x: 490, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4510671483658618735
 MonoBehaviour:
@@ -5210,6 +5259,21 @@ MonoBehaviour:
   label: {fileID: 2946809540133681882}
   inputField: {fileID: 3542755939717379215}
   selectionHighlight: {fileID: 5849993944867365229}
+--- !u!114 &8551770157995104416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8601768581348691369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9596592d34ed644a5a39452c5423c688, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onPointerDown:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8622550087974908439
 GameObject:
   m_ObjectHideFlags: 0
@@ -5726,10 +5790,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 4060620273868529105}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 135, y: -45.165}
-  m_SizeDelta: {x: 250, y: 70.33}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4521319728654229883
 CanvasRenderer:
@@ -5924,6 +5988,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3978458056472222776}
   - component: {fileID: 8051314421444283233}
+  - component: {fileID: 473210613969323496}
   m_Layer: 5
   m_Name: Button Control Cell Template
   m_TagString: Untagged
@@ -5948,10 +6013,10 @@ RectTransform:
   - {fileID: 9148671989379266228}
   m_Father: {fileID: 6786534419838322610}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 245, y: -110}
-  m_SizeDelta: {x: 490, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8051314421444283233
 MonoBehaviour:
@@ -5969,6 +6034,21 @@ MonoBehaviour:
   button: {fileID: 3533800925554043484}
   buttonLabel: {fileID: 38892013636405147}
   selectionHighlight: {fileID: 2159336738069038715}
+--- !u!114 &473210613969323496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9089131666929438132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9596592d34ed644a5a39452c5423c688, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onPointerDown:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &9219550056393283681
 GameObject:
   m_ObjectHideFlags: 0
