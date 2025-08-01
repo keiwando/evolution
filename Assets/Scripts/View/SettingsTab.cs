@@ -11,6 +11,7 @@ namespace Keiwando.UI {
     private static Color selectedTextColor = new Color(0.2f, 0.2f, 0.2f);
     private static Color defaultTextColor = new Color(0.86f, 0.86f, 0.86f);
 
+    public Button button;
     public TMP_Text label;
     public Image backgroundImage;
 

@@ -9,6 +9,9 @@ namespace Keiwando.Evolution.UI {
 
     public class SettingsViewController: MonoBehaviour {
 
+        [SerializeField] private SettingsView settingsView;
+
+        // TODO: Remove
         [SerializeField] private GeneralSettingsView generalSettingsView;
         [SerializeField] private NetworkSettingsView networkSettingsView;
 
@@ -30,6 +33,8 @@ namespace Keiwando.Evolution.UI {
             settingsManager.grid = grid;
             generalSettingsView.Delegate = settingsManager;
             networkSettingsView.Delegate = settingsManager;
+
+            settingsManager.Setup(settingsView, setupForPauseScreen: false);
             
             closeButton.onClick.AddListener(delegate () {
                 Hide();

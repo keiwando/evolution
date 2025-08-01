@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
@@ -10,6 +11,8 @@ namespace Keiwando.UI {
   }
 
   public class MultiselectControl: MonoBehaviour {
+
+    public UnityEvent<int> onCurrentIndexChanged = new UnityEvent<int>();
 
     public MultiselectControlItem[] items;
 
@@ -22,11 +25,16 @@ namespace Keiwando.UI {
       get { return currentIndex; }
       set {
         int itemCount = items != null ? items.Length : 0;
+        int oldValue = currentIndex;
         currentIndex = Mathf.Clamp(value, 0, itemCount);
+        if (oldValue != currentIndex && notifyAboutIndexChange) {
+          onCurrentIndexChanged.Invoke(currentIndex);
+        }
         Refresh();
       }
     }
     private int currentIndex = 0;
+    private bool notifyAboutIndexChange = true;
 
     void Start() {
 
@@ -49,6 +57,12 @@ namespace Keiwando.UI {
       } else {
         label.SetText("");
       }
+    }
+
+    public void SetCurrentIndexWithoutNotify(int index) {
+      notifyAboutIndexChange = false;
+      CurrentIndex = index;
+      notifyAboutIndexChange = true;
     }
 
     private void ChangeIndex(int offset) {

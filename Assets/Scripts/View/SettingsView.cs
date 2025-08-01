@@ -13,18 +13,23 @@ namespace Keiwando.UI {
     Multiselect
   }
 
+  // TODO: Add ability to disable controls based on callback (e.g. batch size input)
   public struct SettingControl {
     public SettingControlType type;
     public string name;
-    public bool toggleValue;
+    public Func<bool> toggleValue;
     public Action<bool> onToggleValueChanged;
-    public float sliderValue;
+    public float sliderMinValue;
+    public float sliderMaxValue;
+    public Func<float> sliderValue;
+    public Func<string> sliderFormattedValue;
     public Action<float> onSliderValueChanged;
-    public string inputValue;
+    public Action onButtonPressed;
+    public Func<string> inputValue;
     public Action<string> onInputValueChanged;
     public string[] multiselectNames;
+    public Func<int> multiselectSelectedIndex;
     public Action<int> onMultiselectIndexChanged;
-    public int multiselectSelectedIndex;
 
     public string tooltip;
   }
@@ -79,6 +84,8 @@ namespace Keiwando.UI {
 
     void Start() {
 
+      tabTemplate.gameObject.SetActive(false);
+
       toggleCellTemplate.gameObject.SetActive(false);
       sliderCellTemplate.gameObject.SetActive(false);
       buttonCellTemplate.gameObject.SetActive(false);
@@ -92,10 +99,32 @@ namespace Keiwando.UI {
       }
       for (int tabIndex = 0; tabIndex < this.tabs.Length; tabIndex++) {
         bool isSelectedTab = tabIndex == selectedTabIndex;
+        SettingControlGroup group = controlGroups[tabIndex];
         SettingsTab tab = this.tabs[tabIndex];
+        tab.label.SetText(group.name);
         tab.SetSelected(isSelectedTab);
-        foreach (AnySettingCell cell in settingCellsPerTab[tabIndex]) {
+        for (int controlIndex = 0; controlIndex < group.controls.Length; controlIndex++) {
+          SettingControl control = controlGroups[tabIndex].controls[controlIndex];
+          AnySettingCell cell = settingCellsPerTab[tabIndex][controlIndex];
           cell.gameObject.SetActive(isSelectedTab);
+
+          switch (cell.type) {
+            case SettingControlType.Toggle:
+              cell.toggleControl.toggle.SetIsOnWithoutNotify(control.toggleValue());
+              break;
+            case SettingControlType.Slider:
+              cell.sliderControl.slider.SetValueWithoutNotify(control.sliderValue());
+              cell.sliderControl.valueLabel.SetText(control.sliderFormattedValue());
+              break;
+            case SettingControlType.Input:
+              cell.inputControl.inputField.SetTextWithoutNotify(control.inputValue());
+              break;
+            case SettingControlType.Multiselect:
+              cell.multiselectControl.multiselectControl.SetCurrentIndexWithoutNotify(control.multiselectSelectedIndex());
+              break;
+            default:
+              break;
+          }
         }
       }
     }
@@ -112,6 +141,11 @@ namespace Keiwando.UI {
       for (int i = 0; i < controlGroups.Length; i++) {
         SettingControlGroup group = controlGroups[i];
         SettingsTab tab = Instantiate(tabTemplate.gameObject, tabTemplate.transform.parent).GetComponent<SettingsTab>();
+        int tabIndex = i; // Must copy to not capture a reference to i
+        tab.button.onClick.AddListener(delegate () {
+          this.selectedTabIndex = tabIndex;
+          Refresh();
+        });
         tabs[i] = tab;
 
         this.settingCellsPerTab[i] = new AnySettingCell[group.controls.Length];
@@ -137,31 +171,34 @@ namespace Keiwando.UI {
             }
             Refresh();
           });
-          return new AnySettingCell { toggleControl = cell };
+          return new AnySettingCell { type = control.type, toggleControl = cell };
         }
         case SettingControlType.Slider: {
           SettingsSliderControlCell cell = Instantiate(sliderCellTemplate.gameObject, sliderCellTemplate.transform.parent).GetComponent<SettingsSliderControlCell>();
           cell.gameObject.SetActive(false);
           cell.label.SetText(control.name);
+          cell.slider.minValue = control.sliderMinValue;
+          cell.slider.maxValue = control.sliderMaxValue;
           cell.slider.onValueChanged.AddListener(delegate (float value) {
             if (control.onSliderValueChanged != null) {
               control.onSliderValueChanged(value);
             }
             Refresh();
           });
-          return new AnySettingCell { sliderControl = cell };
+          return new AnySettingCell { type = control.type, sliderControl = cell };
         }
         case SettingControlType.Button: {
           SettingsButtonControlCell cell = Instantiate(buttonCellTemplate.gameObject, buttonCellTemplate.transform.parent).GetComponent<SettingsButtonControlCell>();
           cell.gameObject.SetActive(false);
           cell.label.SetText(control.name);
+          cell.buttonLabel.SetText(control.name);
           cell.button.onClick.AddListener(delegate () {
-            if (control.onInputValueChanged != null) {
-              control.onInputValueChanged(control.inputValue);
+            if (control.onButtonPressed != null) {
+              control.onButtonPressed();
             }
             Refresh();
           });
-          return new AnySettingCell { buttonControl = cell };
+          return new AnySettingCell { type = control.type, buttonControl = cell };
         }
         case SettingControlType.Input: {
           SettingsInputControlCell cell = Instantiate(inputCellTemplate.gameObject, inputCellTemplate.transform.parent).GetComponent<SettingsInputControlCell>();
@@ -173,7 +210,7 @@ namespace Keiwando.UI {
             }
             Refresh();
           });
-          return new AnySettingCell { inputControl = cell };
+          return new AnySettingCell { type = control.type, inputControl = cell };
         }
         case SettingControlType.Multiselect: {
           SettingsMultiselectControlCell cell = Instantiate(multiselectCellTemplate.gameObject, multiselectCellTemplate.transform.parent).GetComponent<SettingsMultiselectControlCell>();
@@ -183,8 +220,13 @@ namespace Keiwando.UI {
           for (int i = 0; i < control.multiselectNames.Length; i++) {
             cell.multiselectControl.items[i] = new MultiselectControlItem { Name = control.multiselectNames[i] };
           }
-          cell.multiselectControl.CurrentIndex = control.multiselectSelectedIndex;
-          return new AnySettingCell { multiselectControl = cell };
+          cell.multiselectControl.CurrentIndex = control.multiselectSelectedIndex();
+          cell.multiselectControl.onCurrentIndexChanged.AddListener(delegate (int currentIndex) {
+            if (control.onMultiselectIndexChanged != null) {
+              control.onMultiselectIndexChanged(currentIndex);
+            }
+          });
+          return new AnySettingCell { type = control.type, multiselectControl = cell };
         }
         default:
           Debug.LogError("Unknown settings control type");

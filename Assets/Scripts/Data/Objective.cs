@@ -12,6 +12,25 @@ static class ObjectiveUtil {
 
 	public const Objective LAST_OBJECTIVE = Objective.Flying;
 
+	public static Objective[] ALL_OBJECTIVES = new Objective[] {
+		Objective.Running,
+		Objective.Jumping,
+		Objective.ObstacleJump,
+		Objective.Climbing,
+		Objective.Flying
+	};
+
+	private static string[] ALL_OBJECTIVE_NAMES;
+	public static string[] GetAllObjectiveNames() {
+		if (ALL_OBJECTIVE_NAMES == null) {
+			ALL_OBJECTIVE_NAMES = new string[ALL_OBJECTIVES.Length];
+			for (int i = 0; i < ALL_OBJECTIVES.Length; i++) {
+				ALL_OBJECTIVE_NAMES[i] = StringRepresentation(ALL_OBJECTIVES[i]);
+			}
+		}
+		return ALL_OBJECTIVE_NAMES;
+	}
+
 	public static Objective ObjectiveForNumber(int n) {
 		switch(n) {
 		case 0: return Objective.Running; 
