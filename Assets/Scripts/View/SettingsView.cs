@@ -13,7 +13,6 @@ namespace Keiwando.UI {
     Multiselect
   }
 
-  // TODO: Add ability to disable controls based on callback (e.g. batch size input)
   public struct SettingControl {
     public SettingControlType type;
     public string name;
@@ -30,6 +29,8 @@ namespace Keiwando.UI {
     public string[] multiselectNames;
     public Func<int> multiselectSelectedIndex;
     public Action<int> onMultiselectIndexChanged;
+
+    public Func<bool> disabledIf;
 
     public string tooltip;
   }
@@ -112,19 +113,31 @@ namespace Keiwando.UI {
           AnySettingCell cell = settingCellsPerTab[tabIndex][controlIndex];
           cell.gameObject.SetActive(isSelectedTab);
 
+          bool disabled = false;
+          if (control.disabledIf != null) {
+            disabled = control.disabledIf();
+          } 
+
           switch (cell.type) {
             case SettingControlType.Toggle:
               cell.toggleControl.toggle.SetIsOnWithoutNotify(control.toggleValue());
+              cell.toggleControl.toggle.interactable = !disabled;
               break;
             case SettingControlType.Slider:
               cell.sliderControl.slider.SetValueWithoutNotify(control.sliderValue());
               cell.sliderControl.valueLabel.SetText(control.sliderFormattedValue());
+              cell.sliderControl.slider.interactable = !disabled;
+              break;
+            case SettingControlType.Button:
+              cell.buttonControl.button.interactable = !disabled;
               break;
             case SettingControlType.Input:
               cell.inputControl.inputField.SetTextWithoutNotify(control.inputValue());
+              cell.inputControl.inputField.interactable = !disabled;
               break;
             case SettingControlType.Multiselect:
               cell.multiselectControl.multiselectControl.SetCurrentIndexWithoutNotify(control.multiselectSelectedIndex());
+              cell.multiselectControl.multiselectControl.interactable = !disabled;
               break;
             default:
               break;

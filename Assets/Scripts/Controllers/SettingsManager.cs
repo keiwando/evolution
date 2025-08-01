@@ -47,6 +47,8 @@ namespace Keiwando.Evolution {
             int tabCount = setupForPauseScreen ? 3 : 4;
             settingsView.controlGroups = new SettingControlGroup[tabCount];
 
+            neuralNetworkUIManager.networkIsEditable = !setupForPauseScreen;
+
             int nextTabIndex = 0;
             if (!setupForPauseScreen) {
                 settingsView.controlGroups[nextTabIndex] = new SettingControlGroup {
@@ -128,7 +130,8 @@ namespace Keiwando.Evolution {
                             var settings = simulationSettings;
                             settings.Objective = ObjectiveUtil.ALL_OBJECTIVES[index];
                             simulationSettings = settings;
-                        }
+                        },
+                        disabledIf = delegate () { return setupForPauseScreen; }
                     },
                     new SettingControl {
                         type = SettingControlType.Toggle,
@@ -162,7 +165,8 @@ namespace Keiwando.Evolution {
                                 settings.BatchSize = newBatchSize;
                                 simulationSettings = settings;
                             }
-                        }
+                        },
+                        disabledIf = delegate () { return !simulationSettings.SimulateInBatches; }
                     },
                     new SettingControl {
                         type = SettingControlType.Multiselect,
@@ -221,7 +225,9 @@ namespace Keiwando.Evolution {
                         name = "Reset",
                         onButtonPressed = delegate () {
                             simulationSettings = SimulationSettings.Default;
-                        }
+                        },
+                        // Disabled so you don't change the objective with it.
+                        disabledIf = delegate () { return setupForPauseScreen; }
                     }
                 }
             };
@@ -260,7 +266,8 @@ namespace Keiwando.Evolution {
                                     neuralNetworkUIManager.Refresh();
                                 }
                             }
-                        }
+                        },
+                        disabledIf = delegate () { return setupForPauseScreen; }
                     },
                     new SettingControl {
                         type = SettingControlType.Button,
@@ -269,7 +276,8 @@ namespace Keiwando.Evolution {
                             networkSettings = NeuralNetworkSettings.Default;
                             
                             neuralNetworkUIManager.Refresh();
-                        }
+                        },
+                        disabledIf = delegate () { return setupForPauseScreen; }
                     }
                 },
                 anciliaryView = neuralNetworkUIManager.neuralNetworkUIRootContainer

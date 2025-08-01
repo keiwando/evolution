@@ -20,6 +20,7 @@ namespace Keiwando.UI {
     [SerializeField] private Button nextButton;
     [SerializeField] private Button textCoverButton;
     [SerializeField] private TMP_Text label;
+    [SerializeField] private CanvasGroup canvasGroup;
 
     public int CurrentIndex { 
       get { return currentIndex; }
@@ -36,15 +37,27 @@ namespace Keiwando.UI {
     private int currentIndex = 0;
     private bool notifyAboutIndexChange = true;
 
+    public bool interactable {
+      get { return _interactable; }
+      set { 
+        _interactable = value;
+        canvasGroup.alpha = _interactable ? 1.0f : 0.5f;
+      }
+    }
+    private bool _interactable = true;
+
     void Start() {
 
       previousButton.onClick.AddListener(delegate () {
+        if (!interactable) { return; }
         ChangeIndex(-1);
       });
       nextButton.onClick.AddListener(delegate () {
+        if (!interactable) { return; }
         ChangeIndex(1);
       });
       textCoverButton.onClick.AddListener(delegate () {
+        if (!interactable) { return; }
         ChangeIndex(1);
       });
 

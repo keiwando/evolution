@@ -22,6 +22,8 @@ public class NeuralNetworkSettingsUIManager : MonoBehaviour {
 
 	private bool needsRefresh = false;
 
+	public bool networkIsEditable = true;
+
 	void Start() {
 
 		#if UNITY_WEBGL
@@ -88,6 +90,7 @@ public class NeuralNetworkSettingsUIManager : MonoBehaviour {
 
 		input.transform.SetParent(transform, false);
 		input.transform.localPosition = position;
+		input.interactable = networkIsEditable;
 
 		return input;
 	}
@@ -110,6 +113,9 @@ public class NeuralNetworkSettingsUIManager : MonoBehaviour {
 	} 
 
 	private void SaveNewSettings(NeuralNetworkSettings settings) {
+		if (!networkIsEditable) {
+			return;
+		}
 		EditorStateManager.NetworkSettings = settings;
 	}
 

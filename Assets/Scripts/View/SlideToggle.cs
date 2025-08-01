@@ -61,7 +61,7 @@ public class SlideToggle : MonoBehaviour {
     if (currentAnimation != null) {
       StopCoroutine(currentAnimation);
     }
-    if (animateChanges && animationsEnabled) {
+    if (animateChanges && animationsEnabled && Time.deltaTime != 0) {
       currentAnimation = StartCoroutine(AnimateToggle(isOn));
     } else {
       SetHandlePosition(isOn, handle.rectTransform.anchoredPosition.x, 1f);
