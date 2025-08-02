@@ -54,7 +54,6 @@ Shader "Hidden/Dof/DX11Dof"
 		float4 misc : TEXCOORD2;
 	};	
 
-	// TODO: activate border clamp tex sampler state instead?
 	inline float4 clampBorderColor(float2 uv)
 	{
 #if 1

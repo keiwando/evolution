@@ -296,7 +296,6 @@
 
 		float4 centerTap = tex2D(_MainTex, UnityStereoScreenSpaceUVAdjust(i.uv1.xy, _MainTex_ST));
 
-		// TODO: important ? breaks when HR blur is being used
 		//centerTap.a = max(centerTap.a, 0.1f);
 
 		float sampleCount =  centerTap.a;

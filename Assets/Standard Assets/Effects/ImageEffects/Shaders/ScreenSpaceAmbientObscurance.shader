@@ -228,7 +228,6 @@ Shader "Hidden/ScreenSpaceAmbientObscurance"
 			int2 ssCInt = ssC.xy * _MainTex_TexelSize.zw;
 			randomPatternRotationAngle = frac(sin(dot(i.uv, float2(12.9898, 78.233))) * 43758.5453) * 1000.0;
 		#else
-			// TODO: make dx9 rand better
 			randomPatternRotationAngle = tex2D(_Rand, i.uv*12.0).x * 1000.0;
 		#endif
 
