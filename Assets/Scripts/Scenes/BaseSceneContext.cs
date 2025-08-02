@@ -105,9 +105,9 @@ namespace Keiwando.Evolution.Scenes {
           return stats.horizontalDistanceTravelled;
         case Objective.ObstacleJump:
         case Objective.Climbing:
-        case Objective.Flying:
           return stats.verticalDistanceTravelled;
         case Objective.Jumping:
+        case Objective.Flying:
           return stats.maxJumpingHeight;
       }
       return stats.horizontalDistanceTravelled;

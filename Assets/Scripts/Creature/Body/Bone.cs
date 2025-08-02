@@ -56,6 +56,9 @@ public class Bone : BodyComponent {
 		bone.wingSpriteRenderer = bone.GetComponentInChildren<SpriteRenderer>();
 
 		bone.UpdateFeatherVisibility();
+		// Note: We have to make sure that the local scale is already correct here and not just
+		// deferred until the Fixed Update, so that attached decorations get placed correctly immediately.
+		bone.UpdateLocalScale();
 
 		return bone;
 	}
@@ -63,12 +66,7 @@ public class Bone : BodyComponent {
 	public void FixedUpdate() {
 
 		UpdateFeatherVisibility();
-
-		if (BoneData.inverted != (transform.localScale.x < 0f)) {
-			var scale = transform.localScale;
-			scale.x *= -1f;
-			transform.localScale = scale;
-		}
+		UpdateLocalScale();
 
 		if (!BoneData.isWing) { 
 			return; 
@@ -92,6 +90,14 @@ public class Bone : BodyComponent {
 		// Debug.DrawRay(transform.position, transform.TransformDirection(-0.1f * forceVec), Color.green, 0, false);
 
 		// Debug.Log("velocity.magnitude: " + localBoneVelocity.magnitude + " localAngle: " + localAngle + " angleFactor: " + angleFactor + " force: " + force);
+	}
+
+	private void UpdateLocalScale() {
+		if (BoneData.inverted != (transform.localScale.x < 0f)) {
+			var scale = transform.localScale;
+			scale.x *= -1f;
+			transform.localScale = scale;
+		}
 	}
 
 	private void UpdateFeatherVisibility() {
@@ -120,6 +126,9 @@ public class Bone : BodyComponent {
 		Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
 		Vector3 position = start + (offset / 2.0f);
 
+		if (BoneData.inverted) {
+			scale.x *= -1f;
+		}
 
 		transform.position = position;
 		transform.up = offset;
