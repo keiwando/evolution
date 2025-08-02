@@ -38,8 +38,6 @@ namespace Keiwando.Evolution {
 		}
 		private bool autoplayEnabled;
 
-		public int AutoplayDuration { get; set; }
-
 		private Coroutine autoplayRoutine;
 		private Coroutine playbackRoutine;
 
@@ -55,12 +53,7 @@ namespace Keiwando.Evolution {
 			evolution = FindAnyObjectByType<Evolution>();
 			evolution.BestCreaturesController = this;
 
-			AutoplayDuration = 10;
 			AutoplayEnabled = true;
-
-			evolution.InitializationDidEnd += delegate () {
-				AutoplayDuration = evolution.Settings.SimulationTime;
-			};
 
 			evolution.NewGenerationDidBegin += delegate () {
 				if (CurrentBest == null && GenerationHasBeenSimulated(1)) {
@@ -139,7 +132,8 @@ namespace Keiwando.Evolution {
 			if (this.CurrentBest == null) return;
 			if (!AutoplayEnabled) return;
 
-			autoplayRoutine = StartCoroutine(ShowNextGenerationAfterTime(AutoplayDuration));
+			float autoplayDuration = evolution.Settings.SimulationTime;
+			autoplayRoutine = StartCoroutine(ShowNextGenerationAfterTime(autoplayDuration));
 		}
 
 		private IEnumerator ShowNextGenerationAfterTime(float time) {

@@ -224,10 +224,6 @@ public class SimulationViewController : MonoBehaviour,
 		bestCreatureController.AutoplayEnabled = enabled;
 	}
 
-  public void DidChangeAutoplayDuration(BestCreaturesOverlayView view, int duration) {
-		bestCreatureController.AutoplayDuration = duration;
-	}
-
   public void DidClickOnPipView(BestCreaturesOverlayView view) {
 		visibleScreen = VisibleScreen.Simulation;
 		Refresh();
@@ -235,10 +231,6 @@ public class SimulationViewController : MonoBehaviour,
     
   public bool IsAutoplayEnabled(BestCreaturesOverlayView view) {
 		return bestCreatureController.AutoplayEnabled;
-	}
-
-  public int GetAutoplayDuration(BestCreaturesOverlayView view) {
-		return bestCreatureController.AutoplayDuration;
 	}
 	
   public int GetCurrentSimulationGeneration(BestCreaturesOverlayView view) {

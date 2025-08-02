@@ -3,16 +3,15 @@ using System.Collections;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public interface IBestCreaturesOverlayViewDelegate {
 
     void SelectedGeneration(BestCreaturesOverlayView view, int generation);
     void DidChangeAutoplayEnabled(BestCreaturesOverlayView view, bool enabled);
-    void DidChangeAutoplayDuration(BestCreaturesOverlayView view, int duration);
     void DidClickOnPipView(BestCreaturesOverlayView view);
     
     bool IsAutoplayEnabled(BestCreaturesOverlayView view);
-    int GetAutoplayDuration(BestCreaturesOverlayView view);
     
     int GetCurrentSimulationGeneration(BestCreaturesOverlayView view);
     int GetGenerationOfCurrentBest(BestCreaturesOverlayView view);
@@ -40,12 +39,6 @@ public class BestCreaturesOverlayView: MonoBehaviour {
 
     [SerializeField]
     private Toggle autoplayToggle;
-    [SerializeField]
-    private GameObject autoplaySettingsContainer;
-    [SerializeField]
-    private Slider autoplayDurationSlider;
-    [SerializeField]
-    private Text autoplayDurationLabel;
 
     [SerializeField]
     private Text errorLabel;
@@ -89,12 +82,6 @@ public class BestCreaturesOverlayView: MonoBehaviour {
             Refresh();
         });
 
-        autoplayDurationSlider.onValueChanged.AddListener(delegate (float value) {
-            int newDuration = Math.Max(2, (int)value);
-            Delegate.DidChangeAutoplayDuration(this, newDuration);
-            RefreshAutoplayDurationLabel();
-        });
-
         pipButton.onClick.AddListener(delegate () {
             Delegate.DidClickOnPipView(this);
         });
@@ -109,13 +96,6 @@ public class BestCreaturesOverlayView: MonoBehaviour {
         RefreshStats();
 
         autoplayToggle.isOn = Delegate.IsAutoplayEnabled(this);
-        autoplaySettingsContainer.SetActive(autoplayToggle.isOn);
-        autoplayDurationSlider.value = (float)Delegate.GetAutoplayDuration(this);
-        RefreshAutoplayDurationLabel();
-    }
-
-    private void RefreshAutoplayDurationLabel() {
-        autoplayDurationLabel.text = string.Format("Duration {0}s", Delegate.GetAutoplayDuration(this));
     }
 
     public static string CreateStatsString(
