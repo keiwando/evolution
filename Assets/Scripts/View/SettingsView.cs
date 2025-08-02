@@ -10,7 +10,8 @@ namespace Keiwando.UI {
     Slider,
     Button,
     Input,
-    Multiselect
+    Multiselect,
+    Label
   }
 
   public struct SettingControl {
@@ -51,6 +52,7 @@ namespace Keiwando.UI {
     [SerializeField] private SettingsButtonControlCell buttonCellTemplate;
     [SerializeField] private SettingsInputControlCell inputCellTemplate;
     [SerializeField] private SettingsMultiselectControlCell multiselectCellTemplate;
+    [SerializeField] private SettingsLabelControlCell labelCellTemplate;
     [SerializeField] private TMP_Text tooltipTextLabel;
 
     private SettingsTab[] tabs;
@@ -65,6 +67,7 @@ namespace Keiwando.UI {
       public SettingsButtonControlCell buttonControl;
       public SettingsInputControlCell inputControl;
       public SettingsMultiselectControlCell multiselectControl;
+      public SettingsLabelControlCell labelControl;
 
       public GameObject gameObject {
         get { 
@@ -79,6 +82,8 @@ namespace Keiwando.UI {
               return inputControl.gameObject;
             case SettingControlType.Multiselect:
               return multiselectControl.gameObject;
+            case SettingControlType.Label:
+              return labelControl.gameObject;
             default:
               return null;
           }
@@ -97,6 +102,8 @@ namespace Keiwando.UI {
               return inputControl.selectionHighlight;
             case SettingControlType.Multiselect:
               return multiselectControl.selectionHighlight;
+            case SettingControlType.Label:
+              return labelControl.selectionHighlight;
             default:
               return null;
           }
@@ -114,6 +121,7 @@ namespace Keiwando.UI {
       buttonCellTemplate.gameObject.SetActive(false);
       inputCellTemplate.gameObject.SetActive(false);
       multiselectCellTemplate.gameObject.SetActive(false);
+      labelCellTemplate.gameObject.SetActive(false);
     }
 
     public void Refresh() {
@@ -290,6 +298,12 @@ namespace Keiwando.UI {
             Refresh();
           });
           return new AnySettingCell { type = control.type, multiselectControl = cell };
+        }
+        case SettingControlType.Label: {
+          SettingsLabelControlCell cell = Instantiate(labelCellTemplate.gameObject, labelCellTemplate.transform.parent).GetComponent<SettingsLabelControlCell>();
+          cell.gameObject.SetActive(false);
+          cell.label.SetText(control.name);
+          return new AnySettingCell { type = control.type, labelControl = cell };
         }
         default:
           Debug.LogError("Unknown settings control type");

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using Keiwando.UI;
 using Keiwando.Evolution.UI;
+using System.Configuration;
 
 namespace Keiwando.Evolution {
 
@@ -63,7 +65,7 @@ namespace Keiwando.Evolution {
                                 settings.GridEnabled = isOn;
                                 editorSettings = settings;
                             },
-                            tooltip = "When enabled, joints can only be placed on a fixed grid in the creature."
+                            tooltip = SettingsTooltips.GRID
                         },
                         new SettingControl {
                             type = SettingControlType.Slider,
@@ -80,7 +82,7 @@ namespace Keiwando.Evolution {
                                 settings.GridSize = Math.Clamp(value, min: EditorSettings.MIN_GRID_SIZE, max: EditorSettings.MAX_GRID_SIZE);
                                 editorSettings = settings;
                             },
-                            tooltip = "Controls how fine the grid in the creature editor should be."
+                            tooltip = SettingsTooltips.GRID_SIZE
                         },
                         new SettingControl {
                             type = SettingControlType.Button,
@@ -88,7 +90,7 @@ namespace Keiwando.Evolution {
                             onButtonPressed = delegate () {
                                 editorSettings = EditorSettings.Default;
                             },
-                            tooltip = "Resets all editor settings"
+                            tooltip = SettingsTooltips.EDITOR_RESET
                         }
                     }
                 };
@@ -108,7 +110,7 @@ namespace Keiwando.Evolution {
                                 PopulationSizeDidChange(newPopulationSize);
                             }
                         },
-                        tooltip = "The number of creatures to simulate in each generation."
+                        tooltip = SettingsTooltips.POPULATION_SIZE
                     },
                     new SettingControl {
                         type = SettingControlType.Input,
@@ -120,7 +122,7 @@ namespace Keiwando.Evolution {
                                 SimulationTimeDidChange(newSimulationTime);
                             }
                         },
-                        tooltip = "The number of seconds to simulate each creature."
+                        tooltip = SettingsTooltips.SIMULATION_TIME
                     },
                     new SettingControl {
                         type = SettingControlType.Multiselect,
@@ -137,8 +139,7 @@ namespace Keiwando.Evolution {
                             simulationSettings = settings;
                         },
                         disabledIf = delegate () { return setupForPauseScreen; },
-                        // TODO: Explain each task here.
-                        tooltip = "The task that the creatures are trying to learn." + (setupForPauseScreen ? "\nThis cannot be changed during a simulation." : "")
+                        tooltip = SettingsTooltips.TASK + (setupForPauseScreen ? "\nThis cannot be changed during a simulation." : "")
                     },
                     new SettingControl {
                         type = SettingControlType.Toggle,
@@ -149,7 +150,7 @@ namespace Keiwando.Evolution {
                             settings.KeepBestCreatures = isOn;
                             simulationSettings = settings;
                         },
-                        tooltip = "When this option is enabled, the two best creatures of a simulation run are copied to the next generation without any modifications (no recombination or mutation)."
+                        tooltip = SettingsTooltips.KEEP_BEST_CREATURES
                     },
                     new SettingControl {
                         type = SettingControlType.Toggle,
@@ -160,7 +161,7 @@ namespace Keiwando.Evolution {
                             settings.SimulateInBatches = isOn;
                             simulationSettings = settings;
                         },
-                        tooltip = "Instead of simulating all of the creatures of one generation at once, you have the option to simulate them in smaller batches. This will be easier on the CPU but it will also take a longer amount of time to finish simulating each generation."
+                        tooltip = SettingsTooltips.SIMULATE_IN_BATCHES
                     },
                     new SettingControl {
                         type = SettingControlType.Input,
@@ -176,7 +177,7 @@ namespace Keiwando.Evolution {
                             }
                         },
                         disabledIf = delegate () { return !simulationSettings.SimulateInBatches; },
-                        tooltip = "The number of creatures of the same generation to simulate at once."
+                        tooltip = SettingsTooltips.BATCH_SIZE
                     },
                     new SettingControl {
                         type = SettingControlType.Multiselect,
@@ -190,34 +191,7 @@ namespace Keiwando.Evolution {
                             settings.SelectionAlgorithm = ALL_SELECTION_ALGORITHMS[index];
                             simulationSettings = settings;
                         },
-                        tooltip = @"
-<size=20><b>Selection Algorithm</b></size>
-
-
-Defines how creatures are selected for survival and reproduction.
-
-
-<b>Uniform</b>
-
-Every creature has the same chances of being selected.
-
-
-<b>Fitness Proportional</b>
-
-The selection probability is proportional to the fitness of the creature.
-
-
-<b>Rank
-Proportional</b>
-
-The selection probability is proportional to the rank of the fitness of the creature.
-
-
-<b>Tournament</b>
-
-Chooses
-a group of creatures uniformly at random and then selects the best one of that group.
-"
+                        tooltip = SettingsTooltips.SELECTION_ALGORITHM
                     },
                     new SettingControl {
                         type = SettingControlType.Multiselect,
@@ -231,27 +205,7 @@ a group of creatures uniformly at random and then selects the best one of that g
                             settings.RecombinationAlgorithm = ALL_RECOMBINATION_ALGORITHMS[index];
                             simulationSettings = settings;
                         },
-                        tooltip = @"
-<size=20><b>Recombination Algorithm</b></size>
-
-
-Defines how two parent chromosomes are recombined into one offspring.
-
-
-<b>One Point</b>
-
-Cuts the parent chromosomes at the same random index and uses one part from each parent.
-
-
-<b>Multi Point</b>
-
-Cuts the parent chromosomes at multiple random indices and alternatingly chooses parts from the parent chromosomes.
-
-
-<b>Uniform</b>
-
-Chooses each bit at random from either parent chromosome.
-"
+                        tooltip = SettingsTooltips.RECOMBINATION_ALGORITHM
                     },
                     new SettingControl {
                         type = SettingControlType.Multiselect,
@@ -265,26 +219,7 @@ Chooses each bit at random from either parent chromosome.
                             settings.MutationAlgorithm = ALL_MUTATION_ALGORITHMS[index];
                             simulationSettings = settings;
                         },
-                        tooltip = @"
-<size=20><b>Mutation Algorithm</b></size>
-
-Defines how random changes are applied to offspring chromosomes.
-
-
-<b>Chunk</b>
-
-Changes a random number of consecutive values in the chromosome.
-
-
-<b>Global</b>
-
-Changes the value at each index with a random probability.
-
-
-<b>Inversion</b>
-
-Chooses a random start and end index and inverts the order of values inbetween.'                        
-"
+                        tooltip = SettingsTooltips.MUTATION_ALGORITHM
                     },
                     new SettingControl {
                         type = SettingControlType.Slider,
@@ -298,7 +233,7 @@ Chooses a random start and end index and inverts the order of values inbetween.'
                             settings.MutationRate = Math.Clamp(value, 0f, 1f);
                             simulationSettings = settings;
                         },
-                        tooltip = "The probability for each offspring to receive any amount of random mutation."
+                        tooltip = SettingsTooltips.MUTATION_RATE
                     },
                     new SettingControl {
                         type = SettingControlType.Button,
@@ -308,7 +243,7 @@ Chooses a random start and end index and inverts the order of values inbetween.'
                         },
                         // Disabled so you don't change the objective with it.
                         disabledIf = delegate () { return setupForPauseScreen; },
-                        tooltip = "Resets all simulation settings to their default values."
+                        tooltip = SettingsTooltips.SIMULATION_RESET
                     }
                 }
             };
@@ -349,7 +284,7 @@ Chooses a random start and end index and inverts the order of values inbetween.'
                             }
                         },
                         disabledIf = delegate () { return setupForPauseScreen; },
-                        tooltip = "The total number of layers in the neural network that controls the creature's muscles." + (setupForPauseScreen ? "\nThis cannot be changed during a simulation." : "")
+                        tooltip = SettingsTooltips.NETWORK_NUMBER_OF_LAYERS + (setupForPauseScreen ? "\nThis cannot be changed during a simulation." : "")
                     },
                     new SettingControl {
                         type = SettingControlType.Button,
@@ -360,29 +295,53 @@ Chooses a random start and end index and inverts the order of values inbetween.'
                             neuralNetworkUIManager.Refresh();
                         },
                         disabledIf = delegate () { return setupForPauseScreen; },
-                        tooltip = "Resets the neural network to its default state."
+                        tooltip = SettingsTooltips.NETWORK_RESET
                     }
                 },
                 anciliaryView = neuralNetworkUIManager.neuralNetworkUIRootContainer
             };
 
-            // TODO: Add credits tab
-            settingsView.controlGroups[nextTabIndex++] = new SettingControlGroup {
+            bool showQuitButton = false;
+            #if UNITY_WINDOWS || UNITY_MACOS || UNITY_EDITOR
+            showQuitButton = true;
+            #endif
+            SettingControl[] aboutSettingsControls = new SettingControl[showQuitButton ? 5 : 4];
+            aboutSettingsControls[0] = new SettingControl {
+                type = SettingControlType.Label,
                 name = "Credits",
-                controls = new SettingControl[] {
-                    new SettingControl {
-                        type = SettingControlType.Button,
-                        name = "Credits"
-                        // TODO: Add tooltip
+                tooltip = SettingsTooltips.CREDITS
+            };
+            aboutSettingsControls[1] = new SettingControl {
+                type = SettingControlType.Label,
+                name = "Version",
+                tooltip = string.Format("<size=24>{0}</size>", Application.version.ToString())
+            };
+            aboutSettingsControls[2] = new SettingControl {
+                type = SettingControlType.Button,
+                name = "Source Code",
+                onButtonPressed = delegate () {
+                    Application.OpenURL("https://github.com/keiwando/evolution");
+                },
+                tooltip = SettingsTooltips.SOURCE_CODE
+            };
+            aboutSettingsControls[3] = new SettingControl {
+                type = SettingControlType.Label,
+                name = "Impressum",
+                tooltip = SettingsTooltips.IMPRESSUM()
+            };
+            if (showQuitButton) {
+                aboutSettingsControls[4] = new SettingControl {
+                    type = SettingControlType.Button,
+                    name = "Quit Game",
+                    onButtonPressed = delegate () {
+                        Application.Quit();
                     },
-                    new SettingControl {
-                        type = SettingControlType.Button,
-                        name = "Impressum",
-                        onButtonPressed = delegate () {
-                            // TODO: Implement
-                        }
-                    }
-                }
+                    tooltip = SettingsTooltips.QUIT_GAME
+                };
+            }
+            settingsView.controlGroups[nextTabIndex++] = new SettingControlGroup {
+                name = "About",
+                controls = aboutSettingsControls
             };
 
             settingsView.SetupControls();
@@ -456,5 +415,138 @@ Chooses a random start and end index and inverts the order of values inbetween.'
             "Inversion"
         };
     }
+}
+
+internal class SettingsTooltips {
+
+    public static string GRID = "When enabled, joints can only be placed on a fixed grid in the creature.";
+    public static string GRID_SIZE = "Controls how fine the grid in the creature editor should be.";
+    public static string EDITOR_RESET = "Resets all editor settings.";
+
+    public static string POPULATION_SIZE = "The number of creatures to simulate in each generation.";
+    public static string SIMULATION_TIME = "The number of seconds to simulate each creature.";
+    public static string TASK = @"<size=20>Task</size>
+
+The task that the creatures are trying to learn. This objective determines how the fitness score of each creature is calculated.
+
+
+<size=18>Running</size>
+
+Move as far to the right as possible.
+
+<size=18>Jumping</size>
+
+Jump as high as possible.
+
+<size=18>Obstacle Jump</size>
+
+Jump to avoid a rolling ball.
+
+<size=18>Climbing</size>
+
+Climb up a staircase.
+
+<size=18>Flying</size>
+
+Fly as high as possible and avoid touching the ground for as long as possible.
+"; 
+    public static string KEEP_BEST_CREATURES = "When this option is enabled, the two best creatures of a simulation run are copied to the next generation without any modifications (no recombination or mutation).";
+    public static string SIMULATE_IN_BATCHES =  "Instead of simulating all of the creatures of one generation at once, you have the option to simulate them in smaller batches. This will be easier on the CPU but it will also take a longer amount of time to finish simulating each generation.";
+    public static string BATCH_SIZE = "The number of creatures of the same generation to simulate at once.\nEnable \"Simulate in Batches\" to edit this value.";
+    public static string SELECTION_ALGORITHM = @"<size=20><b>Selection Algorithm</b></size>
+
+
+Defines how creatures are selected for survival and reproduction.
+
+
+<size=18>Uniform</size>
+
+Every creature has the same chances of being selected.
+
+
+<size=18>Fitness Proportional</size>
+
+The selection probability is proportional to the fitness of the creature.
+
+
+<size=18>Rank Proportional</size>
+
+The selection probability is proportional to the rank of the fitness of the creature.
+
+
+<size=18>Tournament</size>
+
+Chooses a group of creatures uniformly at random and then selects the best one of that group.
+";
+    public static string RECOMBINATION_ALGORITHM = @"<size=20><b>Recombination Algorithm</b></size>
+
+
+Defines how two parent chromosomes are recombined into one offspring.
+
+
+<size=18>One Point</size>
+
+Cuts the parent chromosomes at the same random index and uses one part from each parent.
+
+
+<size=18>Multi Point</size>
+
+Cuts the parent chromosomes at multiple random indices and alternatingly chooses parts from the parent chromosomes.
+
+
+<size=18>Uniform</size>
+
+Chooses each bit at random from either parent chromosome.
+";
+    public static string MUTATION_ALGORITHM = @"<size=20><b>Mutation Algorithm</b></size>
+
+Defines how random changes are applied to offspring chromosomes.
+
+
+<size=18>Chunk</size>
+
+Changes a random number of consecutive values in the chromosome.
+
+
+<size=18>Global</size>
+
+Changes the value at each index with a random probability.
+
+
+<size=18>Inversion</size>
+
+Chooses a random start and end index and inverts the order of values inbetween.       
+";
+    public static string MUTATION_RATE = "The probability for each offspring to receive any amount of random mutation.";
+    public static string SIMULATION_RESET = "Resets all simulation settings to their default values.";
+
+    public static string NETWORK_NUMBER_OF_LAYERS = "The total number of layers in the neural network that controls the creature's muscles.";
+    public static string NETWORK_RESET = "Resets the neural network to its default state.";
+
+    public static string CREDITS = @"Made by
+<size=22>Keiwan Donyagard</size>
+
+<size=16>Website:</size>
+keiwando.com
+
+<size=16>Evolution Website:</size>
+keiwando.com/evolution
+
+<size=16>Contact:</size>
+keiwando.com/contact
+";
+    public static string SOURCE_CODE = "github.com/keiwando/evolution";
+
+    private static string IMPRESSUM_B64 = "QU5HQUJFTiBHRU3DhFNTIMKnIDUgVE1HOgpLZWl3YW4gRG9ueWFnYXJkIFZhamVkCgpLb250YWt0CmtlaXdhbi5kb255YWdhcmRAZ21haWwuY29tCkZheDogKzQ5IDIzMSA5ODE5NDgzMQpTY2jDvHR6ZW5zdHJhw59lIDk3CjQ0MTQ3IERvcnRtdW5k";
+    private static string IMPRESSUM_TXT = null;
+    public static string IMPRESSUM() {
+        if (IMPRESSUM_TXT == null) {
+            byte[] decodedBytes = System.Convert.FromBase64String(IMPRESSUM_B64);
+            IMPRESSUM_TXT = System.Text.Encoding.UTF8.GetString (decodedBytes);
+        }
+        return IMPRESSUM_TXT;
+    }
+    
+    public static string QUIT_GAME = "Quits the game. Unsaved changes are lost.";
 }
 
