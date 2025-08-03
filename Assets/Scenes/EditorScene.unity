@@ -29882,6 +29882,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1730465019}
   m_CullTransparentMesh: 0
+--- !u!1 &1735218480 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3593883801664574350, guid: dfac67bc1c72344cc9fea855a05b1677,
+    type: 3}
+  m_PrefabInstance: {fileID: 6042650113600519028}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1738271720
 GameObject:
   m_ObjectHideFlags: 0
@@ -31286,6 +31292,7 @@ MonoBehaviour:
   InteractiveZoomEnabled: 1
   pointerHoverAreasToIgnore:
   - {fileID: 111325321}
+  - {fileID: 2146675146}
   bottomMovementPadding: 10
   topMovementPadding: 10
   leftMovementPadding: 18
@@ -36686,12 +36693,25 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 6042650113600519028}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1735218480}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76b19727cc9c74f958d6f0045394281e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2146675146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1735218480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a771390974b54ebd86609cf0505e8a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isHovered: 0
 --- !u!1 &1076516961774623
 GameObject:
   m_ObjectHideFlags: 0
@@ -38214,7 +38234,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3593883801664574350, guid: dfac67bc1c72344cc9fea855a05b1677,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2146675146}
   m_SourcePrefab: {fileID: 100100000, guid: dfac67bc1c72344cc9fea855a05b1677, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
