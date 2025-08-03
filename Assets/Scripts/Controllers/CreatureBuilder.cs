@@ -160,6 +160,9 @@ namespace Keiwando.Evolution {
 			}
 			var bone = CreateBoneBetween(startingJoint, endingJoint, data);
 			bone.ConnectToJoints();
+			// Note: Calling this here is especially important to make sure that the local scale is correct immediately
+			// for flipped bones.
+			bone.RefreshBonePlacement();
 			bones.Add(bone);
 		}
 

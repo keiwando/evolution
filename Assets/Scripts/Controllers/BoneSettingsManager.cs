@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using UnityEngine;
 using Keiwando.Evolution.UI;
 using Keiwando.UI;
 
@@ -12,13 +14,15 @@ namespace Keiwando.Evolution {
         private const float MAX_WEIGHT = 5f;
 
         private Bone bone;
+        private List<Decoration> decorations;
         private AdvancedBodyControlsViewController viewController;
         private LabelledSlider weightSlider;
         private LabelledToggle wingToggle;
         private LabelledToggle invertedToggle;
 
-        public BoneSettingsManager(Bone bone, AdvancedBodyControlsViewController viewController): base() {
+        public BoneSettingsManager(Bone bone, List<Decoration> decorations, AdvancedBodyControlsViewController viewController): base() {
             this.bone = bone;
+            this.decorations = decorations;
             this.viewController = viewController;
 
             viewController.Reset();
@@ -63,6 +67,17 @@ namespace Keiwando.Evolution {
                     oldData.weight, oldData.isWing, inverted
                 );
                 bone.BoneData = data;
+                foreach (Decoration decoration in decorations) {
+                    if (decoration.DecorationData.boneId == bone.BoneData.id) {
+                        var oldPosition = decoration.transform.position;
+                        var targetLocalPosition = bone.transform.InverseTransformPoint(oldPosition);
+                        var decorationData = decoration.DecorationData;
+                        decorationData.offset = new Vector2(targetLocalPosition.x, targetLocalPosition.y);
+                        decoration.DecorationData = decorationData;
+                        decoration.UpdateOrientation();
+                    }
+                }
+                // TODO: Update all decorations that are attached to this bone to maintain their previous orientations.
                 Refresh();
             };
 

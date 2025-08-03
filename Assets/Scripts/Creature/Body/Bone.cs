@@ -18,7 +18,14 @@ public class Bone : BodyComponent {
 	public GameObject legacyWeightObj => _legacyWeightObj;
 	private GameObject _legacyWeightObj;
 
-	public BoneData BoneData { get; set; }
+	public BoneData BoneData { 
+		get { return _boneData; } 
+		set {
+			_boneData = value;
+			UpdateLocalScale();
+		}
+	}
+	private BoneData _boneData;
 
 	public Rigidbody Body => body;
 	private Rigidbody body;
@@ -126,7 +133,7 @@ public class Bone : BodyComponent {
 		Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
 		Vector3 position = start + (offset / 2.0f);
 
-		if (BoneData.inverted) {
+		if (BoneData.inverted && scale.x > 0) {
 			scale.x *= -1f;
 		}
 

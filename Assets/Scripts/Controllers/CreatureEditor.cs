@@ -687,7 +687,7 @@ public class CreatureEditor: MonoBehaviour,
             advancedSettingsManager = new JointSettingsManager(part as Joint, viewController.ShowAdvancedSettingsControls());
         }
         else if (part is Bone) {
-            advancedSettingsManager = new BoneSettingsManager(part as Bone, viewController.ShowAdvancedSettingsControls());
+            advancedSettingsManager = new BoneSettingsManager(part as Bone, creatureBuilder.decorations, viewController.ShowAdvancedSettingsControls());
         }
         else if (part is Muscle) {
             advancedSettingsManager = new MuscleSettingsManager(part as Muscle, viewController.ShowAdvancedSettingsControls());
