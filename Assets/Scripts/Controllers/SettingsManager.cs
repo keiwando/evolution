@@ -64,6 +64,7 @@ namespace Keiwando.Evolution {
                                 var settings = editorSettings;
                                 settings.GridEnabled = isOn;
                                 editorSettings = settings;
+                                refreshGrid();
                             },
                             tooltip = SettingsTooltips.GRID
                         },
@@ -81,6 +82,7 @@ namespace Keiwando.Evolution {
                                 settings = editorSettings;
                                 settings.GridSize = Math.Clamp(value, min: EditorSettings.MIN_GRID_SIZE, max: EditorSettings.MAX_GRID_SIZE);
                                 editorSettings = settings;
+                                refreshGrid();
                             },
                             tooltip = SettingsTooltips.GRID_SIZE
                         },
@@ -89,6 +91,7 @@ namespace Keiwando.Evolution {
                             name = "Reset",
                             onButtonPressed = delegate () {
                                 editorSettings = EditorSettings.Default;
+                                refreshGrid();
                             },
                             tooltip = SettingsTooltips.EDITOR_RESET
                         }
@@ -345,6 +348,11 @@ namespace Keiwando.Evolution {
             };
 
             settingsView.SetupControls();
+        }
+
+        private void refreshGrid() {
+            grid.gameObject.SetActive(editorSettings.GridEnabled);
+            grid.Size = editorSettings.GridSize;
         }
 
         // MARK: - IBasicSettingsViewDelegate

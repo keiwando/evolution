@@ -22,6 +22,11 @@ public class SlideToggle : MonoBehaviour {
   private Toggle _toggle;
   public bool animateChanges = true;
 
+  public bool interactable {
+    get { return toggle.interactable; }
+    set { toggle.interactable = value; }
+  }
+
   private Color onTint;
   private float toggleEnabledHandleX;
   private Coroutine currentAnimation;
@@ -43,12 +48,16 @@ public class SlideToggle : MonoBehaviour {
     SetIsOn(toggle.isOn, false);
   }
 
-  public void SetIsOn(bool isOn, bool animated = true) {
+  public void SetIsOn(bool isOn, bool animated = true, bool withoutNotify = false) {
     InitializeIfNecessary();
     animationsEnabled = animated;
     bool toggleValueChanged = toggle.isOn != isOn;
-    toggle.isOn = isOn;
-    if (!toggleValueChanged) {
+    if (withoutNotify) {
+      toggle.SetIsOnWithoutNotify(isOn);
+    } else {
+      toggle.isOn = isOn;
+    }
+    if (!toggleValueChanged || withoutNotify) {
       // We run this manually to ensure that the visual state of the slide
       // toggle is updated, even if the underlying toggle might already
       // be on this state.

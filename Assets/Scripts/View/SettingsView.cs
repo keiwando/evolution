@@ -143,6 +143,10 @@ namespace Keiwando.UI {
           AnySettingCell cell = settingCellsPerTab[tabIndex][controlIndex];
           cell.gameObject.SetActive(isSelectedTab);
 
+          if (!isSelectedTab) {
+            continue;
+          }
+
           bool isSelected = isSelectedTab && controlIndex == selectedControlIndex;
           cell.selectionHighlight.SetActive(isSelected);
           if (isSelected && control.tooltip != null) {
@@ -157,7 +161,7 @@ namespace Keiwando.UI {
 
           switch (cell.type) {
             case SettingControlType.Toggle:
-              cell.toggleControl.toggle.SetIsOnWithoutNotify(control.toggleValue());
+              cell.toggleControl.toggle.SetIsOn(control.toggleValue(), withoutNotify: true);
               cell.toggleControl.toggle.interactable = !disabled;
               break;
             case SettingControlType.Slider:
@@ -230,7 +234,7 @@ namespace Keiwando.UI {
           SettingsToggleControlCell cell = Instantiate(toggleCellTemplate.gameObject, toggleCellTemplate.transform.parent).GetComponent<SettingsToggleControlCell>();
           cell.gameObject.SetActive(false);
           cell.label.SetText(control.name);
-          cell.toggle.onValueChanged.AddListener(delegate (bool isOn) {
+          cell.toggle.toggle.onValueChanged.AddListener(delegate (bool isOn) {
             if (control.onToggleValueChanged != null) {
               control.onToggleValueChanged(isOn);
             }
