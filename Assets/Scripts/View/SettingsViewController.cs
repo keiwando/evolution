@@ -8,6 +8,7 @@ namespace Keiwando.Evolution.UI {
 
         [SerializeField] private SettingsView settingsView;
         [SerializeField] private NeuralNetworkSettingsUIManager neuralNetworkSettingsUIManager;
+        [SerializeField] private EditorViewController editorViewController;
 
         [SerializeField] private Button closeButton;
         [SerializeField] private Grid grid;
@@ -40,6 +41,7 @@ namespace Keiwando.Evolution.UI {
             InputRegistry.shared.Deregister(this);
             GestureRecognizerCollection.shared.GetAndroidBackButtonGestureRecognizer().OnGesture -= OnAndroidBack;
             gameObject.SetActive(false);
+            editorViewController.Refresh();
         }
 
         private void OnAndroidBack(AndroidBackButtonGestureRecognizer rec) {

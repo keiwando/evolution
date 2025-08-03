@@ -7980,6 +7980,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settingsView: {fileID: 2146675145}
   neuralNetworkSettingsUIManager: {fileID: 1423479628}
+  editorViewController: {fileID: 1891045104}
   closeButton: {fileID: 1202334672}
   grid: {fileID: 1469868451}
 --- !u!114 &433860074
@@ -32602,6 +32603,37 @@ MonoBehaviour:
   editorActionBringForwardButton: {fileID: 1983405622}
   editorActionSendBackwardButton: {fileID: 374216739}
   migrationNotice: {fileID: 814334265}
+--- !u!1 &1894360866
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1894360867}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1894360867
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894360866}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.4434333, y: 11.493231, z: 0.042687736}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1895294884
 GameObject:
   m_ObjectHideFlags: 0
@@ -38196,3 +38228,4 @@ SceneRoots:
   - {fileID: 1175946799}
   - {fileID: 1744929214}
   - {fileID: 1738271721}
+  - {fileID: 1894360867}
