@@ -140,6 +140,8 @@ public class Bone : BodyComponent {
 		transform.position = position;
 		transform.up = offset;
 		transform.localScale = scale;
+		float eulerRotation = transform.rotation.eulerAngles.z;
+		transform.rotation = Quaternion.Euler(0, 0, eulerRotation);
 	}
 
 	/// <summary>
