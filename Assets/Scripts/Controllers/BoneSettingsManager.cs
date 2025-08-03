@@ -67,7 +67,7 @@ namespace Keiwando.Evolution {
                     oldData.weight, oldData.isWing, inverted
                 );
                 bone.BoneData = data;
-                foreach (Decoration decoration in decorations) {
+                foreach (Decoration decoration in this.decorations) {
                     if (decoration.DecorationData.boneId == bone.BoneData.id) {
                         var oldPosition = decoration.transform.position;
                         var targetLocalPosition = bone.transform.InverseTransformPoint(oldPosition);
@@ -77,7 +77,6 @@ namespace Keiwando.Evolution {
                         decoration.UpdateOrientation();
                     }
                 }
-                // TODO: Update all decorations that are attached to this bone to maintain their previous orientations.
                 Refresh();
             };
 

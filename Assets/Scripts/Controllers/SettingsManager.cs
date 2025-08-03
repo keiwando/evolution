@@ -302,7 +302,7 @@ namespace Keiwando.Evolution {
             };
 
             bool showQuitButton = false;
-            #if UNITY_WINDOWS || UNITY_MACOS || UNITY_EDITOR
+            #if UNITY_WINDOWS || UNITY_STANDALONE_OSX || UNITY_EDITOR
             showQuitButton = true;
             #endif
             SettingControl[] aboutSettingsControls = new SettingControl[showQuitButton ? 5 : 4];
