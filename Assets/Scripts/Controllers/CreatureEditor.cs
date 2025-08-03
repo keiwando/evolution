@@ -133,6 +133,7 @@ public class CreatureEditor: MonoBehaviour,
     public void LoadDesign(CreatureDesign design) {
         historyManager.Push(GetState(historyManager));
         creatureBuilder.Reset();
+        selectionManager.DeselectAll();
         creatureBuilder = new CreatureBuilder(design);
         viewController.Refresh();
     }
@@ -149,11 +150,13 @@ public class CreatureEditor: MonoBehaviour,
 
     public void Undo() {
         creatureBuilder.CancelTemporaryBodyParts();
+        selectionManager.DeselectAll();
         historyManager.Undo();
     }
 
     public void Redo() {
         creatureBuilder.CancelTemporaryBodyParts();
+        selectionManager.DeselectAll();
         historyManager.Redo();
     }
     
@@ -459,7 +462,7 @@ public class CreatureEditor: MonoBehaviour,
                 }
                 if (GestureRecognizerCollection.shared.GetClickGestureRecognizer().ClickEndedOnThisFrame() && 
                     selectionManager.LastHoveringIsPartOfSelection() && 
-                    !transformGizmo.gameObject.activeSelf &&
+                    !currentClickStartedOverTransformGizmo &&
                     !selectionManager.SelectionOnlyContainsType(BodyComponentType.Muscle) &&
                     // For single selected joints, scale and rotation doesn't do anything.
                     !(selectionManager.SelectionOnlyContainsType(BodyComponentType.Joint) && 

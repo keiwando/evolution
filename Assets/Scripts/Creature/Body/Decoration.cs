@@ -54,7 +54,9 @@ public class Decoration : BodyComponent {
 
   public void UpdateOrientation() {
     float scale = DecorationData.scale;
-    transform.position = bone.transform.TransformPoint(new Vector3(DecorationData.offset.x, DecorationData.offset.y, Z_POSITION));
+    Vector3 worldPosition = bone.transform.TransformPoint(new Vector3(DecorationData.offset.x, DecorationData.offset.y, 0));
+    worldPosition.z = Z_POSITION;
+    transform.position = worldPosition;
     transform.rotation = bone.transform.rotation * Quaternion.Euler(0f, 0f, DecorationData.rotation * Mathf.Rad2Deg);
     transform.localScale = new Vector3(scale, scale, scale);
 

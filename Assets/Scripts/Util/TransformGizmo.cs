@@ -1,10 +1,10 @@
-using System;
 using Keiwando.Evolution;
 using UnityEngine;
 
 public class TransformGizmo: MonoBehaviour {
 
   private const float BASE_HANDLE_SCALE = 0.5f;
+  private const float BASE_LINE_WIDTH = 0.1f;
   public const float BASE_HANDLE_DISTANCE_FROM_ORIGIN = 2f;
 
   public SpriteRenderer scaleHandle;
@@ -26,9 +26,16 @@ public class TransformGizmo: MonoBehaviour {
     rotationLineRenderer.SetPosition(0, this.transform.position);
     rotationLineRenderer.SetPosition(1, rotationHandle.transform.position);
 
-    float handleScale = BASE_HANDLE_SCALE * zoomableCamera.GetCurrentRelativeZoom();
+    float relativeZoom = zoomableCamera.GetCurrentRelativeZoom();
+    float handleScale = BASE_HANDLE_SCALE * relativeZoom;
     scaleHandle.gameObject.transform.localScale = new Vector3(handleScale, handleScale, handleScale);
     rotationHandle.gameObject.transform.localScale = new Vector3(handleScale, handleScale, handleScale);
+    
+    float lineWidth = BASE_LINE_WIDTH * relativeZoom;
+    scaleLineRenderer.startWidth = lineWidth;
+    scaleLineRenderer.endWidth = lineWidth;
+    rotationLineRenderer.startWidth = lineWidth;
+    rotationLineRenderer.endWidth = lineWidth;
   }
 
   public void Update() {
