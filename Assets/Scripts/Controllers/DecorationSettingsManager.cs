@@ -15,7 +15,7 @@ namespace Keiwando.Evolution {
       this.viewController = viewController;
 
       viewController.Reset();
-      viewController.SetTitle("Decoration Settings");
+      viewController.SetTitle("Skin Settings");
 
       flipXToggle = viewController.AddToggle("Flip Horizontal");
       flipXToggle.onValueChanged += delegate (bool flipX) {

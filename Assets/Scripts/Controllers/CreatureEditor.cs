@@ -725,7 +725,7 @@ public class CreatureEditor: MonoBehaviour,
     #endregion
     #region User Messages
 
-    private const string MESSAGE_ADD_BONES_BEFORE_ADDING_DECORATIONS = "Add bones before attaching decorations.";
+    private const string MESSAGE_ADD_BONES_BEFORE_ADDING_DECORATIONS = "Add bones before attaching skins.";
     private const string MESSAGE_ADD_JOINTS_BEFORE_ADDING_BONES = "Add joints and connect them with bones.";
     private const string MESSAGE_ADD_BONES_BEFORE_ADDING_MUSCLES = "Add bones and connect them with muscles.";
 
