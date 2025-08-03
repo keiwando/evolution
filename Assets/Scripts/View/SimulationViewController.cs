@@ -105,6 +105,12 @@ public class SimulationViewController : MonoBehaviour,
 		int secondsPerGeneration = evolution.Settings.SimulationTime * batchesPerGeneration;
 		int secondsSinceLastSave = secondsPerGeneration * fullGenerationsSinceLastSave;
 		if (fullGenerationsSinceLastSave < 1 || secondsSinceLastSave < EXIT_CONFIRMATION_TIME_DELTA) {
+
+			// Early generations should just exit without saving
+			if (evolution.AutoSaver.Enabled && evolution.CurrentGenerationNumber > 5 && fullGenerationsSinceLastSave > 0) {
+				evolution.SaveSimulation();
+			}
+
 			evolution.Finish();
 			SceneController.LoadSync(SceneController.Scene.Editor);		
 			return;
