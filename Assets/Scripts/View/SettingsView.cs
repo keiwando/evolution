@@ -141,6 +141,7 @@ namespace Keiwando.UI {
         for (int controlIndex = 0; controlIndex < group.controls.Length; controlIndex++) {
           SettingControl control = controlGroups[tabIndex].controls[controlIndex];
           AnySettingCell cell = settingCellsPerTab[tabIndex][controlIndex];
+          bool wasActive = cell.gameObject.activeSelf;
           cell.gameObject.SetActive(isSelectedTab);
 
           if (!isSelectedTab) {
@@ -161,7 +162,7 @@ namespace Keiwando.UI {
 
           switch (cell.type) {
             case SettingControlType.Toggle:
-              cell.toggleControl.toggle.SetIsOn(control.toggleValue(), withoutNotify: true);
+              cell.toggleControl.toggle.SetIsOn(control.toggleValue(), animated: wasActive, withoutNotify: true);
               cell.toggleControl.toggle.interactable = !disabled;
               break;
             case SettingControlType.Slider:
