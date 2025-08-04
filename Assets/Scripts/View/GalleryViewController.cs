@@ -107,7 +107,7 @@ namespace Keiwando.Evolution.UI {
 
       for (int i = 0; i < numberOfItemsPerPage; i++) {
         var cell = Instantiate(templateGridCell, grid.transform);
-        cell.gameObject.SetActive(true);
+        cell.gameObject.SetActive(false);
         cells[i] = cell;
 
         int cellIndex = i;
@@ -263,11 +263,7 @@ namespace Keiwando.Evolution.UI {
 
       for (int cellIndex = 0; cellIndex < cells.Length; cellIndex++) {
         GalleryGridCell cell = cells[cellIndex];
-        if (cellIndex < numberOfItemsOnCurrentPage) {
-          cell.gameObject.SetActive(true);
-        } else {
-          cell.gameObject.SetActive(false);
-        }
+        cell.gameObject.SetActive(cellIndex < numberOfItemsOnCurrentPage);
       }
 
       prevPageButton.interactable = currentPageIndex > 0;
