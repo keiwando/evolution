@@ -25,6 +25,7 @@ namespace Keiwando.UI {
     public Func<string> sliderFormattedValue;
     public Action<float> onSliderValueChanged;
     public Action onButtonPressed;
+    public bool inputIsNumeric;
     public Func<string> inputValue;
     public Action<string> onInputValueChanged;
     public string[] multiselectNames;
@@ -289,6 +290,9 @@ namespace Keiwando.UI {
           SettingsInputControlCell cell = Instantiate(inputCellTemplate.gameObject, inputCellTemplate.transform.parent).GetComponent<SettingsInputControlCell>();
           cell.gameObject.SetActive(false);
           cell.label.SetText(control.name);
+          if (control.inputIsNumeric) {
+            cell.inputField.contentType = TMP_InputField.ContentType.IntegerNumber;
+          }
           cell.inputField.onEndEdit.AddListener(delegate (string value) {
             if (control.onInputValueChanged != null) {
               control.onInputValueChanged(value);

@@ -88,7 +88,7 @@ namespace Keiwando.Evolution {
       }
       if (pointerHoverAreasToIgnore != null) {
         foreach (PointerHoverDetector pointerHoverDetector in pointerHoverAreasToIgnore) {
-          if (pointerHoverDetector.isHovered) {
+          if (pointerHoverDetector.gameObject.activeInHierarchy && pointerHoverDetector.isHovered) {
             return false;
           }
         }

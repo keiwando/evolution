@@ -280,7 +280,7 @@ public class CreatureEditor: MonoBehaviour,
                     creatureBuilder.TryStartingBone(joint); 
                 } else if (creatureBuilder.joints.Count == 0) {
                     infoAlert.label.SetText(MESSAGE_ADD_JOINTS_BEFORE_ADDING_BONES);
-                    infoAlert.fade.FadeInOut(totalDuration: 3f);
+                    infoAlert.fade.FadeInOut(totalDuration: 2f);
                 } 
                 break;
 
@@ -290,7 +290,7 @@ public class CreatureEditor: MonoBehaviour,
                     creatureBuilder.TryStartingMuscle(bone); 
                 } else if (creatureBuilder.bones.Count == 0) {
                     infoAlert.label.SetText(MESSAGE_ADD_BONES_BEFORE_ADDING_MUSCLES);
-                    infoAlert.fade.FadeInOut(totalDuration: 3f);
+                    infoAlert.fade.FadeInOut(totalDuration: 2f);
                 }
                     
                 break;
@@ -302,7 +302,7 @@ public class CreatureEditor: MonoBehaviour,
                     creatureBuilder.CreateDecorationFromBone(closestBone, clickWorldPos, SelectedDecorationType);
                 } else {
                     infoAlert.label.SetText(MESSAGE_ADD_BONES_BEFORE_ADDING_DECORATIONS);
-                    infoAlert.fade.FadeInOut(totalDuration: 3f);
+                    infoAlert.fade.FadeInOut(totalDuration: 2f);
                 }
                 break;
 

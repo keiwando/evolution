@@ -110,6 +110,7 @@ namespace Keiwando.Evolution {
                     new SettingControl {
                         type = SettingControlType.Input,
                         name = "Population Size",
+                        inputIsNumeric = true,
                         inputValue = delegate () { return simulationSettings.PopulationSize.ToString(); },
                         onInputValueChanged = delegate (string newValue) {
                             int newPopulationSize = 0;
@@ -122,6 +123,7 @@ namespace Keiwando.Evolution {
                     new SettingControl {
                         type = SettingControlType.Input,
                         name = "Simulation Time",
+                        inputIsNumeric = true,
                         inputValue = delegate () { return simulationSettings.SimulationTime.ToString(); },
                         onInputValueChanged = delegate (string newValue) {
                             int newSimulationTime = 0;
@@ -173,6 +175,7 @@ namespace Keiwando.Evolution {
                     new SettingControl {
                         type = SettingControlType.Input,
                         name = "Batch Size",
+                        inputIsNumeric = true,
                         inputValue = delegate () { return simulationSettings.BatchSize.ToString(); },
                         onInputValueChanged = delegate (string newValue) {
                             int newBatchSize = 0;
@@ -261,6 +264,7 @@ namespace Keiwando.Evolution {
                     new SettingControl {
                         type = SettingControlType.Input,
                         name = "Number of Layers",
+                        inputIsNumeric = true,
                         inputValue = delegate () { return (networkSettings.NumberOfIntermediateLayers + 2).ToString(); },
                         onInputValueChanged = delegate (string newTextValue) {
                             int numberOfLayers = 2;
