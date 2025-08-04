@@ -317,7 +317,7 @@ namespace Keiwando.Evolution {
             showQuitButton = true;
             #endif
             bool showWindowModeSelector = true;
-            #if UNITY_IOS
+            #if UNITY_IOS || UNITY_ANDROID
             showWindowModeSelector = false;
             #endif
             int generalSettingsCount = 4;
@@ -390,7 +390,7 @@ namespace Keiwando.Evolution {
         }
 
         public static void SetWindowMode(WindowMode windowMode) {
-            #if !UNITY_IOS
+            #if !UNITY_IOS && !UNITY_ANDROID
             switch (windowMode) {
                 case (WindowMode.Windowed): {
                     Screen.fullScreenMode = FullScreenMode.Windowed;
