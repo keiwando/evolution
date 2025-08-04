@@ -112,7 +112,12 @@ namespace Keiwando.UI {
     }
     private AnySettingCell[][] settingCellsPerTab;
 
+    public bool refreshAfterFullscreenChanges = true;
+    private bool previousFullscreenState = false;
+
     void Start() {
+
+      previousFullscreenState = Screen.fullScreen;
 
       tabTemplate.gameObject.SetActive(false);
 
@@ -122,6 +127,13 @@ namespace Keiwando.UI {
       inputCellTemplate.gameObject.SetActive(false);
       multiselectCellTemplate.gameObject.SetActive(false);
       labelCellTemplate.gameObject.SetActive(false);
+    }
+
+    void Update() {
+      if (previousFullscreenState != Screen.fullScreen) {
+        previousFullscreenState = Screen.fullScreen;
+        Refresh();
+      }
     }
 
     public void Refresh() {

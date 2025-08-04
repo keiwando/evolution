@@ -11,7 +11,6 @@ public class Settings {
 	private const string HIDDEN_CREATURE_OPACITY_KEY = "HIDDEN_CREATURE_OPACITY_KEY";
 	private const string DEFAULT_GRID_VISIBILITY_KEY = "DEFAULT_GRID_VISIBILITY_KEY";
 	private const string FLYING_GRID_VISIBILITY_KEY = "FLYING_GRID_VISIBILITY_KEY";
-	private const string DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY = "DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY";
 	private const string DONT_SHOW_EXIT_CONFIRMATION_OVERLAY_AGAIN_KEY = "DONT_SHOW_EXIT_CONFIRMATION_OVERLAY_AGAIN_KEY";
 	private const string GRID_SIZE_KEY = "GRID_SIZE";
 	private const string GRID_ENABLED_KEY = "GRID_ENABLED";
@@ -64,11 +63,6 @@ public class Settings {
 	public static float FlyingGridVisibility {
 		get { return Store.GetFloat(FLYING_GRID_VISIBILITY_KEY, 0.5f); }
 		set { Store.SetFloat(FLYING_GRID_VISIBILITY_KEY, value); }
-	}
-
-	public static bool DontShowV2SimulationDeprecationOverlayAgain {
-		get { return Store.GetBool(DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY, false); }
-		set { Store.SetBool(DONT_SHOW_V_2_SIMULATION_DEPRECATION_OVERLAY_AGAIN_KEY, value); }
 	}
 
 	public static bool DontShowExitConfirmationOverlayAgain {
@@ -151,7 +145,6 @@ public class Settings {
 		HiddenCreatureOpacity = 0.225f;
 		DefaultGridVisibility = 0.0f;
 		FlyingGridVisibility = 0.5f;
-		DontShowV2SimulationDeprecationOverlayAgain = false;
 		DontShowExitConfirmationOverlayAgain = false;
 		GridSize = 1.0f;
 		GridEnabled = false;

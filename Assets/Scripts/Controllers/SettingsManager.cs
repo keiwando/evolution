@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Keiwando.UI;
 using Keiwando.Evolution.UI;
-using System.Configuration;
 
 namespace Keiwando.Evolution {
+
+    public enum WindowMode: int {
+        Windowed = 0,
+        Fullscreen = 1
+    }
 
     public class SettingsManager: 
         IBasicSettingsViewDelegate {
@@ -305,21 +309,47 @@ namespace Keiwando.Evolution {
             };
 
             bool showQuitButton = false;
-            #if UNITY_WINDOWS || UNITY_STANDALONE_OSX || UNITY_EDITOR
+            #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_EDITOR
             showQuitButton = true;
             #endif
-            SettingControl[] aboutSettingsControls = new SettingControl[showQuitButton ? 5 : 4];
-            aboutSettingsControls[0] = new SettingControl {
+            bool showWindowModeSelector = true;
+            #if UNITY_IOS
+            showWindowModeSelector = false;
+            #endif
+            int generalSettingsCount = 4;
+            if (showWindowModeSelector) {
+                generalSettingsCount += 1;
+            }
+            if (showQuitButton) {
+                generalSettingsCount += 1;
+            }
+            SettingControl[] generalSettingsControls = new SettingControl[generalSettingsCount];
+            int generalSettingIndex = 0;
+            if (showWindowModeSelector) {
+                generalSettingsControls[generalSettingIndex++] = new SettingControl {
+                    type = SettingControlType.Multiselect,
+                    name = "Window Mode",
+                    multiselectNames = ALL_WINDOW_MODE_NAMES,
+                    multiselectSelectedIndex = delegate () {
+                        return Array.IndexOf(ALL_WINDOW_MODES, GetCurrentWindowMode());
+                    },
+                    onMultiselectIndexChanged = delegate (int index) {
+                        WindowMode windowMode = ALL_WINDOW_MODES[index];
+                        SettingsManager.SetWindowMode(windowMode);
+                    } 
+                };
+            }
+            generalSettingsControls[generalSettingIndex++] = new SettingControl {
                 type = SettingControlType.Label,
                 name = "Credits",
                 tooltip = SettingsTooltips.CREDITS
             };
-            aboutSettingsControls[1] = new SettingControl {
+            generalSettingsControls[generalSettingIndex++] = new SettingControl {
                 type = SettingControlType.Label,
                 name = "Version",
                 tooltip = string.Format("<size=24>{0}</size>", Application.version.ToString())
             };
-            aboutSettingsControls[2] = new SettingControl {
+            generalSettingsControls[generalSettingIndex++] = new SettingControl {
                 type = SettingControlType.Button,
                 name = "Source Code",
                 onButtonPressed = delegate () {
@@ -327,13 +357,13 @@ namespace Keiwando.Evolution {
                 },
                 tooltip = SettingsTooltips.SOURCE_CODE
             };
-            aboutSettingsControls[3] = new SettingControl {
+            generalSettingsControls[generalSettingIndex++] = new SettingControl {
                 type = SettingControlType.Label,
                 name = "Impressum",
                 tooltip = SettingsTooltips.IMPRESSUM()
             };
             if (showQuitButton) {
-                aboutSettingsControls[4] = new SettingControl {
+                generalSettingsControls[generalSettingIndex++] = new SettingControl {
                     type = SettingControlType.Button,
                     name = "Quit Game",
                     onButtonPressed = delegate () {
@@ -343,8 +373,8 @@ namespace Keiwando.Evolution {
                 };
             }
             settingsView.controlGroups[nextTabIndex++] = new SettingControlGroup {
-                name = "About",
-                controls = aboutSettingsControls
+                name = "General",
+                controls = generalSettingsControls
             };
 
             settingsView.SetupControls();
@@ -353,6 +383,43 @@ namespace Keiwando.Evolution {
         private void refreshGrid() {
             grid.gameObject.SetActive(editorSettings.GridEnabled);
             grid.Size = editorSettings.GridSize;
+        }
+
+        public static void SetWindowMode(WindowMode windowMode) {
+            #if !UNITY_IOS
+            switch (windowMode) {
+                case (WindowMode.Windowed): {
+                    Screen.fullScreenMode = FullScreenMode.Windowed;
+                    int width = Screen.currentResolution.width / 2;
+                    int height = Screen.currentResolution.height / 2;
+                    if (width > 0 && height > 0) {
+                        Screen.SetResolution(width, height, fullscreen: false);
+                    }
+                    Screen.fullScreen = false;
+                    break;
+                }
+                case (WindowMode.Fullscreen): {
+                    Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+                    int width = Screen.currentResolution.width;
+                    int height = Screen.currentResolution.height;
+                    if (width > 0 && height > 0) {
+                        Screen.SetResolution(width, height, fullscreen: true);
+                    }
+                    Screen.fullScreen = true;
+                    break;
+                }
+                default:
+                    break;
+            }
+            #endif
+        }
+
+        public static WindowMode GetCurrentWindowMode() {
+            if (Screen.fullScreen) {
+                return WindowMode.Fullscreen;
+            } else {
+                return WindowMode.Windowed;
+            }
         }
 
         // MARK: - IBasicSettingsViewDelegate
@@ -421,6 +488,15 @@ namespace Keiwando.Evolution {
             "Chunk",
             "Global",
             "Inversion"
+        };
+
+        private static string[] ALL_WINDOW_MODE_NAMES = new string[] {
+            "Windowed",
+            "Fullscreen"
+        };
+        private static WindowMode[] ALL_WINDOW_MODES = new WindowMode[] {
+            WindowMode.Windowed,
+            WindowMode.Fullscreen
         };
     }
 }
