@@ -106,7 +106,7 @@ public class SimulationSerializer {
 
 		using (var stream = File.Open(path, FileMode.Open))
 		using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8)) {
-			SimulationData simulationData = DecodeSimulationData(reader);
+			SimulationData simulationData = DecodeSimulationData(reader, loadAllBestCreatures: false);
 			if (simulationData != null) {
 				return simulationData;
 			}
@@ -348,7 +348,7 @@ public class SimulationSerializer {
 		}
 	}
 
-	public static SimulationData DecodeSimulationData(BinaryReader reader) {
+	public static SimulationData DecodeSimulationData(BinaryReader reader, bool loadAllBestCreatures = true) {
 		try {
 
 			if (
@@ -407,9 +407,9 @@ public class SimulationSerializer {
 			List<ChromosomeData?> bestCreatures = new List<ChromosomeData?>();
 
 			for (int i = 0; i < numberOfBestCreaturesData; i++) {
-				// We only need to actually load the latest best creature initially. The rest can be loaded
-				// on demand.
-				if (i < numberOfBestCreaturesData - 1) {
+				if (!loadAllBestCreatures && i < numberOfBestCreaturesData - 1) {
+					// We only need to actually load the latest best creature initially. The rest can be loaded
+					// on demand.
 					reader.BaseStream.Seek(chromosomeLength * sizeof(float), SeekOrigin.Current);
 					CreatureStats.Skip(reader);
 					bestCreatures.Add(null);
@@ -428,7 +428,8 @@ public class SimulationSerializer {
 				currentChromosomes: currentChromosomes,
 				lastV2SimulatedGeneration: lastV2SimulatedGeneration
 			);
-		} catch {
+		} catch (Exception exception) {
+			Debug.LogError(exception.Message);
 			return null;
 		}
 	}
