@@ -7,6 +7,7 @@ namespace Keiwando.Evolution.Scenes {
 
         private const string PREFAB_PATH = "Prefabs/Structures/ObstacleBall";
         private const float BASE_FORCE = 5000f;
+        private const float BASE_EQUIVALENT_SPEED = 5f;
 
         /// <summary>
         /// The duration in seconds between two consecutively spawned obstacles.
@@ -29,6 +30,10 @@ namespace Keiwando.Evolution.Scenes {
         private GameObject obstacleTemplate;
 
         void Start() {
+            // This is primarily important for correcty gallery playback rendering since
+            // we forward the layer of this object to its dynamically spawned children.
+            this.gameObject.layer = Context.GetDynamicForegroundLayer();
+
             this.obstacleTemplate = Instantiate(Resources.Load(PREFAB_PATH), transform) as GameObject;
             this.obstacleTemplate.SetActive(false);
             this.obstacleTemplate.layer = Context.GetDynamicForegroundLayer();

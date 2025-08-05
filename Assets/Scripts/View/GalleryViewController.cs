@@ -50,12 +50,15 @@ namespace Keiwando.Evolution.UI {
     struct PerObjectData {
       public int layer;
       public GameObject gameObject;
+      public bool isDynamicObjectSpawner;
     }
     struct LoadedSceneData {
       public Scene scene;
       public Camera camera;
+      public PhysicsScene physicsScene;
       public Creature creature;
       public List<PerObjectData> allObjects;
+      public bool needsPhysicsSimulation;
     }
     private LoadedSceneData?[] loadedScenes;
     /// The unordered set of all scene indices that are requested
@@ -97,13 +100,6 @@ namespace Keiwando.Evolution.UI {
       this.renderTextures = new RenderTexture[numberOfItemsPerPage + 1];
 
       this.loadedScenes = new LoadedSceneData?[1];
-      // this.scenes = new Scene?[numberOfItemsPerPage];
-      // this.cameras = new Camera[numberOfItemsPerPage];
-      // this.creatures = new Creature[numberOfItemsPerPage];
-      // this.allObjectsPerScene = new List<PerObjectData>[numberOfItemsPerPage];
-      // for (int i = 0; i < numberOfItemsPerPage; i++) {
-      //   this.allObjectsPerScene[i] = new List<PerObjectData>();
-      // }
 
       for (int i = 0; i < numberOfItemsPerPage; i++) {
         var cell = Instantiate(templateGridCell, grid.transform);
@@ -184,6 +180,56 @@ namespace Keiwando.Evolution.UI {
       
       galleryMoreMenu.gameObject.SetActive(false);
       fullscreenMoreMenu.gameObject.SetActive(false);
+    }
+
+    void FixedUpdate() {
+      bool needsPhysicsUpdate = false;
+      foreach (LoadedSceneData? loadedSceneData in this.loadedScenes) {
+        if (loadedSceneData.HasValue && loadedSceneData.Value.needsPhysicsSimulation) {
+          needsPhysicsUpdate = true;
+          break;
+        }
+      }
+      if (needsPhysicsUpdate) {
+        // We have to set the correct layers, otherwise the objects of different scenes will
+        // collide with each other…
+        setAllObjectsToHiddenAndRememberOldLayersIfNecessary();
+        for (int cellIndex = 0; cellIndex < numberOfItemsOnCurrentPage; cellIndex++) {
+          int galleryEntryIndex = getGalleryEntryIndexForCellIndex(cellIndex);
+          if (this.loadedScenes[galleryEntryIndex] == null) {
+            continue;
+          }
+          LoadedSceneData loadedSceneData = this.loadedScenes[galleryEntryIndex].Value;
+          if (!loadedSceneData.needsPhysicsSimulation) {
+            continue;
+          }
+          for (int i = 0; i < loadedSceneData.allObjects.Count; i++) {
+            PerObjectData perObjectData = loadedSceneData.allObjects[i];
+            if (perObjectData.gameObject != null) {
+              perObjectData.gameObject.layer = perObjectData.layer;
+              if (perObjectData.isDynamicObjectSpawner) {
+                foreach (UnityEngine.Transform childTransform in perObjectData.gameObject.transform) {
+                  childTransform.gameObject.layer = perObjectData.layer;
+                }
+              }
+            }
+          }
+
+          loadedSceneData.physicsScene.Simulate(Time.fixedDeltaTime);
+
+          for (int i = 0; i < loadedSceneData.allObjects.Count; i++) {
+            PerObjectData perObjectData = loadedSceneData.allObjects[i];
+            if (perObjectData.gameObject != null) {
+              perObjectData.gameObject.layer = hiddenLayer;
+              if (perObjectData.isDynamicObjectSpawner) {
+                foreach (UnityEngine.Transform childTransform in perObjectData.gameObject.transform) {
+                  childTransform.gameObject.layer = hiddenLayer;
+                }
+              }
+            }
+          }
+        }
+      }
     }
 
     void Update() {
@@ -318,22 +364,7 @@ namespace Keiwando.Evolution.UI {
 
       // Manually render the necessary scenes
 
-      foreach (int sceneIndex in neededSceneIndices) {
-        if (this.loadedScenes[sceneIndex] == null) {
-          continue;
-        }
-        LoadedSceneData loadedSceneData = this.loadedScenes[sceneIndex].Value;
-        for (int i = 0; i < loadedSceneData.allObjects.Count; i++) {
-          PerObjectData perObjectData = loadedSceneData.allObjects[i];
-          if (perObjectData.gameObject != null) {
-            if (perObjectData.gameObject.layer != hiddenLayer) {
-              perObjectData.layer = perObjectData.gameObject.layer;
-            }
-            perObjectData.gameObject.layer = hiddenLayer;
-            loadedSceneData.allObjects[i] = perObjectData;
-          }
-        }
-      }
+      setAllObjectsToHiddenAndRememberOldLayersIfNecessary();
       for (int cellIndex = 0; cellIndex < numberOfItemsOnCurrentPage; cellIndex++) {
         int galleryEntryIndex = getGalleryEntryIndexForCellIndex(cellIndex);
         if (fullscreenSceneIndex.HasValue && galleryEntryIndex != fullscreenSceneIndex.Value){
@@ -347,27 +378,49 @@ namespace Keiwando.Evolution.UI {
           PerObjectData perObjectData = loadedSceneData.allObjects[i];
           if (perObjectData.gameObject != null) {
             perObjectData.gameObject.layer = perObjectData.layer;
+            if (perObjectData.isDynamicObjectSpawner) {
+              foreach (UnityEngine.Transform childTransform in perObjectData.gameObject.transform) {
+                childTransform.gameObject.layer = perObjectData.layer;
+              }
+            }
           }
         }
+
         loadedSceneData.camera.Render();
 
         for (int i = 0; i < loadedSceneData.allObjects.Count; i++) {
           PerObjectData perObjectData = loadedSceneData.allObjects[i];
           if (perObjectData.gameObject != null) {
             perObjectData.gameObject.layer = hiddenLayer;
+            if (perObjectData.isDynamicObjectSpawner) {
+              foreach (UnityEngine.Transform childTransform in perObjectData.gameObject.transform) {
+                childTransform.gameObject.layer = hiddenLayer;
+              }
+            }
           }
         }
       }
-      // Reset all object layers to their original values so that 
-      // we don't reset perObjectData.layer to hidden for all objects on the next frame
+    }
+
+    private void setAllObjectsToHiddenAndRememberOldLayersIfNecessary() {
       foreach (int sceneIndex in neededSceneIndices) {
         if (this.loadedScenes[sceneIndex] == null) {
           continue;
         }
         LoadedSceneData loadedSceneData = this.loadedScenes[sceneIndex].Value;
-        foreach (PerObjectData perObjectData in loadedSceneData.allObjects) {
+        for (int i = 0; i < loadedSceneData.allObjects.Count; i++) {
+          PerObjectData perObjectData = loadedSceneData.allObjects[i];
           if (perObjectData.gameObject != null) {
-            perObjectData.gameObject.layer = perObjectData.layer;
+            if (perObjectData.gameObject.layer != hiddenLayer) {
+              perObjectData.layer = perObjectData.gameObject.layer;
+            }
+            perObjectData.gameObject.layer = hiddenLayer;
+            if (perObjectData.isDynamicObjectSpawner) {
+              foreach (UnityEngine.Transform childTransform in perObjectData.gameObject.transform) {
+                childTransform.gameObject.layer = hiddenLayer;
+              }
+            }
+            loadedSceneData.allObjects[i] = perObjectData;
           }
         }
       }
@@ -457,6 +510,7 @@ namespace Keiwando.Evolution.UI {
       LoadedSceneData loadedSceneData = new LoadedSceneData();
       loadedSceneData.scene = scene;
       loadedSceneData.creature = sceneLoadContext.Creatures[0];
+      loadedSceneData.physicsScene = sceneLoadContext.PhysicsScene;
 
       var prevActiveScene = SceneManager.GetActiveScene();
       SceneManager.SetActiveScene(scene);
@@ -466,9 +520,18 @@ namespace Keiwando.Evolution.UI {
       foreach (GameObject rootObject in rootObjects) {
         // GetComponentsInChildren includes the root object
         foreach (UnityEngine.Transform childTransform in rootObject.GetComponentsInChildren<UnityEngine.Transform>()) {
+          bool isDynamicObjectSpawner = false;
+          if (recording.task == Objective.ObstacleJump) { 
+              RollingObstacleSpawnerBehaviour obstacleSpawner = childTransform.GetComponent<RollingObstacleSpawnerBehaviour>();
+              if (obstacleSpawner != null) { 
+                isDynamicObjectSpawner = true;
+                loadedSceneData.needsPhysicsSimulation = true;
+              }
+          }
           loadedSceneData.allObjects.Add(new PerObjectData {
             layer = childTransform.gameObject.layer,
-            gameObject = childTransform.gameObject
+            gameObject = childTransform.gameObject,
+            isDynamicObjectSpawner = isDynamicObjectSpawner
           });
         }
       }

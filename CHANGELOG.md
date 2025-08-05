@@ -1,3 +1,15 @@
+## v4.0
+
+- Save recordings of your favourite simulation results in the new gallery.
+- Choose from a list of skins such as googly eyes, noses, hands, feet and more and attach them to your creature's bones for a more personalized look. Skins are purely cosmetic and do not affect the simulation.
+- Tap a selection of body components with the move tool to show scale and rotation handles for precise adjustments. This is especially useful for fine-tuning the orientation and size of the new skins.
+- Improved the performance of save file loading and saving and reduced the memory usage during the simulation.
+- The camera now follows the creatures vertically as well, so your flying creatures won't fly out of view.
+- Added a background grid to the simulation screen to help see the movement of flying creatures once the ground is no longer visible.
+- Improved UI layout for different screen sizes and resolutions.
+- Improved the visual quality of the UI.
+- Other bug fixes and stability improvements.
+
 ## v3.1.1
 
 - Fixed launch crash on Android 12
