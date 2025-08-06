@@ -29,7 +29,7 @@ While you are able to download the source code and build the game for yourself f
 
 ## Building the Code
 
-In order to build Evolution from its source code you need to download Unity 2018.4.36f1 (including its iOS build support modules). Then, you can just open the folder in Unity, select a platform (command + shift + B) and build the application for that platform.
+In order to build Evolution from its source code you need to download Unity 6000.0.43f1 (including its iOS build support modules). Then, you can just open the folder in Unity, select a platform (command + shift + B) and build the application for that platform.
 
 
 ## License
