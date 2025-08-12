@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 using Keiwando.Evolution.Scenes;
 
@@ -273,7 +274,9 @@ public class CreatureRecordingPlayer {
   private float currentPlaybackSampleInterpolationT = 0f;
 
   private float playbackStartTime = 0.0f;
-  
+
+  public List<IResettableStructure> structuresToReset;
+
   private CreatureRecordingMovementData recording;
 
   public CreatureRecordingPlayer(CreatureRecordingMovementData recording) {
@@ -299,6 +302,13 @@ public class CreatureRecordingPlayer {
     if (wrappedPlaybackTime < recording.sampleTimestamps[currentPlaybackSample]) {
       currentPlaybackSample = 0;
       currentPlaybackSampleInterpolationT = 0f;
+      if (structuresToReset != null) {
+        foreach (IResettableStructure structure in structuresToReset) {
+          if (structure != null) {
+            structure.Reset();
+          }
+        }
+      }
     }
     for (int sampleIndex = currentPlaybackSample + 1; sampleIndex < validSampleCount; sampleIndex++) {
       float sampleTimestamp = recording.sampleTimestamps[sampleIndex];

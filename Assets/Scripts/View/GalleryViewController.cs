@@ -59,6 +59,7 @@ namespace Keiwando.Evolution.UI {
       public Creature creature;
       public List<PerObjectData> allObjects;
       public bool needsPhysicsSimulation;
+      public CreatureRecordingPlayer recordingPlayer;
     }
     private LoadedSceneData?[] loadedScenes;
     /// The unordered set of all scene indices that are requested
@@ -547,6 +548,15 @@ namespace Keiwando.Evolution.UI {
         } else if (rootObject.name == "GalleryPlaybackController") {
           GalleryPlaybackController playbackController = rootObject.GetComponent<GalleryPlaybackController>();
           CreatureRecordingPlayer player = new CreatureRecordingPlayer(recording: recording.movementData);
+          loadedSceneData.recordingPlayer = player;
+          for (int i = 0; i < loadedSceneData.allObjects.Count; i++) {
+            if (loadedSceneData.allObjects[i].isDynamicObjectSpawner) {
+              if (player.structuresToReset == null) {
+                player.structuresToReset = new List<IResettableStructure>();
+              }
+              player.structuresToReset.Add(loadedSceneData.allObjects[i].gameObject.GetComponent<IResettableStructure>());
+            }
+          }
           playbackController.Setup(sceneLoadContext.Creatures[0], player);
           playbackController.Play();
         }

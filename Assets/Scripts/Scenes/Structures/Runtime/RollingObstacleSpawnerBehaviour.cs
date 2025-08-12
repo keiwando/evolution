@@ -1,9 +1,10 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Keiwando.Evolution.Scenes {
 
-    public class RollingObstacleSpawnerBehaviour: MonoBehaviour {
+    public class RollingObstacleSpawnerBehaviour: MonoBehaviour, IResettableStructure {
 
         private const string PREFAB_PATH = "Prefabs/Structures/ObstacleBall";
         private const float BASE_FORCE = 5000f;
@@ -28,6 +29,9 @@ namespace Keiwando.Evolution.Scenes {
         public ISceneContext Context;
 
         private GameObject obstacleTemplate;
+        private List<GameObject> spawnedObstacles = new List<GameObject>();
+
+        private Coroutine coroutine;
 
         void Start() {
             // This is primarily important for correcty gallery playback rendering since
@@ -38,14 +42,21 @@ namespace Keiwando.Evolution.Scenes {
             this.obstacleTemplate.SetActive(false);
             this.obstacleTemplate.layer = Context.GetDynamicForegroundLayer();
 
-            StartCoroutine(SpawnObstacle());
+            coroutine = StartCoroutine(SpawnObstacle());
         }
 
         private IEnumerator SpawnObstacle() {
 
             while (true) {
+
+                for (int i = spawnedObstacles.Count - 1; i >= 0; i--) {
+                    if (spawnedObstacles[i] == null) {
+                        spawnedObstacles.RemoveAt(i);
+                    }
+                }
                 
                 var obstacle = Instantiate(obstacleTemplate, transform.position, Quaternion.identity, transform) as GameObject;
+                spawnedObstacles.Add(obstacle);
                 obstacle.SetActive(true);
                 var destroyAfterTime = obstacle.AddComponent<DestroyAfterTime>();
                 destroyAfterTime.Lifetime = ObstacleLifetime;
@@ -55,6 +66,19 @@ namespace Keiwando.Evolution.Scenes {
 
                 yield return new WaitForSeconds(SpawnInterval);
             }
+        }
+
+        public void Reset() {
+            if (this.coroutine != null) {
+                StopCoroutine(this.coroutine);
+            }
+            foreach (GameObject gameObject in spawnedObstacles) {
+                if (gameObject != null) {
+                    Destroy(gameObject);
+                }
+            }
+            spawnedObstacles.Clear();
+            coroutine = StartCoroutine(SpawnObstacle());
         }
     }
 }

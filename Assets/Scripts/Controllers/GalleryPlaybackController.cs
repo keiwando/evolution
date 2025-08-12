@@ -6,14 +6,10 @@ namespace Keiwando.Evolution {
   public class GalleryPlaybackController : MonoBehaviour {
 
     public CreatureRecordingPlayer recordingPlayer;
-
     public Creature creature;
-    public PhysicsScene physicsScene;
 
     [SerializeField]
     private TrackedCamera trackedCamera;
-
-    private bool paused = true;
 
     void Start() {
       Physics.simulationMode = SimulationMode.Script;
@@ -30,20 +26,12 @@ namespace Keiwando.Evolution {
     }
 
     public void Play() {
-      paused = false;
-      
       creature.SetOnBestCreatureLayer();
 
 			creature.Alive = false;
 			creature.gameObject.SetActive(false);
 			creature.Alive = true;
 			creature.gameObject.SetActive(true);
-    }
-
-    void FixedUpdate() {
-			if (!paused && physicsScene != null && physicsScene.IsValid()) {
-				physicsScene.Simulate(Time.fixedDeltaTime);
-			}
     }
   }
 }
