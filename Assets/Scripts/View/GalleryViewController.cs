@@ -254,7 +254,7 @@ namespace Keiwando.Evolution.UI {
       int totalNumberOfPages = Math.Max(1, (totalItemCount + numberOfItemsPerPage - 1) / numberOfItemsPerPage);
       currentPageIndex = Math.Clamp(currentPageIndex, 0, totalNumberOfPages - 1);
 
-      numberOfItemsOnCurrentPage = currentPageIndex == totalNumberOfPages - 1 ? totalItemCount % numberOfItemsPerPage : numberOfItemsPerPage;
+      numberOfItemsOnCurrentPage = Math.Min(numberOfItemsPerPage, totalItemCount - currentPageIndex * numberOfItemsPerPage);
 
       if (loadedScenes.Length != galleryManager.gallery.entries.Count) {
         Array.Resize(ref loadedScenes, galleryManager.gallery.entries.Count);
