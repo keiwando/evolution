@@ -146,6 +146,10 @@ namespace Keiwando.Evolution {
 				muscle.PrepareForEvolution();
 			}
 
+			foreach (Decoration decoration in decorations) {
+				decoration.PrepareForEvolution();
+			}
+
 			RefreshDecorationSortingOrders();
 
 			alive = true;
