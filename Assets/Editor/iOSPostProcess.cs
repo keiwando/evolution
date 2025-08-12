@@ -23,6 +23,8 @@ public class iOSPostProcess : MonoBehaviour {
             rootDict.values.Remove(existsOnSuspendKey);
         }
 
+        rootDict.SetBoolean("ITSAppUsesNonExemptEncryption", false);
+
         plist.WriteToFile(plistPath);
     }
 }
