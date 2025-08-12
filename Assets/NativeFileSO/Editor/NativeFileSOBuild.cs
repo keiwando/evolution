@@ -30,9 +30,20 @@ public class NativeFileSOBuild: IPostprocessBuildWithReport {
 
 	public void OnPostprocessBuild(BuildReport report) {
 		if (report.summary.platform == BuildTarget.StandaloneOSX) {
-			PostProcessMacOS(report.summary.outputPath);
+			string plistPath = null;
+			if (report.summary.outputPath.EndsWith(".app")) {
+				plistPath = report.summary.outputPath + "/Contents/Info.plist";
+			} else {
+				string[] directories = Directory.GetDirectories(report.summary.outputPath);
+				if (directories.Length > 0) {
+					plistPath = directories[0] + "/Info.plist";
+				}
+			}
+			PostProcessMacOS(plistPath);
 			#if UNITY_STANDALONE_OSX
-			UnityEditor.OSXStandalone.MacOSCodeSigning.CodeSignAppBundle(report.summary.outputPath);
+			if (report.summary.outputPath.EndsWith(".app")) {
+				UnityEditor.OSXStandalone.MacOSCodeSigning.CodeSignAppBundle(report.summary.outputPath);
+			}
 			#endif			
 		}
 	}
@@ -116,14 +127,15 @@ public class NativeFileSOBuild: IPostprocessBuildWithReport {
 		}
 	}
 
-	private static void PostProcessMacOS(string path) {
-		var plistPath = path + "/Contents/Info.plist";
+	private static void PostProcessMacOS(string plistPath) {
+		if (string.IsNullOrEmpty(plistPath)) {
+			Debug.LogWarning("No Info.plist found during the build!");
+		}
 		var plist = new PlistDocument();
 		plist.ReadFromFile(plistPath);
 		AddSupportedFileTypesToInfoPlist(plist);
 		plist.WriteToFile(plistPath);
 	}
-
 
 	static void AddFrameworks(PBXProject project, string targetGUID) {
 
