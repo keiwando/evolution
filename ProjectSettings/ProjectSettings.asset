@@ -142,7 +142,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 4.0.1
+  bundleVersion: 4.0.2
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -171,12 +171,12 @@ PlayerSettings:
     iPhone: com.keiwando.Evolution
     tvOS: com.Company.ProductName
   buildNumber:
-    Standalone: 22
+    Standalone: 23
     VisionOS: 0
-    iPhone: 2
+    iPhone: 23
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 22
+  AndroidBundleVersionCode: 23
   AndroidMinSdkVersion: 24
   AndroidTargetSdkVersion: 36
   AndroidPreferredInstallLocation: 0
