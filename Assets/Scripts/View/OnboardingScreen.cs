@@ -19,7 +19,7 @@ public class OnboardingScreen : MonoBehaviour {
 	[SerializeField]
 	private Button helpButton;
 	[SerializeField]
-	private Button evolveButton;
+	private GameObject evolveButton;
 
 	[SerializeField]
 	private Text description;
@@ -73,7 +73,7 @@ public class OnboardingScreen : MonoBehaviour {
 		helpButton.gameObject.SetActive(currentScreenIndex == 5);
 		skipButton.gameObject.SetActive(currentScreenIndex < totalScreenCount - 1);
 		doneButton.gameObject.SetActive(currentScreenIndex == totalScreenCount - 1);
-		evolveButton.gameObject.SetActive(currentScreenIndex == totalScreenCount - 2);
+		evolveButton.SetActive(currentScreenIndex == totalScreenCount - 2);
 	}
 
 	public void GoToNextScreen() {
