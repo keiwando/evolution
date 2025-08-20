@@ -180,7 +180,7 @@ namespace Keiwando.Evolution {
                         onInputValueChanged = delegate (string newValue) {
                             int newBatchSize = 0;
                             if (int.TryParse(newValue, out newBatchSize)) {
-                                newBatchSize = Math.Clamp(newBatchSize, 1, simulationSettings.BatchSize);
+                                newBatchSize = Math.Clamp(newBatchSize, 1, simulationSettings.PopulationSize);
                                 var settings = simulationSettings;
                                 settings.BatchSize = newBatchSize;
                                 simulationSettings = settings;
