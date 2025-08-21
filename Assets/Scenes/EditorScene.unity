@@ -2533,7 +2533,6 @@ GameObject:
   - component: {fileID: 111325318}
   - component: {fileID: 111325319}
   - component: {fileID: 111325320}
-  - component: {fileID: 111325321}
   m_Layer: 5
   m_Name: Decorations Container
   m_TagString: Untagged
@@ -2615,19 +2614,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &111325321
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 111325317}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a771390974b54ebd86609cf0505e8a4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isHovered: 0
 --- !u!1 &112237770
 GameObject:
   m_ObjectHideFlags: 0
@@ -12204,7 +12190,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 727723756}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.41993958
+  m_Size: 0.41993964
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -31332,8 +31318,8 @@ MonoBehaviour:
   zoomOutLength: 10
   InteractiveZoomEnabled: 1
   pointerHoverAreasToIgnore:
-  - {fileID: 111325321}
-  - {fileID: 2146675146}
+  - {fileID: 111325317}
+  - {fileID: 1735218480}
   bottomMovementPadding: 10
   topMovementPadding: 10
   leftMovementPadding: 18
@@ -36740,19 +36726,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76b19727cc9c74f958d6f0045394281e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2146675146
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1735218480}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a771390974b54ebd86609cf0505e8a4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isHovered: 0
 --- !u!1 &1076516961774623
 GameObject:
   m_ObjectHideFlags: 0
@@ -38305,11 +38278,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3593883801664574350, guid: dfac67bc1c72344cc9fea855a05b1677,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2146675146}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dfac67bc1c72344cc9fea855a05b1677, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

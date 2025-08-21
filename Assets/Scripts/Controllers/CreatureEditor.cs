@@ -457,9 +457,6 @@ public class CreatureEditor: MonoBehaviour,
                 break;
 
             case Tool.Move: 
-                if (!this.currentClickStartedOverUI) {
-                    creatureEdited = creatureBuilder.MoveEnded(jointsToMove, decorationsToMove); 
-                }
                 if (GestureRecognizerCollection.shared.GetClickGestureRecognizer().ClickEndedOnThisFrame() && 
                     selectionManager.LastHoveringIsPartOfSelection() && 
                     !currentClickStartedOverTransformGizmo &&
@@ -472,8 +469,11 @@ public class CreatureEditor: MonoBehaviour,
                     transformGizmo.Reset();
                     creatureBuilder.CancelMove(jointsToMove, decorationsToMove, oldDesign);
                     creatureEdited = false;
-                } else if (!currentClickStartedOverTransformGizmo) {
-                    if (!isPointerOverUI) {
+                } else {
+                    if (!this.currentClickStartedOverUI) {
+                        creatureEdited = creatureBuilder.MoveEnded(jointsToMove, decorationsToMove); 
+                    }
+                    if (!currentClickStartedOverTransformGizmo && !isPointerOverUI) {
                         transformGizmo.gameObject.SetActive(false);
                         jointsToMove.Clear();
                         decorationsToMove.Clear();

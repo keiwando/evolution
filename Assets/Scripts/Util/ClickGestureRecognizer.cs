@@ -13,11 +13,11 @@ namespace Keiwando {
 
     private float clickStartTime = 0f;
 
-    private const float CLICK_DURATION_THRESHOLD = 0.5f;
+    private const float CLICK_DURATION_THRESHOLD = 0.3f;
     #if UNITY_IOS || UNITY_ANDROID
-    private const float CLICK_MOVE_THRESHOLD = 40f;
+    private const float CLICK_MOVE_THRESHOLD_IN_DP = 6f;
     #else
-    private const float CLICK_MOVE_THRESHOLD = 5f;
+    private const float CLICK_MOVE_THRESHOLD_IN_DP = 2f;
     #endif
 
     void Update() {
@@ -43,7 +43,8 @@ namespace Keiwando {
         if (clickDuration > CLICK_DURATION_THRESHOLD) {
           this.State = GestureRecognizerState.Cancelled;
         }
-        if (Vector2.Distance(Input.mousePosition, this.ClickPosition) > CLICK_MOVE_THRESHOLD) {
+        float clickMoveThresholdInPx = DpToPixels(CLICK_MOVE_THRESHOLD_IN_DP);
+        if (Vector2.Distance(Input.mousePosition, this.ClickPosition) > clickMoveThresholdInPx) {
           this.State = GestureRecognizerState.Cancelled;
         }
       } 
@@ -59,6 +60,15 @@ namespace Keiwando {
 
     public bool ClickEndedOnThisFrame() {
       return this.State == GestureRecognizerState.Ended;
+    }
+
+    private float DpToPixels(float dp) {
+        float dpi = Screen.dpi;
+        // Apparently, Screen.dpi can be 0 on some devices
+        if (dpi == 0) {
+          dpi = 160f;
+        }
+        return dp * (dpi / 160f);
     }
   }
 }

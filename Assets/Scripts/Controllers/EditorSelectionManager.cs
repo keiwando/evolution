@@ -102,6 +102,9 @@ namespace Keiwando.Evolution {
             if (Input.touchCount != 1) {
                 hovering = null;
             }
+            if (Input.touchCount > 0 && InputUtils.IsTouchOverUI(Input.GetTouch(0).fingerId)) {
+                hovering = null;
+            }
             #endif
 
             this.lastHovering = currentHovering;

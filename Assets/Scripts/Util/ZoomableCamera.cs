@@ -43,7 +43,7 @@ namespace Keiwando.Evolution {
 
     public bool InteractiveZoomEnabled = true;
 
-    public PointerHoverDetector[] pointerHoverAreasToIgnore;
+    public GameObject[] pointerHoverAreasToIgnore;
 
     private Camera _camera;
 
@@ -87,8 +87,20 @@ namespace Keiwando.Evolution {
         return false;
       }
       if (pointerHoverAreasToIgnore != null) {
-        foreach (PointerHoverDetector pointerHoverDetector in pointerHoverAreasToIgnore) {
-          if (pointerHoverDetector.gameObject.activeInHierarchy && pointerHoverDetector.isHovered) {
+        foreach (GameObject pointerHoverArea in pointerHoverAreasToIgnore) {
+          if (!pointerHoverArea.gameObject.activeInHierarchy) {
+            continue;
+          }
+          bool isHovered = false;
+          RectTransform rect = pointerHoverArea.transform as RectTransform;
+          #if UNITY_IOS || UNITY_ANDROID 
+          for (int touchI = 0; touchI < Input.touchCount; touchI++) {
+            isHovered |= RectTransformUtility.RectangleContainsScreenPoint(rect, Input.GetTouch(touchI).position);
+          }
+          #else 
+          isHovered = RectTransformUtility.RectangleContainsScreenPoint(rect, Input.mousePosition);
+          #endif
+          if (isHovered) {
             return false;
           }
         }
