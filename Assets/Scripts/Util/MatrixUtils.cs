@@ -44,9 +44,11 @@ public static class MatrixUtils {
 		    result = CreateMatrix2D(aRows, bCols);
 
 		for (int i = 0; i < aRows; ++i) // each row of A
-			for (int j = 0; j < bCols; ++j) // each col of B
+			for (int j = 0; j < bCols; ++j) { // each col of B
+				result[i][j] = 0f;
 				for (int k = 0; k < aCols; ++k)
 					result[i][j] += lhs[i][k] * rhs[k][j];
+			}
 		
 		return result;
     }
@@ -63,9 +65,11 @@ public static class MatrixUtils {
         if (result == null)
 		    result = new float[aRows];
 
-		for (int i = 0; i < aRows; ++i) // each row of A
+		for (int i = 0; i < aRows; ++i) { // each row of A
+			result[i] = 0f;
 			for (int k = 0; k < aCols; ++k)
 				result[i] += matrixA[i][k] * vectorB[k];
+		}
 		
 		return result;
 	}
@@ -85,9 +89,11 @@ public static class MatrixUtils {
         if (result == null)
 		    result = new float[aRows];
 
-		for (int i = 0; i < aRows; ++i) // each row of A
+		for (int i = 0; i < aRows; ++i) { // each row of A
+			result[i] = 0f;
 			for (int k = 0; k < aCols; ++k)
 				result[i] += matrixA[k][i] * vectorB[k];
+		}
 		
 		return result;
 	}
